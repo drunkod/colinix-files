@@ -15,8 +15,14 @@
 
 
   # common admin operations:
+  #   sudo systemctl start postgresql
   #   sudo -u postgres psql
   #   > \l   # lists all databases
   #   > \du  # lists all roles
+  #   > \c pleroma  # connects to database by name
+  #   > \d   # shows all tables
   #   > \q   # exits psql
+  # dump/restore (-F t = tar):
+  #   sudo -u postgres pg_dump -F t pleroma > /backup/pleroma-db.tar
+  #   sudo -u postgres -g postgres pg_restore -d pleroma /backup/pleroma-db.tar
 }
