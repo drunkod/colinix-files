@@ -55,8 +55,13 @@
     options = [ "bind" ];
   };
 
-  # swapDevices = [ 
-  #   { device = "/swapfile"; size = 4096; }
-  # ];
+  # in-memory compressed RAM (seems to be dynamically sized)
+  zramSwap = {
+    enable = true;
+  };
+
+  swapDevices = [
+    { device = "/swapfile"; size = 4096; }
+  ];
 }
 
