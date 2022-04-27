@@ -25,7 +25,11 @@
   ];
 
   # TODO colin: re-enable the firewall
-  networking.firewall.enable = false;
+  # networking.firewall.enable = false;
+  networking.firewall.allowedTCPPorts = [ 25 80 443 ];
+  # DLNA ports: https://jellyfin.org/docs/general/networking/index.html
+  networking.firewall.allowedUDPPorts = [ 1900 7359 ];
+
 
   # XXX colin: UNMODIFIED DEFAULTS BELOW
 
