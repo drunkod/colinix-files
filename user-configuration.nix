@@ -55,6 +55,8 @@
     passwordAuthentication = false;
   };
 
+  programs.vim.defaultEditor = true;
+
   # gitea doesn't create the git user
   users.users.git = {
     description = "Gitea Service";
