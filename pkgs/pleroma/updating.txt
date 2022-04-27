@@ -1,0 +1,10 @@
+in default.nix:
+  update `rev` and recompute sha256.
+    use nix to-sri sha256:<expected>
+
+run mix2nix inside the pleroma git root and pipe the output into mix.nix
+  inside default.nix, update all git mix deps
+  inside mix.nix, change base64url to use buildRebar3 instead of buildMix
+
+move majic from mix.nix -> default.nix and add:
+  buildInputs = [ file ];
