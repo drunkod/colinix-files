@@ -7,13 +7,15 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
       ./fs-configuration.nix
+      ./hardware-configuration.nix
+      ./net-configuration.nix
       ./services-conf/gitea-configuration.nix
       ./services-conf/jellyfin-configuration.nix
       ./services-conf/matrix-configuration.nix
       ./services-conf/nginx-configuration.nix
       ./services-conf/pleroma-configuration.nix
+      ./services-conf/postfix-configuration.nix
       ./services-conf/postgres-configuration.nix
       ./user-configuration.nix
     ];
@@ -23,12 +25,6 @@
       pleroma = super.callPackage ./pkgs/pleroma { };
     })
   ];
-
-  # TODO colin: re-enable the firewall
-  # networking.firewall.enable = false;
-  networking.firewall.allowedTCPPorts = [ 25 80 443 ];
-  # DLNA ports: https://jellyfin.org/docs/general/networking/index.html
-  networking.firewall.allowedUDPPorts = [ 1900 7359 ];
 
 
   # XXX colin: UNMODIFIED DEFAULTS BELOW

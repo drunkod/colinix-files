@@ -28,8 +28,10 @@
       pkgs.htop
       pkgs.matrix-synapse
       pkgs.mix2nix
+      pkgs.netcat
       pkgs.nmap
       pkgs.ripgrep
+      pkgs.telnet
       pkgs.sudo
       (pkgs.vim_configurable.customize {
         name = "vim";
