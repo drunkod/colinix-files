@@ -7,10 +7,10 @@
   users.mutableUsers = false;
 
   # docs: https://nixpkgs-manual-sphinx-markedown-example.netlify.app/generated/options-db.xml.html#users-users
-  users.users.nixos = {
+  users.users.colin = {
     # sets group to "users" (?)
     isNormalUser = true;
-    home = "/home/nixos";
+    home = "/home/colin";
     uid = 1000;
     # XXX colin: this is what the installer has, but is it necessary?
     # group = "users";
@@ -44,7 +44,7 @@
   };
 
   # Automatically log in at the virtual consoles.
-  services.getty.autologinUser = "nixos";
+  services.getty.autologinUser = "colin";
 
   security.sudo = {
     enable = lib.mkDefault true;
