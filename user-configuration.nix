@@ -22,17 +22,27 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG+MZ/l5d8g5hbxMB9ed1uyvhV85jwNrSVNVxb5ujQjw colin@colin.laptop"
     ];
     packages = [
+      pkgs.gnumake
+      pkgs.dig
+      pkgs.duplicity
       pkgs.fd
       pkgs.file
       pkgs.git
       pkgs.htop
+      pkgs.iftop
+      pkgs.iotop
+      pkgs.iptables
+      pkgs.lsof
       pkgs.matrix-synapse
       pkgs.mix2nix
       pkgs.netcat
+      pkgs.nettools
       pkgs.nmap
       pkgs.ripgrep
       pkgs.telnet
       pkgs.sudo
+      pkgs.wireguard
+      pkgs.zola
       (pkgs.vim_configurable.customize {
         name = "vim";
         vimrcConfig.customRC = ''
