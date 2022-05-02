@@ -48,6 +48,18 @@
         vimrcConfig.customRC = ''
           " wtf vim project: NOBODY LIKES MOUSE FOR VISUAL MODE
           set mouse-=a
+          " copy/paste to system clipboard
+          set clipboard=unnamedplus
+          " <tab> completion menu settings
+          set wildmenu
+          set wildmode=longest,list,full
+          " highlight all matching searches (using / and ?)
+          set hlsearch
+          " allow backspace to delete empty lines in insert mode
+          set backspace=indent,eol,start
+          " highlight trailing space & related syntax errors (does this work?)
+          let c_space_errors=1
+          let python_space_errors=1
         '';
       })
     ];
