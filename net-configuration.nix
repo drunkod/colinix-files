@@ -4,18 +4,20 @@
   networking.domain = "uninsane.org";
 
   # TODO: enable firewall
-  networking.firewall.enable = false;
-  # networking.firewall.allowedTCPPorts = [ 25 80 443 ];
-  # # DLNA ports: https://jellyfin.org/docs/general/networking/index.html
-  # networking.firewall.allowedUDPPorts = [ 1900 7359 ];
+  # networking.firewall.enable = false;
+  networking.firewall.enable = true;
+  networking.firewall.allowedTCPPorts = [ 25 80 443 ];
+  # DLNA ports: https://jellyfin.org/docs/general/networking/index.html
+  networking.firewall.allowedUDPPorts = [ 1900 7359 ];
 
   # OVPN CONFIG:
   # DOCS: https://nixos.wiki/wiki/WireGuard
-  # note: without the namespace, you'll need to add a specific route through eth0 for the peer (185.157.162.7/32)
   networking.wireguard.enable = true;
   networking.wireguard.interfaces.wg0 = {
     privateKeyFile = "/etc/nixos/wireguard.private";
-    # listenPort = 51820;  # shouldn't be necessary
+    # wg is active only in this namespace.
+    # run e.g. ip netns ovpns <some command like ping/curl/etc, it'll go through wg>
+    # note: without the namespace, you'll need to add a specific route through eth0 for the peer (185.157.162.7/32)
     interfaceNamespace = "ovpns";
     preSetup = "${pkgs.iproute2}/bin/ip netns add ovpns || true";
     postShutdown = "${pkgs.iproute2}/bin/ip netns delete ovpns";
@@ -26,12 +28,7 @@
       {
         publicKey = "Qno+hILmJ8TZ6/PpOOhtspmncyILY2phiTBFaER9IFE=";
         endpoint = "vpn29.prd.amsterdam.ovpn.com:9930";
-        # TODO: switch back to 0.0.0.0/0?
-        # allowedIPs = [ "0.0.0.0/0" ];
-        allowedIPs = [
-          "0.0.0.0/1"
-          "128.0.0.0/1"
-        ];
+        allowedIPs = [ "0.0.0.0/0" ];
         # nixOS says this is important for keeping NATs active
         persistentKeepalive = 25;
       }
@@ -60,11 +57,6 @@
   #     # client addr
   #     # {
   #     #   address = "2001:470:a:466::2";
-  #     #   prefixLength = 64;
-  #     # }
-  #     # HW addr?
-  #     # {
-  #     #   address = "fe80::c0a8:16";
   #     #   prefixLength = 64;
   #     # }
   #   ];
