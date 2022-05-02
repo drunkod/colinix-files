@@ -57,6 +57,10 @@
           set hlsearch
           " allow backspace to delete empty lines in insert mode
           set backspace=indent,eol,start
+          " built-in syntax highlighting
+          syntax enable
+          " show line/col number in bottom right
+          set ruler
           " highlight trailing space & related syntax errors (does this work?)
           let c_space_errors=1
           let python_space_errors=1
