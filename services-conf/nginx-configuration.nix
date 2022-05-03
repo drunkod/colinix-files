@@ -88,6 +88,18 @@
     };
   };
 
+  # transmission
+  services.nginx.virtualHosts."bt.uninsane.org" = {
+    # basicAuth is literally cleartext user/pw, so FORCE this to happen over SSL
+    forceSSL = true;
+    enableACME = true;
+    locations."/" = {
+      # created with htpasswd -c bt.htpasswd <user>
+      basicAuthFile = "/etc/nixos/services-conf/bt.htpasswd";
+      proxyPass = "http://127.0.0.1:9091";
+    };
+  };
+
   services.nginx.virtualHosts."matrix.uninsane.org" = {
     addSSL = true;
     enableACME = true;

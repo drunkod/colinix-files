@@ -17,6 +17,7 @@
       ./services-conf/pleroma-configuration.nix
       ./services-conf/postfix-configuration.nix
       ./services-conf/postgres-configuration.nix
+      ./services-conf/transmission-configuration.nix
       ./user-configuration.nix
     ];
 
