@@ -73,8 +73,8 @@
   services.getty.autologinUser = "colin";
 
   security.sudo = {
-    enable = lib.mkDefault true;
-    wheelNeedsPassword = lib.mkForce false;
+    enable = true;
+    wheelNeedsPassword = false;
   };
 
   services.openssh = {
