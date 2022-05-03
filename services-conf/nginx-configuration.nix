@@ -94,9 +94,7 @@
     forceSSL = true;
     enableACME = true;
     locations."/" = {
-      # created with htpasswd -c bt.htpasswd <user>
-      basicAuthFile = "/etc/nixos/services-conf/bt.htpasswd";
-      proxyPass = "http://127.0.0.1:9091";
+      proxyPass = "http://ovpns.uninsane.org:9091";
     };
   };
 

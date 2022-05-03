@@ -10,6 +10,12 @@
   # DLNA ports: https://jellyfin.org/docs/general/networking/index.html
   networking.firewall.allowedUDPPorts = [ 1900 7359 ];
 
+  # we need to use externally-visible nameservers in order for VPNs to be able to resolve hosts.
+  networking.nameservers = [
+    "1.1.1.1"
+    "9.9.9.9"
+  ];
+
   # OVPN CONFIG:
   # DOCS: https://nixos.wiki/wiki/WireGuard
   networking.wireguard.enable = true;
