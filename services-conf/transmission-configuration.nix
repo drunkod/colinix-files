@@ -16,6 +16,7 @@
     download-dir = "/mnt/storage/opt/uninsane/media/";
   };
 
+  systemd.services.transmission.after = ["wireguard-wg0.service"];
   systemd.services.transmission.serviceConfig = {
     # run this behind the OVPN static VPN
     NetworkNamespacePath = "/run/netns/ovpns";
