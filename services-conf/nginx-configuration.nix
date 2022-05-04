@@ -98,6 +98,14 @@
     };
   };
 
+  services.nginx.virtualHosts."jackett.uninsane.org" = {
+    forceSSL = true;
+    enableACME = true;
+    locations."/" = {
+      proxyPass = "http://ovpns.uninsane.org:9117";
+    };
+  };
+
   services.nginx.virtualHosts."matrix.uninsane.org" = {
     addSSL = true;
     enableACME = true;

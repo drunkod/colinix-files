@@ -11,6 +11,7 @@
       ./hardware-configuration.nix
       ./net-configuration.nix
       ./services-conf/gitea-configuration.nix
+      ./services-conf/jackett-configuration.nix
       ./services-conf/jellyfin-configuration.nix
       ./services-conf/matrix-configuration.nix
       ./services-conf/nginx-configuration.nix
@@ -24,6 +25,7 @@
   nixpkgs.overlays = [
     (self: super: {
       pleroma = super.callPackage ./pkgs/pleroma { };
+      jackett = self.callPackage ./pkgs/jackett { pkgs = super; };
     })
   ];
 
