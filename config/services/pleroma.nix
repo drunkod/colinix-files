@@ -6,7 +6,7 @@
 {
   services.pleroma.enable = true;
   # XXX colin: this isn't checked into git, so make sure to create it first:
-  services.pleroma.secretConfigFile = "/etc/nixos/services-conf/pleroma.secret.exs";
+  services.pleroma.secretConfigFile = "/etc/nixos/secrets/pleroma.secret.exs";
   # services.pleroma.secretConfigFile = "/var/lib/pleroma/prod.secret.exs";
   services.pleroma.configs = [
     ''

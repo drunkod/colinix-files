@@ -18,7 +18,7 @@
   # DOCS: https://nixos.wiki/wiki/WireGuard
   networking.wireguard.enable = true;
   networking.wireguard.interfaces.wg0 = {
-    privateKeyFile = "/etc/nixos/wireguard.private";
+    privateKeyFile = "/etc/nixos/secrets/wireguard.private";
     # wg is active only in this namespace.
     # run e.g. ip netns ovpns <some command like ping/curl/etc, it'll go through wg>
     # note: without the namespace, you'll need to add a specific route through eth0 for the peer (185.157.162.7/32)

@@ -7,19 +7,19 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./fs-configuration.nix
-      ./hardware-configuration.nix
-      ./net-configuration.nix
-      ./services-conf/gitea-configuration.nix
-      ./services-conf/jackett-configuration.nix
-      ./services-conf/jellyfin-configuration.nix
-      ./services-conf/matrix-configuration.nix
-      ./services-conf/nginx-configuration.nix
-      ./services-conf/pleroma-configuration.nix
-      ./services-conf/postfix-configuration.nix
-      ./services-conf/postgres-configuration.nix
-      ./services-conf/transmission-configuration.nix
-      ./user-configuration.nix
+      ./config/fs.nix
+      ./config/hardware.nix
+      ./config/net.nix
+      ./config/users.nix
+      ./config/services/gitea.nix
+      ./config/services/jackett.nix
+      ./config/services/jellyfin.nix
+      ./config/services/matrix.nix
+      ./config/services/nginx.nix
+      ./config/services/pleroma.nix
+      ./config/services/postfix.nix
+      ./config/services/postgres.nix
+      ./config/services/transmission.nix
     ];
 
   nixpkgs.overlays = [
