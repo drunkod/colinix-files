@@ -16,6 +16,15 @@
     options = [ "bind" ];
   };
 
+  fileSystems."/var/lib/transmission/Downloads" = {
+    device = "/mnt/storage/opt/uninsane/media";
+    options = [ "bind" ];
+  };
+  fileSystems."/var/lib/transmission/.incomplete" = {
+    device = "/mnt/storage/opt/uninsane/media/incomplete";
+    options = [ "bind" ];
+  };
+
   # swapDevices = [ 
   #   { device = "/swapfile"; size = 4096; }
   # ];

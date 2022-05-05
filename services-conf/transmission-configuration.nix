@@ -13,8 +13,20 @@
     rpc-password = "{503fc8928344f495efb8e1f955111ca5c862ce0656SzQnQ5";
     rpc-whitelist-enabled = false;
 
-    download-dir = "/mnt/storage/opt/uninsane/media/";
+    # download-dir = "/mnt/storage/opt/uninsane/media/";
+
+    # force peer connections to be encrypted
+    encryption = 2;
+
+    # units in kBps
+    speed-limit-down = 3000;
+    speed-limit-down-enabled = true;
+    speed-limit-up = 600;
+    speed-limit-up-enabled = true;
+
   };
+  # transmission will by default not allow the world to read its files.
+  services.transmission.downloadDirPermissions = "775";
 
   systemd.services.transmission.after = ["wireguard-wg0.service"];
   systemd.services.transmission.serviceConfig = {
