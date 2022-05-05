@@ -3,8 +3,6 @@
 {
   networking.domain = "uninsane.org";
 
-  # TODO: enable firewall
-  # networking.firewall.enable = false;
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 25 80 443 ];
   # DLNA ports: https://jellyfin.org/docs/general/networking/index.html
