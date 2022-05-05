@@ -56,7 +56,7 @@
     
     # (added by colin; based on https://docs.pleroma.social/backend/configuration/cheatsheet/#logger)
     config :logger,
-      backends: [:console, {ExSyslogger, :ex_syslogger}]
+      backends: [{ExSyslogger, :ex_syslogger}]
     
     config :logger, :ex_syslogger,
       level: :warn
