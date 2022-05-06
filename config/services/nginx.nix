@@ -94,7 +94,8 @@
     forceSSL = true;
     enableACME = true;
     locations."/" = {
-      proxyPass = "http://ovpns.uninsane.org:9091";
+      # proxyPass = "http://ovpns.uninsane.org:9091";
+      proxyPass = "http://10.0.1.6:9091";
     };
   };
 
@@ -102,7 +103,8 @@
     forceSSL = true;
     enableACME = true;
     locations."/" = {
-      proxyPass = "http://ovpns.uninsane.org:9117";
+      # proxyPass = "http://ovpns.uninsane.org:9117";
+      proxyPass = "http://10.0.1.6:9117";
     };
   };
 

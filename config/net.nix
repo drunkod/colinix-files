@@ -39,6 +39,34 @@
     ];
   };
 
+  systemd.services.wg0veth = {
+    description = "veth pair to allow communication between host and wg0 netns";
+    after = [ "wireguard-wg0.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+
+      ExecStart = with pkgs; writeScript "wg0veth-start" ''
+        #!${bash}/bin/bash
+        # create veth pair
+        ${iproute2}/bin/ip link add ovpns-veth-a type veth peer name ovpns-veth-b
+        ${iproute2}/bin/ip addr add 10.0.1.5/24 dev ovpns-veth-a
+        ${iproute2}/bin/ip link set ovpns-veth-a up
+        # mv veth-b into the ovpns namespace
+        ${iproute2}/bin/ip link set ovpns-veth-b netns ovpns
+        ${iproute2}/bin/ip -n ovpns addr add 10.0.1.6/24 dev ovpns-veth-b
+        ${iproute2}/bin/ip -n ovpns link set ovpns-veth-b up
+      '';
+
+      ExecStop = with pkgs; writeScript "wg0veth-stop" ''
+        #!${bash}/bin/bash
+        ${iproute2}/bin/ip -n wg0 link del ovpns-veth-b
+        ${iproute2}/bin/ip link del ovpns-veth-a
+      '';
+    };
+  };
+
   # HURRICANE ELECTRIC CONFIG:
   # networking.sits = {
   #   hurricane = {

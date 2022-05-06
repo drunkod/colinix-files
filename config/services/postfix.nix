@@ -27,6 +27,7 @@
   # keeping this the same as the hostname seems simplest
   services.opendkim.selector = "mx";
 
+  systemd.services.postfix.after = ["wg0veth.service"];
   systemd.services.postfix.serviceConfig = {
     # run this behind the OVPN static VPN
     NetworkNamespacePath = "/run/netns/ovpns";
