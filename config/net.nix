@@ -58,6 +58,8 @@
         ${iproute2}/bin/ip link set ovpns-veth-b netns ovpns
         ${iproute2}/bin/ip -n ovpns addr add 10.0.1.6/24 dev ovpns-veth-b
         ${iproute2}/bin/ip -n ovpns link set ovpns-veth-b up
+        # forward HTTP traffic, which we need for letsencrypt to work
+        ${iproute2}/bin/ip netns exec ovpns ${socat}/bin/socat TCP4-LISTEN:80,reuseaddr,fork,su=nobody TCP4:10.0.1.5:80 &
       '';
 
       ExecStop = with pkgs; writeScript "wg0veth-stop" ''

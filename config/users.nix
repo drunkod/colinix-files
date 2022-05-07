@@ -39,8 +39,9 @@
       pkgs.nettools
       pkgs.nmap
       pkgs.ripgrep
-      pkgs.telnet
+      pkgs.socat
       pkgs.sudo
+      pkgs.telnet
       pkgs.wireguard
       pkgs.zola
       (pkgs.vim_configurable.customize {

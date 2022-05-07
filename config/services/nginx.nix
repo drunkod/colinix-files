@@ -182,8 +182,13 @@
     };
   };
 
-  # exists only to manage acme for dovecot
+  # exists only to manage certs for dovecot
   services.nginx.virtualHosts."imap.uninsane.org" = {
+    forceSSL = true;
+    enableACME = true;
+  };
+  # exists only to manage certs for Postfix
+  services.nginx.virtualHosts."mx.uninsane.org" = {
     forceSSL = true;
     enableACME = true;
   };
