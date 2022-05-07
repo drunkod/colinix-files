@@ -1,10 +1,27 @@
 { config, pkgs, lib, ... }:
 
+let
+  submissionOptions = {
+      smtpd_tls_security_level = "encrypt";
+      smtpd_sasl_auth_enable = "yes";
+      smtpd_sasl_type = "dovecot";
+      smtpd_sasl_path = "/run/dovecot2/auth";
+      smtpd_sasl_security_options = "noanonymous";
+      smtpd_sasl_local_domain = "uninsane.org";
+      smtpd_client_restrictions = "permit_sasl_authenticated,reject";
+      # reuse the virtual map so that sender mapping matches recipient mapping
+      smtpd_sender_login_maps = "hash:/var/lib/postfix/conf/virtual";
+      smtpd_sender_restrictions = "reject_sender_login_mismatch";
+      smtpd_recipient_restrictions = "reject_non_fqdn_recipient,reject_unknown_recipient_domain,permit_sasl_authenticated,reject";
+  };
+in
 {
   services.postfix.enable = true;
   services.postfix.hostname = "mx.uninsane.org";
   services.postfix.origin = "uninsane.org";
-  services.postfix.destination = ["localhost" "uninsane.org"];
+  services.postfix.destination = [ "localhost" "uninsane.org" ];
+  services.postfix.sslCert = "/var/lib/acme/mx.uninsane.org/fullchain.pem";
+  services.postfix.sslKey = "/var/lib/acme/mx.uninsane.org/key.pem";
 
   services.postfix.virtual = ''
     @uninsane.org colin
@@ -20,9 +37,15 @@
     non_smtpd_milters = $smtpd_milters
     milter_default_action = accept
     inet_protocols = ipv4
+    smtp_tls_security_level = may
   '';
 
-  systemd.services.postfix.after = ["wg0veth.service"];
+  services.postfix.enableSubmission = true;
+  services.postfix.submissionOptions = submissionOptions;
+  services.postfix.enableSubmissions = true;
+  services.postfix.submissionsOptions = submissionOptions;
+
+  systemd.services.postfix.after = [ "wg0veth.service" ];
   systemd.services.postfix.serviceConfig = {
     # run this behind the OVPN static VPN
     NetworkNamespacePath = "/run/netns/ovpns";
@@ -43,7 +66,7 @@
   # keeping this the same as the hostname seems simplest
   services.opendkim.selector = "mx";
 
-  systemd.services.opendkim.after = ["wg0veth.service"];
+  systemd.services.opendkim.after = [ "wg0veth.service" ];
   systemd.services.opendkim.serviceConfig = {
     # run this behind the OVPN static VPN
     NetworkNamespacePath = "/run/netns/ovpns";
@@ -67,6 +90,17 @@
       driver = passwd-file
       args = /etc/nixos/secrets/dovecot.passwd
     }
+
+    # allow postfix to query our auth db
+    service auth {
+      unix_listener auth {
+        mode = 0660
+        user = postfix
+        group = postfix
+      }
+    }
+    auth_mechanisms = plain login
+
 
     mail_debug = yes
     auth_debug = yes
