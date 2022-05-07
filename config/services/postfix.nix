@@ -50,4 +50,26 @@
     # /run/opendkim/opendkim.sock needs to be rw by postfix
     UMask = lib.mkForce "0011";
   };
+
+  # inspired by https://gitlab.com/simple-nixos-mailserver/nixos-mailserver/
+  services.dovecot2.enable = true;
+  services.dovecot2.sslServerCert = "/var/lib/acme/imap.uninsane.org/fullchain.pem";
+  services.dovecot2.sslServerKey = "/var/lib/acme/imap.uninsane.org/key.pem";
+  services.dovecot2.enablePAM = false;
+  # passwd file looks like /etc/passwd.
+  # use nix run nixpkgs.apacheHttpd -c htpasswd -nbB "" "my passwd" to generate the password
+  services.dovecot2.extraConfig = ''
+    passdb {
+      driver = passwd-file
+      args = /etc/nixos/secrets/dovecot.passwd
+    }
+    userdb {
+      driver = passwd-file
+      args = /etc/nixos/secrets/dovecot.passwd
+    }
+
+    mail_debug = yes
+    auth_debug = yes
+    # verbose_ssl = yes
+  '';
 }

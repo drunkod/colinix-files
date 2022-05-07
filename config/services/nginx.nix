@@ -182,6 +182,12 @@
     };
   };
 
+  # exists only to manage acme for dovecot
+  services.nginx.virtualHosts."imap.uninsane.org" = {
+    forceSSL = true;
+    enableACME = true;
+  };
+
   security.acme.acceptTerms = true;
   security.acme.email = "acme@uninsane.org";
 }
