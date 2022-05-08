@@ -32,7 +32,73 @@
   services.matrix-synapse.extraConfig = ''
     registration_requires_token: true
   '';
+  services.matrix-synapse.app_service_config_files = [
+    "/var/lib/matrix-appservice-irc/registration.yml"  # auto-created by irc appservice
+  ];
 
   # new users may be registered on the CLI:
   # register_new_matrix_user -c /nix/store/8n6kcka37jhmi4qpd2r03aj71pkyh21s-homeserver.yaml http://localhost:8008
+
+  # IRC bridging
+  # note: Rizon allows only FOUR simultaneous IRC connections per IP: https://wiki.rizon.net/index.php?title=Connection/Session_Limit_Exemptions
+  # Rizon supports CertFP for auth: https://wiki.rizon.net/index.php?title=CertFP
+  services.matrix-appservice-irc.enable = true;
+  services.matrix-appservice-irc.registrationUrl = "http://127.0.0.1:8009";
+  # settings documented here: https://github.com/matrix-org/matrix-appservice-irc/blob/develop/config.sample.yaml
+  services.matrix-appservice-irc.settings = {
+    homeserver = {
+      url = "http://127.0.0.1:8008";
+      dropMatrixMessagesAfterSecs = 300;
+      domain = "uninsane.org";
+      enablePresence = true;
+      bindPort = 9999;
+      bindHost = "127.0.0.1";
+    };
+    ircService = {
+      servers = {
+        "irc.rizon.net" = {
+          name = "Rizon";
+          port = 6697;  # SSL port
+          ssl = true;
+          sasl = false;  # just use plain auth
+          botConfig = {
+            # bot has no presence in IRC channel; only real Matrix users
+            enabled = false;
+          };
+          dynamicChannels = {
+            enabled = true;
+            aliasTemplate = "#irc_rizon_$CHANNEL";
+          };
+          ircClients = {
+            nickTemplate = "$LOCALPART_uninsane";
+          };
+          matrixClients = {
+            userTemplate = "@irc_rizon_$NICK";
+          };
+
+          membershipLists = {
+            enabled = true;
+            global = {
+              ircToMatrix = {
+                initial = true;
+                incremental = true;
+              };
+              matrixToIrc = {
+                initial = true;
+                incremental = true;
+              };
+            };
+          };
+
+          # hardcoded mappings, for when dynamicChannels fails us :-(
+          mappings = {
+            "#chat" = {
+              roomIds = [ "!GXJSOTdbtxRboGtDep:uninsane.org" ];
+            };
+          };
+          # passwordEncryptionKeyPath = "/path/to/privkey";
+        };
+      };
+    };
+  };
 }
