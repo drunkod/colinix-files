@@ -5,7 +5,7 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ./config ];
+  imports = [ ./cfg ];
 
   nixpkgs.overlays = [
     (self: super: {
