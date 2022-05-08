@@ -5,22 +5,7 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./config/fs.nix
-      ./config/hardware.nix
-      ./config/net.nix
-      ./config/users.nix
-      ./config/services/gitea.nix
-      ./config/services/jackett.nix
-      ./config/services/jellyfin.nix
-      ./config/services/matrix.nix
-      ./config/services/nginx.nix
-      ./config/services/pleroma.nix
-      ./config/services/postfix.nix
-      ./config/services/postgres.nix
-      ./config/services/transmission.nix
-    ];
+  imports = [ ./config ];
 
   nixpkgs.overlays = [
     (self: super: {
