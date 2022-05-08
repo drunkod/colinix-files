@@ -54,6 +54,7 @@
       bindPort = 9999;
       bindHost = "127.0.0.1";
     };
+
     ircService = {
       servers = {
         "irc.rizon.net" = {
@@ -64,6 +65,8 @@
           botConfig = {
             # bot has no presence in IRC channel; only real Matrix users
             enabled = false;
+            nick = "UninsaneDotOrg";
+            username = "uninsane";
           };
           dynamicChannels = {
             enabled = true;
@@ -71,9 +74,11 @@
           };
           ircClients = {
             nickTemplate = "$LOCALPART_uninsane";
+            # by default, Matrix will convert messages greater than (3) lines into a pastebin-like URL to send to IRC.
+            lineLimit = 20;
           };
           matrixClients = {
-            userTemplate = "@irc_rizon_$NICK";
+            userTemplate = "@irc_rizon_$NICK";  # the :uninsane.org part is appended automatically
           };
 
           membershipLists = {
@@ -82,12 +87,18 @@
               ircToMatrix = {
                 initial = true;
                 incremental = true;
+                requireMatrixJoined = false;
               };
               matrixToIrc = {
                 initial = true;
                 incremental = true;
               };
             };
+          };
+          # sync room description?
+          bridgeInfoState = {
+            enabled = true;
+            initial = true;
           };
 
           # hardcoded mappings, for when dynamicChannels fails us :-(
