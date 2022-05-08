@@ -3,11 +3,19 @@
 {
   networking.domain = "uninsane.org";
 
-  networking.firewall.enable = false;
-  # networking.firewall.enable = true;
-  # networking.firewall.allowedTCPPorts = [ 25 80 143 443 993 ];
-  # # DLNA ports: https://jellyfin.org/docs/general/networking/index.html
-  # networking.firewall.allowedUDPPorts = [ 1900 7359 ];
+  # networking.firewall.enable = false;
+  networking.firewall.enable = true;
+  networking.firewall.allowedTCPPorts = [
+    25   # SMTP
+    80   # HTTP
+    143  # IMAP
+    443  # HTTPS
+    465  # SMTPS (maybe not required?)
+    587  # SMTPS/submission (maybe not required?)
+    993  # IMAPS
+  ];
+  # DLNA ports: https://jellyfin.org/docs/general/networking/index.html
+  networking.firewall.allowedUDPPorts = [ 1900 7359 ];
 
   # we need to use externally-visible nameservers in order for VPNs to be able to resolve hosts.
   networking.nameservers = [
