@@ -71,8 +71,8 @@
       backends: [{ExSyslogger, :ex_syslogger}]
     
     config :logger, :ex_syslogger,
-      level: :debug
-    #  level: :warn
+      level: :warn
+    #  level: :debug
     ''
   ];
 
