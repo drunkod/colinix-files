@@ -32,6 +32,7 @@
       pkgs.iftop
       pkgs.iotop
       pkgs.iptables
+      pkgs.jq
       pkgs.lsof
       pkgs.matrix-synapse
       pkgs.mix2nix

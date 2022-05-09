@@ -27,7 +27,7 @@
     addSSL = true;
     enableACME = true;
 
-    # allow matrix users to discover that user@uninsane.org is reachable via matrix.uninsane.org
+    # allow matrix users to discover that @user:uninsane.org is reachable via matrix.uninsane.org
     locations."= /.well-known/matrix/server".extraConfig =
       let
         # use 443 instead of the default 8448 port to unite
@@ -49,6 +49,13 @@
         add_header Access-Control-Allow-Origin *;
         return 200 '${builtins.toJSON client}';
       '';
+
+    # allow ActivityPub clients to discover how to reach @user@uninsane.org
+    # TODO: waiting on https://git.pleroma.social/pleroma/pleroma/-/merge_requests/3361/
+    # locations."/.well-known/nodeinfo" = {
+    #   proxyPass = "http://127.0.0.1:4000";
+    #   extraConfig = pleromaExtraConfig;
+    # };
   };
 
   services.nginx.virtualHosts."fed.uninsane.org" = {
@@ -56,6 +63,7 @@
     enableACME = true;
     locations."/" = {
       proxyPass = "http://127.0.0.1:4000";
+      # documented: https://git.pleroma.social/pleroma/pleroma/-/blob/develop/installation/pleroma.nginx
       extraConfig = ''
         # XXX colin: this block is in the nixos examples: i don't understand all of it
         add_header 'Access-Control-Allow-Origin' '*' always;
@@ -76,12 +84,13 @@
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
+        # proxy_set_header Host $http_host;
         proxy_set_header Host $host;
-
-	# colin: added this due to Pleroma complaining in its logs
-        proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # colin: added this due to Pleroma complaining in its logs
+        # proxy_set_header X-Real-IP $remote_addr;
+        # proxy_set_header X-Forwarded-Proto $scheme;
 
         client_max_body_size 16m;
       '';

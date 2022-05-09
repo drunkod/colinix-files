@@ -18,12 +18,14 @@
     
     config :pleroma, :instance,
       name: "Perfectly Sane",
+      description: "Single-user Pleroma instance",
       email: "admin.pleroma@uninsane.org",
       notify_email: "notify.pleroma@uninsane.org",
       limit: 5000,
       registrations_open: true,
       account_approval_required: true,
-      max_pinned_statuses: 5
+      max_pinned_statuses: 5,
+      external_user_synchronization: true
 
     # docs: https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendmail.html
     # test mail config with sudo -u pleroma ./bin/pleroma_ctl email test --to someone@somewhere.net
@@ -52,13 +54,16 @@
       ]
     
     config :pleroma, :database, rum_enabled: false
-    # config :pleroma, :instance, static_dir: "/mnt/storage/opt/pleroma.nix/instance/static"
-    # config :pleroma, Pleroma.Uploaders.Local, uploads: "/mnt/storage/opt/pleroma.nix/uploads"
     config :pleroma, :instance, static_dir: "/var/lib/pleroma/instance/static"
     config :pleroma, Pleroma.Uploaders.Local, uploads: "/var/lib/pleroma/uploads"
     config :pleroma, configurable_from_database: false
 
     config :pleroma, Pleroma.Upload, filters: [Pleroma.Upload.Filter.Exiftool]
+
+    # TODO: GET /api/pleroma/captcha is broken
+    config :pleroma, Pleroma.Captcha,
+      enabled: false,
+      method: Pleroma.Captcha.Native
 
 
     # (enabled by colin)
