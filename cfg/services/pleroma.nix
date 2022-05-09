@@ -58,6 +58,7 @@
     config :pleroma, Pleroma.Uploaders.Local, uploads: "/var/lib/pleroma/uploads"
     config :pleroma, configurable_from_database: false
 
+    # strip metadata from uploaded images
     config :pleroma, Pleroma.Upload, filters: [Pleroma.Upload.Filter.Exiftool]
 
     # TODO: GET /api/pleroma/captcha is broken
@@ -71,13 +72,23 @@
     config :pleroma, :http_security,
       sts: true
     
-    # (added by colin; based on https://docs.pleroma.social/backend/configuration/cheatsheet/#logger)
+    # docs: https://docs.pleroma.social/backend/configuration/cheatsheet/#logger
     config :logger,
       backends: [{ExSyslogger, :ex_syslogger}]
     
     config :logger, :ex_syslogger,
       level: :warn
     #  level: :debug
+
+    # XXX colin: not sure if this actually _does_ anything
+    config :pleroma, :emoji,
+      shortcode_globs: ["/emoji/**/*.png"],
+      groups: [
+        "Cirno": "/emoji/cirno/*.png",
+        "Kirby": "/emoji/kirby/*.png",
+        "Bun": "/emoji/bun/*.png",
+        "Yuru Camp": "/emoji/yuru_camp/*.png",
+      ]
     ''
   ];
 
