@@ -8,15 +8,17 @@
 
 beamPackages.mixRelease rec {
   pname = "pleroma";
-  version = "2.4.51";
+  version = "2.4.52";
 
   src = fetchFromGitLab {
     domain = "git.pleroma.social";
     owner = "pleroma";
     repo = "pleroma";
-    rev = "a5d7e98de0ed7989d80e4698155676488afbb423";
-    # compute with `nix to-sri sha256:<output from failed nix build>`
-    sha256 = "sha256-CvhqlpCxmEIYTtGqCMCUCVq8Y71J95l6W6FRJMXvSL8=";
+    rev = "4605efe272016a5ba8ba6e96a9bec9a6e40c1591";
+    # to update: uncomment the null hash, run nixos-rebuild and
+    # compute the new hash with `nix to-sri sha256:<output from failed nix build>`
+    # sha256 = "sha256-0000000000000000000000000000000000000000000=";
+    sha256 = "sha256-Dp1kTUDfNC7EDoK9WToXkUvsj7v66eKuD15le5IZgiY=";
   };
 
   preFixup = if (cookieFile != null) then ''
@@ -51,7 +53,7 @@ beamPackages.mixRelease rec {
     inherit beamPackages lib;
     overrides = (final: prev: {
       # mix2nix does not support git dependencies yet,
-      # so we need to add them manually
+      # so we need to add them manually. these are grabbed from git/pleroma/`mix.exs`
       gettext = beamPackages.buildMix rec {
         name = "gettext";
         version = "0.19.1";
