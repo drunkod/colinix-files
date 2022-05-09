@@ -18,11 +18,23 @@
     
     config :pleroma, :instance,
       name: "Perfectly Sane",
-      email: "dev@null",
-      notify_email: "dev@null",
+      email: "admin.pleroma@uninsane.org",
+      notify_email: "notify.pleroma@uninsane.org",
       limit: 5000,
-      registrations_open: false
-    
+      registrations_open: true,
+      account_approval_required: true,
+      max_pinned_statuses: 5
+
+    # docs: https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendmail.html
+    # test mail config with sudo -u pleroma ./bin/pleroma_ctl email test --to someone@somewhere.net
+    config :pleroma, Pleroma.Emails.Mailer,
+      enabled: true,
+      adapter: Swoosh.Adapters.Sendmail,
+      cmd_path: "${pkgs.postfix}/bin/sendmail"
+
+    config :pleroma, Pleroma.User,
+      restricted_nicknames: [ "admin", "uninsane", "root" ]
+
     config :pleroma, :media_proxy,
       enabled: false,
       redirect_on_failure: true
@@ -59,7 +71,8 @@
       backends: [{ExSyslogger, :ex_syslogger}]
     
     config :logger, :ex_syslogger,
-      level: :warn
+      level: :debug
+    #  level: :warn
     ''
   ];
 
@@ -68,5 +81,16 @@
     pkgs.bash 
     # used by Pleroma to strip geo tags from uploads
     pkgs.exiftool 
+    # i saw some errors when pleroma was shutting down about it not being able to find `awk`. probably not critical
+    pkgs.gawk
+    # needed for email operations like password reset
+    pkgs.postfix
   ];
+
+  # systemd.services.pleroma.serviceConfig = {
+  #   # required for sendmail. see https://git.pleroma.social/pleroma/pleroma/-/issues/2259
+  #   NoNewPrivileges = lib.mkForce false;
+  #   PrivateTmp = lib.mkForce false;
+  #   CapabilityBoundingSet = lib.mkForce "~";
+  # };
 }

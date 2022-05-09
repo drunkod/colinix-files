@@ -94,4 +94,9 @@
     group = "gitea";
     isSystemUser = true;
   };
+
+  # this is required to allow pleroma to send email.
+  # raw `sendmail` works, but i think pleroma's passing it some funny flags or something, idk.
+  # hack to fix that.
+  users.users.pleroma.extraGroups = [ "postdrop" ];
 }
