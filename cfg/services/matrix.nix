@@ -37,7 +37,16 @@
   ];
 
   # new users may be registered on the CLI:
-  # register_new_matrix_user -c /nix/store/8n6kcka37jhmi4qpd2r03aj71pkyh21s-homeserver.yaml http://localhost:8008
+  #   register_new_matrix_user -c /nix/store/8n6kcka37jhmi4qpd2r03aj71pkyh21s-homeserver.yaml http://localhost:8008
+  #
+  # or provide an registration token then can use to register through the client.
+  #   docs: https://github.com/matrix-org/synapse/blob/develop/docs/usage/administration/admin_api/registration_tokens.md
+  # first, grab your own user's access token (Help & About section in Element). then:
+  #   curl --header "Authorization: Bearer <my_token>" localhost:8008/_synapse/admin/v1/registration_tokens
+  # create a token with unlimited uses:
+  #   curl -d '{}' --header "Authorization: Bearer <my_token>" localhost:8008/_synapse/admin/v1/registration_tokens/new
+  # create a token with limited uses:
+  #   curl -d '{ "uses_allowed": 1 }' --header "Authorization: Bearer <my_token>" localhost:8008/_synapse/admin/v1/registration_tokens/new
 
   # IRC bridging
   # note: Rizon allows only FOUR simultaneous IRC connections per IP: https://wiki.rizon.net/index.php?title=Connection/Session_Limit_Exemptions
