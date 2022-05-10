@@ -106,4 +106,20 @@ in
     auth_debug = yes
     # verbose_ssl = yes
   '';
+
+  #### OUTGOING MESSAGE REWRITING:
+  services.postfix.enableHeaderChecks = true;
+  services.postfix.headerChecks = [
+    # intercept gitea registration confirmations and manually screen them
+    {
+      # headerChecks are somehow ignorant of alias rules: have to redirect to a real user
+      action = "REDIRECT colin@uninsane.org";
+      pattern = "/^Subject: Please activate your account/";
+    }
+    # XXX postfix only supports performing ONE action per header.
+    # {
+    #   action = "REPLACE Subject: git application: Please activate your account";
+    #   pattern = "/^Subject:.*activate your account/";
+    # }
+  ];
 }

@@ -19,8 +19,9 @@
     service = {
       # timeout for email approval. 5760 = 4 days
       ACTIVE_CODE_LIVE_MINUTES = 5760;
-      REGISTER_EMAIL_CONFIRM = false;
-      REGISTER_MANUAL_CONFIRM = true;
+      # REGISTER_EMAIL_CONFIRM = false;
+      # REGISTER_MANUAL_CONFIRM = true;
+      REGISTER_EMAIL_CONFIRM = true;
       # not sure what this notified on?
       ENABLE_NOTIFY_MAIL = true;
       # defaults to image-based captcha.
