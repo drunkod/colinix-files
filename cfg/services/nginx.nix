@@ -3,25 +3,8 @@
 
 {
   services.nginx.enable = true;
-  # services.nginx.config = pkgs.lib.readFile /etc/nixos/services/nginx.conf;
-  # services.nginx.httpConfig = ''
-  # server {
-  #   server_name uninsane.org;
-  #   listen 80;
-  #   location / {
-  #     root /home/nixos;
-  #     index index.html;
-  #   }
-  #   
-  #   location ~* \.(png|ico|gif|jpg|jpeg)$ {
-  #     expires 60m;
-  #   }
 
-  #   location /share/ {
-  #     autoindex on;
-  #   }
-  # }
-  # '';
+  # web blog/personal site
   services.nginx.virtualHosts."uninsane.org" = {
     root = "/mnt/storage/opt/uninsane/root";
     addSSL = true;
@@ -58,6 +41,7 @@
     # };
   };
 
+  # Pleroma server and web interface
   services.nginx.virtualHosts."fed.uninsane.org" = {
     addSSL = true;
     enableACME = true;
@@ -97,7 +81,7 @@
     };
   };
 
-  # transmission
+  # transmission web client
   services.nginx.virtualHosts."bt.uninsane.org" = {
     # basicAuth is literally cleartext user/pw, so FORCE this to happen over SSL
     forceSSL = true;
@@ -108,6 +92,7 @@
     };
   };
 
+  # jackett torrent search
   services.nginx.virtualHosts."jackett.uninsane.org" = {
     forceSSL = true;
     enableACME = true;
@@ -117,6 +102,7 @@
     };
   };
 
+  # matrix chat server
   services.nginx.virtualHosts."matrix.uninsane.org" = {
     addSSL = true;
     enableACME = true;
@@ -129,12 +115,35 @@
     locations."/" = {
       proxyPass = "http://127.0.0.1:8008";
     };
+    # redirect browsers to the web client.
+    # i don't think native matrix clients ever fetch the root.
+    # ideally this would be put behind some user-agent test though.
+    locations."= /" = {
+      return = "301 https://web.matrix.uninsane.org";
+    };
 
     # locations."/_matrix" = {
     #   proxyPass = "http://127.0.0.1:8008";
     # };
   };
 
+  # matrix web client
+  # docs: https://nixos.org/manual/nixos/stable/index.html#module-services-matrix-element-web
+  services.nginx.virtualHosts."web.matrix.uninsane.org" = {
+    forceSSL = true;
+    enableACME = true;
+
+    root = pkgs.element-web.override {
+      conf = {
+        default_server_config."m.homeserver" = {
+          "base_url" = "https://matrix.uninsane.org";
+          "server_name" = "uninsane.org";
+        };
+      };
+    };
+  };
+
+  # hosted git (web view and for `git <cmd>` use
   services.nginx.virtualHosts."git.uninsane.org" = {
     addSSL = true;
     enableACME = true;
@@ -144,6 +153,7 @@
     };
   };
 
+  # Jellyfin multimedia server
   # this is mostly taken from the official jellfin.org docs
   services.nginx.virtualHosts."jelly.uninsane.org" = {
     addSSL = true;
