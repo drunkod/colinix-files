@@ -10,4 +10,60 @@
   services.gitea.rootUrl = "https://git.uninsane.org/";
   services.gitea.cookieSecure = true;
   # services.gitea.disableRegistration = true;
+
+  services.gitea.settings = {
+    server = {
+      # options: "home", "explore", "organizations", "login" or URL fragment (or full URL)
+      LANDING_PAGE = "explore";
+    };
+    service = {
+      # timeout for email approval. 5760 = 4 days
+      ACTIVE_CODE_LIVE_MINUTES = 5760;
+      REGISTER_EMAIL_CONFIRM = false;
+      REGISTER_MANUAL_CONFIRM = true;
+      # not sure what this notified on?
+      ENABLE_NOTIFY_MAIL = true;
+      # defaults to image-based captcha.
+      # also supports recaptcha (with custom URLs) or hCaptcha.
+      ENABLE_CAPTCHA = true;
+      NOREPLY_ADDRESS = "noreply.anonymous.git@uninsane.org";
+    };
+    repository = {
+      DEFAULT_BRANCH = "master";
+    };
+    other = {
+      SHOW_FOOTER_TEMPLATE_LOAD_TIME = false;
+    };
+    ui = {
+      # options: "auto", "gitea", "arc-green"
+      DEFAULT_THEME = "arc-green";
+      # cache frontend assets if true
+      # USE_SERVICE_WORKER = true;
+    };
+    #"ui.meta" = ... to customize html author/description/etc
+    mailer = {
+      ENABLED = true;
+      MAILER_TYPE = "sendmail";
+      FROM = "notify.git@uninsane.org";
+      SENDMAIL_PATH = "${pkgs.postfix}/bin/sendmail";
+    };
+    time = {
+      # options: ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, RFC3339, RFC3339Nano, Kitchen, Stamp, StampMilli, StampMicro, StampNano
+      # docs: https://pkg.go.dev/time#pkg-constants
+      FORMAT = "RFC3339";
+    };
+  };
+  # options: "Trace", "Debug", "Info", "Warn", "Error", "Critical"
+  services.gitea.log.level = "Info";
+
+  systemd.services.gitea.serviceConfig = {
+    # nix default is AF_UNIX AF_INET AF_INET6.
+    # we need more protos for sendmail to work. i thought it only needed +AF_LOCAL, but that didn't work.
+    RestrictAddressFamilies = lib.mkForce "~";
+    # add maildrop to allow sendmail to work
+    ReadWritePaths = lib.mkForce [
+      "/var/lib/postfix/queue/maildrop"
+      "/var/lib/gitea"
+    ];
+  };
 }

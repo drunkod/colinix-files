@@ -94,6 +94,8 @@
     useDefaultShell = true;
     group = "gitea";
     isSystemUser = true;
+    # sendmail access (not 100% sure if this is necessary)
+    extraGroups = [ "postdrop" ];
   };
 
   # this is required to allow pleroma to send email.
