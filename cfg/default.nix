@@ -6,6 +6,7 @@
     ./hardware.nix
     ./net.nix
     ./users.nix
+    ./services/duplicity.nix
     ./services/gitea.nix
     ./services/jackett.nix
     ./services/jellyfin.nix
