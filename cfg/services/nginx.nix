@@ -33,6 +33,15 @@
         return 200 '${builtins.toJSON client}';
       '';
 
+    # static URLs might not be aware of .well-known (e.g. registration confirmation URLs),
+    # so hack around that.
+    locations."/_matrix" = {
+      proxyPass = "http://127.0.0.1:8008";
+    };
+    locations."/_synapse" = {
+      proxyPass = "http://127.0.0.1:8008";
+    };
+
     # allow ActivityPub clients to discover how to reach @user@uninsane.org
     # TODO: waiting on https://git.pleroma.social/pleroma/pleroma/-/merge_requests/3361/
     # locations."/.well-known/nodeinfo" = {

@@ -29,8 +29,29 @@
     }
   ];
 
+  # services.matrix-synapse.extraConfig = ''
+  #   registration_requires_token: true
+  #   admin_contact: "admin.matrix@uninsane.org"
+  # '';
+
   services.matrix-synapse.extraConfig = ''
-    registration_requires_token: true
+    admin_contact: "admin.matrix@uninsane.org"
+    registrations_require_3pid:
+      - email
+    email:
+      smtp_host: "mx.uninsane.org"
+      smtp_port: 587
+      smtp_user: "matrix-synapse"
+      smtp_pass: "matrix-synapse-super-secret"
+      require_transport_security: true
+      enable_tls: true
+      notif_from: "%(app)s <notify.matrix@uninsane.org>"
+      app_name: "Uninsane Matrix"
+      enable_notifs: true
+      validation_token_lifetime: 96h
+      invite_client_location: "https://web.matrix.uninsane.org"
+      subjects:
+        email_validation: "[%(server_name)s] Validate your email"
   '';
   services.matrix-synapse.app_service_config_files = [
     "/var/lib/matrix-appservice-irc/registration.yml"  # auto-created by irc appservice

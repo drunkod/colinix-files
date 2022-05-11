@@ -12,4 +12,11 @@
   #     LC_COLLATE = "C"
   #     LC_CTYPE = "C";
   # '';
+
+
+  # common admin operations:
+  #   sudo -u postgres psql
+  #   > \l   # lists all databases
+  #   > \du  # lists all roles
+  #   > \q   # exits psql
 }

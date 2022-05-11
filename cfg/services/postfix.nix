@@ -2,17 +2,17 @@
 
 let
   submissionOptions = {
-      smtpd_tls_security_level = "encrypt";
-      smtpd_sasl_auth_enable = "yes";
-      smtpd_sasl_type = "dovecot";
-      smtpd_sasl_path = "/run/dovecot2/auth";
-      smtpd_sasl_security_options = "noanonymous";
-      smtpd_sasl_local_domain = "uninsane.org";
-      smtpd_client_restrictions = "permit_sasl_authenticated,reject";
-      # reuse the virtual map so that sender mapping matches recipient mapping
-      smtpd_sender_login_maps = "hash:/var/lib/postfix/conf/virtual";
-      smtpd_sender_restrictions = "reject_sender_login_mismatch";
-      smtpd_recipient_restrictions = "reject_non_fqdn_recipient,reject_unknown_recipient_domain,permit_sasl_authenticated,reject";
+    smtpd_tls_security_level = "encrypt";
+    smtpd_sasl_auth_enable = "yes";
+    smtpd_sasl_type = "dovecot";
+    smtpd_sasl_path = "/run/dovecot2/auth";
+    smtpd_sasl_security_options = "noanonymous";
+    smtpd_sasl_local_domain = "uninsane.org";
+    smtpd_client_restrictions = "permit_sasl_authenticated,reject";
+    # reuse the virtual map so that sender mapping matches recipient mapping
+    smtpd_sender_login_maps = "hash:/var/lib/postfix/conf/virtual";
+    smtpd_sender_restrictions = "reject_sender_login_mismatch";
+    smtpd_recipient_restrictions = "reject_non_fqdn_recipient,permit_sasl_authenticated,reject";
   };
 in
 {
@@ -24,6 +24,7 @@ in
   services.postfix.sslKey = "/var/lib/acme/mx.uninsane.org/key.pem";
 
   services.postfix.virtual = ''
+    notify.matrix@uninsane.org matrix-synapse
     @uninsane.org colin
   '';
 
@@ -115,6 +116,11 @@ in
       # headerChecks are somehow ignorant of alias rules: have to redirect to a real user
       action = "REDIRECT colin@uninsane.org";
       pattern = "/^Subject: Please activate your account/";
+    }
+    # intercept Matrix registration confirmations
+    {
+      action = "REDIRECT colin@uninsane.org";
+      pattern = "/^Subject:.*Validate your email/";
     }
     # XXX postfix only supports performing ONE action per header.
     # {
