@@ -8,8 +8,8 @@
   # replicates the default behaviour.
   networking.useDHCP = false;
   networking.interfaces.eth0.useDHCP = true;
-  # TODO: how to disable entirely?
-  networking.interfaces.wlan0.useDHCP = false;
+  # XXX colin: probably don't need this. wlan0 won't be populated unless i touch a value in networking.interfaces.wlan0
+  networking.wireless.enable = false;
 
   # networking.firewall.enable = false;
   networking.firewall.enable = true;
