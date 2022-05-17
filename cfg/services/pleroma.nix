@@ -103,6 +103,11 @@
     pkgs.postfix
   ];
 
+  systemd.services.pleroma.serviceConfig = {
+    # postgres can be slow to service early requests, preventing pleroma from starting on the first try
+    Restart = "on-failure";
+  };
+
   # systemd.services.pleroma.serviceConfig = {
   #   # required for sendmail. see https://git.pleroma.social/pleroma/pleroma/-/issues/2259
   #   NoNewPrivileges = lib.mkForce false;
