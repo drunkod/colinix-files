@@ -2,6 +2,10 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
+# USEFUL COMMANDS:
+#   nix show-config
+#   nix-option   ##  query options -- including their SET VALUE; similar to search: https://search.nixos.org/options
+
 { config, lib, modulesPath, pkgs, specialArgs, options }:
 
 let
