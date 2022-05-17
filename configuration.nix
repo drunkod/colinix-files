@@ -4,6 +4,7 @@
 
 # USEFUL COMMANDS:
 #   nix show-config
+#   nix eval --raw <expr>  => print an expression. e.g. nixpkgs.raspberrypifw prints store path to the package
 #   nix-option   ##  query options -- including their SET VALUE; similar to search: https://search.nixos.org/options
 
 { config, lib, modulesPath, pkgs, specialArgs, options }:
