@@ -42,48 +42,6 @@ in
   ];
 
 
-  # NixOS defaults to grub: we don't want that.
-  boot.loader.grub.enable = false;
-  # Enables the generation of /boot/extlinux/extlinux.conf
-  boot.loader.generic-extlinux-compatible.enable = true;
-  boot.loader.raspberryPiColin.enable = true;
-  boot.loader.raspberryPiColin.uboot.enable = true;
-  boot.loader.raspberryPiColin.version = 4;
-
-  boot.initrd.availableKernelModules = [
-    "bcm2711_thermal"
-    "bcm_phy_lib"
-    "brcmfmac"
-    "brcmutil"
-    "broadcom"
-    "clk_raspberrypi"
-    "drm"  # Direct Render Manager
-    "enclosure"  # SCSI ?
-    "fuse"
-    "mdio_bcm_unimac"
-    "pcie_brcmstb"
-    "raspberrypi_cpufreq"
-    "raspberrypi_hwmon"
-    "ses"  # SCSI Enclosure Services
-    "uas"  # USB attached storage
-    "uio"  # userspace IO
-    "uio_pdrv_genirq"
-    "xhci_pci"
-    "xhci_pci_renesas"
-  ];
-  boot.initrd.compressor = "gzip";  # defaults to zstd
-  # hack in the `boot.shell_on_fail` arg since it doesn't seem to work otherwise
-  boot.initrd.preFailCommands = "allowShell=1";
-  # default: 4 (warn). 7 is debug
-  # boot.consoleLogLevel = 7;
-  # boot.kernelParams = [
-  #   "boot.shell_on_fail"
-  #   # "boot.trace"
-  #   # "systemd.log_level=debug"
-  #   # "systemd.log_target=console"
-  # ];
-
-
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
