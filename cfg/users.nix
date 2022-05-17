@@ -27,6 +27,7 @@
       pkgs.gnumake
       pkgs.dig
       pkgs.duplicity
+      pkgs.fatresize
       pkgs.fd
       pkgs.file
       pkgs.git
