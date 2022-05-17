@@ -31,24 +31,28 @@
     "9.9.9.9"
   ];
 
-  # OVPN CONFIG:
+  # OVPN CONFIG (https://www.ovpn.com):
   # DOCS: https://nixos.wiki/wiki/WireGuard
   networking.wireguard.enable = true;
   networking.wireguard.interfaces.wg0 = {
-    privateKeyFile = "/etc/nixos/secrets/wireguard.private";
+    # to generate:
+    # wg genkey > /etc/nixos/secrets/wg0.private
+    # wg pubkey < /etc/nixos/secrets/wg0.private > /etc/nixos/secrets/wg0.public
+    privateKeyFile = "/etc/nixos/secrets/wg0.private";
     # wg is active only in this namespace.
-    # run e.g. ip netns ovpns <some command like ping/curl/etc, it'll go through wg>
-    # note: without the namespace, you'll need to add a specific route through eth0 for the peer (185.157.162.7/32)
+    # run e.g. ip netns exec ovpns <some command like ping/curl/etc, it'll go through wg>
+    #   sudo ip netns exec ovpns ping www.google.com
+    # note: without the namespace, you'll need to add a specific route through eth0 for the peer (185.157.162.178/32)
     interfaceNamespace = "ovpns";
     preSetup = "${pkgs.iproute2}/bin/ip netns add ovpns || true";
     postShutdown = "${pkgs.iproute2}/bin/ip netns delete ovpns";
     ips = [
-      "185.157.162.190/32"
+      "185.157.162.178/32"
     ];
     peers = [
       {
-        publicKey = "Qno+hILmJ8TZ6/PpOOhtspmncyILY2phiTBFaER9IFE=";
-        endpoint = "vpn29.prd.amsterdam.ovpn.com:9930";
+        publicKey = "SkkEZDCBde22KTs/Hc7FWvDBfdOCQA4YtBEuC3n5KGs=";
+        endpoint = "vpn36.prd.amsterdam.ovpn.com:9930";
         allowedIPs = [ "0.0.0.0/0" ];
         # nixOS says this is important for keeping NATs active
         persistentKeepalive = 25;
