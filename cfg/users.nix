@@ -28,6 +28,7 @@
       pkgs.fd
       pkgs.file
       pkgs.git
+      pkgs.gptfdisk
       pkgs.htop
       pkgs.iftop
       pkgs.iotop
@@ -39,6 +40,8 @@
       pkgs.netcat
       pkgs.nettools
       pkgs.nmap
+      pkgs.parted
+      pkgs.python3
       pkgs.ripgrep
       pkgs.socat
       pkgs.sudo
@@ -71,8 +74,9 @@
     ];
   };
 
-  # Automatically log in at the virtual consoles.
-  services.getty.autologinUser = "colin";
+  # automatically log in at the virtual consoles.
+  # using root here makes sure we always have an escape hatch
+  services.getty.autologinUser = "root";
 
   security.sudo = {
     enable = true;

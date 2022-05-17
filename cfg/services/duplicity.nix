@@ -9,6 +9,7 @@
   #   web-created keys are allowed to delete files, which you probably don't want for an incremental backup program
   services.duplicity.targetUrl = builtins.replaceStrings ["\n"] [""] (builtins.readFile /etc/nixos/secrets/duplicity_url);
   # format: PASSPHRASE=<cleartext>
+  # two sisters
   services.duplicity.secretFile = /etc/nixos/secrets/duplicity_env;
   # NB: manually trigger with `systemctl start duplicity`
   services.duplicity.frequency = "daily";
@@ -24,7 +25,7 @@
     "/var/lib/transmission/Downloads"
     "/var/lib/transmission/.incomplete"
     # data that's not worth the cost to backup:
-    "/mnt/storage/opt/uninsane/media"
+    "/opt/uninsane/media"
   ];
 
   # set this for the FIRST backup, then remove it to enable incremental backups

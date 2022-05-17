@@ -13,7 +13,7 @@
     rpc-password = "{503fc8928344f495efb8e1f955111ca5c862ce0656SzQnQ5";
     rpc-whitelist-enabled = false;
 
-    # download-dir = "/mnt/storage/opt/uninsane/media/";
+    # download-dir = "/opt/uninsane/media/";
 
     # force peer connections to be encrypted
     encryption = 2;

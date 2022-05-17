@@ -6,7 +6,7 @@
 
   # web blog/personal site
   services.nginx.virtualHosts."uninsane.org" = {
-    root = "/mnt/storage/opt/uninsane/root";
+    root = "/opt/uninsane/root";
     addSSL = true;
     enableACME = true;
 

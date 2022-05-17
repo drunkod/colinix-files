@@ -72,7 +72,7 @@
   # IRC bridging
   # note: Rizon allows only FOUR simultaneous IRC connections per IP: https://wiki.rizon.net/index.php?title=Connection/Session_Limit_Exemptions
   # Rizon supports CertFP for auth: https://wiki.rizon.net/index.php?title=CertFP
-  services.matrix-appservice-irc.enable = true;
+  # services.matrix-appservice-irc.enable = true;
   services.matrix-appservice-irc.registrationUrl = "http://127.0.0.1:8009";
   # settings documented here: https://github.com/matrix-org/matrix-appservice-irc/blob/develop/config.sample.yaml
   services.matrix-appservice-irc.settings = {
@@ -136,15 +136,15 @@
           };
 
           # hardcoded mappings, for when dynamicChannels fails us. TODO: probably safe to remove these.
-          mappings = {
-            "#chat" = {
-              roomIds = [ "!GXJSOTdbtxRboGtDep:uninsane.org" ];
-            };
-            # BakaBT requires account registration, which i think means my user needs to be added before the appservice user
-            "#BakaBT" = {
-              roomIds = [ "!feZKttuYuHilqPFSkD:uninsane.org" ];
-            };
-          };
+          # mappings = {
+          #   "#chat" = {
+          #     roomIds = [ "!GXJSOTdbtxRboGtDep:uninsane.org" ];
+          #   };
+          #   # BakaBT requires account registration, which i think means my user needs to be added before the appservice user
+          #   "#BakaBT" = {
+          #     roomIds = [ "!feZKttuYuHilqPFSkD:uninsane.org" ];
+          #   };
+          # };
           # for per-user IRC password:
           #   invite @irc_rizon_NickServ:uninsane.org to a DM and type `help`  => register
           #   invite the matrix-appservice-irc user to a DM and type `!help`   => add PW to database

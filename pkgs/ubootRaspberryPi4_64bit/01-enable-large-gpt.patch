@@ -1,0 +1,109 @@
+diff --git a/configs/rpi_4_defconfig b/configs/rpi_4_defconfig
+index eae03bf023..2ded4123ce 100644
+--- a/configs/rpi_4_defconfig
++++ b/configs/rpi_4_defconfig
+@@ -63,3 +63,11 @@ CONFIG_VIDEO_BCM2835=y
+ CONFIG_CONSOLE_SCROLL_LINES=10
+ CONFIG_PHYS_TO_BUS=y
+ CONFIG_OF_LIBFDT_OVERLAY=y
++CONFIG_CMD_CONFIG=y
++CONFIG_CMD_EFIDEBUG=y
++CONFIG_CMD_GPT=y
++CONFIG_CMD_LOG=y
++CONFIG_CMD_READ=y
++CONFIG_CMD_USB_MASS_STORAGE=y
++CONFIG_LOG_MAX_LEVEL=8
++CONFIG_CMD_LSBLK=y
+diff --git a/disk/part.c b/disk/part.c
+index 79955c7fb0..c1d469cebb 100644
+--- a/disk/part.c
++++ b/disk/part.c
+@@ -15,7 +15,7 @@
+ #include <part.h>
+ #include <ubifs_uboot.h>
+ 
+-#undef	PART_DEBUG
++#define        PART_DEBUG
+ 
+ #ifdef PART_DEBUG
+ #define        PRINTF(fmt,args...)     printf (fmt ,##args)
+
+diff --git a/disk/part_efi.c b/disk/part_efi.c
+index 829ccb6bd1..5f3f0ae042 100644
+--- a/disk/part_efi.c
++++ b/disk/part_efi.c
+@@ -133,12 +133,12 @@ static int validate_gpt_header(gpt_header *gpt_h, lbaint_t lba,
+ 	 * Check that the first_usable_lba and that the last_usable_lba are
+ 	 * within the disk.
+ 	 */
+-	if (le64_to_cpu(gpt_h->first_usable_lba) > lastlba) {
++	if (le64_to_cpu(gpt_h->first_usable_lba) > lastlba && lastlba != 0) {
+ 		printf("GPT: first_usable_lba incorrect: %llX > " LBAF "\n",
+ 		       le64_to_cpu(gpt_h->first_usable_lba), lastlba);
+ 		return -1;
+ 	}
+-	if (le64_to_cpu(gpt_h->last_usable_lba) > lastlba) {
++	if (le64_to_cpu(gpt_h->last_usable_lba) > lastlba && lastlba != 0) {
+ 		printf("GPT: last_usable_lba incorrect: %llX > " LBAF "\n",
+ 		       le64_to_cpu(gpt_h->last_usable_lba), lastlba);
+ 		return -1;
+@@ -1044,6 +1044,8 @@ static int is_gpt_valid(struct blk_desc *dev_desc, u64 lba,
+		return 2;
+	}
+ 
++       printf("is_gpt_valid: sig, lba0, lbaend %llx %llx %llx\n", pgpt_head->signature, pgpt_head->first_usable_lba, pgpt_head->last_usable_lba);
++
+	if (validate_gpt_header(pgpt_head, (lbaint_t)lba, dev_desc->lba))
+		return 0;
+ 
+@@ -1088,6 +1090,7 @@ static int find_valid_gpt(struct blk_desc *dev_desc, gpt_header *gpt_head,
+			  gpt_entry **pgpt_pte)
+ {
+	int r;
++       printf("find_valid_gpt %s\n", dev_desc->vendor);
+ 
+	r = is_gpt_valid(dev_desc, GPT_PRIMARY_PARTITION_TABLE_LBA, gpt_head,
+			 pgpt_pte);
+
+diff --git a/drivers/block/blk-uclass.c b/drivers/block/blk-uclass.c
+index 21c5209bb6..6ce03d8d09 100644
+--- a/drivers/block/blk-uclass.c
++++ b/drivers/block/blk-uclass.c
+@@ -443,6 +443,8 @@ unsigned long blk_dread(struct blk_desc *block_dev, lbaint_t start,
+	const struct blk_ops *ops = blk_get_ops(dev);
+	ulong blks_read;
+ 
++	printf("blk_dread %s %llu %llu\n", block_dev->vendor, start, blkcnt);
++
+	if (!ops->read)
+		return -ENOSYS;
+ 
+diff --git a/include/configs/rpi.h b/include/configs/rpi.h
+index 7a5f0851b5..01545f7480 100644
+--- a/include/configs/rpi.h
++++ b/include/configs/rpi.h
+@@ -15,6 +15,8 @@
+ 
+ /* Architecture, CPU, etc.*/
+ 
++#define CONFIG_SYS_64BIT_LBA
++
+ /* Use SoC timer for AArch32, but architected timer for AArch64 */
+ #ifndef CONFIG_ARM64
+ #define CONFIG_SYS_TIMER_RATE          1000000
+diff --git a/include/log.h b/include/log.h
+index 8f35c10abb..afd2d704f4 100644
+--- a/include/log.h
++++ b/include/log.h
+@@ -241,11 +241,7 @@ int _log_buffer(enum log_category_t cat, enum log_level_t level,
+                      __func__, pr_fmt(_fmt), ##_args); \
+ })
+ 
+-#ifdef DEBUG
+ #define _DEBUG	1
+-#else
+-#define _DEBUG	0
+-#endif
+ 
+ #ifdef CONFIG_SPL_BUILD
+ #define _SPL_BUILD     1

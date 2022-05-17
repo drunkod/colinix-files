@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, lib, modulesPath, pkgs, specialArgs, options }:
 
 let
   pkgsUnstable = import (builtins.fetchTarball {
@@ -16,7 +16,10 @@ let
   }) {};
 in
 {
-  imports = [ ./cfg ];
+  imports = [
+    ./cfg
+    ./modules
+  ];
 
   nixpkgs.overlays = [
     (self: super: {
@@ -31,92 +34,55 @@ in
       # https://github.com/go-gitea/gitea/pull/19119
       # safe to remove after 1.16.5 (or 1.16.7 if we need db compat?)
       gitea = pkgsUnstable.gitea;
+
+      # try a newer rpi4 u-boot
+      # ubootRaspberryPi4_64bit = pkgsUnstable.ubootRaspberryPi4_64bit;
+      ubootRaspberryPi4_64bit = self.callPackage ./pkgs/ubootRaspberryPi4_64bit { pkgs = super; };
     })
   ];
 
 
-  # XXX colin: UNMODIFIED DEFAULTS BELOW
-
-  # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
+  # NixOS defaults to grub: we don't want that.
   boot.loader.grub.enable = false;
   # Enables the generation of /boot/extlinux/extlinux.conf
   boot.loader.generic-extlinux-compatible.enable = true;
+  boot.loader.raspberryPiColin.enable = true;
+  boot.loader.raspberryPiColin.uboot.enable = true;
+  boot.loader.raspberryPiColin.version = 4;
 
-  # networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Set your time zone.
-  # time.timeZone = "Europe/Amsterdam";
-
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
-  networking.useDHCP = false;
-  networking.interfaces.eth0.useDHCP = true;
-  networking.interfaces.wlan0.useDHCP = true;
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  # };
-
-  # Enable the X11 windowing system.
-  # services.xserver.enable = true;
-
-  
-
-  # Configure keymap in X11
-  # services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e";
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
-  # Enable sound.
-  # sound.enable = true;
-  # hardware.pulseaudio.enable = true;
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  # users.users.jane = {
-  #   isNormalUser = true;
-  #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-  # };
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  # environment.systemPackages = with pkgs; [
-  #   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #   wget
-  #   firefox
+  boot.initrd.availableKernelModules = [
+    "bcm2711_thermal"
+    "bcm_phy_lib"
+    "brcmfmac"
+    "brcmutil"
+    "broadcom"
+    "clk_raspberrypi"
+    "drm"  # Direct Render Manager
+    "enclosure"  # SCSI ?
+    "fuse"
+    "mdio_bcm_unimac"
+    "pcie_brcmstb"
+    "raspberrypi_cpufreq"
+    "raspberrypi_hwmon"
+    "ses"  # SCSI Enclosure Services
+    "uas"  # USB attached storage
+    "uio"  # userspace IO
+    "uio_pdrv_genirq"
+    "xhci_pci"
+    "xhci_pci_renesas"
+  ];
+  boot.initrd.compressor = "gzip";  # defaults to zstd
+  # hack in the `boot.shell_on_fail` arg since it doesn't seem to work otherwise
+  boot.initrd.preFailCommands = "allowShell=1";
+  # default: 4 (warn). 7 is debug
+  # boot.consoleLogLevel = 7;
+  # boot.kernelParams = [
+  #   "boot.shell_on_fail"
+  #   # "boot.trace"
+  #   # "systemd.log_level=debug"
+  #   # "systemd.log_target=console"
   # ];
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

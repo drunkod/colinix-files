@@ -2,7 +2,7 @@
 
 {
   services.postgresql.enable = true;
-  services.postgresql.dataDir = "/mnt/storage/opt/postgresql/13";
+  services.postgresql.dataDir = "/opt/postgresql/13";
   # XXX colin: for a proper deploy, we'd want to include something for Pleroma here too.
   # services.postgresql.initialScript = pkgs.writeText "synapse-init.sql" ''
   #   CREATE ROLE "matrix-synapse" WITH LOGIN PASSWORD '<password goes here>';
