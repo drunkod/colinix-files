@@ -14,8 +14,10 @@
 
   # NixOS defaults to grub: we don't want that.
   boot.loader.grub.enable = false;
-  # Enables the generation of /boot/extlinux/extlinux.conf
-  boot.loader.generic-extlinux-compatible.enable = true;
+  # raspberryPi boot loader creates extlinux.conf.
+  #   otherwise, enable the generic-extlinux-compatible loader below.
+  # note: THESE ARE MUTUALLY EXCLUSIVE. generic-extlinux-compatible causes uboot to not be built
+  # boot.loader.generic-extlinux-compatible.enable = true;
   boot.loader.raspberryPiColin.enable = true;
   boot.loader.raspberryPiColin.uboot.enable = true;
   boot.loader.raspberryPiColin.version = 4;

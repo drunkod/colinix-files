@@ -1,19 +1,3 @@
-diff --git a/configs/rpi_4_defconfig b/configs/rpi_4_defconfig
-index eae03bf023..2ded4123ce 100644
---- a/configs/rpi_4_defconfig
-+++ b/configs/rpi_4_defconfig
-@@ -63,3 +63,11 @@ CONFIG_VIDEO_BCM2835=y
- CONFIG_CONSOLE_SCROLL_LINES=10
- CONFIG_PHYS_TO_BUS=y
- CONFIG_OF_LIBFDT_OVERLAY=y
-+CONFIG_CMD_CONFIG=y
-+CONFIG_CMD_EFIDEBUG=y
-+CONFIG_CMD_GPT=y
-+CONFIG_CMD_LOG=y
-+CONFIG_CMD_READ=y
-+CONFIG_CMD_USB_MASS_STORAGE=y
-+CONFIG_LOG_MAX_LEVEL=8
-+CONFIG_CMD_LSBLK=y
 diff --git a/disk/part.c b/disk/part.c
 index 79955c7fb0..c1d469cebb 100644
 --- a/disk/part.c
@@ -32,21 +16,6 @@ diff --git a/disk/part_efi.c b/disk/part_efi.c
 index 829ccb6bd1..5f3f0ae042 100644
 --- a/disk/part_efi.c
 +++ b/disk/part_efi.c
-@@ -133,12 +133,12 @@ static int validate_gpt_header(gpt_header *gpt_h, lbaint_t lba,
- 	 * Check that the first_usable_lba and that the last_usable_lba are
- 	 * within the disk.
- 	 */
--	if (le64_to_cpu(gpt_h->first_usable_lba) > lastlba) {
-+	if (le64_to_cpu(gpt_h->first_usable_lba) > lastlba && lastlba != 0) {
- 		printf("GPT: first_usable_lba incorrect: %llX > " LBAF "\n",
- 		       le64_to_cpu(gpt_h->first_usable_lba), lastlba);
- 		return -1;
- 	}
--	if (le64_to_cpu(gpt_h->last_usable_lba) > lastlba) {
-+	if (le64_to_cpu(gpt_h->last_usable_lba) > lastlba && lastlba != 0) {
- 		printf("GPT: last_usable_lba incorrect: %llX > " LBAF "\n",
- 		       le64_to_cpu(gpt_h->last_usable_lba), lastlba);
- 		return -1;
 @@ -1044,6 +1044,8 @@ static int is_gpt_valid(struct blk_desc *dev_desc, u64 lba,
 		return 2;
 	}
@@ -78,19 +47,6 @@ index 21c5209bb6..6ce03d8d09 100644
 	if (!ops->read)
 		return -ENOSYS;
  
-diff --git a/include/configs/rpi.h b/include/configs/rpi.h
-index 7a5f0851b5..01545f7480 100644
---- a/include/configs/rpi.h
-+++ b/include/configs/rpi.h
-@@ -15,6 +15,8 @@
- 
- /* Architecture, CPU, etc.*/
- 
-+#define CONFIG_SYS_64BIT_LBA
-+
- /* Use SoC timer for AArch32, but architected timer for AArch64 */
- #ifndef CONFIG_ARM64
- #define CONFIG_SYS_TIMER_RATE          1000000
 diff --git a/include/log.h b/include/log.h
 index 8f35c10abb..afd2d704f4 100644
 --- a/include/log.h
