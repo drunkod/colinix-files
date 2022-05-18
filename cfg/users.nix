@@ -32,6 +32,7 @@
       pkgs.file
       pkgs.git
       pkgs.gptfdisk
+      pkgs.hdparm
       pkgs.htop
       pkgs.iftop
       pkgs.iotop
@@ -46,6 +47,7 @@
       pkgs.parted
       pkgs.python3
       pkgs.ripgrep
+      pkgs.smartmontools
       pkgs.socat
       pkgs.sudo
       pkgs.telnet

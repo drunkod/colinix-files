@@ -1,0 +1,28 @@
+diff --git a/src/shutdown/shutdown.c b/src/shutdown/shutdown.c
+index 2c3cbec02c..8eef305578 100644
+--- a/src/shutdown/shutdown.c
++++ b/src/shutdown/shutdown.c
+@@ -603,6 +603,7 @@ int main(int argc, char *argv[]) {
+                                 execv(args[0], (char * const *) args);
+ 
+                                 /* execv failed (kexec binary missing?), so try simply reboot(RB_KEXEC) */
++                                sleep(15);
+                                 (void) reboot(cmd);
+                                 _exit(EXIT_FAILURE);
+                         }
+@@ -614,6 +615,7 @@ int main(int argc, char *argv[]) {
+                 _fallthrough_;
+ 
+         case RB_AUTOBOOT:
++                sleep(15);
+                 (void) reboot_with_parameter(REBOOT_LOG);
+                 log_info("Rebooting.");
+                 break;
+@@ -630,6 +632,7 @@ int main(int argc, char *argv[]) {
+                 assert_not_reached();
+         }
+ 
++        sleep(15);
+         (void) reboot(cmd);
+         if (errno == EPERM && in_container) {
+                 /* If we are in a container, and we lacked

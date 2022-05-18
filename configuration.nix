@@ -6,6 +6,7 @@
 #   nix show-config
 #   nix eval --raw <expr>  => print an expression. e.g. nixpkgs.raspberrypifw prints store path to the package
 #   nix-option   ##  query options -- including their SET VALUE; similar to search: https://search.nixos.org/options
+#   nixos-rebuild switch --upgrade   ## pull changes from the nixos channel (e.g. security updates) and rebuild
 
 { config, lib, modulesPath, pkgs, specialArgs, options }:
 
@@ -33,6 +34,8 @@ in
       pleroma = super.callPackage ./pkgs/pleroma { };
       # jackett doesn't allow customization of the bind address: this will probably always be here.
       jackett = self.callPackage ./pkgs/jackett { pkgs = super; };
+      # fix abrupt HDD poweroffs as during reboot. patching systemd requires rebuilding nearly every package.
+      # systemd = import ./pkgs/systemd { pkgs = super; };
 
       #### nixos-unstable packages
       # gitea: 1.16.5 contains a fix which makes manual user approval *actually* work.
