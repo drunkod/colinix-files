@@ -51,6 +51,7 @@
       pkgs.socat
       pkgs.sudo
       pkgs.telnet
+      pkgs.vulnix
       pkgs.wireguard
       pkgs.zola
       (pkgs.vim_configurable.customize {
