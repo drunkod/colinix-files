@@ -13,6 +13,8 @@
   #     LC_CTYPE = "C";
   # '';
 
+  # daily backups to /var/backup
+  services.postgresqlBackup.enable = true;
 
   # common admin operations:
   #   sudo systemctl start postgresql
