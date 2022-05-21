@@ -24,24 +24,14 @@
   };
 
   outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager }: {
-    nixosConfigurations.uninsane = nixpkgs.lib.nixosSystem {
-      pkgs = self.packages.aarch64-linux.pkgs;
+    nixosConfigurations.uninsane = self.decl-machine {
       system = "aarch64-linux";
-      modules = [
-        ./configuration.nix
-        ./uninsane
-        ./modules
-      ];
+      extraModules = [ ./uninsane ];
     };
 
-    nixosConfigurations.lappy = nixpkgs.lib.nixosSystem {
-      pkgs = self.packages.x86_64-linux.pkgs;
+    nixosConfigurations.lappy = self.decl-machine {
       system = "x86_64-linux";
-      specialArgs = { home-manager = home-manager; };
-      modules = [
-        ./configuration.nix
-        ./lappy
-      ];
+      extraModules = [ ./lappy ];
     };
 
     nixosConfigurations.pda = pkgs-mobile.lib.nixosSystem {
@@ -82,6 +72,16 @@
         # })
       ];
     };
+
+    decl-machine = { system, extraModules }: (nixpkgs.lib.nixosSystem {
+        pkgs = self.packages."${system}".pkgs;
+        system = "${system}";
+        specialArgs = { home-manager = home-manager; };
+        modules = [
+          ./configuration.nix
+          ./modules
+        ] ++ extraModules;
+    });
 
     packages = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
       {
