@@ -6,11 +6,14 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-21.11";
     pkgs-gitea.url = "nixpkgs/c777cdf5c564015d5f63b09cc93bef4178b19b01";
+    pkgs-mobile.url = "nixpkgs/7e567a3d092b7de69cdf5deaeb8d9526de230916";
+    # this includes a patch to enable flake support
+    mobile-nixos.url = "github:ngi-nix/mobile-nixos/afe022e1898aa05381077a89c3681784e6074458";
     home-manager.url = "github:nix-community/home-manager/release-21.11";
     # XXX colin: is this right?
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
-  outputs = { self, nixpkgs, pkgs-gitea, home-manager }: {
+  outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager }: {
     nixosConfigurations.uninsane = nixpkgs.lib.nixosSystem {
       pkgs = import nixpkgs {
         system = "aarch64-linux";
@@ -73,6 +76,35 @@
         ./configuration.nix
         ./lappy/users.nix
         ./lappy/hardware.nix
+      ];
+    };
+    nixosConfigurations.pda = pkgs-mobile.lib.nixosSystem {
+      # inherit (self.packages.aarch64-linux) pkgs;
+      system = "aarch64-linux";
+      modules = [
+        # ({ pkgs, ... }: {
+        #   nixpkgs.config.allowUnfree = true;
+        # })
+        # home-manager.nixosModules.home-manager {
+        #   home-manager.useGlobalPkgs = true;
+        #   home-manager.useUserPackages = true;
+        #   home-manager.users.colin.imports = [ ./colin.nix ];
+        # }
+        # ./configuration.nix
+        # ./users.nix
+        mobile-nixos.nixosModules.pine64-pinephone ({
+          users.users.root.password = "147147";
+        })
+        # ({ pkgs, mobile-nixos, ... }: {
+        #   imports = [
+        #     (import "${mobile-nixos}/lib/configuration.nix" { device = "pine64-pinephone"; })
+        #   ];
+        # })
+        # ({ pkgs, ... }: {
+        #   imports = [
+        #     <mobnixos>/devices/pine64-pinephone
+        #   ];
+        # })
       ];
     };
     # packages = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:

@@ -1,5 +1,20 @@
 {
   "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1623875721,
+        "narHash": "sha256-A8BU7bjS5GirpAUv4QA+QnJ4CceLHkcXdRp4xITDB0s=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "f7e004a55b120c02ecb6219596820fcd32ca8772",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -21,7 +36,42 @@
         "type": "github"
       }
     },
+    "mobile-nixos": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1630497267,
+        "narHash": "sha256-5EGLM0TUOnw+jAqH3UROqDCEwT02huPEDdzCTfDkJqU=",
+        "owner": "ngi-nix",
+        "repo": "mobile-nixos",
+        "rev": "afe022e1898aa05381077a89c3681784e6074458",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ngi-nix",
+        "repo": "mobile-nixos",
+        "rev": "afe022e1898aa05381077a89c3681784e6074458",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
+      "locked": {
+        "lastModified": 1629048390,
+        "narHash": "sha256-do7HuXFSKyj4ulMlRvGigNZCqOaGD9i0M3OLkFQgEAc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e41ba38114055832e5ba4a851e9c00149eef3e4a",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-unstable",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs_2": {
       "locked": {
         "lastModified": 1652975354,
         "narHash": "sha256-qP1DpEYQdSq7NZ542TSHffIT6xGm7MaSMG9faQWPcg0=",
@@ -51,11 +101,28 @@
         "type": "indirect"
       }
     },
+    "pkgs-mobile": {
+      "locked": {
+        "lastModified": 1624271441,
+        "narHash": "sha256-26QNDCdRE5mPOWYJrPGpVzgrJ3ZxqvWOONfeMsjryz4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "7e567a3d092b7de69cdf5deaeb8d9526de230916",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "rev": "7e567a3d092b7de69cdf5deaeb8d9526de230916",
+        "type": "indirect"
+      }
+    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs",
-        "pkgs-gitea": "pkgs-gitea"
+        "mobile-nixos": "mobile-nixos",
+        "nixpkgs": "nixpkgs_2",
+        "pkgs-gitea": "pkgs-gitea",
+        "pkgs-mobile": "pkgs-mobile"
       }
     }
   },
