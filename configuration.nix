@@ -8,24 +8,19 @@
 #   nix-option   ##  query options -- including their SET VALUE; similar to search: https://search.nixos.org/options
 #   nixos-rebuild switch --upgrade   ## pull changes from the nixos channel (e.g. security updates) and rebuild
 
-{ config, lib, modulesPath, pkgs, specialArgs, options }:
+{ config, modulesPath, pkgs, specialArgs, options }:
 
-let
-  pkgsUnstable = import (builtins.fetchTarball {
-    # Descriptive name to make the store path easier to identify
-    name = "nixos-unstable-2022-05-05";
-    # Commit hash for master on above date (s/commits/archive and append .tar.gz)
-    # see https://github.com/NixOS/nixpkgs/commits/nixos-unstable
-    url = "https://github.com/NixOS/nixpkgs/archive/c777cdf5c564015d5f63b09cc93bef4178b19b01.tar.gz";
-    # Hash obtained using `nix-prefetch-url --unpack <url>`
-    sha256 = "0r2xhflcy5agaz4a3b8pxiyiwh32s1kl3swv73flnj1x3v69s8bm";
-  }) {};
-in
 {
-  imports = [
-    ./cfg
-    ./modules
-  ];
+
+  # enable flake support.
+  # the real config root lives in flake.nix
+  nix = {
+    #package = pkgs.nixFlakes;
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
 
   nixpkgs.overlays = [
     (self: super: {
@@ -41,10 +36,10 @@ in
       # gitea: 1.16.5 contains a fix which makes manual user approval *actually* work.
       # https://github.com/go-gitea/gitea/pull/19119
       # safe to remove after 1.16.5 (or 1.16.7 if we need db compat?)
-      gitea = pkgsUnstable.gitea;
+      gitea = pkgs.unstable.gitea;
 
       # try a newer rpi4 u-boot
-      # ubootRaspberryPi4_64bit = pkgsUnstable.ubootRaspberryPi4_64bit;
+      # ubootRaspberryPi4_64bit = pkgs.unstable.ubootRaspberryPi4_64bit;
       ubootRaspberryPi4_64bit = self.callPackage ./pkgs/ubootRaspberryPi4_64bit { pkgs = super; };
     })
   ];
