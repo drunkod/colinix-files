@@ -1,2 +1,3 @@
 result
-secrets/*
+/secrets/*
+!/secrets/readme.md
