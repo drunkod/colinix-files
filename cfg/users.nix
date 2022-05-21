@@ -14,7 +14,7 @@
     uid = 1000;
     # XXX colin: this is what the installer has, but is it necessary?
     # group = "users";
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" "nixbuild" ];
     initialHashedPassword = "";
     shell = pkgs.bashInteractive;
     # XXX colin: create ssh key for THIS user by logging in and running:
