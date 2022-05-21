@@ -22,23 +22,15 @@
     # XXX colin: is this right?
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
+
   outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager }: {
     nixosConfigurations.uninsane = nixpkgs.lib.nixosSystem {
-      pkgs = self.packages.aarch_64-linux.pkgs;
+      pkgs = self.packages.aarch64-linux.pkgs;
       system = "aarch64-linux";
       modules = [
         ./configuration.nix
-        ./cfg
+        ./uninsane
         ./modules
-        ({ pkgs, ... }: {
-          # This value determines the NixOS release from which the default
-          # settings for stateful data, like file locations and database versions
-          # on your system were taken. It‘s perfectly fine and recommended to leave
-          # this value at the release version of the first install of this system.
-          # Before changing this value read the documentation for this option
-          # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-          system.stateVersion = "21.11"; # Did you read the comment?
-        })
       ];
     };
 
@@ -51,6 +43,7 @@
         ./lappy
       ];
     };
+
     nixosConfigurations.pda = pkgs-mobile.lib.nixosSystem {
       # inherit (self.packages.aarch64-linux) pkgs;
       system = "aarch64-linux";
@@ -89,6 +82,7 @@
         # })
       ];
     };
+
     packages = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
       {
         pkgs = import nixpkgs {
@@ -119,17 +113,6 @@
       }
     );
 
-    # flake-utils.lib.eachDefaultSystem (system:
-    #   let pkgs = nixpkgs.legacyPackages.${system};
-    #   in {
-    #     # packages.hello = pkgs.hello;
-
-    #     # devShell = pkgs.mkShell { buildInputs = [ pkgs.hello pkgs.cowsay ]; };
-    #     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-    #       system = "${system}";
-    #     };
-    #   }
-    # );
   };
 }
 
