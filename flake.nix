@@ -68,16 +68,10 @@
     };
 
     nixosConfigurations.lappy = nixpkgs.lib.nixosSystem {
-      pkgs = import nixpkgs {
-        system = "x86_64-linux";
-        config.allowUnfree = true;
-      };
+      pkgs = self.packages.x86_64-linux.pkgs;
       system = "x86_64-linux";
       specialArgs = { home-manager = home-manager; };
       modules = [
-        ({ pkgs, ... }: {
-          nixpkgs.config.allowUnfree = true;
-        })
         ./configuration.nix
         ./lappy
       ];
@@ -120,11 +114,12 @@
         # })
       ];
     };
-    # packages = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
-    #   {
-    #     pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
-    #   }
-    # );
+    packages = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
+      {
+        pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
+      }
+    );
+
     # flake-utils.lib.eachDefaultSystem (system:
     #   let pkgs = nixpkgs.legacyPackages.${system};
     #   in {
