@@ -103,7 +103,7 @@
     decl-machine = { system, extraModules }: (nixpkgs.lib.nixosSystem {
         pkgs = self.genpkgs."${system}".pkgs;
         system = "${system}";
-        specialArgs = { home-manager = home-manager; nurpkgs = nurpkgs; };
+        specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
           ./configuration.nix
           ./modules
