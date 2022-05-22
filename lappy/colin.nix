@@ -72,6 +72,7 @@
 
 
   home.packages = [
+    pkgs.btrfs-progs
     pkgs.gnumake
     pkgs.dig
     pkgs.duplicity
