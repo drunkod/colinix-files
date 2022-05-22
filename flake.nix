@@ -29,8 +29,16 @@
       system = "aarch64-linux";
       extraModules = [ ./machines/uninsane ];
     };
+    packages.aarch64-linux.uninsane-img = self.decl-img {
+      system = "aarch64-linux";
+      extraModules = [ ./machines/uninsane ];
+    };
 
     nixosConfigurations.desko = self.decl-machine {
+      system = "x86_64-linux";
+      extraModules = [ ./machines/desko ];
+    };
+    packages.x86_64-linux.desko-img = self.decl-img {
       system = "x86_64-linux";
       extraModules = [ ./machines/desko ];
     };
