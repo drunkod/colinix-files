@@ -19,7 +19,7 @@ but after that you can set them to their real value and run `git update-index --
 
 to build a distributable image (GPT-formatted image with rootfs and /boot partition):
 ```sh
-nix build .#lappy-gpt
+nix build .#imgs.lappy
 ```
 this can then be `dd`'d onto a disk and directly booted from a EFI system.
 there's some post-processing to do before running a rebuild on the deployed system (e.g. change fstab UUIDs)

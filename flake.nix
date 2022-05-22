@@ -34,75 +34,69 @@
   };
 
   outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager, nurpkgs }: {
-    nixosConfigurations.uninsane = self.decl-machine {
-      system = "aarch64-linux";
-      extraModules = [ ./machines/uninsane ];
-    };
-    packages.aarch64-linux.uninsane-img = self.decl-img {
-      system = "aarch64-linux";
-      extraModules = [ ./machines/uninsane ];
+    machines.uninsane = self.decl-bootable-machine { name = "uninsane"; system = "aarch64-linux"; };
+    machines.desko = self.decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
+    machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
+
+    machines.pda = {
+      nixosConfigurations.pda = pkgs-mobile.lib.nixosSystem {
+        # inherit (self.genpkgs.aarch64-linux) pkgs;
+        system = "aarch64-linux";
+        modules = [
+          mobile-nixos.nixosModules.pine64-pinephone ({
+            users.users.root.password = "147147";
+          })
+          ({ pkgs, ... }: {
+            # This value determines the NixOS release from which the default
+            # settings for stateful data, like file locations and database versions
+            # on your system were taken. It‘s perfectly fine and recommended to leave
+            # this value at the release version of the first install of this system.
+            # Before changing this value read the documentation for this option
+            # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+            system.stateVersion = "21.11"; # Did you read the comment?
+          })
+          # ({ pkgs, mobile-nixos, ... }: {
+          #   imports = [
+          #     (import "${mobile-nixos}/lib/configuration.nix" { device = "pine64-pinephone"; })
+          #   ];
+          # })
+          # ({ pkgs, ... }: {
+          #   imports = [
+          #     <mobnixos>/devices/pine64-pinephone
+          #   ];
+          # })
+        ];
+      };
+      imgs.pda = (pkgs-mobile.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          mobile-nixos.nixosModules.pine64-pinephone ({
+            users.users.root.password = "147147";
+          })
+          ({ pkgs, ... }: {
+            system.stateVersion = "21.11"; # Did you read the comment?
+          })
+          ./image.nix
+        ];
+      }).config.system.build.raw;
     };
 
-    nixosConfigurations.desko = self.decl-machine {
-      system = "x86_64-linux";
-      extraModules = [ ./machines/desko ];
-    };
-    packages.x86_64-linux.desko-img = self.decl-img {
-      system = "x86_64-linux";
-      extraModules = [ ./machines/desko ];
-    };
-
-    nixosConfigurations.lappy = self.decl-machine {
-      system = "x86_64-linux";
-      extraModules = [ ./machines/lappy ];
-    };
-    packages.x86_64-linux.lappy-img = self.decl-img {
-      system = "x86_64-linux";
-      extraModules = [ ./machines/lappy ];
-    };
-
-    nixosConfigurations.pda = pkgs-mobile.lib.nixosSystem {
-      # inherit (self.genpkgs.aarch64-linux) pkgs;
-      system = "aarch64-linux";
-      modules = [
-        # ({ pkgs, ... }: {
-        #   nixpkgs.config.allowUnfree = true;
-        # })
-        # home-manager.nixosModules.home-manager {
-        #   home-manager.useGlobalPkgs = true;
-        #   home-manager.useUserPackages = true;
-        #   home-manager.users.colin.imports = [ ./colin.nix ];
-        # }
-        # ./configuration.nix
-        # ./users.nix
-        mobile-nixos.nixosModules.pine64-pinephone ({
-          users.users.root.password = "147147";
-        })
-        ({ pkgs, ... }: {
-          # This value determines the NixOS release from which the default
-          # settings for stateful data, like file locations and database versions
-          # on your system were taken. It‘s perfectly fine and recommended to leave
-          # this value at the release version of the first install of this system.
-          # Before changing this value read the documentation for this option
-          # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-          system.stateVersion = "21.11"; # Did you read the comment?
-        })
-        # ({ pkgs, mobile-nixos, ... }: {
-        #   imports = [
-        #     (import "${mobile-nixos}/lib/configuration.nix" { device = "pine64-pinephone"; })
-        #   ];
-        # })
-        # ({ pkgs, ... }: {
-        #   imports = [
-        #     <mobnixos>/devices/pine64-pinephone
-        #   ];
-        # })
-      ];
-    };
+    nixosConfigurations = {}
+      // self.machines.uninsane.nixosConfigurations
+      // self.machines.desko.nixosConfigurations
+      // self.machines.lappy.nixosConfigurations
+      // self.machines.pda.nixosConfigurations
+    ;
+    imgs = {}
+      // self.machines.uninsane.imgs
+      // self.machines.desko.imgs
+      // self.machines.lappy.imgs
+      // self.machines.pda.imgs
+    ;
 
     decl-machine = { system, extraModules }: (nixpkgs.lib.nixosSystem {
+        inherit system;
         pkgs = self.genpkgs."${system}".pkgs;
-        system = "${system}";
         specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
           ./configuration.nix
@@ -120,6 +114,15 @@
         .config.system.build.raw
     );
 
+    decl-bootable-machine = { name, system }: (
+      let extraModules = [ ./machines/${name} ];
+      in {
+        nixosConfigurations."${name}" = self.decl-machine { inherit system; inherit extraModules; };
+        imgs."${name}" = self.decl-img { inherit system; inherit extraModules; };
+      }
+    );
+
+    # apply all our package overlays, but to all platforms possible.
     genpkgs = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
       {
         pkgs = import nixpkgs {
