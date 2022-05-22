@@ -18,12 +18,17 @@
     # pkgs-mobile.url = "nixpkgs/23d785aa6f853e6cf3430119811c334025bbef55";  # latest mobile-nixos:unstable:device.pine64-pinephone.aarch64-linux build 2022/02/20 https://hydra.nixos.org/build/167888996#tabs-buildinputs  -- still tries to compile linux from source, fails building lvgui
     # this includes a patch to enable flake support
     mobile-nixos.url = "github:ngi-nix/mobile-nixos/afe022e1898aa05381077a89c3681784e6074458";
-    home-manager.url = "github:nix-community/home-manager/release-21.11";
-    # XXX colin: is this right?
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-21.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager }: {
+  outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager, nixos-generators }: {
     nixosConfigurations.uninsane = self.decl-machine {
       system = "aarch64-linux";
       extraModules = [ ./uninsane ];
@@ -34,8 +39,48 @@
       extraModules = [ ./lappy ];
     };
 
+    nixosConfigurations.lappy-iso = self.decl-machine {
+      system = "x86_64-linux";
+      extraModules = [
+        ./lappy
+        "${nixpkgs}/nixos/modules/installer/cd-dvd/iso-image.nix"
+        ({ pkgs, ...}: {
+          isoImage.isoName = "lappy-iso";
+          isoImage.makeEfiBootable = true;
+          isoImage.makeUsbBootable = true;
+          isoImage.edition = "minimal";
+          isoImage.squashfsCompression = "gzip";
+        })
+      ];
+    };
+
+    nixosConfigurations.lappy-sd = self.decl-machine {
+      system = "x86_64-linux";
+      extraModules = [
+        ./lappy
+        "${nixpkgs}/nixos/modules/installer/sd-card/sd-image.nix"
+        ({ pkgs, ...}: {
+          sdImage.imageName = "lappy-sd";
+          sdImage.compressImage = false;
+          sdImage.populateRootCommands = "";
+          sdImage.populateFirmwareCommands = "";
+        })
+      ];
+    };
+
+    packages.x86_64-linux.lappy-gpt = (nixos-generators.nixosGenerate {
+      pkgs = self.genpkgs.x86_64-linux.pkgs;
+      specialArgs = { home-manager = home-manager; };
+      modules = [
+        ./configuration.nix
+        ./lappy
+        ./modules
+      ];
+      format = "raw-efi";
+    }).content;
+
     nixosConfigurations.pda = pkgs-mobile.lib.nixosSystem {
-      # inherit (self.packages.aarch64-linux) pkgs;
+      # inherit (self.genpkgs.aarch64-linux) pkgs;
       system = "aarch64-linux";
       modules = [
         # ({ pkgs, ... }: {
@@ -74,7 +119,7 @@
     };
 
     decl-machine = { system, extraModules }: (nixpkgs.lib.nixosSystem {
-        pkgs = self.packages."${system}".pkgs;
+        pkgs = self.genpkgs."${system}".pkgs;
         system = "${system}";
         specialArgs = { home-manager = home-manager; };
         modules = [
@@ -83,7 +128,7 @@
         ] ++ extraModules;
     });
 
-    packages = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
+    genpkgs = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
       {
         pkgs = import nixpkgs {
           inherit system;

@@ -92,6 +92,8 @@
     pkgs.matrix-synapse
     pkgs.mix2nix
     pkgs.netcat
+    pkgs.nixUnstable
+    # pkgs.nixos-generators
     # pkgs.nettools
     pkgs.nmap
     pkgs.parted
@@ -99,6 +101,7 @@
     pkgs.python3
     pkgs.ripgrep
     pkgs.smartmontools
+    pkgs.snapper
     pkgs.socat
     pkgs.sudo
     pkgs.telnet

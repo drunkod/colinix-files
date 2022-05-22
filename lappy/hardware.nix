@@ -27,15 +27,23 @@
     pkgs.vaapiIntel
   ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/75230e56-2c69-4e41-b03e-68475f119980";
-      fsType = "btrfs";
-    };
+  # funky defaulting/forcing here because:
+  # - we want to support image generation, where fs is defined by label instead of UUID
+  # - we want images to have btrfs roots, not ext4 default
+  fileSystems."/" = {
+    device = lib.mkDefault "/dev/disk/by-uuid/75230e56-2c69-4e41-b03e-68475f119980";
+    fsType = lib.mkForce "btrfs";
+    options = lib.mkDefault [
+      "compress=zstd"
+      "defaults"
+    ];
+    autoResize = lib.mkForce false;
+  };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/BD79-D6BB";
-      fsType = "vfat";
-    };
+  fileSystems."/boot" = lib.mkDefault {
+    device = "/dev/disk/by-uuid/BD79-D6BB";
+    fsType = "vfat";
+  };
 
   swapDevices = [ ];
 
@@ -46,7 +54,18 @@
   services.xserver.desktopManager.gnome.enable = true;
   services.xserver.displayManager.gdm.enable = true;
 
+  # services.snapper.configs = {
+  #   root = {
+  #     subvolume = "/";
+  #     extraConfig = {
+  #       ALLOW_USERS = "colin";
+  #     };
+  #   };
+  # };
+  # services.snapper.snapshotInterval = "daily";
+
   networking.useDHCP = false;
   networking.networkmanager.enable = true;
+  networking.wireless.enable = lib.mkForce false;
 
 }
