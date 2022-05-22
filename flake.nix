@@ -39,25 +39,10 @@
       system = "x86_64-linux";
       extraModules = [ ./machines/lappy ];
     };
-
-    # this produces a EFI-bootable .img file (GPT with / and /boot).
-    # after building this, steps are:
-    #   run `btrfs-convert --uuid copy <device>`
-    #   boot, checkout this flake into /etc/nixos AND UPDATE THE UUIDS IT REFERENCES.
-    #   then `nixos-rebuild ...`
-    packages.x86_64-linux.lappy-gpt = let
-      image = nixpkgs.lib.nixosSystem {
-        pkgs = self.genpkgs.x86_64-linux.pkgs;
-        system = "x86_64-linux";
-        specialArgs = { home-manager = home-manager; };
-        modules = [
-          ./configuration.nix
-          ./modules
-          ./machines/lappy
-          ./image.nix
-        ];
-      };
-      in image.config.system.build.raw;
+    packages.x86_64-linux.lappy-img = self.decl-img {
+      system = "x86_64-linux";
+      extraModules = [ ./machines/lappy ];
+    };
 
     nixosConfigurations.pda = pkgs-mobile.lib.nixosSystem {
       # inherit (self.genpkgs.aarch64-linux) pkgs;
@@ -107,6 +92,26 @@
           ./modules
         ] ++ extraModules;
     });
+
+    # this produces a EFI-bootable .img file (GPT with / and /boot).
+    # after building this, steps are:
+    #   run `btrfs-convert --uuid copy <device>`
+    #   boot, checkout this flake into /etc/nixos AND UPDATE THE UUIDS IT REFERENCES.
+    #   then `nixos-rebuild ...`
+    decl-img = { system, extraModules }: (
+      let
+        image = nixpkgs.lib.nixosSystem {
+          pkgs = self.genpkgs."${system}".pkgs;
+          system = "${system}";
+          specialArgs = { home-manager = home-manager; };
+          modules = [
+            ./configuration.nix
+            ./modules
+            ./image.nix
+          ] ++ extraModules;
+        };
+      in image.config.system.build.raw
+    );
 
     genpkgs = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
       {
