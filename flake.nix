@@ -22,9 +22,10 @@
       url = "github:nix-community/home-manager/release-21.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nurpkgs.url = "github:nix-community/NUR";
   };
 
-  outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager }: {
+  outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager, nurpkgs }: {
     nixosConfigurations.uninsane = self.decl-machine {
       system = "aarch64-linux";
       extraModules = [ ./machines/uninsane ];
@@ -94,7 +95,7 @@
     decl-machine = { system, extraModules }: (nixpkgs.lib.nixosSystem {
         pkgs = self.genpkgs."${system}".pkgs;
         system = "${system}";
-        specialArgs = { home-manager = home-manager; };
+        specialArgs = { home-manager = home-manager; nurpkgs = nurpkgs; };
         modules = [
           ./configuration.nix
           ./modules
@@ -111,7 +112,7 @@
         image = nixpkgs.lib.nixosSystem {
           pkgs = self.genpkgs."${system}".pkgs;
           system = "${system}";
-          specialArgs = { home-manager = home-manager; };
+          specialArgs = { home-manager = home-manager; nurpkgs = nurpkgs; };
           modules = [
             ./configuration.nix
             ./modules
@@ -128,14 +129,15 @@
           config.allowUnfree = true;
 
           overlays = [
-            (self: super: {
+            nurpkgs.overlay
+            (next: prev: {
               #### customized packages
               # nixos-unstable pleroma is too far out-of-date for our db
-              pleroma = super.callPackage ./pkgs/pleroma { };
+              pleroma = prev.callPackage ./pkgs/pleroma { };
               # jackett doesn't allow customization of the bind address: this will probably always be here.
-              jackett = self.callPackage ./pkgs/jackett { pkgs = super; };
+              jackett = next.callPackage ./pkgs/jackett { pkgs = prev; };
               # fix abrupt HDD poweroffs as during reboot. patching systemd requires rebuilding nearly every package.
-              # systemd = import ./pkgs/systemd { pkgs = super; };
+              # systemd = import ./pkgs/systemd { pkgs = prev; };
 
               #### nixos-unstable packages
               # gitea: 1.16.5 contains a fix which makes manual user approval *actually* work.
@@ -144,7 +146,7 @@
               gitea = pkgs-gitea.legacyPackages."${system}".gitea;
 
               # patch rpi uboot with something that fixes USB HDD boot
-              ubootRaspberryPi4_64bit = self.callPackage ./pkgs/ubootRaspberryPi4_64bit { pkgs = super; };
+              ubootRaspberryPi4_64bit = next.callPackage ./pkgs/ubootRaspberryPi4_64bit { pkgs = prev; };
             })
           ];
         };

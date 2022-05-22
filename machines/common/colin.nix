@@ -18,13 +18,21 @@
 
   programs.firefox = {
     enable = true;
-    # profiles.default = {
-    #   settings = {
-    #     "browser.urlbar.placeholderName" = "DuckDuckGo";
-    #   };
-    # };
-    # extensions = [
-    # ];
+    # empty profile required to allow extensions below
+    profiles.default = {
+      # settings = {
+      #   "browser.urlbar.placeholderName" = "DuckDuckGo";
+      # };
+    };
+    # NB: these must be manually enabled in the Firefox settings on first start
+    # extensions can be found here: https://gitlab.com/rycee/nur-expressions/-/blob/master/pkgs/firefox-addons/addons.json
+    extensions = [
+      pkgs.nur.repos.rycee.firefox-addons.bypass-paywalls-clean
+      pkgs.nur.repos.rycee.firefox-addons.i-dont-care-about-cookies
+      pkgs.nur.repos.rycee.firefox-addons.sidebery
+      pkgs.nur.repos.rycee.firefox-addons.sponsorblock
+      pkgs.nur.repos.rycee.firefox-addons.ublock-origin
+    ];
   };
 
   programs.vim = {
