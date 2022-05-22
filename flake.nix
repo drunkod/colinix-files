@@ -27,17 +27,17 @@
   outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager }: {
     nixosConfigurations.uninsane = self.decl-machine {
       system = "aarch64-linux";
-      extraModules = [ ./uninsane ];
+      extraModules = [ ./machines/uninsane ];
     };
 
     nixosConfigurations.desko = self.decl-machine {
       system = "x86_64-linux";
-      extraModules = [ ./desko ];
+      extraModules = [ ./machines/desko ];
     };
 
     nixosConfigurations.lappy = self.decl-machine {
       system = "x86_64-linux";
-      extraModules = [ ./lappy ];
+      extraModules = [ ./machines/lappy ];
     };
 
     # this produces a EFI-bootable .img file (GPT with / and /boot).
@@ -52,8 +52,8 @@
         specialArgs = { home-manager = home-manager; };
         modules = [
           ./configuration.nix
-          ./lappy
           ./modules
+          ./machines/lappy
           ./image.nix
         ];
       };
