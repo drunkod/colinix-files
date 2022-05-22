@@ -30,6 +30,11 @@
       extraModules = [ ./uninsane ];
     };
 
+    nixosConfigurations.desko = self.decl-machine {
+      system = "x86_64-linux";
+      extraModules = [ ./desko ];
+    };
+
     nixosConfigurations.lappy = self.decl-machine {
       system = "x86_64-linux";
       extraModules = [ ./lappy ];
