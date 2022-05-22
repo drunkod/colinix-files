@@ -81,18 +81,8 @@
       }).config.system.build.raw;
     };
 
-    nixosConfigurations = {}
-      // self.machines.uninsane.nixosConfigurations
-      // self.machines.desko.nixosConfigurations
-      // self.machines.lappy.nixosConfigurations
-      // self.machines.pda.nixosConfigurations
-    ;
-    imgs = {}
-      // self.machines.uninsane.imgs
-      // self.machines.desko.imgs
-      // self.machines.lappy.imgs
-      // self.machines.pda.imgs
-    ;
+    nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfigurations."${name}") self.machines;
+    imgs = builtins.mapAttrs (name: value: value.imgs."${name}") self.machines;
 
     decl-machine = { system, extraModules }: (nixpkgs.lib.nixosSystem {
         inherit system;
