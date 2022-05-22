@@ -2,7 +2,7 @@
 {
   fileSystems."/" = {
     # boot by label instead of unpredictable uuid
-    device = "/dev/disk/by-label/nixos";
+    device = "/dev/disk/by-label/nixos-lappy";
     # make-disk-image only supports ext4
     fsType = "ext4";
   };
@@ -12,6 +12,7 @@
   system.build.raw = import "${toString modulesPath}/../lib/make-disk-image.nix" {
     inherit lib config pkgs;
     partitionTableType = "efi";
+    label = "nixos-lappy";
     fsType = config.fileSystems."/".fsType;
     diskSize = "auto";
     format = "raw";
