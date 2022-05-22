@@ -39,7 +39,7 @@
     machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
 
     machines.pda = {
-      nixosConfigurations.pda = pkgs-mobile.lib.nixosSystem {
+      nixosConfiguration = pkgs-mobile.lib.nixosSystem {
         # inherit (self.genpkgs.aarch64-linux) pkgs;
         system = "aarch64-linux";
         modules = [
@@ -67,7 +67,7 @@
           # })
         ];
       };
-      imgs.pda = (pkgs-mobile.lib.nixosSystem {
+      img = (pkgs-mobile.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
           mobile-nixos.nixosModules.pine64-pinephone ({
@@ -81,8 +81,8 @@
       }).config.system.build.raw;
     };
 
-    nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfigurations."${name}") self.machines;
-    imgs = builtins.mapAttrs (name: value: value.imgs."${name}") self.machines;
+    nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) self.machines;
+    imgs = builtins.mapAttrs (name: value: value.img) self.machines;
 
     decl-machine = { system, extraModules }: (nixpkgs.lib.nixosSystem {
         inherit system;
@@ -107,8 +107,8 @@
     decl-bootable-machine = { name, system }: (
       let extraModules = [ ./machines/${name} ];
       in {
-        nixosConfigurations."${name}" = self.decl-machine { inherit system; inherit extraModules; };
-        imgs."${name}" = self.decl-img { inherit system; inherit extraModules; };
+        nixosConfiguration = self.decl-machine { inherit system; inherit extraModules; };
+        img = self.decl-img { inherit system; inherit extraModules; };
       }
     );
 
