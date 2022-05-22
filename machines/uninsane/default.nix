@@ -4,6 +4,7 @@
   imports = [
     ./fs.nix
     ./hardware.nix
+    ./homes.nix
     ./net.nix
     ./users.nix
     ./services/duplicity.nix
