@@ -35,6 +35,11 @@
       extraModules = [ ./lappy ];
     };
 
+    # this produces a EFI-bootable .img file (GPT with / and /boot).
+    # after building this, steps are:
+    #   run `btrfs-convert --uuid copy <device>`
+    #   boot, checkout this flake into /etc/nixos AND UPDATE THE UUIDS IT REFERENCES.
+    #   then `nixos-rebuild ...`
     packages.x86_64-linux.lappy-gpt = let
       image = nixpkgs.lib.nixosSystem {
         pkgs = self.genpkgs.x86_64-linux.pkgs;
