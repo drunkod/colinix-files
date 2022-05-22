@@ -22,13 +22,9 @@
       url = "github:nix-community/home-manager/release-21.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager, nixos-generators }: {
+  outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager }: {
     nixosConfigurations.uninsane = self.decl-machine {
       system = "aarch64-linux";
       extraModules = [ ./uninsane ];
@@ -39,45 +35,19 @@
       extraModules = [ ./lappy ];
     };
 
-    nixosConfigurations.lappy-iso = self.decl-machine {
-      system = "x86_64-linux";
-      extraModules = [
-        ./lappy
-        "${nixpkgs}/nixos/modules/installer/cd-dvd/iso-image.nix"
-        ({ pkgs, ...}: {
-          isoImage.isoName = "lappy-iso";
-          isoImage.makeEfiBootable = true;
-          isoImage.makeUsbBootable = true;
-          isoImage.edition = "minimal";
-          isoImage.squashfsCompression = "gzip";
-        })
-      ];
-    };
-
-    nixosConfigurations.lappy-sd = self.decl-machine {
-      system = "x86_64-linux";
-      extraModules = [
-        ./lappy
-        "${nixpkgs}/nixos/modules/installer/sd-card/sd-image.nix"
-        ({ pkgs, ...}: {
-          sdImage.imageName = "lappy-sd";
-          sdImage.compressImage = false;
-          sdImage.populateRootCommands = "";
-          sdImage.populateFirmwareCommands = "";
-        })
-      ];
-    };
-
-    packages.x86_64-linux.lappy-gpt = (nixos-generators.nixosGenerate {
-      pkgs = self.genpkgs.x86_64-linux.pkgs;
-      specialArgs = { home-manager = home-manager; };
-      modules = [
-        ./configuration.nix
-        ./lappy
-        ./modules
-      ];
-      format = "raw-efi";
-    }).content;
+    packages.x86_64-linux.lappy-gpt = let
+      image = nixpkgs.lib.nixosSystem {
+        pkgs = self.genpkgs.x86_64-linux.pkgs;
+        system = "x86_64-linux";
+        specialArgs = { home-manager = home-manager; };
+        modules = [
+          ./configuration.nix
+          ./lappy
+          ./modules
+          ./image.nix
+        ];
+      };
+      in image.config.system.build.raw;
 
     nixosConfigurations.pda = pkgs-mobile.lib.nixosSystem {
       # inherit (self.genpkgs.aarch64-linux) pkgs;

@@ -6,6 +6,8 @@
   # find more of these with sensors-detect
   boot.kernelModules = [ "coretemp" "kvm-intel" ];
   boot.extraModulePackages = [ ];
+  boot.kernelParams = [ "boot.shell_on_fail" ];
+  boot.consoleLogLevel = 7;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -27,21 +29,17 @@
     pkgs.vaapiIntel
   ];
 
-  # funky defaulting/forcing here because:
-  # - we want to support image generation, where fs is defined by label instead of UUID
-  # - we want images to have btrfs roots, not ext4 default
-  fileSystems."/" = {
-    device = lib.mkDefault "/dev/disk/by-uuid/75230e56-2c69-4e41-b03e-68475f119980";
-    fsType = lib.mkForce "btrfs";
-    options = lib.mkDefault [
+  fileSystems."/" = lib.mkDefault {
+    device = "/dev/disk/by-uuid/75230e56-2c69-4e41-b03e-68475f119980";
+    fsType = "btrfs";
+    options = [
       "compress=zstd"
       "defaults"
     ];
-    autoResize = lib.mkForce false;
   };
 
-  fileSystems."/boot" = lib.mkDefault {
-    device = "/dev/disk/by-uuid/BD79-D6BB";
+  fileSystems."/boot" = {
+    device = lib.mkDefault "/dev/disk/by-uuid/BD79-D6BB";
     fsType = "vfat";
   };
 
