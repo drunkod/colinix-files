@@ -2,6 +2,14 @@
 #   https://nixos.wiki/wiki/Flakes
 #   https://serokell.io/blog/practical-nix-flakes
 
+# TODO:
+#   cross compiling:
+#     https://nixos.wiki/wiki/Cross_Compiling
+#     https://nixos.wiki/wiki/NixOS_on_ARM
+#     overlays = [{ ... }: {
+#       nixpkgs.crossSystem.system = "aarch64-linux";
+#     }];
+
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-21.11";
@@ -108,18 +116,8 @@
     #   boot, checkout this flake into /etc/nixos AND UPDATE THE UUIDS IT REFERENCES.
     #   then `nixos-rebuild ...`
     decl-img = { system, extraModules }: (
-      let
-        image = nixpkgs.lib.nixosSystem {
-          pkgs = self.genpkgs."${system}".pkgs;
-          system = "${system}";
-          specialArgs = { home-manager = home-manager; nurpkgs = nurpkgs; };
-          modules = [
-            ./configuration.nix
-            ./modules
-            ./image.nix
-          ] ++ extraModules;
-        };
-      in image.config.system.build.raw
+      (self.decl-machine { inherit system; extraModules = extraModules ++ [./image.nix]; })
+        .config.system.build.raw
     );
 
     genpkgs = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
