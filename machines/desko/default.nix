@@ -1,7 +1,7 @@
 { home-manager, config, pkgs, ... }:
 {
   imports = [
-    ./../common/homes.nix
+    ./../common/home-manager.nix
     ./../common/users.nix
     ./../common/hardware.nix
     ./../common/gui.nix
