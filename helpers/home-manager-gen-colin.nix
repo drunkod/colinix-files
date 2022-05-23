@@ -133,6 +133,7 @@
     pkgs.gnome.dconf-editor
     pkgs.mesa-demos
     pkgs.tdesktop
+    pkgs.vlc
   ] else [])
   ++ (if gui != null && system == "x86_64-linux" then
   [
