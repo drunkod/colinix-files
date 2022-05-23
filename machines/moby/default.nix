@@ -3,7 +3,7 @@
   imports = [
     ./../common/home-manager.nix
     ./../common/users.nix
-    ./../common/gui.nix
+    ./../common/gnome.nix
   ];
 
   home-manager.users.colin = import ./../../helpers/home-manager-gen-colin.nix {
