@@ -2,8 +2,7 @@
 
 {
   imports = [
-    ./../common/users.nix
-    ./../common/home-manager.nix
+    ./../common/all
     ./fs.nix
     ./hardware.nix
     ./net.nix

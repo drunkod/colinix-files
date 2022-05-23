@@ -1,8 +1,7 @@
 { home-manager, config, pkgs, lib, ... }:
 {
   imports = [
-    ./../common/home-manager.nix
-    ./../common/users.nix
+    ./../common/all
     ./../common/hardware.nix
     ./../common/gnome.nix
     ./fs.nix
