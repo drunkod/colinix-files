@@ -2,9 +2,9 @@
 
 {
   imports = [
+    ./../common/home-manager.nix
     ./fs.nix
     ./hardware.nix
-    ./homes.nix
     ./net.nix
     ./users.nix
     ./services/duplicity.nix
@@ -18,6 +18,8 @@
     ./services/postgres.nix
     ./services/transmission.nix
   ];
+
+  home-manager.users.colin.imports = [ ./colin.nix ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
