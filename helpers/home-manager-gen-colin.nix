@@ -1,10 +1,6 @@
-# docs:
-#   https://rycee.gitlab.io/home-manager/
-#   man home-configuration.nix
-
-{ config, pkgs, ... }:
-{
-
+# system is e.g. x86_64-linux
+# gui is "gnome", or null
+{ pkgs, system, gui }: {
   home.stateVersion = "21.11";
   home.username = "colin";
   home.homeDirectory = "/home/colin";
@@ -14,25 +10,6 @@
     enable = true;
     userName = "colin";
     userEmail = "colin@uninsane.org";
-  };
-
-  programs.firefox = {
-    enable = true;
-    # empty profile required to allow extensions below
-    profiles.default = {
-      # settings = {
-      #   "browser.urlbar.placeholderName" = "DuckDuckGo";
-      # };
-    };
-    # NB: these must be manually enabled in the Firefox settings on first start
-    # extensions can be found here: https://gitlab.com/rycee/nur-expressions/-/blob/master/pkgs/firefox-addons/addons.json
-    extensions = [
-      pkgs.nur.repos.rycee.firefox-addons.bypass-paywalls-clean
-      pkgs.nur.repos.rycee.firefox-addons.i-dont-care-about-cookies
-      pkgs.nur.repos.rycee.firefox-addons.sidebery
-      pkgs.nur.repos.rycee.firefox-addons.sponsorblock
-      pkgs.nur.repos.rycee.firefox-addons.ublock-origin
-    ];
   };
 
   programs.vim = {
@@ -59,7 +36,7 @@
     '';
   };
 
-  dconf.settings = {
+  dconf.settings = if gui == "gnome" then {
     # control alt-tab behavior
     "org/gnome/desktop/wm/keybindings" = {
       switch-applications = [ "<Super>Tab" ];
@@ -73,11 +50,26 @@
       sleep-inactive-ac-type = "nothing";
       sleep-inactive-battery-timeout = 5400;  # seconds
     };
-  };
+  } else null;
 
-  # xsession.enable = true;
-  # xsession.windowManager.command = "…";
-
+  programs.firefox = if gui != null then {
+    enable = true;
+    # empty profile required to allow extensions below
+    profiles.default = {
+      # settings = {
+      #   "browser.urlbar.placeholderName" = "DuckDuckGo";
+      # };
+    };
+    # NB: these must be manually enabled in the Firefox settings on first start
+    # extensions can be found here: https://gitlab.com/rycee/nur-expressions/-/blob/master/pkgs/firefox-addons/addons.json
+    extensions = [
+      pkgs.nur.repos.rycee.firefox-addons.bypass-paywalls-clean
+      pkgs.nur.repos.rycee.firefox-addons.i-dont-care-about-cookies
+      pkgs.nur.repos.rycee.firefox-addons.sidebery
+      pkgs.nur.repos.rycee.firefox-addons.sponsorblock
+      pkgs.nur.repos.rycee.firefox-addons.ublock-origin
+    ];
+  } else null;
 
   home.packages = [
     pkgs.btrfs-progs
@@ -117,7 +109,8 @@
     pkgs.usbutils
     pkgs.wireguard
     pkgs.zola
-
+  ]
+  ++ (if gui != null then [
     # GUI only
     pkgs.clinfo
     pkgs.element-desktop
@@ -125,8 +118,9 @@
     pkgs.mesa-demos
     pkgs.signal-desktop
     pkgs.tdesktop
-
+  ] else [])
+  ++ (if system == "x86_64-linux" then [
     # x86_64 only
     pkgs.discord
-  ];
+  ] else []);
 }
