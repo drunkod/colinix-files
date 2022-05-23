@@ -2,7 +2,7 @@
 {
   imports = [
     ./../common/all
-    ./../common/hardware.nix
+    ./../common/hardware-x86_64.nix
     ./../common/gnome.nix
     ./fs.nix
   ];
