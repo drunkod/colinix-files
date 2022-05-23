@@ -14,7 +14,7 @@
     uid = 1000;
     # XXX colin: this is what the installer has, but is it necessary?
     # group = "users";
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [ "wheel" "nixbuild" "networkmanager" ];
     initialHashedPassword = "";
     # shell = pkgs.bashInteractive;
     # XXX colin: create ssh key for THIS user by logging in and running:
@@ -25,10 +25,6 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPU5GlsSfbaarMvDA20bxpSZGWviEzXGD8gtrIowc1pX colin@desko"
     ];
   };
-
-  # automatically log in at the virtual consoles.
-  # using root here makes sure we always have an escape hatch
-  # services.getty.autologinUser = "root";
 
   security.sudo = {
     enable = true;
@@ -41,21 +37,6 @@
     passwordAuthentication = false;
   };
 
+  # TODO colin: move this somewhere else!
   programs.vim.defaultEditor = true;
-
-  # gitea doesn't create the git user
-  # users.users.git = {
-  #   description = "Gitea Service";
-  #   home = "/var/lib/gitea";
-  #   useDefaultShell = true;
-  #   group = "gitea";
-  #   isSystemUser = true;
-  #   # sendmail access (not 100% sure if this is necessary)
-  #   extraGroups = [ "postdrop" ];
-  # };
-
-  # # this is required to allow pleroma to send email.
-  # # raw `sendmail` works, but i think pleroma's passing it some funny flags or something, idk.
-  # # hack to fix that.
-  # users.users.pleroma.extraGroups = [ "postdrop" ];
 }
