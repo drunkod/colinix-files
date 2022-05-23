@@ -88,12 +88,13 @@
 
   home.packages = [
     pkgs.btrfs-progs
-    pkgs.gnumake
     pkgs.dig
+    pkgs.cryptsetup
     pkgs.duplicity
     pkgs.fatresize
     pkgs.fd
     pkgs.file
+    pkgs.gnumake
     pkgs.gptfdisk
     pkgs.hdparm
     pkgs.htop
