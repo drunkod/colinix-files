@@ -39,7 +39,9 @@
     "mobile-nixos": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": [
+          "pkgs-mobile"
+        ]
       },
       "locked": {
         "lastModified": 1630497267,
@@ -57,21 +59,6 @@
       }
     },
     "nixpkgs": {
-      "locked": {
-        "lastModified": 1629048390,
-        "narHash": "sha256-do7HuXFSKyj4ulMlRvGigNZCqOaGD9i0M3OLkFQgEAc=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "e41ba38114055832e5ba4a851e9c00149eef3e4a",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "ref": "nixos-unstable",
-        "type": "indirect"
-      }
-    },
-    "nixpkgs_2": {
       "locked": {
         "lastModified": 1652975354,
         "narHash": "sha256-qP1DpEYQdSq7NZ542TSHffIT6xGm7MaSMG9faQWPcg0=",
@@ -135,7 +122,7 @@
       "inputs": {
         "home-manager": "home-manager",
         "mobile-nixos": "mobile-nixos",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs",
         "nurpkgs": "nurpkgs",
         "pkgs-gitea": "pkgs-gitea",
         "pkgs-mobile": "pkgs-mobile"

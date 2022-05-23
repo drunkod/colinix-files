@@ -21,6 +21,7 @@
 
   # enable cross compilation
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+  # nixpkgs.crossSystem.system = "aarch64-linux";
 
   powerManagement.cpuFreqGovernor = "powersave";
   hardware.enableRedistributableFirmware = true;
@@ -47,11 +48,6 @@
 
   time.timeZone = "America/Los_Angeles";
 
-  # start gnome/gdm on boot
-  services.xserver.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-
   # services.snapper.configs = {
   #   root = {
   #     subvolume = "/";
@@ -61,9 +57,4 @@
   #   };
   # };
   # services.snapper.snapshotInterval = "daily";
-
-  networking.useDHCP = false;
-  networking.networkmanager.enable = true;
-  networking.wireless.enable = lib.mkForce false;
-
 }

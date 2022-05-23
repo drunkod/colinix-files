@@ -25,7 +25,10 @@
     # pkgs-mobile.url = "nixpkgs/5aaed40d22f0d9376330b6fa413223435ad6fee5";  # (untested) associated with HN comment 2022/01/16 https://hydra.nixos.org/build/164693256#tabs-buildinputs -- still tries to compile linux from source
     # pkgs-mobile.url = "nixpkgs/23d785aa6f853e6cf3430119811c334025bbef55";  # latest mobile-nixos:unstable:device.pine64-pinephone.aarch64-linux build 2022/02/20 https://hydra.nixos.org/build/167888996#tabs-buildinputs  -- still tries to compile linux from source, fails building lvgui
     # this includes a patch to enable flake support
-    mobile-nixos.url = "github:ngi-nix/mobile-nixos/afe022e1898aa05381077a89c3681784e6074458";
+    mobile-nixos = {
+      url = "github:ngi-nix/mobile-nixos/afe022e1898aa05381077a89c3681784e6074458";
+      inputs.nixpkgs.follows = "pkgs-mobile";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-21.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -40,74 +43,33 @@
 
     machines.moby = {
       nixosConfiguration = pkgs-mobile.lib.nixosSystem {
-        # inherit (self.genpkgs.aarch64-linux) pkgs;
         system = "aarch64-linux";
+        specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
           mobile-nixos.nixosModules.pine64-pinephone ({
             users.users.root.password = "147147";
           })
-          ({ pkgs, ... }: {
-            # This value determines the NixOS release from which the default
-            # settings for stateful data, like file locations and database versions
-            # on your system were taken. It‘s perfectly fine and recommended to leave
-            # this value at the release version of the first install of this system.
-            # Before changing this value read the documentation for this option
-            # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-            system.stateVersion = "21.11"; # Did you read the comment?
+          ({ config, pkgs, ... }: {
+            nixpkgs.config.allowUnfree = true;
+            nixpkgs.overlays = [ nurpkgs.overlay ];
           })
-          # ({ pkgs, mobile-nixos, ... }: {
-          #   imports = [
-          #     (import "${mobile-nixos}/lib/configuration.nix" { device = "pine64-pinephone"; })
-          #   ];
-          # })
-          # ({ pkgs, ... }: {
-          #   imports = [
-          #     <mobnixos>/devices/pine64-pinephone
-          #   ];
-          # })
+          ./machines/moby
         ];
       };
       img = (pkgs-mobile.lib.nixosSystem {
-        # inherit (self.genpkgs.aarch64-linux) pkgs;
         system = "aarch64-linux";
+        specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
           mobile-nixos.nixosModules.pine64-pinephone ({
             users.users.root.password = "147147";
           })
-          ({ pkgs, ... }: {
-            # This value determines the NixOS release from which the default
-            # settings for stateful data, like file locations and database versions
-            # on your system were taken. It‘s perfectly fine and recommended to leave
-            # this value at the release version of the first install of this system.
-            # Before changing this value read the documentation for this option
-            # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-            system.stateVersion = "21.11"; # Did you read the comment?
+          ({ config, pkgs, ... }: {
+            nixpkgs.config.allowUnfree = true;
+            nixpkgs.overlays = [ nurpkgs.overlay ];
           })
-          # ({ pkgs, mobile-nixos, ... }: {
-          #   imports = [
-          #     (import "${mobile-nixos}/lib/configuration.nix" { device = "pine64-pinephone"; })
-          #   ];
-          # })
-          # ({ pkgs, ... }: {
-          #   imports = [
-          #     <mobnixos>/devices/pine64-pinephone
-          #   ];
-          # })
+          ./machines/moby
         ];
       }).config.mobile.outputs.u-boot.disk-image;
-      # img = nixosConfiguration.config.system.build.disk-image;
-      # img = (pkgs-mobile.lib.nixosSystem {
-      #   system = "aarch64-linux";
-      #   modules = [
-      #     mobile-nixos.nixosModules.pine64-pinephone ({
-      #       users.users.root.password = "147147";
-      #     })
-      #     ({ pkgs, ... }: {
-      #       system.stateVersion = "21.11"; # Did you read the comment?
-      #     })
-      #     ./image.nix
-      #   ];
-      # }).config.system.build.raw;
     };
 
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) self.machines;
@@ -142,6 +104,7 @@
     );
 
     # apply all our package overlays, but to all platforms possible.
+    # genpkgs = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
     genpkgs = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
       {
         pkgs = import nixpkgs {
@@ -149,6 +112,7 @@
           config.allowUnfree = true;
 
           overlays = [
+            #mobile-nixos.overlay
             nurpkgs.overlay
             (next: prev: {
               #### customized packages
