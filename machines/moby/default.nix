@@ -1,12 +1,16 @@
-{ home-manager, config, pkgs, ... }:
+{ home-manager, config, pkgs, lib, ... }:
 {
   imports = [
-    ./homes.nix
+    ./../common/home-manager.nix
     ./../common/users.nix
     ./../common/gui.nix
-    # ./../common/hardware.nix
-    # ./fs.nix
   ];
+
+  home-manager.users.colin = import ./../../helpers/home-manager-gen-colin.nix {
+    inherit pkgs lib;
+    system = "aarch64-linux";
+    gui = "gnome";
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

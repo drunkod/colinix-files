@@ -1,3 +1,7 @@
+# docs:
+#   https://rycee.gitlab.io/home-manager/
+#   man home-configuration.nix
+
 # system is e.g. x86_64-linux
 # gui is "gnome", or null
 { lib, pkgs, system, gui, extraPackages ? [] }: {
@@ -109,17 +113,19 @@
     pkgs.wireguard
     pkgs.zola
   ]
-  ++ (if gui != null then [
+  ++ (if gui != null then
+  [
     # GUI only
     pkgs.clinfo
     pkgs.element-desktop
     pkgs.gnome.dconf-editor
     pkgs.mesa-demos
-    pkgs.signal-desktop
     pkgs.tdesktop
   ] else [])
-  ++ (if system == "x86_64-linux" then [
+  ++ (if gui != null && system == "x86_64-linux" then
+  [
     # x86_64 only
+    pkgs.signal-desktop
     pkgs.discord
   ] else [])
   ++ extraPackages;
