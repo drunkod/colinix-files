@@ -118,11 +118,15 @@
     pkgs.wireguard
     pkgs.zola
 
+    # GUI only
     pkgs.clinfo
-    pkgs.discord
     pkgs.element-desktop
     pkgs.gnome.dconf-editor
     pkgs.mesa-demos
+    pkgs.signal-desktop
     pkgs.tdesktop
+
+    # x86_64 only
+    pkgs.discord
   ];
 }
