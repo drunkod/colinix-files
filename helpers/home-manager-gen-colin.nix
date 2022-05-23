@@ -1,6 +1,6 @@
 # system is e.g. x86_64-linux
 # gui is "gnome", or null
-{ pkgs, system, gui }: {
+{ lib, pkgs, system, gui, extraPackages ? [] }: {
   home.stateVersion = "21.11";
   home.username = "colin";
   home.homeDirectory = "/home/colin";
@@ -36,7 +36,7 @@
     '';
   };
 
-  dconf.settings = if gui == "gnome" then {
+  dconf.settings = lib.mkIf (gui == "gnome") {
     # control alt-tab behavior
     "org/gnome/desktop/wm/keybindings" = {
       switch-applications = [ "<Super>Tab" ];
@@ -50,9 +50,9 @@
       sleep-inactive-ac-type = "nothing";
       sleep-inactive-battery-timeout = 5400;  # seconds
     };
-  } else null;
+  };
 
-  programs.firefox = if gui != null then {
+  programs.firefox = lib.mkIf (gui != null) {
     enable = true;
     # empty profile required to allow extensions below
     profiles.default = {
@@ -69,7 +69,7 @@
       pkgs.nur.repos.rycee.firefox-addons.sponsorblock
       pkgs.nur.repos.rycee.firefox-addons.ublock-origin
     ];
-  } else null;
+  };
 
   home.packages = [
     pkgs.btrfs-progs
@@ -90,7 +90,6 @@
     pkgs.lm_sensors  # for sensors-detect
     pkgs.lsof
     pkgs.pciutils
-    pkgs.matrix-synapse
     pkgs.mix2nix
     pkgs.netcat
     pkgs.nixUnstable
@@ -122,5 +121,6 @@
   ++ (if system == "x86_64-linux" then [
     # x86_64 only
     pkgs.discord
-  ] else []);
+  ] else [])
+  ++ extraPackages;
 }

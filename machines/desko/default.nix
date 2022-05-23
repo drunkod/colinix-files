@@ -1,4 +1,4 @@
-{ home-manager, config, pkgs, ... }:
+{ home-manager, config, pkgs, lib, ... }:
 {
   imports = [
     ./../common/home-manager.nix
@@ -9,6 +9,8 @@
   ];
 
   home-manager.users.colin = import ./../../helpers/home-manager-gen-colin.nix {
-    inherit pkgs; system = "x86_64-linux"; gui = "gnome";
+    inherit pkgs lib;
+    system = "x86_64-linux";
+    gui = "gnome";
   };
 }
