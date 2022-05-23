@@ -38,7 +38,7 @@
     machines.desko = self.decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
     machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
 
-    machines.pda = {
+    machines.moby = {
       nixosConfiguration = pkgs-mobile.lib.nixosSystem {
         # inherit (self.genpkgs.aarch64-linux) pkgs;
         system = "aarch64-linux";
