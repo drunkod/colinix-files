@@ -40,6 +40,7 @@
     '';
   };
 
+  # obtain these by running `dconf dump /` after manually customizing gnome
   dconf.settings = lib.mkIf (gui == "gnome") {
     # control alt-tab behavior
     "org/gnome/desktop/wm/keybindings" = {
@@ -53,6 +54,16 @@
       idle-brigthness = 50;
       sleep-inactive-ac-type = "nothing";
       sleep-inactive-battery-timeout = 5400;  # seconds
+    };
+    "org/gnome/shell" = {
+      favorite-apps = ["org.gnome.Nautilus.desktop" "firefox.desktop" "org.gnome.Terminal.desktop"];
+    };
+    "org/gnome/desktop/session" = {
+      # how long until considering a session idle (triggers e.g. screen blanking)
+      idle-delay = 900;
+    };
+    "org/gnome/desktop/interface" = {
+      text-scaling-factor = 1.25;
     };
   };
 
