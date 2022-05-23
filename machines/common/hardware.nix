@@ -44,9 +44,8 @@
   # For 32 bit applications
   hardware.opengl.driSupport32Bit = true;
 
+  # TODO colin: does this *do* anything?
   swapDevices = [ ];
-
-  time.timeZone = "America/Los_Angeles";
 
   # services.snapper.configs = {
   #   root = {
