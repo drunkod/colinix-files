@@ -126,6 +126,7 @@
   [
     # x86_64 only
     pkgs.signal-desktop
+    pkgs.spotify
     pkgs.discord
   ] else [])
   ++ extraPackages;
