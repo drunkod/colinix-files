@@ -131,6 +131,7 @@
     pkgs.clinfo
     pkgs.element-desktop
     pkgs.gnome.dconf-editor
+    pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
     pkgs.tdesktop
     pkgs.vlc
