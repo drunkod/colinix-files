@@ -142,6 +142,8 @@
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
     pkgs.tdesktop
+    # pleroma client. TODO: port this to nix: https://craftplacer.moe/projects/kaiteki/
+    pkgs.whalebird
     pkgs.vlc
   ] else [])
   ++ (if gui == "gnome" then

@@ -13,6 +13,7 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-21.11";
+    pkgs-unstable.url = "nixpkgs/nixos-unstable";
     pkgs-gitea.url = "nixpkgs/c777cdf5c564015d5f63b09cc93bef4178b19b01";
     # pkgs-mobile.url = "nixpkgs/6daa4a5c045d40e6eae60a3b6e427e8700f1c07f"; # currently pinned to mobile-nixos tip  -> fails building lvgui
     pkgs-mobile.url = "nixpkgs/7e567a3d092b7de69cdf5deaeb8d9526de230916";  # 2021/06/21, coordinated with mobile-nixos 85557dca93ae574eaa7dc7b1877edf681a280d35 ; builds linux, but no errors after running for 4 hours
@@ -36,7 +37,7 @@
     nurpkgs.url = "github:nix-community/NUR";
   };
 
-  outputs = { self, nixpkgs, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager, nurpkgs }: {
+  outputs = { self, nixpkgs, pkgs-unstable, pkgs-gitea, pkgs-mobile, mobile-nixos, home-manager, nurpkgs }: {
     machines.uninsane = self.decl-bootable-machine { name = "uninsane"; system = "aarch64-linux"; };
     machines.desko = self.decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
     machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
@@ -122,14 +123,18 @@
               # fix abrupt HDD poweroffs as during reboot. patching systemd requires rebuilding nearly every package.
               # systemd = import ./pkgs/systemd { pkgs = prev; };
 
+              # patch rpi uboot with something that fixes USB HDD boot
+              ubootRaspberryPi4_64bit = next.callPackage ./pkgs/ubootRaspberryPi4_64bit { pkgs = prev; };
+
               #### nixos-unstable packages
               # gitea: 1.16.5 contains a fix which makes manual user approval *actually* work.
               # https://github.com/go-gitea/gitea/pull/19119
               # safe to remove after 1.16.5 (or 1.16.7 if we need db compat?)
               gitea = pkgs-gitea.legacyPackages."${system}".gitea;
 
-              # patch rpi uboot with something that fixes USB HDD boot
-              ubootRaspberryPi4_64bit = next.callPackage ./pkgs/ubootRaspberryPi4_64bit { pkgs = prev; };
+              # nixos-21.11 whalebird uses an insecure electron version.
+              # TODO: remove this on next nixos release.
+              whalebird = pkgs-unstable.legacyPackages.${system}.whalebird;
             })
           ];
         };
