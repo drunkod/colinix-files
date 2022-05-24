@@ -15,23 +15,26 @@
     nixpkgs.url = "nixpkgs/nixos-21.11";
     pkgs-unstable.url = "nixpkgs/nixos-unstable";
     pkgs-gitea.url = "nixpkgs/c777cdf5c564015d5f63b09cc93bef4178b19b01";
-    # pkgs-mobile.url = "nixpkgs/6daa4a5c045d40e6eae60a3b6e427e8700f1c07f"; # currently pinned to mobile-nixos tip  -> fails building lvgui
-    pkgs-mobile.url = "nixpkgs/7e567a3d092b7de69cdf5deaeb8d9526de230916";  # 2021/06/21, coordinated with mobile-nixos 85557dca93ae574eaa7dc7b1877edf681a280d35 ; builds linux, but no errors after running for 4 hours
-    # pkgs-mobile.url = "nixpkgs/cbe587c735b734405f56803e267820ee1559e6c1";  # successful mobile-nixos build https://hydra.nixos.org/eval/1759474#tabs-inputs
-    # pkgs-mobile.url = "nixpkgs/48037fd90426e44e4bf03e6479e88a11453b9b66";  # successful mobile-nixos build 2022/05/19 https://hydra.nixos.org/eval/1762659#tabs-inputs
+    # pkgs-mobile.url = "nixpkgs/6daa4a5c045d40e6eae60a3b6e427e8700f1c07f";  # FAILS: currently pinned to mobile-nixos tip  -> fails building lvgui
+    # pkgs-mobile.url = "nixpkgs/7e567a3d092b7de69cdf5deaeb8d9526de230916";  # WORKS (NO PHOSH): 2021/06/21, coordinated with mobile-nixos 85557dca93ae574eaa7dc7b1877edf681a280d35
+    # pkgs-mobile.url = "nixpkgs/dfd82985c273aac6eced03625f454b334daae2e8";  # FAILS (kernelAtLeast... originates in mobile-nixos): 2022/05/20
+    # pkgs-mobile.url = "nixpkgs/ff691ed9ba21528c1b4e034f36a04027e4522c58";  # FAILS (kernelAtLeast) 2022/05/17  https://hydra.nixos.org/eval/1762140
+    pkgs-mobile.url = "nixpkgs/710fed5a2483f945b14f4a58af2cd3676b42d8c8";    # BUILDS (NO PHOSH) 2022/03/30  https://hydra.nixos.org/eval/1752121
+    # pkgs-mobile.url = "nixpkgs/cbe587c735b734405f56803e267820ee1559e6c1";  # UNTESTED: successful mobile-nixos build https://hydra.nixos.org/eval/1759474#tabs-inputs
+    # pkgs-mobile.url = "nixpkgs/48037fd90426e44e4bf03e6479e88a11453b9b66";  # UNTESTED: successful mobile-nixos build 2022/05/19 https://hydra.nixos.org/eval/1762659#tabs-inputs
     # pkgs-mobile.url = "nixpkgs/1d7db1b9e4cf1ee075a9f52e5c36f7b9f4207502"; 
     # pkgs-mobile.url = "nixpkgs/43ff6cb1c027d13dc938b88eb099462210fea52f";
-    # pkgs-mobile.url = "nixpkgs/98bb5b77c8c6666824a4c13d23befa1e07210ef1";  # mobile-nixos build 2022/02/10 https://hydra.nixos.org/eval/1743260#tabs-inputs fails building lvgui
-    # pkgs-mobile.url = "nixpkgs/nixos-21.11";  # linux fails at config time
-    # pkgs-mobile.url = "nixpkgs/5aaed40d22f0d9376330b6fa413223435ad6fee5";  # (untested) associated with HN comment 2022/01/16 https://hydra.nixos.org/build/164693256#tabs-buildinputs -- still tries to compile linux from source
-    # pkgs-mobile.url = "nixpkgs/23d785aa6f853e6cf3430119811c334025bbef55";  # latest mobile-nixos:unstable:device.pine64-pinephone.aarch64-linux build 2022/02/20 https://hydra.nixos.org/build/167888996#tabs-buildinputs  -- still tries to compile linux from source, fails building lvgui
+    # pkgs-mobile.url = "nixpkgs/98bb5b77c8c6666824a4c13d23befa1e07210ef1";  # FAILS: mobile-nixos build 2022/02/10 https://hydra.nixos.org/eval/1743260#tabs-inputs fails building lvgui
+    # pkgs-mobile.url = "nixpkgs/nixos-21.11";                               # FAILS: linux fails at config time
+    # pkgs-mobile.url = "nixpkgs/5aaed40d22f0d9376330b6fa413223435ad6fee5";  # UNTESTED (NO PHOSH): associated with HN comment 2022/01/16 https://hydra.nixos.org/build/164693256#tabs-buildinputs
+    # pkgs-mobile.url = "nixpkgs/23d785aa6f853e6cf3430119811c334025bbef55";  # FAILS: latest mobile-nixos:unstable:device.pine64-pinephone.aarch64-linux build 2022/02/20 https://hydra.nixos.org/build/167888996#tabs-buildinputs  -- fails building lvgui
     mobile-nixos = {
       # this includes a patch to enable flake support
       # url = "github:ngi-nix/mobile-nixos/afe022e1898aa05381077a89c3681784e6074458";
       url = "github:nixos/mobile-nixos";
       flake = false;
-      # XXX colin: does this work for non-flakes?
-      inputs.nixpkgs.follows = "pkgs-mobile";
+      # TODO colin: is this necessary (or wanted)?
+      # inputs.nixpkgs.follows = "pkgs-mobile";
     };
     home-manager = {
       url = "github:nix-community/home-manager/release-21.11";
@@ -54,6 +57,7 @@
             device = "pine64-pinephone";
           })
         ];
+        basePkgs = pkgs-mobile;
       };
       in {
         nixosConfiguration = machine;
@@ -63,7 +67,7 @@
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) self.machines;
     imgs = builtins.mapAttrs (name: value: value.img) self.machines;
 
-    decl-machine = { name, system, extraModules ? [] }: (nixpkgs.lib.nixosSystem {
+    decl-machine = { name, system, extraModules ? [], basePkgs ? nixpkgs }: (basePkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [

@@ -113,6 +113,7 @@
     pkgs.hdparm
     pkgs.htop
     pkgs.iftop
+    pkgs.inetutils  # for telnet
     pkgs.iotop
     pkgs.iptables
     pkgs.jq
@@ -134,9 +135,8 @@
     pkgs.snapper
     pkgs.socat
     pkgs.sudo
-    pkgs.telnet
     pkgs.usbutils
-    pkgs.wireguard
+    pkgs.wireguard-tools
     pkgs.zola
   ]
   ++ (if gui != null then

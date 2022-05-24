@@ -11,15 +11,15 @@ let
     name = "sm.puri.OSK0";
     desktopName = "On-screen keyboard";
     exec = "${pkgs.squeekboard}/bin/squeekboard";
-    # categories = [ "GNOME" "Core" ];
-    # onlyShowIn = [ "GNOME" ];
+    categories = [ "GNOME" "Core" ];
+    onlyShowIn = [ "GNOME" ];
     noDisplay = true;
-    # extraConfig = {
-    #   X-GNOME-Autostart-Phase = "Panel";
-    #   X-GNOME-Provides = "inputmethod";
-    #   X-GNOME-Autostart-Notify = "true";
-    #   X-GNOME-AutoRestart = "true";
-    # };
+    extraConfig = {
+      X-GNOME-Autostart-Phase = "Panel";
+      X-GNOME-Provides = "inputmethod";
+      X-GNOME-Autostart-Notify = "true";
+      X-GNOME-AutoRestart = "true";
+    };
   };
 
   phocConfigType = types.submodule {
