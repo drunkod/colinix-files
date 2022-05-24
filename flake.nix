@@ -83,6 +83,7 @@
           ./configuration.nix
           ./modules
           ./machines/${name}
+          (import ./helpers/set-hostname.nix name)
         ] ++ extraModules;
     });
 
