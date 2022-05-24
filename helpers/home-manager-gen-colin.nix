@@ -91,6 +91,10 @@
     ];
   };
 
+  home.shellAliases = {
+    ":q" = "exit";
+  };
+
   home.packages = [
     pkgs.btrfs-progs
     pkgs.dig
