@@ -75,13 +75,14 @@
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) self.machines;
     imgs = builtins.mapAttrs (name: value: value.img) self.machines;
 
-    decl-machine = { system, extraModules }: (nixpkgs.lib.nixosSystem {
+    decl-machine = { name, system, extraModules ? [] }: (nixpkgs.lib.nixosSystem {
         inherit system;
         pkgs = self.genpkgs."${system}".pkgs;
         specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
           ./configuration.nix
           ./modules
+          ./machines/${name}
         ] ++ extraModules;
     });
 
@@ -90,18 +91,15 @@
     #   run `btrfs-convert --uuid copy <device>`
     #   boot, checkout this flake into /etc/nixos AND UPDATE THE UUIDS IT REFERENCES.
     #   then `nixos-rebuild ...`
-    decl-img = { system, extraModules }: (
-      (self.decl-machine { inherit system; extraModules = extraModules ++ [./image.nix]; })
+    decl-img = { name, system, extraModules ? [] }: (
+      (self.decl-machine { inherit name; inherit system; extraModules = extraModules ++ [./image.nix]; })
         .config.system.build.raw
     );
 
-    decl-bootable-machine = { name, system }: (
-      let extraModules = [ ./machines/${name} ];
-      in {
-        nixosConfiguration = self.decl-machine { inherit system; inherit extraModules; };
-        img = self.decl-img { inherit system; inherit extraModules; };
-      }
-    );
+    decl-bootable-machine = { name, system }: {
+      nixosConfiguration = self.decl-machine { inherit name; inherit system; };
+      img = self.decl-img { inherit name; inherit system; };
+    };
 
     # apply all our package overlays, but to all platforms possible.
     # genpkgs = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
