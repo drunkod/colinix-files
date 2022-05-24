@@ -1,6 +1,8 @@
 # docs:
 #   https://rycee.gitlab.io/home-manager/
+#   https://rycee.gitlab.io/home-manager/options.html
 #   man home-configuration.nix
+#
 
 # system is e.g. x86_64-linux
 # gui is "gnome", or null
@@ -69,21 +71,24 @@
 
   programs.firefox = lib.mkIf (gui != null) {
     enable = true;
-    # empty profile required to allow extensions below
-    profiles.default = {
-      # settings = {
-      #   "browser.urlbar.placeholderName" = "DuckDuckGo";
-      # };
 
+    profiles.default = {
       bookmarks = {
         fed_uninsane.url = "https://fed.uninsane.org/";
         delightful.url = "https://delightful.club/";
       };
     };
+
+    # firefox profile support seems to be broken :shrug:
+    # profiles.other = {
+    #   id = 2;
+    # };
+
     # NB: these must be manually enabled in the Firefox settings on first start
     # extensions can be found here: https://gitlab.com/rycee/nur-expressions/-/blob/master/pkgs/firefox-addons/addons.json
     extensions = [
       pkgs.nur.repos.rycee.firefox-addons.bypass-paywalls-clean
+      pkgs.nur.repos.rycee.firefox-addons.metamask
       pkgs.nur.repos.rycee.firefox-addons.i-dont-care-about-cookies
       pkgs.nur.repos.rycee.firefox-addons.sidebery
       pkgs.nur.repos.rycee.firefox-addons.sponsorblock

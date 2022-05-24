@@ -11,5 +11,8 @@
     inherit pkgs lib;
     system = "x86_64-linux";
     gui = "gnome";
+    extraPackages = [
+      pkgs.electrum
+    ];
   };
 }

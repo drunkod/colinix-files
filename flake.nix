@@ -89,7 +89,7 @@
 
     decl-machine = { name, system, extraModules ? [] }: (nixpkgs.lib.nixosSystem {
         inherit system;
-        pkgs = self.genpkgs."${system}".pkgs;
+        pkgs = self.genpkgs.${system}.pkgs;
         specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
           ./configuration.nix
@@ -141,11 +141,14 @@
               # gitea: 1.16.5 contains a fix which makes manual user approval *actually* work.
               # https://github.com/go-gitea/gitea/pull/19119
               # safe to remove after 1.16.5 (or 1.16.7 if we need db compat?)
-              gitea = pkgs-gitea.legacyPackages."${system}".gitea;
+              gitea = pkgs-gitea.legacyPackages.${system}.gitea;
 
               # nixos-21.11 whalebird uses an insecure electron version.
               # TODO: remove this on next nixos release.
               whalebird = pkgs-unstable.legacyPackages.${system}.whalebird;
+
+              # we care about keeping these packages up-to-date
+              electrum = pkgs-unstable.legacyPackages.${system}.electrum;
             })
           ];
         };
