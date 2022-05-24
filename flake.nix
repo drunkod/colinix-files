@@ -45,36 +45,20 @@
     machines.desko = self.decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
     machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
 
-    machines.moby = {
-      nixosConfiguration = nixpkgs.lib.nixosSystem {
+    machines.moby =
+      let machine = self.decl-machine {
+        name = "moby";
         system = "aarch64-linux";
-        specialArgs = { inherit home-manager; inherit nurpkgs; };
-        modules = [
-          # mobile-nixos.nixosModules.pine64-pinephone ({
-          #   users.users.root.password = "147147";
-          # })
+        extraModules = [
           (import "${mobile-nixos}/lib/configuration.nix" {
             device = "pine64-pinephone";
           })
-          (self.overlaysModule "aarch64-linux")
-          ./machines/moby
         ];
       };
-      img = (nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";
-        specialArgs = { inherit home-manager; inherit nurpkgs; };
-        modules = [
-          # mobile-nixos.nixosModules.pine64-pinephone ({
-          #   users.users.root.password = "147147";
-          # })
-          (import "${mobile-nixos}/lib/configuration.nix" {
-            device = "pine64-pinephone";
-          })
-          (self.overlaysModule "aarch64-linux")
-          ./machines/moby
-        ];
-      }).config.mobile.outputs.u-boot.disk-image;
-    };
+      in {
+        nixosConfiguration = machine;
+        img = machine.config.mobile.outputs.u-boot.disk-image;
+      };
 
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) self.machines;
     imgs = builtins.mapAttrs (name: value: value.img) self.machines;
