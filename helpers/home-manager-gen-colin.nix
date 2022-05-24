@@ -130,11 +130,14 @@
     # GUI only
     pkgs.clinfo
     pkgs.element-desktop
-    pkgs.gnome.dconf-editor
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
     pkgs.tdesktop
     pkgs.vlc
+  ] else [])
+  ++ (if gui == "gnome" then
+  [
+    pkgs.gnome.dconf-editor
   ] else [])
   ++ (if gui != null && system == "x86_64-linux" then
   [
