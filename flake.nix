@@ -48,7 +48,6 @@
     machines.moby = {
       nixosConfiguration = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
-        # pkgs = self.genpkgs.aarch64-linux.pkgs;
         specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
           # mobile-nixos.nixosModules.pine64-pinephone ({
@@ -57,16 +56,12 @@
           (import "${mobile-nixos}/lib/configuration.nix" {
             device = "pine64-pinephone";
           })
-          ({ config, pkgs, ... }: {
-            nixpkgs.config.allowUnfree = true;
-            nixpkgs.overlays = [ nurpkgs.overlay ];
-          })
+          (self.overlaysModule "aarch64-linux")
           ./machines/moby
         ];
       };
       img = (nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
-        # pkgs = self.genpkgs.aarch64-linux.pkgs;
         specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
           # mobile-nixos.nixosModules.pine64-pinephone ({
@@ -75,10 +70,7 @@
           (import "${mobile-nixos}/lib/configuration.nix" {
             device = "pine64-pinephone";
           })
-          ({ config, pkgs, ... }: {
-            nixpkgs.config.allowUnfree = true;
-            nixpkgs.overlays = [ nurpkgs.overlay ];
-          })
+          (self.overlaysModule "aarch64-linux")
           ./machines/moby
         ];
       }).config.mobile.outputs.u-boot.disk-image;
@@ -89,13 +81,13 @@
 
     decl-machine = { name, system, extraModules ? [] }: (nixpkgs.lib.nixosSystem {
         inherit system;
-        pkgs = self.genpkgs.${system}.pkgs;
         specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
           ./configuration.nix
           ./modules
           ./machines/${name}
           (import ./helpers/set-hostname.nix name)
+          (self.overlaysModule system)
         ] ++ extraModules;
     });
 
@@ -114,47 +106,39 @@
       img = self.decl-img { inherit name; inherit system; };
     };
 
-    # apply all our package overlays, but to all platforms possible.
-    # genpkgs = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
-    genpkgs = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all (system:
-      {
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
+    overlaysModule = system: { config, pkgs, ...}: {
+      nixpkgs.config.allowUnfree = true;
 
-          overlays = [
-            #mobile-nixos.overlay
-            nurpkgs.overlay
-            (next: prev: {
-              #### customized packages
-              # nixos-unstable pleroma is too far out-of-date for our db
-              pleroma = prev.callPackage ./pkgs/pleroma { };
-              # jackett doesn't allow customization of the bind address: this will probably always be here.
-              jackett = next.callPackage ./pkgs/jackett { pkgs = prev; };
-              # fix abrupt HDD poweroffs as during reboot. patching systemd requires rebuilding nearly every package.
-              # systemd = import ./pkgs/systemd { pkgs = prev; };
+      nixpkgs.overlays = [
+        #mobile-nixos.overlay
+        nurpkgs.overlay
+        (next: prev: {
+          #### customized packages
+          # nixos-unstable pleroma is too far out-of-date for our db
+          pleroma = prev.callPackage ./pkgs/pleroma { };
+          # jackett doesn't allow customization of the bind address: this will probably always be here.
+          jackett = next.callPackage ./pkgs/jackett { pkgs = prev; };
+          # fix abrupt HDD poweroffs as during reboot. patching systemd requires rebuilding nearly every package.
+          # systemd = import ./pkgs/systemd { pkgs = prev; };
 
-              # patch rpi uboot with something that fixes USB HDD boot
-              ubootRaspberryPi4_64bit = next.callPackage ./pkgs/ubootRaspberryPi4_64bit { pkgs = prev; };
+          # patch rpi uboot with something that fixes USB HDD boot
+          ubootRaspberryPi4_64bit = next.callPackage ./pkgs/ubootRaspberryPi4_64bit { pkgs = prev; };
 
-              #### nixos-unstable packages
-              # gitea: 1.16.5 contains a fix which makes manual user approval *actually* work.
-              # https://github.com/go-gitea/gitea/pull/19119
-              # safe to remove after 1.16.5 (or 1.16.7 if we need db compat?)
-              gitea = pkgs-gitea.legacyPackages.${system}.gitea;
+          #### nixos-unstable packages
+          # gitea: 1.16.5 contains a fix which makes manual user approval *actually* work.
+          # https://github.com/go-gitea/gitea/pull/19119
+          # safe to remove after 1.16.5 (or 1.16.7 if we need db compat?)
+          gitea = pkgs-gitea.legacyPackages.${system}.gitea;
 
-              # nixos-21.11 whalebird uses an insecure electron version.
-              # TODO: remove this on next nixos release.
-              whalebird = pkgs-unstable.legacyPackages.${system}.whalebird;
+          # nixos-21.11 whalebird uses an insecure electron version.
+          # TODO: remove this on next nixos release.
+          whalebird = pkgs-unstable.legacyPackages.${system}.whalebird;
 
-              # we care about keeping these packages up-to-date
-              electrum = pkgs-unstable.legacyPackages.${system}.electrum;
-            })
-          ];
-        };
-      }
-    );
-
+          # we care about keeping these packages up-to-date
+          electrum = pkgs-unstable.legacyPackages.${system}.electrum;
+        })
+      ];
+    };
   };
 }
 
