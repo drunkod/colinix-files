@@ -16,6 +16,7 @@
     # group = "users";
     extraGroups = [ "wheel" "nixbuild" "networkmanager" ];
     initialPassword = lib.mkDefault "";
+    shell = pkgs.zsh;
     # shell = pkgs.bashInteractive;
     # XXX colin: create ssh key for THIS user by logging in and running:
     #   ssh-keygen -t ed25519
