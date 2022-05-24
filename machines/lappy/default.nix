@@ -1,4 +1,4 @@
-{ home-manager, config, pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 {
   imports = [
     ./../common/all
