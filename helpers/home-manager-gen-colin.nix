@@ -11,7 +11,33 @@
   home.username = "colin";
   home.homeDirectory = "/home/colin";
   programs.home-manager.enable = true;
-  programs.zsh.enable = true;
+  programs.zsh = {
+    enable = true;
+    enableSyntaxHighlighting = true;
+    enableVteIntegration = true;
+    dotDir = ".config/zsh";
+    # prezto = oh-my-zsh fork; controls prompt, auto-completion, etc.
+    # see: https://github.com/sorin-ionescu/prezto
+    prezto = {
+      enable = true;
+      pmodules = [
+        "environment"
+        "terminal"
+        "editor"
+        "history"
+        "directory"
+        "spectrum"
+        "utility"
+        "completion"
+        "prompt"
+        "git"
+      ];
+      prompt = {
+        theme = "powerlevel10k";
+      };
+    };
+  };
+  programs.kitty.enable = true;
   programs.git = {
     enable = true;
     userName = "colin";
@@ -143,12 +169,14 @@
   ++ (if gui != null then
   [
     # GUI only
+    # pkgs.alacritty
     pkgs.clinfo
     pkgs.element-desktop
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
     pkgs.tdesktop
     pkgs.vlc
+    pkgs.xterm
   ] else [])
   ++ (if gui == "gnome" then
   [
