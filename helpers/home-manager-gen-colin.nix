@@ -76,6 +76,7 @@
       bookmarks = {
         fed_uninsane.url = "https://fed.uninsane.org/";
         delightful.url = "https://delightful.club/";
+        mempool.url = "https://jochen-hoenicke.de/queue";
       };
     };
 
