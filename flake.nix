@@ -25,9 +25,12 @@
     # pkgs-mobile.url = "nixpkgs/nixos-21.11";  # linux fails at config time
     # pkgs-mobile.url = "nixpkgs/5aaed40d22f0d9376330b6fa413223435ad6fee5";  # (untested) associated with HN comment 2022/01/16 https://hydra.nixos.org/build/164693256#tabs-buildinputs -- still tries to compile linux from source
     # pkgs-mobile.url = "nixpkgs/23d785aa6f853e6cf3430119811c334025bbef55";  # latest mobile-nixos:unstable:device.pine64-pinephone.aarch64-linux build 2022/02/20 https://hydra.nixos.org/build/167888996#tabs-buildinputs  -- still tries to compile linux from source, fails building lvgui
-    # this includes a patch to enable flake support
     mobile-nixos = {
-      url = "github:ngi-nix/mobile-nixos/afe022e1898aa05381077a89c3681784e6074458";
+      # this includes a patch to enable flake support
+      # url = "github:ngi-nix/mobile-nixos/afe022e1898aa05381077a89c3681784e6074458";
+      url = "github:nixos/mobile-nixos";
+      flake = false;
+      # XXX colin: does this work for non-flakes?
       inputs.nixpkgs.follows = "pkgs-mobile";
     };
     home-manager = {
@@ -43,12 +46,16 @@
     machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
 
     machines.moby = {
-      nixosConfiguration = pkgs-mobile.lib.nixosSystem {
+      nixosConfiguration = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
+        # pkgs = self.genpkgs.aarch64-linux.pkgs;
         specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
-          mobile-nixos.nixosModules.pine64-pinephone ({
-            users.users.root.password = "147147";
+          # mobile-nixos.nixosModules.pine64-pinephone ({
+          #   users.users.root.password = "147147";
+          # })
+          (import "${mobile-nixos}/lib/configuration.nix" {
+            device = "pine64-pinephone";
           })
           ({ config, pkgs, ... }: {
             nixpkgs.config.allowUnfree = true;
@@ -57,12 +64,16 @@
           ./machines/moby
         ];
       };
-      img = (pkgs-mobile.lib.nixosSystem {
+      img = (nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
+        # pkgs = self.genpkgs.aarch64-linux.pkgs;
         specialArgs = { inherit home-manager; inherit nurpkgs; };
         modules = [
-          mobile-nixos.nixosModules.pine64-pinephone ({
-            users.users.root.password = "147147";
+          # mobile-nixos.nixosModules.pine64-pinephone ({
+          #   users.users.root.password = "147147";
+          # })
+          (import "${mobile-nixos}/lib/configuration.nix" {
+            device = "pine64-pinephone";
           })
           ({ config, pkgs, ... }: {
             nixpkgs.config.allowUnfree = true;
