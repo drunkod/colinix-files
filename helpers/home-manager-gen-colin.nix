@@ -74,6 +74,11 @@
       # settings = {
       #   "browser.urlbar.placeholderName" = "DuckDuckGo";
       # };
+
+      bookmarks = {
+        fed_uninsane.url = "https://fed.uninsane.org/";
+        delightful.url = "https://delightful.club/";
+      };
     };
     # NB: these must be manually enabled in the Firefox settings on first start
     # extensions can be found here: https://gitlab.com/rycee/nur-expressions/-/blob/master/pkgs/firefox-addons/addons.json
