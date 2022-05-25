@@ -172,6 +172,7 @@
     # pkgs.alacritty
     pkgs.clinfo
     pkgs.element-desktop
+    pkgs.gimp
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
     pkgs.tdesktop
