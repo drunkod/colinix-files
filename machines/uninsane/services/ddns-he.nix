@@ -12,6 +12,9 @@
       ${crl} "https://native.uninsane.org:${pass}@dyn.dns.he.net/nic/update?hostname=native.uninsane.org"
       ${crl} "https://uninsane.org:${pass}@dyn.dns.he.net/nic/update?hostname=uninsane.org"
     '';
-    startAt = "10min";
+  };
+  systemd.timers.ddns-he.timerConfig = {
+    OnStartupSec = "2min";
+    OnUnitActiveSec = "10min";
   };
 }
