@@ -16,6 +16,13 @@
     enableSyntaxHighlighting = true;
     enableVteIntegration = true;
     dotDir = ".config/zsh";
+
+    initExtraBeforeCompInit = ''
+      # p10k instant prompt
+      # run p10k configure to configure, but it can't write out its file :-(
+      POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+    '';
+
     # prezto = oh-my-zsh fork; controls prompt, auto-completion, etc.
     # see: https://github.com/sorin-ionescu/prezto
     prezto = {
