@@ -2,36 +2,14 @@
 #   https://nixos.wiki/wiki/Flakes
 #   https://serokell.io/blog/practical-nix-flakes
 
-# TODO:
-#   cross compiling:
-#     https://nixos.wiki/wiki/Cross_Compiling
-#     https://nixos.wiki/wiki/NixOS_on_ARM
-#     overlays = [{ ... }: {
-#       nixpkgs.crossSystem.system = "aarch64-linux";
-#     }];
-
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-21.11";
     pkgs-unstable.url = "nixpkgs/nixos-unstable";
     pkgs-gitea.url = "nixpkgs/c777cdf5c564015d5f63b09cc93bef4178b19b01";
     # pkgs-telegram.url = "nixpkgs/33775ec9a2173a08e46edf9f46c9febadbf743e8";# 2022/04/18; telegram 3.7.3. fails: nix log /nix/store/y5kv47hnv55qknb6cnmpcyraicay79fx-telegram-desktop-3.7.3.drv: g++: fatal error: cannot execute '/nix/store/njk5sbd21305bhr7gwibxbbvgbx5lxvn-gcc-9.3.0/libexec/gcc/aarch64-unknown-linux-gnu/9.3.0/cc1plus': execv: No such file or directory
-    # pkgs-mobile.url = "nixpkgs/6daa4a5c045d40e6eae60a3b6e427e8700f1c07f";  # FAILS: currently pinned to mobile-nixos tip  -> fails building lvgui
-    # pkgs-mobile.url = "nixpkgs/7e567a3d092b7de69cdf5deaeb8d9526de230916";  # WORKS (NO PHOSH): 2021/06/21, coordinated with mobile-nixos 85557dca93ae574eaa7dc7b1877edf681a280d35
     pkgs-mobile.url = "nixpkgs/dfd82985c273aac6eced03625f454b334daae2e8";    # WORKS: 2022/05/20; mobile-nixos follows this same commit.
-    # pkgs-mobile.url = "nixpkgs/ff691ed9ba21528c1b4e034f36a04027e4522c58";  # FAILS (kernelAtLeast) 2022/05/17  https://hydra.nixos.org/eval/1762140
-    # pkgs-mobile.url = "nixpkgs/710fed5a2483f945b14f4a58af2cd3676b42d8c8";  # BUILDS (NO PHOSH) 2022/03/30  https://hydra.nixos.org/eval/1752121
-    # pkgs-mobile.url = "nixpkgs/cbe587c735b734405f56803e267820ee1559e6c1";  # UNTESTED: successful mobile-nixos build https://hydra.nixos.org/eval/1759474#tabs-inputs
-    # pkgs-mobile.url = "nixpkgs/48037fd90426e44e4bf03e6479e88a11453b9b66";  # UNTESTED: successful mobile-nixos build 2022/05/19 https://hydra.nixos.org/eval/1762659#tabs-inputs
-    # pkgs-mobile.url = "nixpkgs/1d7db1b9e4cf1ee075a9f52e5c36f7b9f4207502"; 
-    # pkgs-mobile.url = "nixpkgs/43ff6cb1c027d13dc938b88eb099462210fea52f";
-    # pkgs-mobile.url = "nixpkgs/98bb5b77c8c6666824a4c13d23befa1e07210ef1";  # FAILS: mobile-nixos build 2022/02/10 https://hydra.nixos.org/eval/1743260#tabs-inputs fails building lvgui
-    # pkgs-mobile.url = "nixpkgs/nixos-21.11";                               # FAILS: linux fails at config time
-    # pkgs-mobile.url = "nixpkgs/5aaed40d22f0d9376330b6fa413223435ad6fee5";  # UNTESTED (NO PHOSH): associated with HN comment 2022/01/16 https://hydra.nixos.org/build/164693256#tabs-buildinputs
-    # pkgs-mobile.url = "nixpkgs/23d785aa6f853e6cf3430119811c334025bbef55";  # FAILS: latest mobile-nixos:unstable:device.pine64-pinephone.aarch64-linux build 2022/02/20 https://hydra.nixos.org/build/167888996#tabs-buildinputs  -- fails building lvgui
     mobile-nixos = {
-      # this includes a patch to enable flake support
-      # url = "github:ngi-nix/mobile-nixos/afe022e1898aa05381077a89c3681784e6074458";
       url = "github:nixos/mobile-nixos";
       flake = false;
       # TODO colin: is this necessary (or wanted)?

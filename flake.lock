@@ -97,21 +97,6 @@
         "type": "indirect"
       }
     },
-    "pkgs-telegram": {
-      "locked": {
-        "lastModified": 1653269863,
-        "narHash": "sha256-B0Zhu/a8Qnh1V7bu51tMvl3Q3UQRYe9WlzrPVH4/zvo=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "33775ec9a2173a08e46edf9f46c9febadbf743e8",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "rev": "33775ec9a2173a08e46edf9f46c9febadbf743e8",
-        "type": "indirect"
-      }
-    },
     "pkgs-unstable": {
       "locked": {
         "lastModified": 1653060744,
@@ -135,7 +120,6 @@
         "nurpkgs": "nurpkgs",
         "pkgs-gitea": "pkgs-gitea",
         "pkgs-mobile": "pkgs-mobile",
-        "pkgs-telegram": "pkgs-telegram",
         "pkgs-unstable": "pkgs-unstable"
       }
     }
