@@ -2,11 +2,6 @@
 {
   imports = [
     ./../common/all
-    # TODO: remove this phosh.nix file.
-    # phosh service support was added to nixpkgs on 2022/05/07: https://github.com/NixOS/nixpkgs/pull/153940
-    # it may be possible to import this via <unstable-pkgs>/... path ?
-    # or find a more recent nixpkgs which builds with mobile-nixos. that PR indicates people have done so.
-    ./phosh.nix
     ./gui-phosh.nix
   ];
 
