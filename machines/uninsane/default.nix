@@ -7,6 +7,7 @@
     ./hardware.nix
     ./net.nix
     ./users.nix
+    ./services/ddns-he.nix
     ./services/duplicity.nix
     ./services/gitea.nix
     ./services/jackett.nix

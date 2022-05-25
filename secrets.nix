@@ -1,0 +1,3 @@
+{
+  ddns-he.password = "<REPLACEME>";
+}
