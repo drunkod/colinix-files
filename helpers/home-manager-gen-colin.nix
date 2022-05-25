@@ -176,15 +176,17 @@
   ++ (if gui != null then
   [
     # GUI only
-    # pkgs.alacritty
     pkgs.clinfo
-    pkgs.element-desktop
-    pkgs.gimp
+    pkgs.element-desktop  # broken on phosh
+    pkgs.evince  # works on phosh
+    pkgs.gimp  # broken on phosh
+    pkgs.gnome.gnome-maps  # works on phosh
+    pkgs.gnome.gnome-terminal  # works on phosh
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
-    pkgs.tdesktop
-    pkgs.vlc
-    pkgs.xterm
+    pkgs.tdesktop  # broken on phosh
+    pkgs.vlc  # broken on phosh
+    pkgs.xterm  # broken on phosh
   ] else [])
   ++ (if gui == "gnome" then
   [
