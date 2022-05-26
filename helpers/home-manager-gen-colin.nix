@@ -11,6 +11,22 @@
   home.username = "colin";
   home.homeDirectory = "/home/colin";
   programs.home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
+
+  # XDG defines things like ~/Desktop, ~/Downloads, etc.
+  # these clutter the home, so i mostly don't use them.
+  xdg.userDirs = {
+    enable = true;
+    createDirectories = false;  # on headless systems, most xdg dirs are noise
+    desktop = "$HOME/.xdg/Desktop";
+    documents = "$HOME/src";
+    download = "$HOME/tmp";
+    music = "$HOME/Music";
+    pictures = "$HOME/Pictures";
+    publicShare = "$HOME/.xdg/Public";
+    templates = "$HOME/.xdg/Templates";
+    videos = "$HOME/Videos";
+  };
+
   programs.zsh = {
     enable = true;
     enableSyntaxHighlighting = true;
