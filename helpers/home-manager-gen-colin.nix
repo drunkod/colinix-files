@@ -10,7 +10,7 @@
   home.stateVersion = "21.11";
   home.username = "colin";
   home.homeDirectory = "/home/colin";
-  programs.home-manager.enable = true;
+  programs.home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
   programs.zsh = {
     enable = true;
     enableSyntaxHighlighting = true;
@@ -135,6 +135,10 @@
     # common typos
     "cd.." = "cd ..";
     "cd../" = "cd ../";
+  };
+
+  home.sessionVariables = {
+    EDITOR = "vim";
   };
 
   home.packages = [
