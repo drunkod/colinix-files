@@ -31,8 +31,9 @@
   hardware.enableRedistributableFirmware = true;
   hardware.cpu.amd.updateMicrocode = true;    # desktop
   hardware.cpu.intel.updateMicrocode = true;  # laptop
-  powerManagement.powertop.enable = true;
   services.fwupd.enable = true;
+  # powertop will default to putting USB devices -- including HID -- to sleep after TWO SECONDS
+  powerManagement.powertop.enable = false;
 
   hardware.opengl.extraPackages = [
     # laptop
