@@ -132,6 +132,9 @@
 
   home.shellAliases = {
     ":q" = "exit";
+    # common typos
+    "cd.." = "cd ..";
+    "cd../" = "cd ../";
   };
 
   home.packages = [
