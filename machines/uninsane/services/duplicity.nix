@@ -28,6 +28,11 @@
     "/opt/uninsane/media"
   ];
 
+  services.duplicity.extraFlags = [
+    # without --allow-source-mismatch, duplicity will abort if you change the hostname between backups
+    "--allow-source-mismatch"
+  ];
+
   # set this for the FIRST backup, then remove it to enable incremental backups
   #   (that the first backup *isn't* full i think is a defect)
   # services.duplicity.fullIfOlderThan = "always";
