@@ -15,5 +15,7 @@
    }];
 
 # better secrets management? read:
+- decrypted at activation time: https://github.com/Mic92/sops-nix
+less promising:
 - https://christine.website/blog/nixos-encrypted-secrets-2021-01-20
 - git-crypt (https://github.com/bobbbay/dotfiles.git)
