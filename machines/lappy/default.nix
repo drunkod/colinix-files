@@ -1,9 +1,9 @@
 { config, pkgs, lib, ... }:
 {
   imports = [
-    ./../common/all
-    ./../common/hardware-x86_64.nix
-    ./../common/gnome.nix
+    ./../../helpers/universal
+    ./../../helpers/hardware-x86_64.nix
+    ./../../helpers/gnome.nix
     ./fs.nix
   ];
 

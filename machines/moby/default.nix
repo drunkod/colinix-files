@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 {
   imports = [
-    ./../common/all
+    ./../../helpers/universal
     ./gui-phosh.nix
   ];
 

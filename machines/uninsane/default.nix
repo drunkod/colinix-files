@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ./../common/all
+    ./../../helpers/universal
     ./fs.nix
     ./hardware.nix
     ./net.nix
