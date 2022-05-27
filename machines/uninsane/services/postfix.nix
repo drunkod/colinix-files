@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, secrets, ... }:
 
 let
   submissionOptions = {
@@ -80,16 +80,21 @@ in
   services.dovecot2.sslServerCert = "/var/lib/acme/imap.uninsane.org/fullchain.pem";
   services.dovecot2.sslServerKey = "/var/lib/acme/imap.uninsane.org/key.pem";
   services.dovecot2.enablePAM = false;
-  # passwd file looks like /etc/passwd.
-  # use nix run nixpkgs.apacheHttpd -c htpasswd -nbB "" "my passwd" to generate the password
-  services.dovecot2.extraConfig = ''
+  services.dovecot2.extraConfig =
+  let
+    passwdFile = builtins.toFile "dovecot-passwd-file" ''
+      colin:${secrets.dovecot.hashedPasswd.colin}:1000:1000::/var/mail/colin/run/current-system/sw/bin/nologin:
+      matrix-synapse:${secrets.dovecot.hashedPasswd.matrix-synapse}:224:224::/var/mail/colin:/run/current-system/sw/bin/nologin:
+      '';
+  in
+    ''
     passdb {
       driver = passwd-file
-      args = /etc/nixos/secrets/dovecot.passwd
+      args = ${passwdFile}
     }
     userdb {
       driver = passwd-file
-      args = /etc/nixos/secrets/dovecot.passwd
+      args = ${passwdFile}
     }
 
     # allow postfix to query our auth db

@@ -24,4 +24,9 @@
 
   # keep this synchronized with the dovecot auth
   matrix-synapse.smtp_pass = "<REPLACEME>";
+
+  # passwd file looks like /etc/passwd.
+  # use nix run nixpkgs.apacheHttpd -c htpasswd -nbB "" "my passwd" to generate the password
+  dovecot.hashedPasswd.colin = "<REPLACEME>";
+  dovecot.hashedPasswd.matrix-synapse = "<REPLACEME>";
 } // import ./local.nix
