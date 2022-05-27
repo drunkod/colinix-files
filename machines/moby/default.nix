@@ -2,7 +2,7 @@
 {
   imports = [
     ./../../helpers/universal
-    # ./gui-phosh.nix
+    # ./../../helpers/phosh.nix
     ./../../helpers/plasma-mobile.nix
   ];
 
