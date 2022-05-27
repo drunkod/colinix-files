@@ -1,13 +1,9 @@
 # docs: https://search.nixos.org/options?channel=21.11&query=duplicity
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, secrets, ... }:
 
 {
   services.duplicity.enable = true;
-  # format: b2://$key_id:$app_key@$bucket
-  # create key with: b2 create-key --bucket uninsane-host-duplicity uninsane-host-duplicity-safe listBuckets,listFiles,readBuckets,readFiles,writeFiles
-  #   ^ run this until you get a key with no forward slashes :upside_down:
-  #   web-created keys are allowed to delete files, which you probably don't want for an incremental backup program
-  services.duplicity.targetUrl = builtins.replaceStrings ["\n"] [""] (builtins.readFile ../../../secrets/duplicity_url);
+  services.duplicity.targetUrl = secrets.duplicity.url;
   # format: PASSPHRASE=<cleartext>
   # two sisters
   services.duplicity.secretFile = /etc/nixos/secrets/duplicity_env;
