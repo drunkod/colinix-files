@@ -1,6 +1,6 @@
 # docs: https://nixos.wiki/wiki/Matrix
 # docs: https://nixos.org/manual/nixos/stable/index.html#module-services-matrix-synapse
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, secrets, ... }:
 
 {
   services.matrix-synapse.enable = true;
@@ -42,7 +42,7 @@
       smtp_host: "mx.uninsane.org"
       smtp_port: 587
       smtp_user: "matrix-synapse"
-      smtp_pass: "matrix-synapse-super-secret"
+      smtp_pass: "${secrets.matrix-synapse.smtp_pass}"
       require_transport_security: true
       enable_tls: true
       notif_from: "%(app)s <notify.matrix@uninsane.org>"

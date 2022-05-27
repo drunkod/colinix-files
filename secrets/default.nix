@@ -19,4 +19,7 @@
   pleroma.vapid_public_key = "<REPLACEME>";
   pleroma.vapid_private_key = "<REPLACEME>";
   pleroma.joken_default_signer = "<REPLACEME>";
+
+  # keep this synchronized with the dovecot auth
+  matrix-synapse.smtp_pass = "<REPLACEME>";
 } // import ./local.nix
