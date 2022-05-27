@@ -3,7 +3,7 @@
   imports = [
     ./../../helpers/universal
     ./../../helpers/hardware-x86_64.nix
-    ./../../helpers/gnome.nix
+    ./../../helpers/gui/gnome.nix
     ./fs.nix
   ];
 
