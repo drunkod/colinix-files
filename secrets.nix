@@ -11,4 +11,12 @@
   # wg genkey > wg0.private
   # wg pubkey < wg0.private > wg0.public
   wireguard.privateKey = "<REPLACEME>";
+
+  # these would otherwise be found in 'pleroma.secret.exs'
+  pleroma.secret_key_base = "<REPLACEME>";
+  pleroma.signing_salt = "<REPLACEME>";
+  pleroma.db_password = "<REPLACEME>";
+  pleroma.vapid_public_key = "<REPLACEME>";
+  pleroma.vapid_private_key = "<REPLACEME>";
+  pleroma.joken_default_signer = "<REPLACEME>";
 }
