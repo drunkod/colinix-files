@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, secrets, ... }:
 
 {
   networking.domain = "uninsane.org";
@@ -35,10 +35,7 @@
   # DOCS: https://nixos.wiki/wiki/WireGuard
   networking.wireguard.enable = true;
   networking.wireguard.interfaces.wg0 = {
-    # to generate:
-    # wg genkey > /etc/nixos/secrets/wg0.private
-    # wg pubkey < /etc/nixos/secrets/wg0.private > /etc/nixos/secrets/wg0.public
-    privateKeyFile = "/etc/nixos/secrets/wg0.private";
+    privateKey = secrets.wireguard.privateKey;
     # wg is active only in this namespace.
     # run e.g. ip netns exec ovpns <some command like ping/curl/etc, it'll go through wg>
     #   sudo ip netns exec ovpns ping www.google.com
