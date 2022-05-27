@@ -48,7 +48,7 @@
 
     decl-machine = { name, system, extraModules ? [], basePkgs ? nixpkgs }: (basePkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit home-manager; inherit nurpkgs; secrets = import ./secrets.nix ;};
+        specialArgs = { inherit home-manager; inherit nurpkgs; secrets = import ./secrets/default.nix; };
         modules = [
           ./configuration.nix
           ./modules

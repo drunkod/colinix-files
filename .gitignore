@@ -1,3 +1,2 @@
 result
-/secrets/*
-!/secrets/readme.md
+/secrets/local.nix

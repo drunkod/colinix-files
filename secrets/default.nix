@@ -19,4 +19,4 @@
   pleroma.vapid_public_key = "<REPLACEME>";
   pleroma.vapid_private_key = "<REPLACEME>";
   pleroma.joken_default_signer = "<REPLACEME>";
-}
+} // import ./local.nix
