@@ -2,7 +2,8 @@
 {
   imports = [
     ./../../helpers/universal
-    ./gui-phosh.nix
+    # ./gui-phosh.nix
+    ./../../helpers/plasma-mobile.nix
   ];
 
   # XXX colin: phosh doesn't work well with passwordless login
