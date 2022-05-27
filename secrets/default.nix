@@ -6,6 +6,8 @@
   #   ^ run this until you get a key with no forward slashes :upside_down:
   #   web-created keys are allowed to delete files, which you probably don't want for an incremental backup program
   duplicity.url = "b2://<REPLACEME:KEY_ID>:<REPLACEME:APPKEY>:<REPLACEME:BUCKET>";
+  # remote backups will be encrypted using this (gpg) passphrase
+  duplicity.passphrase = "<REPLACEME>";
 
   # to generate:
   # wg genkey > wg0.private

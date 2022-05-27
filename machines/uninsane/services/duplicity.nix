@@ -6,7 +6,8 @@
   services.duplicity.targetUrl = secrets.duplicity.url;
   # format: PASSPHRASE=<cleartext>
   # two sisters
-  services.duplicity.secretFile = /etc/nixos/secrets/duplicity_env;
+  services.duplicity.secretFile =
+    builtins.toFile "duplicity_env" "PASSPHRASE=${secrets.duplicity.passphrase}";
   # NB: manually trigger with `systemctl start duplicity`
   services.duplicity.frequency = "daily";
   services.duplicity.exclude = [
