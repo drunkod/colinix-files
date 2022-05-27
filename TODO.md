@@ -13,3 +13,7 @@
    overlays = [{ ... }: {
      nixpkgs.crossSystem.system = "aarch64-linux";
    }];
+
+# better secrets management? read:
+- https://christine.website/blog/nixos-encrypted-secrets-2021-01-20
+- git-crypt (https://github.com/bobbbay/dotfiles.git)

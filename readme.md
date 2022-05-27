@@ -12,7 +12,11 @@ nix flake show
 
 
 # secrets
-change files in secrets/. they need to be checked into git with some placeholder text for them to be exposed to the flake,
+
+`secrets/default.nix` declares the secrets exposed at evaluation time.
+these are defined *outside* git by writing the actual values to `secrets/local.nix`.
+
+*don't* check in the local.nix file. use `git update-index --assume-unchanged secrets/local.nix` to prevent it from ever being added.
 but after that you can set them to their real value and run `git update-index --assume-unchanged secrets/*`
 
 ## building images
