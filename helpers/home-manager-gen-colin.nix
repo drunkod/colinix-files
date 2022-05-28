@@ -125,6 +125,7 @@
       bookmarks = {
         fed_uninsane.url = "https://fed.uninsane.org/";
         delightful.url = "https://delightful.club/";
+        crowdsupply.url = "https://www.crowdsupply.com/";
         linux_phone_apps.url = "https://linuxphoneapps.org/mobile-compatibility/5/";
         mempool.url = "https://jochen-hoenicke.de/queue";
       };
