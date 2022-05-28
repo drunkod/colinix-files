@@ -4,19 +4,19 @@
 
 {
   services.matrix-synapse.enable = true;
-  services.matrix-synapse.server_name = "uninsane.org";
+  services.matrix-synapse.settings.server_name = "uninsane.org";
 
   # services.matrix-synapse.enable_registration_captcha = true;
   # services.matrix-synapse.enable_registration_without_verification = true;
-  services.matrix-synapse.enable_registration = true;
+  services.matrix-synapse.settings.enable_registration = true;
   # services.matrix-synapse.registration_shared_secret = "<shared key goes here>";
 
   # default for listeners is port = 8448, tls = true, x_forwarded = false.
   # we change this because the server is situated behind nginx.
-  services.matrix-synapse.listeners = [
+  services.matrix-synapse.settings.listeners = [
     {
       port = 8008;
-      bind_address = "127.0.0.1";
+      bind_addresses = [ "127.0.0.1" ];
       type = "http";
       tls = false;
       x_forwarded = true;
@@ -34,26 +34,45 @@
   #   admin_contact: "admin.matrix@uninsane.org"
   # '';
 
-  services.matrix-synapse.extraConfig = ''
-    admin_contact: "admin.matrix@uninsane.org"
-    registrations_require_3pid:
-      - email
-    email:
-      smtp_host: "mx.uninsane.org"
-      smtp_port: 587
-      smtp_user: "matrix-synapse"
-      smtp_pass: "${secrets.matrix-synapse.smtp_pass}"
-      require_transport_security: true
-      enable_tls: true
-      notif_from: "%(app)s <notify.matrix@uninsane.org>"
-      app_name: "Uninsane Matrix"
-      enable_notifs: true
-      validation_token_lifetime: 96h
-      invite_client_location: "https://web.matrix.uninsane.org"
-      subjects:
-        email_validation: "[%(server_name)s] Validate your email"
-  '';
-  services.matrix-synapse.app_service_config_files = [
+  services.matrix-synapse.settings.admin_contact = "admin.matrix@uninsane.org";
+  services.matrix-synapse.settings.registrations_require_3pid = [ "email" ];
+  services.matrix-synapse.settings.email = {
+    smtp_host = "mx.uninsane.org";
+    smtp_port = 587;
+    smtp_user = "matrix-synapse";
+    smtp_pass = secrets.matrix-synapse.smtp_pass;
+    require_transport_security = true;
+    enable_tls = true;
+    notif_from = "%(app)s <notify.matrix@uninsane.org>";
+    app_name = "Uninsane Matrix";
+    enable_notifs = true;
+    validation_token_lifetime = "96h";
+    invite_client_location = "https://web.matrix.uninsane.org";
+    subjects = {
+      email_validation = "[%(server_name)s] Validate your email";
+    };
+  };
+
+  # services.matrix-synapse.extraConfigFiles = [builtins.toFile "matrix-synapse-extra-config" ''
+  #   admin_contact: "admin.matrix@uninsane.org"
+  #   registrations_require_3pid:
+  #     - email
+  #   email:
+  #     smtp_host: "mx.uninsane.org"
+  #     smtp_port: 587
+  #     smtp_user: "matrix-synapse"
+  #     smtp_pass: "${secrets.matrix-synapse.smtp_pass}"
+  #     require_transport_security: true
+  #     enable_tls: true
+  #     notif_from: "%(app)s <notify.matrix@uninsane.org>"
+  #     app_name: "Uninsane Matrix"
+  #     enable_notifs: true
+  #     validation_token_lifetime: 96h
+  #     invite_client_location: "https://web.matrix.uninsane.org"
+  #     subjects:
+  #       email_validation: "[%(server_name)s] Validate your email"
+  # ''];
+  services.matrix-synapse.settings.app_service_config_files = [
     "/var/lib/matrix-appservice-irc/registration.yml"  # auto-created by irc appservice
   ];
 
