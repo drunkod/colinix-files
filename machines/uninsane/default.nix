@@ -14,6 +14,7 @@
     ./services/jellyfin.nix
     ./services/matrix.nix
     ./services/nginx.nix
+    ./services/nix-serve.nix
     ./services/pleroma.nix
     ./services/postfix.nix
     ./services/postgres.nix
