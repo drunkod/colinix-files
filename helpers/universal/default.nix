@@ -3,6 +3,7 @@
 {
   imports = [
     ./home-manager.nix
+    ./nix-cache.nix
     ./users.nix
   ];
 
