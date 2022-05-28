@@ -12,4 +12,7 @@
     system = "x86_64-linux";
     gui = "gnome";
   };
+
+  # docs: https://nixos.org/manual/nixos/stable/options.html#opt-system.stateVersion
+  system.stateVersion = "21.05";
 }
