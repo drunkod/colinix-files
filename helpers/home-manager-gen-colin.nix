@@ -217,6 +217,7 @@
     pkgs.gimp  # broken on phosh
     pkgs.gnome.gnome-maps  # works on phosh
     pkgs.gnome.gnome-terminal  # works on phosh
+    pkgs.inkscape
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
     pkgs.tdesktop  # broken on phosh
