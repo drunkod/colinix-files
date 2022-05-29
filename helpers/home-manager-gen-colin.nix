@@ -107,7 +107,12 @@
       sleep-inactive-battery-timeout = 5400;  # seconds
     };
     "org/gnome/shell" = {
-      favorite-apps = ["org.gnome.Nautilus.desktop" "firefox.desktop" "org.gnome.Terminal.desktop"];
+      favorite-apps = [
+        "org.gnome.Nautilus.desktop"
+        "firefox.desktop"
+        "kitty.desktop"
+        # "org.gnome.Terminal.desktop"
+      ];
     };
     "org/gnome/desktop/session" = {
       # how long until considering a session idle (triggers e.g. screen blanking)
