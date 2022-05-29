@@ -121,6 +121,11 @@
     "org/gnome/desktop/interface" = {
       text-scaling-factor = 1.25;
     };
+    "org/gnome/desktop/media-handling" = {
+      # don't auto-mount inserted media
+      automount = false;
+      automount-open = false;
+    };
   };
 
   programs.firefox = lib.mkIf (gui != null) {
