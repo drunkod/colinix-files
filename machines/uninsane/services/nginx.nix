@@ -233,5 +233,5 @@
   };
 
   security.acme.acceptTerms = true;
-  security.acme.email = "acme@uninsane.org";
+  security.acme.defaults.email = "admin.acme@uninsane.org";
 }
