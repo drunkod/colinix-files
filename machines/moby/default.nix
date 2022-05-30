@@ -3,7 +3,9 @@
   imports = [
     ./../../helpers/universal
     # ./../../helpers/gui/phosh.nix
-    ./../../helpers/gui/plasma-mobile.nix
+    ./../../helpers/gui/phosh-mhuesh.nix
+    # ./../../helpers/gui/plasma-mobile.nix
+    # ./../../helpers/gui/gnome.nix
   ];
 
   # XXX colin: phosh doesn't work well with passwordless login
@@ -43,4 +45,10 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "21.11"; # Did you read the comment?
+
+  # defined: https://www.freedesktop.org/software/systemd/man/machine-info.html
+  # XXX colin: not sure which, if any, software makes use of this
+  environment.etc."machine-info".text = ''
+    CHASSIS="handset"
+  '';
 }
