@@ -196,6 +196,7 @@
     # pkgs.nixos-generators
     # pkgs.nettools
     pkgs.nmap
+    pkgs.obsidian
     pkgs.parted
     pkgs.powertop
     pkgs.python3
