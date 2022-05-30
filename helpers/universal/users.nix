@@ -14,7 +14,15 @@
     uid = 1000;
     # XXX colin: this is what the installer has, but is it necessary?
     # group = "users";
-    extraGroups = [ "wheel" "nixbuild" "networkmanager" ];
+    extraGroups = [
+      "wheel"
+      "nixbuild"
+      "networkmanager"
+      # phosh/mobile. XXX colin: unsure if necessary
+      "video"
+      "feedbackd"
+      "dialout" # required for modem access
+    ];
     initialPassword = lib.mkDefault "";
     shell = pkgs.zsh;
     # shell = pkgs.bashInteractive;
