@@ -2,8 +2,7 @@
 {
   imports = [
     ./../../helpers/universal
-    # ./../../helpers/gui/phosh.nix
-    ./../../helpers/gui/phosh-mhuesh.nix
+    ./../../helpers/gui/phosh.nix
     # ./../../helpers/gui/plasma-mobile.nix
     # ./../../helpers/gui/gnome.nix
   ];
@@ -51,4 +50,7 @@
   environment.etc."machine-info".text = ''
     CHASSIS="handset"
   '';
+
+  # enable rotation sensor
+  hardware.sensor.iio.enable = true;
 }

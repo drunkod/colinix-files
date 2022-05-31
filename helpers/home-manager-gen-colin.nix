@@ -129,9 +129,13 @@
       };
     };
     phosh = {
-      # TODO: figure out where the display zoom = 1.5 is stored
+      # phosh handles scaling via /etc/phosh/phoc.ini
       # "org/gnome/desktop/interface" = {
-      #   text-scaling-factor = 1.5;
+      #   # text-scaling-factor = 1.5;
+      #   scaling-factor = 1.5;
+      # };
+      # "org/gnome/mutter" = {
+      #   experimental-features [ "scale-monitor-framebuffer" ];
       # };
     };
   }).${gui};
