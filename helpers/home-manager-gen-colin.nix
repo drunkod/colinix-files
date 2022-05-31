@@ -221,6 +221,7 @@
   [
     # GUI only
     pkgs.clinfo
+    pkgs.gnome.dconf-editor
     pkgs.element-desktop  # broken on phosh
     pkgs.evince  # works on phosh
     pkgs.gimp  # broken on phosh
@@ -230,12 +231,8 @@
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
     pkgs.tdesktop  # broken on phosh
-    pkgs.vlc  # broken on phosh
+    pkgs.vlc  # works on phosh
     pkgs.xterm  # broken on phosh
-  ] else [])
-  ++ (if gui == "gnome" then
-  [
-    pkgs.gnome.dconf-editor
   ] else [])
   ++ (if gui != null && system == "x86_64-linux" then
   [
