@@ -8,5 +8,9 @@
   ];
 
   time.timeZone = "America/Los_Angeles";
+
+  environment.variables = {
+    EDITOR = "vim";
+  };
 }
 

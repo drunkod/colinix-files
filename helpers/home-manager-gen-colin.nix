@@ -177,15 +177,6 @@
     "cd../" = "cd ../";
   };
 
-  home.sessionVariables = {
-    EDITOR = "vim";
-  }
-  // (if gui != null then {
-    # all guis we support run wayland
-    # particularly on phosh, QT apps won't always start unless this env var is set
-    QT_QPA_PLATFORM = "wayland";
-  } else {});
-
 
   home.packages = [
     pkgs.btrfs-progs
