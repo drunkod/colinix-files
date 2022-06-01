@@ -82,29 +82,13 @@
         "type": "indirect"
       }
     },
-    "pkgs-unstable": {
-      "locked": {
-        "lastModified": 1653845079,
-        "narHash": "sha256-7ghaQZ+7JXLI9FgNH8+RQHAt3/ubT92j8NtjZleP6t4=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "b62ada430501de88dfbb08cea4eb98ead3a5e3e7",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "ref": "nixos-unstable",
-        "type": "indirect"
-      }
-    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
         "mobile-nixos": "mobile-nixos",
         "nixpkgs": "nixpkgs",
         "nurpkgs": "nurpkgs",
-        "pkgs-mobile": "pkgs-mobile",
-        "pkgs-unstable": "pkgs-unstable"
+        "pkgs-mobile": "pkgs-mobile"
       }
     }
   },
