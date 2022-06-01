@@ -44,7 +44,17 @@
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) self.machines;
     imgs = builtins.mapAttrs (name: value: value.img) self.machines;
 
-    decl-machine = { name, system, extraModules ? [], basePkgs ? nixpkgs }: (basePkgs.lib.nixosSystem {
+    decl-machine = { name, system, extraModules ? [], basePkgs ? nixpkgs }: let
+      patchedPkgs = basePkgs.legacyPackages.${system}.applyPatches {
+        name = "nixpkgs-patched-uninsane";
+        src = basePkgs;
+        patches = [
+          # for mobile: allow phoc to scale to non-integer values
+          ./nixpatches/01-phosh-float-scale.patch
+        ];
+      };
+      nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
+      in (nixosSystem {
         inherit system;
         specialArgs = { inherit home-manager; inherit nurpkgs; secrets = import ./secrets/default.nix; };
         modules = [
