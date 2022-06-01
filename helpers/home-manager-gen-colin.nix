@@ -198,15 +198,16 @@
     pkgs.killall
     pkgs.lm_sensors  # for sensors-detect
     pkgs.lsof
-    pkgs.pciutils
     pkgs.mix2nix
     pkgs.netcat
-    pkgs.nixUnstable
+    pkgs.nixpkgs-review
+    pkgs.nixUnstable  # TODO: still needed on 22.05?
     # pkgs.nixos-generators
     # pkgs.nettools
     pkgs.nmap
     pkgs.obsidian
     pkgs.parted
+    pkgs.pciutils
     pkgs.powertop
     pkgs.python3
     pkgs.ripgrep
