@@ -95,10 +95,6 @@
 
           #### TEMPORARY NIXOS-UNSTABLE PACKAGES
 
-          # nixos-21.11 whalebird uses an insecure electron version.
-          # TODO: remove this on next nixos release.
-          whalebird = pkgs-unstable.legacyPackages.${system}.whalebird;
-
           # pkgs-mobile' telegram doesn't build, so explicitly use the stable one.
           # TODO: apply this specifically to the moby build?
           # tdesktop = pkgs-telegram.legacyPackages.${system}.tdesktop;
