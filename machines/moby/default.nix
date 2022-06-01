@@ -22,7 +22,7 @@
       # pkgs.plasma5Packages.pix  # picture viewer
       pkgs.plasma5Packages.kalk  # calculator; broken on phosh
       # pkgs.plasma5Packages.buho  # (plasma mobile?) note application
-      pkgs.plasma5Packages.kasts  #  podcast app; broken on phosh
+      pkgs.plasma5Packages.kasts  #  podcast app; works on phosh after setting QT envar
       pkgs.plasma5Packages.koko  # image gallery; broken on phosh
       pkgs.plasma5Packages.kwave  # media player.
       # pkgs.plasma5Packages.neochat  #  matrix client. needs qcoro => no aarch64 support
