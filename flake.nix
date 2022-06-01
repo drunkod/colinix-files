@@ -6,12 +6,9 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-22.05";
     # pkgs-telegram.url = "nixpkgs/33775ec9a2173a08e46edf9f46c9febadbf743e8";# 2022/04/18; telegram 3.7.3. fails: nix log /nix/store/y5kv47hnv55qknb6cnmpcyraicay79fx-telegram-desktop-3.7.3.drv: g++: fatal error: cannot execute '/nix/store/njk5sbd21305bhr7gwibxbbvgbx5lxvn-gcc-9.3.0/libexec/gcc/aarch64-unknown-linux-gnu/9.3.0/cc1plus': execv: No such file or directory
-    pkgs-mobile.url = "nixpkgs/dfd82985c273aac6eced03625f454b334daae2e8";    # WORKS: 2022/05/20; mobile-nixos follows this same commit.
     mobile-nixos = {
       url = "github:nixos/mobile-nixos";
       flake = false;
-      # TODO colin: is this necessary (or wanted)?
-      # inputs.nixpkgs.follows = "pkgs-mobile";
     };
     home-manager = {
       url = "github:nix-community/home-manager/release-21.11";
@@ -20,7 +17,7 @@
     nurpkgs.url = "github:nix-community/NUR";
   };
 
-  outputs = { self, nixpkgs, pkgs-mobile, mobile-nixos, home-manager, nurpkgs }: {
+  outputs = { self, nixpkgs, mobile-nixos, home-manager, nurpkgs }: {
     machines.uninsane = self.decl-bootable-machine { name = "uninsane"; system = "aarch64-linux"; };
     machines.desko = self.decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
     machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
@@ -34,7 +31,6 @@
             device = "pine64-pinephone";
           })
         ];
-        basePkgs = pkgs-mobile;
       };
       in {
         nixosConfiguration = machine;
@@ -101,7 +97,7 @@
 
           #### TEMPORARY NIXOS-UNSTABLE PACKAGES
 
-          # pkgs-mobile' telegram doesn't build, so explicitly use the stable one.
+          # stable telegram doesn't build, so explicitly use the stable one.
           # TODO: apply this specifically to the moby build?
           # tdesktop = pkgs-telegram.legacyPackages.${system}.tdesktop;
           tdesktop = nixpkgs.legacyPackages.${system}.tdesktop;
