@@ -221,6 +221,7 @@
   ++ (if gui != null then
   [
     # GUI only
+    pkgs.chromium
     pkgs.clinfo
     pkgs.gnome.dconf-editor
     pkgs.element-desktop  # broken on phosh
