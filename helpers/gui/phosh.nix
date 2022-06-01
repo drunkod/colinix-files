@@ -7,7 +7,7 @@
     phocConfig = {
       # find default outputs by catting /etc/phosh/phoc.ini
       outputs.DSI-1 = {
-        scale = 2;
+        scale = 1.5;
       };
     };
   };
