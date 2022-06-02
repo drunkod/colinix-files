@@ -47,6 +47,8 @@
         patches = [
           # for mobile: allow phoc to scale to non-integer values
           ./nixpatches/01-phosh-float-scale.patch
+          # for raspberry pi: allow building u-boot for rpi 4{,00}
+          ./nixpatches/02-rpi4-uboot.patch
         ];
       };
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
@@ -55,7 +57,6 @@
         specialArgs = { inherit home-manager; inherit nurpkgs; secrets = import ./secrets/default.nix; };
         modules = [
           ./configuration.nix
-          ./modules
           ./machines/${name}
           (import ./helpers/set-hostname.nix name)
           (self.overlaysModule system)

@@ -26,9 +26,9 @@
   #   otherwise, enable the generic-extlinux-compatible loader below.
   # note: THESE ARE MUTUALLY EXCLUSIVE. generic-extlinux-compatible causes uboot to not be built
   # boot.loader.generic-extlinux-compatible.enable = true;
-  boot.loader.raspberryPiColin.enable = true;
-  boot.loader.raspberryPiColin.uboot.enable = true;
-  boot.loader.raspberryPiColin.version = 4;
+  boot.loader.raspberryPi.enable = true;
+  boot.loader.raspberryPi.uboot.enable = true;
+  boot.loader.raspberryPi.version = 4;
 
   boot.initrd.availableKernelModules = [
     "bcm2711_thermal"
