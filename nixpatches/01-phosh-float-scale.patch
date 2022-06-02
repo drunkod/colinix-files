@@ -1,13 +1,19 @@
 diff --git a/nixos/modules/services/x11/desktop-managers/phosh.nix b/nixos/modules/services/x11/desktop-managers/phosh.nix
-index 4bf78fa16e7..545d4a945f5 100644
+index 4bf78fa16e7..13f7b3fbef2 100644
 --- a/nixos/modules/services/x11/desktop-managers/phosh.nix
 +++ b/nixos/modules/services/x11/desktop-managers/phosh.nix
-@@ -78,7 +78,7 @@ let
+@@ -78,7 +78,13 @@ let
          description = ''
            Display scaling factor.
          '';
 -        type = types.nullOr types.ints.unsigned;
-+        type = types.nullOr (types.either types.ints.unsigned types.float);
++        type = types.nullOr (
++          types.addCheck
++          (types.either types.int types.float)
++          (x : x > 0)
++        ) // {
++          description = "null or positive integer or float";
++        };
          default = null;
          example = 2;
        };
