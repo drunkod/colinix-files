@@ -191,9 +191,6 @@
     wrapperFeatures.gtk = true;
     config = rec {
       terminal = "${pkgs.kitty}/bin/kitty";
-      gaps.outer = 5;
-      gaps.horizontal = 10;
-      gaps.smartGaps = true;  # disable gaps on workspace with only one container
       window.border = 3;  # pixel boundary between windows
 
       # defaults; required for keybindings decl.
