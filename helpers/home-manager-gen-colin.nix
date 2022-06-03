@@ -291,6 +291,7 @@
     pkgs.chromium
     pkgs.clinfo
     pkgs.gnome.dconf-editor
+    pkgs.gnome.nautilus
     pkgs.element-desktop  # broken on phosh
     pkgs.evince  # works on phosh
     pkgs.font-manager
