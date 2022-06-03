@@ -92,43 +92,44 @@
   };
 
   # obtain these by running `dconf dump /` after manually customizing gnome
-  dconf.settings = lib.mkIf (gui == "gnome") {
-    gnome = {
-      # control alt-tab behavior
-      "org/gnome/desktop/wm/keybindings" = {
-        switch-applications = [ "<Super>Tab" ];
-        switch-applications-backward=[];
-        switch-windows=["<Alt>Tab"];
-        switch-windows-backward=["<Super><Alt>Tab"];
-      };
-      # idle power savings
-      "org/gnome/settings-deamon/plugins/power" = {
-        idle-brigthness = 50;
-        sleep-inactive-ac-type = "nothing";
-        sleep-inactive-battery-timeout = 5400;  # seconds
-      };
-      "org/gnome/shell" = {
-        favorite-apps = [
-          "org.gnome.Nautilus.desktop"
-          "firefox.desktop"
-          "kitty.desktop"
-          # "org.gnome.Terminal.desktop"
-        ];
-      };
-      "org/gnome/desktop/session" = {
-        # how long until considering a session idle (triggers e.g. screen blanking)
-        idle-delay = 900;
-      };
-      "org/gnome/desktop/interface" = {
-        text-scaling-factor = 1.25;
-      };
-      "org/gnome/desktop/media-handling" = {
-        # don't auto-mount inserted media
-        automount = false;
-        automount-open = false;
-      };
-    };
-  };
+  # TODO: fix "is not of type `GVariant value'"
+  # dconf.settings = lib.mkIf (gui == "gnome") {
+  #   gnome = {
+  #     # control alt-tab behavior
+  #     "org/gnome/desktop/wm/keybindings" = {
+  #       switch-applications = [ "<Super>Tab" ];
+  #       switch-applications-backward=[];
+  #       switch-windows=["<Alt>Tab"];
+  #       switch-windows-backward=["<Super><Alt>Tab"];
+  #     };
+  #     # idle power savings
+  #     "org/gnome/settings-deamon/plugins/power" = {
+  #       idle-brigthness = 50;
+  #       sleep-inactive-ac-type = "nothing";
+  #       sleep-inactive-battery-timeout = 5400;  # seconds
+  #     };
+  #     "org/gnome/shell" = {
+  #       favorite-apps = [
+  #         "org.gnome.Nautilus.desktop"
+  #         "firefox.desktop"
+  #         "kitty.desktop"
+  #         # "org.gnome.Terminal.desktop"
+  #       ];
+  #     };
+  #     "org/gnome/desktop/session" = {
+  #       # how long until considering a session idle (triggers e.g. screen blanking)
+  #       idle-delay = 900;
+  #     };
+  #     "org/gnome/desktop/interface" = {
+  #       text-scaling-factor = 1.25;
+  #     };
+  #     "org/gnome/desktop/media-handling" = {
+  #       # don't auto-mount inserted media
+  #       automount = false;
+  #       automount-open = false;
+  #     };
+  #   };
+  # };
 
   # home.pointerCursor = {
   #   package = pkgs.vanilla-dmz;
@@ -274,6 +275,7 @@
     pkgs.obsidian
     pkgs.parted
     pkgs.pciutils
+    # pkgs.ponymix
     pkgs.powertop
     pkgs.python3
     pkgs.ripgrep
@@ -316,6 +318,8 @@
     pkgs.mako # notification daemon
     pkgs.alacritty # TODO: switch to kitty (in sway config)
     pkgs.dmenu # TODO: switch to wofi (in sway config)
+    # user stuff
+    # pkgs.pavucontrol
   ] else [])
   ++ (if gui != null && system == "x86_64-linux" then
   [
