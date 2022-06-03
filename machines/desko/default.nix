@@ -4,7 +4,8 @@
     ./../../helpers/universal
     ./../../helpers/hardware-x86_64.nix
     # ./../../helpers/gui/gnome.nix
-    ./../../helpers/gui/i3.nix
+    #./../../helpers/gui/i3.nix
+    ./../../helpers/gui/sway.nix
     ./fs.nix
   ];
 
@@ -12,7 +13,8 @@
     inherit pkgs lib;
     system = "x86_64-linux";
     # gui = "gnome";
-    gui = "i3";
+    # gui = "i3";
+    gui = "sway";
     extraPackages = [
       pkgs.electrum
     ];

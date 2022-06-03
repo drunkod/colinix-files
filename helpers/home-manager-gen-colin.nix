@@ -130,6 +130,11 @@
     };
   };
 
+  # home.pointerCursor = {
+  #   package = pkgs.vanilla-dmz;
+  #   name = "Vanilla-DMZ";
+  # };
+
   # taken from https://github.com/srid/nix-config/blob/705a70c094da53aa50cf560179b973529617eb31/nix/home/i3.nix
   xsession.windowManager.i3 = lib.mkIf (gui == "i3") (
   let
@@ -179,6 +184,27 @@
       # ];
     };
   });
+
+  wayland.windowManager.sway = lib.mkIf (gui == "sway") {
+    enable = true;
+    wrapperFeatures.gtk = true;
+    config = {
+      terminal = "${pkgs.kitty}/bin/kitty";
+    };
+    # TODO: this might not be necessary (try deleting this and the numix-cursor package)
+    extraConfig = ''
+      seat seat0 xcursor_theme Numix-Cursor 18
+    '';
+    # extraConfig = ''
+    #   seat seat0 xcursor_theme "Vanilla-DMZ" 32
+    # '';
+    # extraSessionCommands = ''
+    #   export XDG_SESSION_TYPE=wayland
+    #   export XDG_SESSION_DESKTOP=sway
+    #   export XDG_CURRENT_DESKTOP=sway
+    # '';
+  };
+
 
   programs.firefox = lib.mkIf (gui != null) {
     enable = true;
@@ -275,9 +301,20 @@
     pkgs.inkscape
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
+    pkgs.numix-cursor-theme
     pkgs.tdesktop  # broken on phosh
     pkgs.vlc  # works on phosh
     pkgs.xterm  # broken on phosh
+  ] else [])
+  ++ (if gui == "sway" then
+  [
+    # TODO: move this to helpers/gui/sway.nix?
+    pkgs.swaylock
+    pkgs.swayidle
+    pkgs.wl-clipboard
+    pkgs.mako # notification daemon
+    pkgs.alacritty # TODO: switch to kitty (in sway config)
+    pkgs.dmenu # TODO: switch to wofi (in sway config)
   ] else [])
   ++ (if gui != null && system == "x86_64-linux" then
   [
