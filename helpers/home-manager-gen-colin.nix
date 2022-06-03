@@ -139,9 +139,17 @@
     config = {
       modifier = mod;
 
-      # fonts = ["DejaVu Sans Mono, FontAwesome 6"];
+      fonts = {
+        names = [ "DejaVu Sans Mono" ];
+        style = "Bold Semi-Condensed";
+        size = 11.0;
+      };
 
-      keybindings = lib.mkOptionDefault {
+      # terminal = "kitty";
+      # terminal = "${pkgs.kitty}/bin/kitty";
+
+      keybindings = {
+        "${mod}+Return" = "exec ${pkgs.kitty}/bin/kitty";
         "${mod}+p" = "exec ${pkgs.dmenu}/bin/dmenu_run";
         "${mod}+x" = "exec sh -c '${pkgs.maim}/bin/maim -s | xclip -selection clipboard -t image/png'";
         "${mod}+Shift+x" = "exec sh -c '${pkgs.i3lock}/bin/i3lock -c 222222 & sleep 5 && xset dpms force of'";
@@ -259,6 +267,7 @@
     pkgs.gnome.dconf-editor
     pkgs.element-desktop  # broken on phosh
     pkgs.evince  # works on phosh
+    pkgs.font-manager
     pkgs.gimp  # broken on phosh
     pkgs.gnome.gnome-maps  # works on phosh
     pkgs.gnome-podcasts
