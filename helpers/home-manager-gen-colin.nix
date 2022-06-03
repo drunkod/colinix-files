@@ -195,7 +195,10 @@
 
       # defaults; required for keybindings decl.
       modifier = "Mod1";
-      menu = "${pkgs.dmenu}/bin/dmenu";  # TODO: use wofi?
+      # list of launchers: https://www.reddit.com/r/swaywm/comments/v39hxa/your_favorite_launcher/
+      # menu = "${pkgs.dmenu}/bin/dmenu_path";
+      menu = "${pkgs.fuzzel}/bin/fuzzel";
+      # menu = "${pkgs.albert}/bin/albert";
       left = "h";
       down = "j";
       up = "k";
@@ -410,7 +413,7 @@
     pkgs.swayidle
     pkgs.wl-clipboard
     pkgs.mako # notification daemon
-    pkgs.dmenu # todo: use wofi?
+    # pkgs.dmenu # todo: use wofi?
     # user stuff
     # pkgs.pavucontrol
   ] else [])
