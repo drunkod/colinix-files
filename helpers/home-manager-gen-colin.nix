@@ -488,13 +488,14 @@
     # GUI only
     pkgs.chromium
     pkgs.clinfo
-    pkgs.gnome.dconf-editor
-    pkgs.gnome.nautilus
     pkgs.element-desktop  # broken on phosh
     pkgs.evince  # works on phosh
     pkgs.font-manager
     pkgs.gimp  # broken on phosh
+    pkgs.gnome.dconf-editor
+    pkgs.gnome.file-roller
     pkgs.gnome.gnome-maps  # works on phosh
+    pkgs.gnome.nautilus
     pkgs.gnome-podcasts
     pkgs.gnome.gnome-terminal  # works on phosh
     pkgs.inkscape
