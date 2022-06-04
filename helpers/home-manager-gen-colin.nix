@@ -504,6 +504,7 @@
     pkgs.playerctl
     pkgs.tdesktop  # broken on phosh
     pkgs.vlc  # works on phosh
+    pkgs.whalebird # pleroma client. TODO: port kaiteki to nix: https://craftplacer.moe/projects/kaiteki/
     pkgs.xterm  # broken on phosh
   ] else [])
   ++ (if gui == "sway" then
@@ -523,8 +524,6 @@
     pkgs.signal-desktop
     pkgs.spotify
     pkgs.discord
-    # pleroma client. TODO: port kaiteki to nix: https://craftplacer.moe/projects/kaiteki/
-    pkgs.whalebird
   ] else [])
   ++ extraPackages;
 }
