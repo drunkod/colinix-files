@@ -287,18 +287,117 @@
         XF86AudioMute = "exec '${pkgs.pulsemixer}/bin/pulsemixer --toggle-mute'";
 
       };
+
+      # mostly defaults:
+      bars = [{
+        mode = "dock";
+        hiddenState = "hide";
+        position = "top";
+        command = "${pkgs.waybar}/bin/waybar";
+        workspaceButtons = true;
+        workspaceNumbers = true;
+        statusCommand = "${pkgs.i3status}/bin/i3status";
+        fonts = {
+          names = [ "monospace" ];
+          size = 8.0;
+        };
+        trayOutput = "primary";
+        colors = {
+          background = "#000000";
+          statusline = "#ffffff";
+          separator = "#666666";
+          focusedWorkspace = {
+            border = "#4c7899";
+            background = "#285577";
+            text = "#ffffff";
+          };
+          activeWorkspace = {
+            border = "#333333";
+            background = "#5f676a";
+            text = "#ffffff";
+          };
+          inactiveWorkspace = {
+            border = "#333333";
+            background = "#222222";
+            text = "#888888";
+          };
+          urgentWorkspace = {
+            border = "#2f343a";
+            background = "#900000";
+            text = "#ffffff";
+          };
+          bindingMode = {
+            border = "#2f343a";
+            background = "#900000";
+            text = "#ffffff";
+          };
+        };
+      }];
     };
-    # TODO: this might not be necessary (try deleting this and the numix-cursor package)
-    extraConfig = ''
-      seat seat0 xcursor_theme Numix-Cursor 18
-    '';
-    # extraConfig = ''
-    #   seat seat0 xcursor_theme "Vanilla-DMZ" 32
-    # '';
-    # extraSessionCommands = ''
-    #   export XDG_SESSION_TYPE=wayland
-    #   export XDG_SESSION_DESKTOP=sway
-    #   export XDG_CURRENT_DESKTOP=sway
+  };
+
+  programs.waybar = lib.mkIf (gui == "sway") {
+    enable = true;
+    # docs: https://github.com/Alexays/Waybar/wiki/Configuration
+    settings = {
+      mainBar = {
+        layer = "top";
+        height = 40;
+        modules-left = ["sway/workspaces" "sway/mode"];
+        modules-center = ["sway/window"];
+        modules-right = ["custom/mediaplayer" "clock" "cpu" "network"];
+        "sway/window" = {
+          max-length = 50;
+        };
+        # include song artist/title. source: https://www.reddit.com/r/swaywm/comments/ni0vso/waybar_spotify_tracktitle/
+        "custom/mediaplayer" = {
+          exec = pkgs.writeShellScript "waybar-mediaplayer" ''
+            player_status=$(${pkgs.playerctl}/bin/playerctl status 2> /dev/null)
+            if [ "$player_status" = "Playing" ]; then
+              echo "$(${pkgs.playerctl}/bin/playerctl metadata artist) - $(${pkgs.playerctl}/bin/playerctl metadata title)"
+            elif [ "$player_status" = "Paused" ]; then
+              echo " $(${pkgs.playerctl}/bin/playerctl metadata artist) - $(${pkgs.playerctl}/bin/playerctl metadata title)"
+            fi
+          '';
+          interval = 2;
+          format = "{}  ";
+          # return-type = "json";
+          on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
+          on-scroll-up = "${pkgs.playerctl}/bin/playerctl next";
+          on-scroll-down = "${pkgs.playerctl}/bin/playerctl previous";
+        };
+        network = {
+          interval = 1;
+          format-ethernet = "{ifname}: {ipaddr}/{cidr}   up: {bandwidthUpBits} down: {bandwidthDownBits}";
+        };
+        cpu = {
+          format = "{usage}% ";
+          tooltip = false;
+        };
+        clock = {
+          format-alt = "{:%a, %d. %b  %H:%M}";
+        };
+      };
+    };
+    # style = ''
+    #   * {
+    #     border: none;
+    #     border-radius: 0;
+    #     font-family: Source Code Pro;
+    #   }
+    #   window#waybar {
+    #     background: #16191C;
+    #     color: #AAB2BF;
+    #   }
+    #   #workspaces button {
+    #     padding: 0 5px;
+    #   }
+    #   .custom-spotify {
+    #     padding: 0 10px;
+    #     margin: 0 4px;
+    #     background-color: #1DB954;
+    #     color: black;
+    #   }
     # '';
   };
 
@@ -401,7 +500,7 @@
     pkgs.inkscape
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
-    pkgs.numix-cursor-theme
+    pkgs.playerctl
     pkgs.tdesktop  # broken on phosh
     pkgs.vlc  # works on phosh
     pkgs.xterm  # broken on phosh
