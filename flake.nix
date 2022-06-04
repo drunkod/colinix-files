@@ -49,6 +49,7 @@
           ./nixpatches/01-phosh-float-scale.patch
           # for raspberry pi: allow building u-boot for rpi 4{,00}
           ./nixpatches/02-rpi4-uboot.patch
+          ./nixpatches/03-whalebird-4.6.0.patch
         ];
       };
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
