@@ -103,6 +103,9 @@
           # TODO: apply this specifically to the moby build?
           # tdesktop = pkgs-telegram.legacyPackages.${system}.tdesktop;
           tdesktop = nixpkgs.legacyPackages.${system}.tdesktop;
+
+          #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
+          whalebird = prev.callPackage ./pkgs/whalebird { };
         })
       ];
     };
