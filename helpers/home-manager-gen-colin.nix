@@ -481,6 +481,7 @@
     pkgs.sudo
     pkgs.usbutils
     pkgs.wireguard-tools
+    pkgs.youtube-dl
     pkgs.zola
   ]
   ++ (if gui != null then
