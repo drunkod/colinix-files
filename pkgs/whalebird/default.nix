@@ -64,14 +64,19 @@ stdenv.mkDerivation rec {
     mkdir $out
     mv opt $out
 
-    # install icon/desktop files
-    mkdir -p "$out/share/icons/hicolor/256x256/apps"
-    cp "$out/opt/Whalebird/resources/build/icons/256x256.png" "$out/share/icons/hicolor/256x256/apps/whalebird.png"
-    mkdir -p "$out/share/applications"
-    cp "${desktopItem}/share/applications/whalebird.desktop" "$out/share/applications/whalebird.desktop"
+    # install icons
+    for icon in $out/opt/Whalebird/resources/build/icons/*.png; do
+      mkdir -p "$out/share/icons/hicolor/$(basename $icon .png)/apps"
+      ln -s "$icon" "$out/share/icons/hicolor/$(basename $icon .png)/apps/whalebird.png"
+    done
+
+    # install desktop item
+    mkdir -p "$out/share"
+    ln -s "${desktopItem}/share/applications" "$out/share/applications"
 
     makeWrapper ${electron}/bin/electron $out/bin/whalebird \
-      --add-flags $out/opt/Whalebird/resources/app.asar
+      --add-flags $out/opt/Whalebird/resources/app.asar \
+      --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--enable-features=UseOzonePlatform --ozone-platform=wayland}}"
 
     runHook postInstall
   '';
