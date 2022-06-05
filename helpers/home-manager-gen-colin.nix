@@ -480,6 +480,7 @@
     pkgs.socat
     pkgs.sudo
     pkgs.usbutils
+    pkgs.wget
     pkgs.wireguard-tools
     pkgs.youtube-dl
     pkgs.zola
