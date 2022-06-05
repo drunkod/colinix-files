@@ -519,6 +519,7 @@
     # pkgs.dmenu # todo: use wofi?
     # user stuff
     # pkgs.pavucontrol
+    pkgs.sway-contrib.grimshot
   ] else [])
   ++ (if gui != null && system == "x86_64-linux" then
   [
