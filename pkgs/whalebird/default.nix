@@ -52,7 +52,7 @@ stdenv.mkDerivation rec {
     # Necessary steps to find the tray icon
     asar extract opt/Whalebird/resources/app.asar "$TMP/work"
     substituteInPlace $TMP/work/dist/electron/main.js \
-      --replace "jo,\"tray_icon.png\"" "\"$out/opt/Whalebird/resources/build/icons/tray_icon.png\""
+      --replace "Do,\"tray_icon.png\"" "\"$out/opt/Whalebird/resources/build/icons/tray_icon.png\""
     asar pack --unpack='{*.node,*.ftz,rect-overlay}' "$TMP/work" opt/Whalebird/resources/app.asar
 
     runHook postBuild
