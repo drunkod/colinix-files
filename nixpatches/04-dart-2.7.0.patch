@@ -1,0 +1,58 @@
+diff --git a/pkgs/development/compilers/flutter/default.nix b/pkgs/development/compilers/flutter/default.nix
+index 9eba6773448..f51aeb8b624 100644
+--- a/pkgs/development/compilers/flutter/default.nix
++++ b/pkgs/development/compilers/flutter/default.nix
+@@ -4,20 +4,20 @@ let
+   getPatches = dir:
+     let files = builtins.attrNames (builtins.readDir dir);
+     in map (f: dir + ("/" + f)) files;
+-  version = "2.10.1";
++  version = "3.0.0";
+   channel = "stable";
+   filename = "flutter_linux_${version}-${channel}.tar.xz";
+ 
+   # Decouples flutter derivation from dart derivation,
+   # use specific dart version to not need to bump dart derivation when bumping flutter.
+-  dartVersion = "2.16.1";
++  dartVersion = "2.17.0";
+   dartSourceBase = "https://storage.googleapis.com/dart-archive/channels";
+   dartForFlutter = dart.override {
+     version = dartVersion;
+     sources = {
+       "${dartVersion}-x86_64-linux" = fetchurl {
+         url = "${dartSourceBase}/stable/release/${dartVersion}/sdk/dartsdk-linux-x64-release.zip";
+-        sha256 = "sha256-PMY6DCFQC8XrlnFzOEPcwgBAs5/cAvNd78969Z+I1Fk=";
++        sha256 = "57b8fd964e47c81d467aeb95b099a670ab7e8f54a1cd74d45bcd1fdc77913d86";
+       };
+     };
+   };
+@@ -29,7 +29,7 @@ in {
+     pname = "flutter";
+     src = fetchurl {
+       url = "https://storage.googleapis.com/flutter_infra_release/releases/${channel}/linux/${filename}";
+-      sha256 = "sha256-rSfwcglDV2rvJl10j7FByAWmghd2FYxrlkgYnvRO54Y=";
++      sha256 = "e96d75ec8e7dc2a46bc8dad5a9e01c391ab9310ad01c4e3940c963dd263788a0";
+     };
+     patches = getPatches ./patches;
+   };
+diff --git a/pkgs/development/compilers/flutter/flutter.nix b/pkgs/development/compilers/flutter/flutter.nix
+index 43538ede339..26f50f731c2 100644
+--- a/pkgs/development/compilers/flutter/flutter.nix
++++ b/pkgs/development/compilers/flutter/flutter.nix
+@@ -48,6 +48,7 @@ let
+     '';
+ 
+     buildPhase = ''
++      set -ex
+       export FLUTTER_ROOT="$(pwd)"
+       export FLUTTER_TOOLS_DIR="$FLUTTER_ROOT/packages/flutter_tools"
+       export SCRIPT_PATH="$FLUTTER_TOOLS_DIR/bin/flutter_tools.dart"
+@@ -61,7 +62,7 @@ let
+                  # path is relative otherwise it's replaced by /build/flutter
+ 
+       pushd "$FLUTTER_TOOLS_DIR"
+-      ${dart}/bin/pub get --offline
++      ${dart}/bin/dart pub get --offline
+       popd
+ 
+       local revision="$(cd "$FLUTTER_ROOT"; git rev-parse HEAD)"
