@@ -1,14 +1,12 @@
 { lib
 , fetchFromGitHub
 , flutter
-, olm
-, imagemagick
 , makeDesktopItem
 }:
 
 flutter.mkFlutterApp rec {
   pname = "kaiteki";
-  version = "1.1";
+  version = "1.0";
 
   vendorHash = "sha256-N7s63e8z4pAFtFV9cFN+CIIg+A/s8lYfiJWrBkMkkd0=";
 
@@ -30,59 +28,11 @@ flutter.mkFlutterApp rec {
 
   sourceRoot = "source/src/kaiteki";
 
-  # postUnpack = ''
-  #   mv assets assets-toplevel
-  #   mv src/kaiteki/* .
-  # '';
-
-  buildInputs = [
-    olm
-  ];
-
-  nativeBuildInputs = [
-    imagemagick
-  ];
-
-  # flutterExtraFetchCommands = ''
-  #   M=$(echo $TMP/.pub-cache/hosted/pub.dartlang.org/matrix-*)
-  #   sed -i $M/scripts/prepare.sh \
-  #     -e "s|/usr/lib/x86_64-linux-gnu/libolm.so.3|/bin/sh|g"  \
-  #     -e "s|if which flutter >/dev/null; then|exit; if which flutter >/dev/null; then|g"
-
-  #   pushd $M
-  #   bash scripts/prepare.sh
-  #   popd
-  # '';
-
-  # replace olm dummy path
-  # postConfigure = ''
-  #   M=$(echo $depsFolder/.pub-cache/hosted/pub.dartlang.org/matrix-*)
-  #   ln -sf ${olm}/lib/libolm.so.3 $M/ffi/olm/libolm.so
-  # '';
-
-  # postInstall = ''
-  #   FAV=$out/app/data/flutter_assets/assets/favicon.png
-  #   ICO=$out/share/icons
-
-  #   install -D $FAV $ICO/fluffychat.png
-  #   mkdir $out/share/applications
-  #   cp $desktopItem/share/applications/*.desktop $out/share/applications
-
-  #   for s in 24 32 42 64 128 256 512; do
-  #     D=$ICO/hicolor/''${s}x''${s}/apps
-  #     mkdir -p $D
-  #     convert $FAV -resize ''${s}x''${s} $D/fluffychat.png
-  #   done
-
-  #   substituteInPlace $out/share/applications/*.desktop \
-  #     --subst-var out
-  # '';
-
   meta = with lib; {
     description = "The comfy Fediverse client";
     homepage = "https://craftplacer.moe/projects/kaiteki/";
     license = licenses.agpl3Plus;
-    # maintainers = with maintainers; [ uninsane ];
+    # maintainers = with maintainers; [ colinsane ];
     platforms = platforms.linux;
   };
 }
