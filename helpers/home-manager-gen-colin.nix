@@ -501,12 +501,13 @@
     pkgs.gnome-podcasts
     pkgs.gnome.gnome-terminal  # works on phosh
     pkgs.inkscape
+    pkgs.kaiteki  # Pleroma client
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
     pkgs.playerctl
     pkgs.tdesktop  # broken on phosh
     pkgs.vlc  # works on phosh
-    pkgs.whalebird # pleroma client. TODO: port kaiteki to nix: https://craftplacer.moe/projects/kaiteki/
+    pkgs.whalebird # pleroma client. input is broken on phosh
     pkgs.xterm  # broken on phosh
   ] else [])
   ++ (if gui == "sway" then
