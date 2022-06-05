@@ -51,6 +51,7 @@
           ./nixpatches/02-rpi4-uboot.patch
           ./nixpatches/03-whalebird-4.6.0.patch
           ./nixpatches/04-dart-2.7.0.patch
+          ./nixpatches/05-whalebird-aarch64.patch
         ];
       };
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
@@ -106,7 +107,7 @@
           tdesktop = nixpkgs.legacyPackages.${system}.tdesktop;
 
           #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
-          whalebird = prev.callPackage ./pkgs/whalebird { };
+          # whalebird = prev.callPackage ./pkgs/whalebird { };
           kaiteki = prev.callPackage ./pkgs/kaiteki { };
         })
       ];

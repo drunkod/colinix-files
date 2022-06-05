@@ -1,0 +1,92 @@
+diff --git a/pkgs/applications/misc/whalebird/default.nix b/pkgs/applications/misc/whalebird/default.nix
+index 7170a63ac7f..16b3e85e1ad 100644
+--- a/pkgs/applications/misc/whalebird/default.nix
++++ b/pkgs/applications/misc/whalebird/default.nix
+@@ -1,17 +1,35 @@
+-{ lib, stdenv, fetchurl, dpkg, autoPatchelfHook, makeWrapper, electron
++{ lib, stdenv, fetchurl, autoPatchelfHook, makeDesktopItem, makeWrapper, electron
+ , nodePackages, alsa-lib, gtk3, libdbusmenu, libxshmfence, mesa, nss }:
+ 
++let
++  desktopItem = makeDesktopItem {
++    desktopName = "Whalebird";
++    genericName = "An Electron based Mastodon client for Windows, Mac and Linux";
++    categories = [ "Network" ];
++    exec = "opt/Whalebird/whalebird";
++    icon = "whalebird";
++    name = "whalebird";
++  };
++in
+ stdenv.mkDerivation rec {
+   pname = "whalebird";
+   version = "4.6.0";
+ 
+-  src = fetchurl {
+-    url = "https://github.com/h3poteto/whalebird-desktop/releases/download/${version}/Whalebird-${version}-linux-x64.deb";
+-    sha256 = "d8042eb21e4320771782a1835a591252894ad657eec46248c807d5a772e1938e";
+-  };
++  src = let
++    downloads = "https://github.com/h3poteto/whalebird-desktop/releases/download/${version}";
++  in
++    {
++      x86_64-linux = fetchurl {
++        url = downloads + "/Whalebird-${version}-linux-x64.tar.bz2";
++        sha256 = "02f2f4b7184494926ef58523174acfa23738d5f27b4956d094836a485047c2f8";
++      };
++      aarch64-linux = fetchurl {
++        url = downloads + "/Whalebird-${version}-linux-arm64.tar.bz2";
++        sha256 = "de0cdf7cbd6f0305100a2440e2559ddce0a5e4ad73a341874d6774e23dc76974";
++      };
++    }.${stdenv.system};
+ 
+   nativeBuildInputs = [
+-    dpkg
+     autoPatchelfHook
+     makeWrapper
+     nodePackages.asar
+@@ -22,7 +40,10 @@ stdenv.mkDerivation rec {
+   dontConfigure = true;
+ 
+   unpackPhase = ''
+-    dpkg-deb -x ${src} ./
++    mkdir -p ./opt
++    tar -xf ${src} -C ./opt
++    # remove the version/target suffix from the untar'd directory
++    mv ./opt/Whalebird-* ./opt/Whalebird
+   '';
+ 
+   buildPhase = ''
+@@ -41,12 +62,21 @@ stdenv.mkDerivation rec {
+     runHook preInstall
+ 
+     mkdir $out
+-    mv usr/share opt $out
++    mv opt $out
++
++    # install icons
++    for icon in $out/opt/Whalebird/resources/build/icons/*.png; do
++      mkdir -p "$out/share/icons/hicolor/$(basename $icon .png)/apps"
++      ln -s "$icon" "$out/share/icons/hicolor/$(basename $icon .png)/apps/whalebird.png"
++    done
++
++    # install desktop item
++    mkdir -p "$out/share"
++    ln -s "${desktopItem}/share/applications" "$out/share/applications"
+ 
+-    substituteInPlace $out/share/applications/whalebird.desktop \
+-      --replace '/opt/Whalebird' $out/bin
+     makeWrapper ${electron}/bin/electron $out/bin/whalebird \
+-      --add-flags $out/opt/Whalebird/resources/app.asar
++      --add-flags $out/opt/Whalebird/resources/app.asar \
++      --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--enable-features=UseOzonePlatform --ozone-platform=wayland}}"
+ 
+     runHook postInstall
+   '';
+@@ -56,6 +86,6 @@ stdenv.mkDerivation rec {
+     homepage = "https://whalebird.social";
+     license = licenses.mit;
+     maintainers = with maintainers; [ wolfangaukang ];
+-    platforms = [ "x86_64-linux" ];
++    platforms = [ "x86_64-linux" "aarch64-linux" ];
+   };
+ }
