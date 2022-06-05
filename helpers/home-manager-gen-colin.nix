@@ -501,7 +501,6 @@
     pkgs.gnome-podcasts
     pkgs.gnome.gnome-terminal  # works on phosh
     pkgs.inkscape
-    pkgs.kaiteki  # Pleroma client
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
     pkgs.playerctl
@@ -525,9 +524,10 @@
   ++ (if gui != null && system == "x86_64-linux" then
   [
     # x86_64 only
+    pkgs.discord
+    pkgs.kaiteki  # Pleroma client
     pkgs.signal-desktop
     pkgs.spotify
-    pkgs.discord
   ] else [])
   ++ extraPackages;
 }
