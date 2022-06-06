@@ -91,6 +91,9 @@
     '';
   };
 
+  # "command not found" will cause the command to be searched in nixpkgs
+  programs.nix-index.enable = true;
+
   # obtain these by running `dconf dump /` after manually customizing gnome
   # TODO: fix "is not of type `GVariant value'"
   # dconf.settings = lib.mkIf (gui == "gnome") {
