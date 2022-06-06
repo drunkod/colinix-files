@@ -47,7 +47,4 @@
     permitRootLogin = "no";
     passwordAuthentication = false;
   };
-
-  # TODO colin: move this somewhere else!
-  programs.vim.defaultEditor = true;
 }
