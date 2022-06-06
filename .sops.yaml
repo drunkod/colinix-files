@@ -1,9 +1,13 @@
 keys:
   - &user_desko_colin age1tnl4jfgacwkargzeqnhzernw29xx8mkv73xh6ufdyde6q7859slsnzf24x
+  - &user_lappy_colin age1ml8kkppftygu2wag57yld98jlrkh4avp54eheq7q0fa2rup843csqjajs6
+  - &user_moby_colin age1lt739n2tq7dmpglvntjr9j2r7426md7rat7x9w930gagtx4jyvnqwts2al
   - &host_desko age1s0v4fm203ap6mckcz3djw8hx30uqu87xfhfdajpmyf8rfrf5xs5swpz6m6
 creation_rules:
   - path_regex: secrets/[^/]+\.yaml$
     key_groups:
     - age:
       - *user_desko_colin
+      - *user_lappy_colin
+      - *user_moby_colin
       - *host_desko
