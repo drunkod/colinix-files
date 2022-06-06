@@ -1,5 +1,5 @@
 diff --git a/pkgs/applications/misc/whalebird/default.nix b/pkgs/applications/misc/whalebird/default.nix
-index 7170a63ac7f..16b3e85e1ad 100644
+index 7170a63ac7f..dcd88fb9a8b 100644
 --- a/pkgs/applications/misc/whalebird/default.nix
 +++ b/pkgs/applications/misc/whalebird/default.nix
 @@ -1,17 +1,35 @@
@@ -12,7 +12,7 @@ index 7170a63ac7f..16b3e85e1ad 100644
 +    desktopName = "Whalebird";
 +    genericName = "An Electron based Mastodon client for Windows, Mac and Linux";
 +    categories = [ "Network" ];
-+    exec = "opt/Whalebird/whalebird";
++    exec = "@out@/bin/whalebird";
 +    icon = "whalebird";
 +    name = "whalebird";
 +  };
@@ -44,19 +44,22 @@ index 7170a63ac7f..16b3e85e1ad 100644
      autoPatchelfHook
      makeWrapper
      nodePackages.asar
-@@ -22,7 +40,10 @@ stdenv.mkDerivation rec {
-   dontConfigure = true;
+@@ -19,10 +37,11 @@ stdenv.mkDerivation rec {
  
+   buildInputs = [ alsa-lib gtk3 libdbusmenu libxshmfence mesa nss ];
+ 
+-  dontConfigure = true;
+-
    unpackPhase = ''
 -    dpkg-deb -x ${src} ./
-+    mkdir -p ./opt
-+    tar -xf ${src} -C ./opt
++    mkdir -p opt
++    tar -xf ${src} -C opt
 +    # remove the version/target suffix from the untar'd directory
-+    mv ./opt/Whalebird-* ./opt/Whalebird
++    mv opt/Whalebird-* opt/Whalebird
    '';
  
    buildPhase = ''
-@@ -41,12 +62,21 @@ stdenv.mkDerivation rec {
+@@ -41,12 +60,23 @@ stdenv.mkDerivation rec {
      runHook preInstall
  
      mkdir $out
@@ -70,8 +73,10 @@ index 7170a63ac7f..16b3e85e1ad 100644
 +    done
 +
 +    # install desktop item
-+    mkdir -p "$out/share"
-+    ln -s "${desktopItem}/share/applications" "$out/share/applications"
++    mkdir -p "$out/share/applications"
++    substitute "${desktopItem}/share/applications/whalebird.desktop" \
++      "$out/share/applications/whalebird.desktop" \
++      --subst-var out
  
 -    substituteInPlace $out/share/applications/whalebird.desktop \
 -      --replace '/opt/Whalebird' $out/bin
