@@ -45,12 +45,19 @@
         name = "nixpkgs-patched-uninsane";
         src = basePkgs;
         patches = [
-          # for mobile: allow phoc to scale to non-integer values
-          ./nixpatches/01-phosh-float-scale.patch
+          # phosh: allow fractional scaling
+          (basePkgs.legacyPackages.${system}.fetchpatch {
+            url = "https://github.com/NixOS/nixpkgs/pull/175872.diff";
+            sha256 = "sha256-mEmqhe8DqlyCxkFWQKQZu+2duz69nOkTANh9TcjEOdY=";
+          })
           # for raspberry pi: allow building u-boot for rpi 4{,00}
+          # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
           ./nixpatches/02-rpi4-uboot.patch
+          # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176476
           ./nixpatches/03-whalebird-4.6.0.patch
+          # alternative to https://github.com/NixOS/nixpkgs/pull/173200
           ./nixpatches/04-dart-2.7.0.patch
+          # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176476
           ./nixpatches/05-whalebird-aarch64.patch
         ];
       };
