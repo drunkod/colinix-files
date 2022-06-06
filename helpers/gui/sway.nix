@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
  
 # docs: https://nixos.wiki/wiki/Sway
 {
@@ -27,5 +27,9 @@
     alsa.support32Bit = true;  # ??
     pulse.enable = true;
   };
+
+  networking.useDHCP = false;
+  networking.networkmanager.enable = true;
+  networking.wireless.enable = lib.mkForce false;
 }
 
