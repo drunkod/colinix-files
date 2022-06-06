@@ -1,22 +1,12 @@
 diff --git a/pkgs/applications/misc/whalebird/default.nix b/pkgs/applications/misc/whalebird/default.nix
-index 9b8a7f0a348..dcd88fb9a8b 100644
+index 9b8a7f0a348..122c0b84c83 100644
 --- a/pkgs/applications/misc/whalebird/default.nix
 +++ b/pkgs/applications/misc/whalebird/default.nix
-@@ -1,17 +1,35 @@
+@@ -1,17 +1,25 @@
 -{ lib, stdenv, fetchurl, dpkg, autoPatchelfHook, makeWrapper, electron
 +{ lib, stdenv, fetchurl, autoPatchelfHook, makeDesktopItem, makeWrapper, electron
  , nodePackages, alsa-lib, gtk3, libdbusmenu, libxshmfence, mesa, nss }:
  
-+let
-+  desktopItem = makeDesktopItem {
-+    desktopName = "Whalebird";
-+    genericName = "An Electron based Mastodon client for Windows, Mac and Linux";
-+    categories = [ "Network" ];
-+    exec = "@out@/bin/whalebird";
-+    icon = "whalebird";
-+    name = "whalebird";
-+  };
-+in
  stdenv.mkDerivation rec {
    pname = "whalebird";
 -  version = "4.5.4";
@@ -45,12 +35,22 @@ index 9b8a7f0a348..dcd88fb9a8b 100644
      autoPatchelfHook
      makeWrapper
      nodePackages.asar
-@@ -19,10 +37,11 @@ stdenv.mkDerivation rec {
+@@ -19,10 +27,22 @@ stdenv.mkDerivation rec {
  
    buildInputs = [ alsa-lib gtk3 libdbusmenu libxshmfence mesa nss ];
  
 -  dontConfigure = true;
--
++  desktopItems = [
++    (makeDesktopItem {
++      desktopName = "Whalebird";
++      comment = meta.description;
++      categories = [ "Network" ];
++      exec = "whalebird";
++      icon = "whalebird";
++      name = "whalebird";
++    })
++  ];
+ 
    unpackPhase = ''
 -    dpkg-deb -x ${src} ./
 +    mkdir -p opt
@@ -60,7 +60,7 @@ index 9b8a7f0a348..dcd88fb9a8b 100644
    '';
  
    buildPhase = ''
-@@ -31,7 +50,7 @@ stdenv.mkDerivation rec {
+@@ -31,7 +51,7 @@ stdenv.mkDerivation rec {
      # Necessary steps to find the tray icon
      asar extract opt/Whalebird/resources/app.asar "$TMP/work"
      substituteInPlace $TMP/work/dist/electron/main.js \
@@ -69,7 +69,7 @@ index 9b8a7f0a348..dcd88fb9a8b 100644
      asar pack --unpack='{*.node,*.ftz,rect-overlay}' "$TMP/work" opt/Whalebird/resources/app.asar
  
      runHook postBuild
-@@ -41,12 +60,23 @@ stdenv.mkDerivation rec {
+@@ -41,12 +61,17 @@ stdenv.mkDerivation rec {
      runHook preInstall
  
      mkdir $out
@@ -81,12 +81,6 @@ index 9b8a7f0a348..dcd88fb9a8b 100644
 +      mkdir -p "$out/share/icons/hicolor/$(basename $icon .png)/apps"
 +      ln -s "$icon" "$out/share/icons/hicolor/$(basename $icon .png)/apps/whalebird.png"
 +    done
-+
-+    # install desktop item
-+    mkdir -p "$out/share/applications"
-+    substitute "${desktopItem}/share/applications/whalebird.desktop" \
-+      "$out/share/applications/whalebird.desktop" \
-+      --subst-var out
  
 -    substituteInPlace $out/share/applications/whalebird.desktop \
 -      --replace '/opt/Whalebird' $out/bin
@@ -97,7 +91,7 @@ index 9b8a7f0a348..dcd88fb9a8b 100644
  
      runHook postInstall
    '';
-@@ -56,6 +86,6 @@ stdenv.mkDerivation rec {
+@@ -56,6 +81,6 @@ stdenv.mkDerivation rec {
      homepage = "https://whalebird.social";
      license = licenses.mit;
      maintainers = with maintainers; [ wolfangaukang ];
