@@ -6,7 +6,7 @@
 
 flutter.mkFlutterApp rec {
   pname = "kaiteki";
-  version = "1.0";
+  version = "unstable-2022-06-03";
 
   vendorHash = "sha256-y22Fvkm2sV0Gso7Z8yHlMU4wiHocytonGCB6GWhaqZo=";
 
@@ -17,14 +17,15 @@ flutter.mkFlutterApp rec {
     hash = "sha256-ggDIbVwueS162m15TFaC6Tcg+0lpcVGi4x/O691sxR8";
   };
 
-  desktopItem = makeDesktopItem {
+  desktopItems = [ (makeDesktopItem {
     name = "Kaiteki";
-    exec = "@out@/bin/kaiteki";
+    exec = "kaiteki";
     icon = "kaiteki";
     desktopName = "Kaiteki";
     genericName = "Micro-blogging client";
+    comment = meta.description;
     categories = [ "Network" "InstantMessaging" "GTK" ];
-  };
+  }) ];
 
   sourceRoot = "source/src/kaiteki";
 
