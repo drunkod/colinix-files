@@ -53,12 +53,10 @@
           # for raspberry pi: allow building u-boot for rpi 4{,00}
           # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
           ./nixpatches/02-rpi4-uboot.patch
-          # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176476
-          ./nixpatches/03-whalebird-4.6.0.patch
           # alternative to https://github.com/NixOS/nixpkgs/pull/173200
           ./nixpatches/04-dart-2.7.0.patch
           # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176476
-          ./nixpatches/05-whalebird-aarch64.patch
+          ./nixpatches/06-whalebird-4.6.0-aarch64.patch
         ];
       };
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
