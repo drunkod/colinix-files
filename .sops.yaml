@@ -1,0 +1,9 @@
+keys:
+  - &user_desko_colin age1tnl4jfgacwkargzeqnhzernw29xx8mkv73xh6ufdyde6q7859slsnzf24x
+  - &host_desko age1s0v4fm203ap6mckcz3djw8hx30uqu87xfhfdajpmyf8rfrf5xs5swpz6m6
+creation_rules:
+  - path_regex: secrets/[^/]+\.yaml$
+    key_groups:
+    - age:
+      - *user_desko_colin
+      - *host_desko

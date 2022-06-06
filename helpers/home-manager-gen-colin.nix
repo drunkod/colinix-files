@@ -472,6 +472,7 @@
     # pkgs.nettools
     pkgs.nmap
     pkgs.obsidian
+    pkgs.openssl
     pkgs.parted
     pkgs.pciutils
     # pkgs.ponymix
@@ -482,6 +483,8 @@
     pkgs.smartmontools
     pkgs.snapper
     pkgs.socat
+    pkgs.sops
+    pkgs.ssh-to-age
     pkgs.sudo
     pkgs.usbutils
     pkgs.wget
