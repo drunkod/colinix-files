@@ -1,10 +1,13 @@
 # features/tweaks
-- enable sshfs (deskto/lappy)
 - set firefox default search engine
 - iron out video drivers
+- emoji picker application
+- emoji font (Font Awesome) for sway status bar
+- find a Masto/Pleroma app which works on mobile
 
 # cleanup
 - remove helpers from outputs section (use `let .. in`)
+- port helpers/ to the module system and mkOption
 
 
 # speed up cross compiling
