@@ -465,6 +465,7 @@
     pkgs.lsof
     pkgs.mix2nix
     pkgs.netcat
+    pkgs.networkmanager
     pkgs.nixpkgs-review
     pkgs.nixUnstable  # TODO: still needed on 22.05?
     # pkgs.nixos-generators
@@ -506,6 +507,7 @@
     pkgs.inkscape
     pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     pkgs.mesa-demos
+    pkgs.networkmanagerapplet
     pkgs.playerctl
     pkgs.tdesktop  # broken on phosh
     pkgs.vlc  # works on phosh
