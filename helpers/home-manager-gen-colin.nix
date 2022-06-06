@@ -526,6 +526,7 @@
     # x86_64 only
     pkgs.discord
     pkgs.kaiteki  # Pleroma client
+    pkgs.gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
     pkgs.signal-desktop
     pkgs.spotify
   ] else [])
