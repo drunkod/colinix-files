@@ -1,7 +1,7 @@
 # docs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/networking/pleroma.nix
 #
 # to run it in a oci-container: https://github.com/barrucadu/nixfiles/blob/master/services/pleroma.nix
-{ config, pkgs, lib, secrets, ... }:
+{ pkgs, secrets, ... }:
 
 {
   services.pleroma.enable = true;

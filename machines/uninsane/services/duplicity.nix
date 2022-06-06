@@ -1,5 +1,5 @@
 # docs: https://search.nixos.org/options?channel=21.11&query=duplicity
-{ config, pkgs, lib, secrets, ... }:
+{ secrets, ... }:
 
 {
   services.duplicity.enable = true;

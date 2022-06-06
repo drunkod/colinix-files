@@ -1,6 +1,6 @@
 # this file originates from ‘nixos-generate-config’
 # but has been heavily modified
-{ config, lib, pkgs, modulesPath, ... }:
+{ pkgs, ... }:
 
 {
   # enables non-free firmware

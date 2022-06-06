@@ -1,6 +1,6 @@
 # docs: https://nixos.wiki/wiki/Matrix
 # docs: https://nixos.org/manual/nixos/stable/index.html#module-services-matrix-synapse
-{ config, pkgs, lib, secrets, ... }:
+{ secrets, ... }:
 
 {
   services.matrix-synapse.enable = true;

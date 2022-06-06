@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ ... }:
  
 {
   # start plasma-mobile on boot

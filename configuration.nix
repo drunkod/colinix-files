@@ -8,7 +8,7 @@
 #   nix-option   ##  query options -- including their SET VALUE; similar to search: https://search.nixos.org/options
 #   nixos-rebuild switch --upgrade   ## pull changes from the nixos channel (e.g. security updates) and rebuild
 
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
 

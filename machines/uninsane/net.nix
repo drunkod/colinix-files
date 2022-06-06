@@ -1,4 +1,4 @@
-{ config, pkgs, secrets, ... }:
+{ pkgs, secrets, ... }:
 
 {
   networking.domain = "uninsane.org";
