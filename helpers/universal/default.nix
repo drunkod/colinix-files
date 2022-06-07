@@ -5,6 +5,7 @@
     ./fs.nix
     ./home-manager.nix
     ./nix-cache.nix
+    ./secrets.nix
     ./users.nix
   ];
 
