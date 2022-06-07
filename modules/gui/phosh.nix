@@ -19,7 +19,7 @@ in
       user = "colin";
       group = "users";
       phocConfig = {
-        xwayland = "true";
+        # xwayland = "true";
         # find default outputs by catting /etc/phosh/phoc.ini
         outputs.DSI-1 = {
           scale = 1.5;
@@ -27,9 +27,16 @@ in
       };
     };
 
+    hardware.opengl.enable = true;
+    hardware.opengl.driSupport = true;
+
     environment.variables = {
       # Qt apps won't always start unless this env var is set
       QT_QPA_PLATFORM = "wayland";
+      # electron apps (e.g. Element) should use the wayland backend
+      # toggle this to have electron apps (e.g. Element) use the wayland backend.
+      # phocConfig.xwayland should be disabled if you do this
+      NIXOS_OZONE_WL = "1";
     };
   };
 }
