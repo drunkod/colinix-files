@@ -2,7 +2,6 @@
 {
   imports = [
     ./../../helpers/universal
-    ./../../helpers/gui/phosh.nix
     # ./../../helpers/gui/plasma-mobile.nix
     # ./../../helpers/gui/gnome.nix
   ];
@@ -36,6 +35,8 @@
       # pkgs.alacritty  # terminal; crashes phosh
     ];
   };
+
+  colinsane.gui.phosh.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
