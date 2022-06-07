@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ./gui
-    ./hardware
+    ./x86_64.nix
   ];
 }

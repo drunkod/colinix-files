@@ -2,9 +2,6 @@
 {
   imports = [
     ./../../helpers/universal
-    ./../../helpers/hardware-x86_64.nix
-    # ./../../helpers/gui/gnome.nix
-    #./../../helpers/gui/i3.nix
     ./fs.nix
   ];
 
