@@ -4,7 +4,7 @@ keys:
   - &user_uninsane_colin age1z8fauff34cdecr6sjkre260luzxcca05kpcwvhx988d306tpcejsp63znu
   - &user_moby_colin age1lt739n2tq7dmpglvntjr9j2r7426md7rat7x9w930gagtx4jyvnqwts2al
   - &host_desko age1s0v4fm203ap6mckcz3djw8hx30uqu87xfhfdajpmyf8rfrf5xs5swpz6m6
-    &host_uninsane age1tzlyex2z6t88tg9h82943e39shxhmqeyr7ywhlwpdjmyqsndv3qq27x0rf
+  - &host_uninsane age1tzlyex2z6t88tg9h82943e39shxhmqeyr7ywhlwpdjmyqsndv3qq27x0rf
 creation_rules:
   - path_regex: secrets/[^/]+\.yaml$
     key_groups:
