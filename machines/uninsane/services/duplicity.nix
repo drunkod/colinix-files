@@ -1,13 +1,13 @@
 # docs: https://search.nixos.org/options?channel=21.11&query=duplicity
-{ secrets, ... }:
+{ secrets, config, ... }:
 
 {
   services.duplicity.enable = true;
+  # TODO: can we put an arbitrary shell expression here, to `cat` the url at runtime?
   services.duplicity.targetUrl = secrets.duplicity.url;
   # format: PASSPHRASE=<cleartext>
   # two sisters
-  services.duplicity.secretFile =
-    builtins.toFile "duplicity_env" "PASSPHRASE=${secrets.duplicity.passphrase}";
+  services.duplicity.secretFile = config.sops.secrets.duplicity_passphrase.path;
   # NB: manually trigger with `systemctl start duplicity`
   services.duplicity.frequency = "daily";
   services.duplicity.exclude = [
@@ -21,6 +21,8 @@
     "/var/lib/pleroma"
     "/var/lib/transmission/Downloads"
     "/var/lib/transmission/.incomplete"
+    # other mounts
+    "/mnt"
     # data that's not worth the cost to backup:
     "/opt/uninsane/media"
   ];

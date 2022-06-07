@@ -19,3 +19,9 @@ creation_rules:
       - *host_lappy
       - *host_uninsane
       - *host_moby
+  - path_regex: secrets/uninsane/[^/]+\.yaml$
+    key_groups:
+    - age:
+      - *user_desko_colin
+      - *user_uninsane_colin
+      - *host_uninsane

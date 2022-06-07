@@ -47,6 +47,10 @@
   sops.secrets.example_key = {
     owner = config.users.users.colin.name;
   };
+  sops.secrets."duplicity_passphrase" = {
+    sopsFile = ../../secrets/uninsane/duplicity.yaml;
+    # owner = "duplicity";
+  };
   # sops.secrets."myservice/my_subdir/my_secret" = {};
 }
 
