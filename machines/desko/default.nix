@@ -5,7 +5,6 @@
     ./../../helpers/hardware-x86_64.nix
     # ./../../helpers/gui/gnome.nix
     #./../../helpers/gui/i3.nix
-    ./../../helpers/gui/sway.nix
     ./fs.nix
   ];
 
@@ -19,6 +18,8 @@
       pkgs.electrum
     ];
   };
+
+  colinsane.gui.sway.enable = true;
 
   # docs: https://nixos.org/manual/nixos/stable/options.html#opt-system.stateVersion
   system.stateVersion = "21.05";

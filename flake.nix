@@ -66,6 +66,7 @@
         specialArgs = { inherit home-manager; inherit nurpkgs; secrets = import ./secrets/default.nix; };
         modules = [
           ./configuration.nix
+          ./modules
           ./machines/${name}
           (import ./helpers/set-hostname.nix name)
           (self.overlaysModule system)

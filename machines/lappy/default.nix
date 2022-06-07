@@ -4,7 +4,6 @@
     ./../../helpers/universal
     ./../../helpers/hardware-x86_64.nix
     # ./../../helpers/gui/gnome.nix
-    ./../../helpers/gui/sway.nix
     ./fs.nix
   ];
 
@@ -14,6 +13,8 @@
     # gui = "gnome";
     gui = "sway";
   };
+
+  colinsane.gui.sway.enable = true;
 
   # docs: https://nixos.org/manual/nixos/stable/options.html#opt-system.stateVersion
   system.stateVersion = "21.05";
