@@ -3,10 +3,11 @@
 
 {
   services.duplicity.enable = true;
-  # TODO: can we put an arbitrary shell expression here, to `cat` the url at runtime?
-  services.duplicity.targetUrl = secrets.duplicity.url;
-  # format: PASSPHRASE=<cleartext>
+  services.duplicity.targetUrl = ''"$DUPLICITY_URL"'';
+  services.duplicity.escapeUrl = false;
+  # format: PASSPHRASE=<cleartext> \n DUPLICITY_URL=b2://...
   # two sisters
+  # TODO: s/duplicity_passphrase/duplicity_env/
   services.duplicity.secretFile = config.sops.secrets.duplicity_passphrase.path;
   # NB: manually trigger with `systemctl start duplicity`
   services.duplicity.frequency = "daily";

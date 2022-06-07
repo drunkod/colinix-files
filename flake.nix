@@ -58,6 +58,8 @@
           ./nixpatches/04-dart-2.7.0.patch
           # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176476
           ./nixpatches/06-whalebird-4.6.0-aarch64.patch
+          # TODO: upstream
+          ./nixpatches/07-duplicity-rich-url.patch
         ];
       };
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
