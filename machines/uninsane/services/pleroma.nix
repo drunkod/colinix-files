@@ -1,21 +1,20 @@
 # docs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/networking/pleroma.nix
 #
 # to run it in a oci-container: https://github.com/barrucadu/nixfiles/blob/master/services/pleroma.nix
-{ pkgs, secrets, ... }:
+{ config, pkgs, ... }:
 
 {
   services.pleroma.enable = true;
-  # TODO: we should write a config file somewhere outside the store... somehow.
-  services.pleroma.secretConfigFile = "/dev/null";
+  services.pleroma.secretConfigFile = config.sops.secrets.pleroma_secrets.path;
   services.pleroma.configs = [
     ''
     import Config
     
     config :pleroma, Pleroma.Web.Endpoint,
       url: [host: "fed.uninsane.org", scheme: "https", port: 443],
-      http: [ip: {127, 0, 0, 1}, port: 4000],
-      secret_key_base: "${secrets.pleroma.secret_key_base}",
-      signing_salt: "${secrets.pleroma.signing_salt}"
+      http: [ip: {127, 0, 0, 1}, port: 4000]
+    #   secret_key_base: "{secrets.pleroma.secret_key_base}",
+    #   signing_salt: "{secrets.pleroma.signing_salt}"
     
     config :pleroma, :instance,
       name: "Perfectly Sane",
@@ -46,7 +45,6 @@
     config :pleroma, Pleroma.Repo,
       adapter: Ecto.Adapters.Postgres,
       username: "pleroma",
-      password: "${secrets.pleroma.db_password}",
       database: "pleroma",
       hostname: "localhost",
       pool_size: 10,
@@ -54,14 +52,15 @@
       parameters: [
           plan_cache_mode: "force_custom_plan"
       ]
+    #   password: "{secrets.pleroma.db_password}",
 
     # Configure web push notifications
     config :web_push_encryption, :vapid_details,
-      subject: "mailto:notify.pleroma@uninsane.org",
-      public_key: "${secrets.pleroma.vapid_public_key}",
-      private_key: "${secrets.pleroma.vapid_private_key}"
+      subject: "mailto:notify.pleroma@uninsane.org"
+    #   public_key: "{secrets.pleroma.vapid_public_key}",
+    #   private_key: "{secrets.pleroma.vapid_private_key}"
 
-    config :joken, default_signer: "${secrets.pleroma.joken_default_signer}"
+    # config :joken, default_signer: "{secrets.pleroma.joken_default_signer}"
     
     config :pleroma, :database, rum_enabled: false
     config :pleroma, :instance, static_dir: "/var/lib/pleroma/instance/static"
@@ -124,4 +123,9 @@
   #   PrivateTmp = lib.mkForce false;
   #   CapabilityBoundingSet = lib.mkForce "~";
   # };
+
+  sops.secrets.pleroma_secrets = {
+    sopsFile = ../../../secrets/uninsane.yaml;
+    owner = config.users.users.pleroma.name;
+  };
 }
