@@ -1,4 +1,4 @@
-{ pkgs, secrets, ... }:
+{ config, pkgs, ... }:
 
 {
   networking.domain = "uninsane.org";
@@ -35,7 +35,7 @@
   # DOCS: https://nixos.wiki/wiki/WireGuard
   networking.wireguard.enable = true;
   networking.wireguard.interfaces.wg0 = {
-    privateKey = secrets.wireguard.privateKey;
+    privateKeyFile = config.sops.secrets.wg_ovpns_privkey.path;
     # wg is active only in this namespace.
     # run e.g. ip netns exec ovpns <some command like ping/curl/etc, it'll go through wg>
     #   sudo ip netns exec ovpns ping www.google.com
@@ -85,6 +85,10 @@
         ${iproute2}/bin/ip link del ovpns-veth-a
       '';
     };
+  };
+
+  sops.secrets."wg_ovpns_privkey" = {
+    sopsFile = ../../secrets/uninsane.yaml;
   };
 
   # HURRICANE ELECTRIC CONFIG:

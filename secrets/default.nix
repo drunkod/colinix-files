@@ -1,9 +1,4 @@
 {
-  # to generate:
-  # wg genkey > wg0.private
-  # wg pubkey < wg0.private > wg0.public
-  wireguard.privateKey = "<REPLACEME>";
-
   # these would otherwise be found in 'pleroma.secret.exs'
   pleroma.secret_key_base = "<REPLACEME>";
   pleroma.signing_salt = "<REPLACEME>";
