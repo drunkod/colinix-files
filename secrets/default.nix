@@ -1,6 +1,4 @@
 {
-  ddns-he.password = "<REPLACEME>";
-
   # to generate:
   # wg genkey > wg0.private
   # wg pubkey < wg0.private > wg0.public

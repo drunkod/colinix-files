@@ -1,20 +1,29 @@
-{ pkgs, secrets, ... }:
+{ config, pkgs, ... }:
 
 {
   systemd.services.ddns-he = {
     description = "update dynamic DNS entries for HurricaneElectric";
+    serviceConfig = {
+      EnvironmentFile = config.sops.secrets.ddns_he.path;
+      # TODO: ProtectSystem = "strict";
+      # TODO: ProtectHome = "full";
+      # TODO: PrivateTmp = true;
+    };
     # HE DDNS API is documented: https://dns.he.net/docs.html
     script = let
-      pass = secrets.ddns-he.password;
       crl = "${pkgs.curl}/bin/curl -4";
     in ''
-      ${crl} "https://he.uninsane.org:${pass}@dyn.dns.he.net/nic/update?hostname=he.uninsane.org"
-      ${crl} "https://native.uninsane.org:${pass}@dyn.dns.he.net/nic/update?hostname=native.uninsane.org"
-      ${crl} "https://uninsane.org:${pass}@dyn.dns.he.net/nic/update?hostname=uninsane.org"
+      ${crl} "https://he.uninsane.org:$HE_PASSPHRASE@dyn.dns.he.net/nic/update?hostname=he.uninsane.org"
+      ${crl} "https://native.uninsane.org:$HE_PASSPHRASE@dyn.dns.he.net/nic/update?hostname=native.uninsane.org"
+      ${crl} "https://uninsane.org:$HE_PASSPHRASE@dyn.dns.he.net/nic/update?hostname=uninsane.org"
     '';
   };
   systemd.timers.ddns-he.timerConfig = {
     OnStartupSec = "2min";
     OnUnitActiveSec = "10min";
+  };
+
+  sops.secrets."ddns_he" = {
+    sopsFile = ../../../secrets/uninsane.yaml;
   };
 }
