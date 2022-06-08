@@ -36,4 +36,9 @@
   # set this for the FIRST backup, then remove it to enable incremental backups
   #   (that the first backup *isn't* full i think is a defect)
   # services.duplicity.fullIfOlderThan = "always";
+
+  sops.secrets."duplicity_passphrase" = {
+    sopsFile = ../../../secrets/uninsane/duplicity.yaml;
+    # owner = "duplicity";
+  };
 }
