@@ -6,7 +6,7 @@
 
 # system is e.g. x86_64-linux
 # gui is "gnome", or null
-{ lib, pkgs, system, gui, extraPackages ? [] }: {
+{ lib, config, pkgs, system, gui, extraPackages ? [] }: {
   home.stateVersion = "21.11";
   home.username = "colin";
   home.homeDirectory = "/home/colin";
@@ -289,6 +289,7 @@
         XF86AudioLowerVolume = "exec '${pkgs.pulsemixer}/bin/pulsemixer --change-volume -5'";
         XF86AudioMute = "exec '${pkgs.pulsemixer}/bin/pulsemixer --toggle-mute'";
 
+        "${modifier}+Print" = "exec '${pkgs.sway-contrib.grimshot}/bin/grimshot copy area'";
       };
 
       # mostly defaults:
@@ -301,8 +302,11 @@
         workspaceNumbers = true;
         statusCommand = "${pkgs.i3status}/bin/i3status";
         fonts = {
-          names = [ "monospace" ];
-          size = 8.0;
+          # names = [ "monospace" "Noto Color Emoji" ];
+          # size = 8.0;
+          # names = [ "Font Awesome 6 Free" "DejaVu Sans" "Hack" ];
+          names = with config.fonts.fontconfig.defaultFonts; (emoji ++ monospace ++ serif ++ sansSerif);
+          size = 24.0;
         };
         trayOutput = "primary";
         colors = {

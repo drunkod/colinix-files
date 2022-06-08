@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, config, lib, ... }:
 {
   imports = [
     ./../../helpers/universal
@@ -10,7 +10,7 @@
   users.users.colin.initialPassword = "147147";
 
   home-manager.users.colin = import ./../../helpers/home-manager-gen-colin.nix {
-    inherit pkgs lib;
+    inherit pkgs config lib;
     system = "aarch64-linux";
     gui = "phosh";
     extraPackages = [

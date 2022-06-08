@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, config, lib, ... }:
 
 {
   imports = [
@@ -22,7 +22,7 @@
   ];
 
   home-manager.users.colin = import ../../helpers/home-manager-gen-colin.nix {
-    inherit pkgs lib;
+    inherit pkgs config lib;
     system = "aarch64-linux";
     gui = null;
     extraPackages = [ pkgs.matrix-synapse ];
