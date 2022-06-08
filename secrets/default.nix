@@ -9,7 +9,4 @@
 
   # keep this synchronized with the dovecot auth
   matrix-synapse.smtp_pass = "<REPLACEME>";
-
-  # generate with nix-store --generate-binary-cache-key nixcache.uninsane.org cache-priv-key.pem cache-pub-key.pem
-  nix-serve.cache-priv-key = "<REPLACEME>";
 } // import ./local.nix
