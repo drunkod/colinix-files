@@ -1,4 +1,4 @@
-{ lib, secrets, ... }:
+{ config, lib, ... }:
 
 let
   submissionOptions = {
@@ -82,10 +82,7 @@ in
   services.dovecot2.enablePAM = false;
   services.dovecot2.extraConfig =
   let
-    passwdFile = builtins.toFile "dovecot-passwd-file" ''
-      colin:${secrets.dovecot.hashedPasswd.colin}:1000:1000::/var/mail/colin/run/current-system/sw/bin/nologin:
-      matrix-synapse:${secrets.dovecot.hashedPasswd.matrix-synapse}:224:224::/var/mail/colin:/run/current-system/sw/bin/nologin:
-      '';
+    passwdFile = config.sops.secrets.dovecot_passwd.path;
   in
     ''
     passdb {
@@ -133,4 +130,11 @@ in
     #   pattern = "/^Subject:.*activate your account/";
     # }
   ];
+
+  sops.secrets.dovecot_passwd = {
+    sopsFile = ../../../secrets/uninsane.yaml;
+    owner = config.users.users.dovecot2.name;
+    # TODO: debug why mail can't be sent without this being world-readable
+    mode = "0444";
+  };
 }
