@@ -1,5 +1,5 @@
 # docs: https://search.nixos.org/options?channel=21.11&query=duplicity
-{ secrets, config, ... }:
+{ config, ... }:
 
 {
   services.duplicity.enable = true;
@@ -38,7 +38,7 @@
   # services.duplicity.fullIfOlderThan = "always";
 
   sops.secrets."duplicity_passphrase" = {
-    sopsFile = ../../../secrets/uninsane/duplicity.yaml;
+    sopsFile = ../../../secrets/uninsane.yaml;
     # owner = "duplicity";
   };
 }
