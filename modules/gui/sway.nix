@@ -197,6 +197,71 @@ in
         }];
       };
     };
+
+    colinsane.home-manager.programs.waybar = {
+      enable = true;
+      # docs: https://github.com/Alexays/Waybar/wiki/Configuration
+      settings = {
+        mainBar = {
+          layer = "top";
+          height = 40;
+          modules-left = ["sway/workspaces" "sway/mode"];
+          modules-center = ["sway/window"];
+          modules-right = ["custom/mediaplayer" "clock" "cpu" "network"];
+          "sway/window" = {
+            max-length = 50;
+          };
+          # include song artist/title. source: https://www.reddit.com/r/swaywm/comments/ni0vso/waybar_spotify_tracktitle/
+          "custom/mediaplayer" = {
+            exec = pkgs.writeShellScript "waybar-mediaplayer" ''
+              player_status=$(${pkgs.playerctl}/bin/playerctl status 2> /dev/null)
+              if [ "$player_status" = "Playing" ]; then
+                echo "$(${pkgs.playerctl}/bin/playerctl metadata artist) - $(${pkgs.playerctl}/bin/playerctl metadata title)"
+              elif [ "$player_status" = "Paused" ]; then
+                echo " $(${pkgs.playerctl}/bin/playerctl metadata artist) - $(${pkgs.playerctl}/bin/playerctl metadata title)"
+              fi
+            '';
+            interval = 2;
+            format = "{}  ";
+            # return-type = "json";
+            on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
+            on-scroll-up = "${pkgs.playerctl}/bin/playerctl next";
+            on-scroll-down = "${pkgs.playerctl}/bin/playerctl previous";
+          };
+          network = {
+            interval = 1;
+            format-ethernet = "{ifname}: {ipaddr}/{cidr}   up: {bandwidthUpBits} down: {bandwidthDownBits}";
+          };
+          cpu = {
+            format = "{usage}% ";
+            tooltip = false;
+          };
+          clock = {
+            format-alt = "{:%a, %d. %b  %H:%M}";
+          };
+        };
+      };
+      # style = ''
+      #   * {
+      #     border: none;
+      #     border-radius: 0;
+      #     font-family: Source Code Pro;
+      #   }
+      #   window#waybar {
+      #     background: #16191C;
+      #     color: #AAB2BF;
+      #   }
+      #   #workspaces button {
+      #     padding: 0 5px;
+      #   }
+      #   .custom-spotify {
+      #     padding: 0 10px;
+      #     margin: 0 4px;
+      #     background-color: #1DB954;
+      #     color: black;
+      #   }
+      # '';
+    };
   };
 }
 

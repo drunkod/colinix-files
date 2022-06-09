@@ -24,6 +24,10 @@ in
       default = {};
       type = types.attrs;
     };
+    colinsane.home-manager.programs = mkOption {
+      default = {};
+      type = types.attrs;
+    };
   };
 
   config = {
@@ -34,7 +38,6 @@ in
       home.stateVersion = "21.11";
       home.username = "colin";
       home.homeDirectory = "/home/colin";
-      programs.home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
 
       # XDG defines things like ~/Desktop, ~/Downloads, etc.
       # these clutter the home, so i mostly don't use them.
@@ -51,99 +54,106 @@ in
         videos = "$HOME/Videos";
       };
 
-      programs.zsh = {
-        enable = true;
-        enableSyntaxHighlighting = true;
-        enableVteIntegration = true;
-        dotDir = ".config/zsh";
+      programs = {
+        home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
 
-        initExtraBeforeCompInit = ''
-          # p10k instant prompt
-          # run p10k configure to configure, but it can't write out its file :-(
-          POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
-        '';
-
-        # prezto = oh-my-zsh fork; controls prompt, auto-completion, etc.
-        # see: https://github.com/sorin-ionescu/prezto
-        prezto = {
+        zsh = {
           enable = true;
-          pmodules = [
-            "environment"
-            "terminal"
-            "editor"
-            "history"
-            "directory"
-            "spectrum"
-            "utility"
-            "completion"
-            "prompt"
-            "git"
+          enableSyntaxHighlighting = true;
+          enableVteIntegration = true;
+          dotDir = ".config/zsh";
+
+          initExtraBeforeCompInit = ''
+            # p10k instant prompt
+            # run p10k configure to configure, but it can't write out its file :-(
+            POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+          '';
+
+          # prezto = oh-my-zsh fork; controls prompt, auto-completion, etc.
+          # see: https://github.com/sorin-ionescu/prezto
+          prezto = {
+            enable = true;
+            pmodules = [
+              "environment"
+              "terminal"
+              "editor"
+              "history"
+              "directory"
+              "spectrum"
+              "utility"
+              "completion"
+              "prompt"
+              "git"
+            ];
+            prompt = {
+              theme = "powerlevel10k";
+            };
+          };
+        };
+        kitty.enable = true;
+        git = {
+          enable = true;
+          userName = "colin";
+          userEmail = "colin@uninsane.org";
+        };
+
+        vim = {
+          enable = true;
+          extraConfig = ''
+            " wtf vim project: NOBODY LIKES MOUSE FOR VISUAL MODE
+            set mouse-=a
+            " copy/paste to system clipboard
+            set clipboard=unnamedplus
+            " <tab> completion menu settings
+            set wildmenu
+            set wildmode=longest,list,full
+            " highlight all matching searches (using / and ?)
+            set hlsearch
+            " allow backspace to delete empty lines in insert mode
+            set backspace=indent,eol,start
+            " built-in syntax highlighting
+            syntax enable
+            " show line/col number in bottom right
+            set ruler
+            " highlight trailing space & related syntax errors (does this work?)
+            let c_space_errors=1
+            let python_space_errors=1
+          '';
+        };
+
+        firefox = lib.mkIf (config.colinsane.gui.enable) {
+          enable = true;
+
+          profiles.default = {
+            bookmarks = {
+              fed_uninsane.url = "https://fed.uninsane.org/";
+              delightful.url = "https://delightful.club/";
+              crowdsupply.url = "https://www.crowdsupply.com/";
+              linux_phone_apps.url = "https://linuxphoneapps.org/mobile-compatibility/5/";
+              mempool.url = "https://jochen-hoenicke.de/queue";
+            };
+          };
+
+          # firefox profile support seems to be broken :shrug:
+          # profiles.other = {
+          #   id = 2;
+          # };
+
+          # NB: these must be manually enabled in the Firefox settings on first start
+          # extensions can be found here: https://gitlab.com/rycee/nur-expressions/-/blob/master/pkgs/firefox-addons/addons.json
+          extensions = [
+            pkgs.nur.repos.rycee.firefox-addons.bypass-paywalls-clean
+            pkgs.nur.repos.rycee.firefox-addons.metamask
+            pkgs.nur.repos.rycee.firefox-addons.i-dont-care-about-cookies
+            pkgs.nur.repos.rycee.firefox-addons.sidebery
+            pkgs.nur.repos.rycee.firefox-addons.sponsorblock
+            pkgs.nur.repos.rycee.firefox-addons.ublock-origin
           ];
-          prompt = {
-            theme = "powerlevel10k";
-          };
-        };
-      };
-      programs.kitty.enable = true;
-      programs.git = {
-        enable = true;
-        userName = "colin";
-        userEmail = "colin@uninsane.org";
-      };
-
-      programs.vim = {
-        enable = true;
-        extraConfig = ''
-          " wtf vim project: NOBODY LIKES MOUSE FOR VISUAL MODE
-          set mouse-=a
-          " copy/paste to system clipboard
-          set clipboard=unnamedplus
-          " <tab> completion menu settings
-          set wildmenu
-          set wildmode=longest,list,full
-          " highlight all matching searches (using / and ?)
-          set hlsearch
-          " allow backspace to delete empty lines in insert mode
-          set backspace=indent,eol,start
-          " built-in syntax highlighting
-          syntax enable
-          " show line/col number in bottom right
-          set ruler
-          " highlight trailing space & related syntax errors (does this work?)
-          let c_space_errors=1
-          let python_space_errors=1
-        '';
-      };
-
-      programs.firefox = lib.mkIf (config.colinsane.gui.enable) {
-        enable = true;
-
-        profiles.default = {
-          bookmarks = {
-            fed_uninsane.url = "https://fed.uninsane.org/";
-            delightful.url = "https://delightful.club/";
-            crowdsupply.url = "https://www.crowdsupply.com/";
-            linux_phone_apps.url = "https://linuxphoneapps.org/mobile-compatibility/5/";
-            mempool.url = "https://jochen-hoenicke.de/queue";
-          };
         };
 
-        # firefox profile support seems to be broken :shrug:
-        # profiles.other = {
-        #   id = 2;
-        # };
-
-        # NB: these must be manually enabled in the Firefox settings on first start
-        # extensions can be found here: https://gitlab.com/rycee/nur-expressions/-/blob/master/pkgs/firefox-addons/addons.json
-        extensions = [
-          pkgs.nur.repos.rycee.firefox-addons.bypass-paywalls-clean
-          pkgs.nur.repos.rycee.firefox-addons.metamask
-          pkgs.nur.repos.rycee.firefox-addons.i-dont-care-about-cookies
-          pkgs.nur.repos.rycee.firefox-addons.sidebery
-          pkgs.nur.repos.rycee.firefox-addons.sponsorblock
-          pkgs.nur.repos.rycee.firefox-addons.ublock-origin
-        ];
-      };
+        # "command not found" will cause the command to be searched in nixpkgs
+        nix-index.enable = true;
+      } // cfg.programs;
 
       home.shellAliases = {
         ":q" = "exit";
@@ -152,75 +162,7 @@ in
         "cd../" = "cd ../";
       };
 
-      # "command not found" will cause the command to be searched in nixpkgs
-      programs.nix-index.enable = true;
-
       wayland.windowManager = cfg.windowManager;
-
-      programs.waybar = lib.mkIf (config.colinsane.gui.sway.enable) {
-        enable = true;
-        # docs: https://github.com/Alexays/Waybar/wiki/Configuration
-        settings = {
-          mainBar = {
-            layer = "top";
-            height = 40;
-            modules-left = ["sway/workspaces" "sway/mode"];
-            modules-center = ["sway/window"];
-            modules-right = ["custom/mediaplayer" "clock" "cpu" "network"];
-            "sway/window" = {
-              max-length = 50;
-            };
-            # include song artist/title. source: https://www.reddit.com/r/swaywm/comments/ni0vso/waybar_spotify_tracktitle/
-            "custom/mediaplayer" = {
-              exec = pkgs.writeShellScript "waybar-mediaplayer" ''
-                player_status=$(${pkgs.playerctl}/bin/playerctl status 2> /dev/null)
-                if [ "$player_status" = "Playing" ]; then
-                  echo "$(${pkgs.playerctl}/bin/playerctl metadata artist) - $(${pkgs.playerctl}/bin/playerctl metadata title)"
-                elif [ "$player_status" = "Paused" ]; then
-                  echo " $(${pkgs.playerctl}/bin/playerctl metadata artist) - $(${pkgs.playerctl}/bin/playerctl metadata title)"
-                fi
-              '';
-              interval = 2;
-              format = "{}  ";
-              # return-type = "json";
-              on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
-              on-scroll-up = "${pkgs.playerctl}/bin/playerctl next";
-              on-scroll-down = "${pkgs.playerctl}/bin/playerctl previous";
-            };
-            network = {
-              interval = 1;
-              format-ethernet = "{ifname}: {ipaddr}/{cidr}   up: {bandwidthUpBits} down: {bandwidthDownBits}";
-            };
-            cpu = {
-              format = "{usage}% ";
-              tooltip = false;
-            };
-            clock = {
-              format-alt = "{:%a, %d. %b  %H:%M}";
-            };
-          };
-        };
-        # style = ''
-        #   * {
-        #     border: none;
-        #     border-radius: 0;
-        #     font-family: Source Code Pro;
-        #   }
-        #   window#waybar {
-        #     background: #16191C;
-        #     color: #AAB2BF;
-        #   }
-        #   #workspaces button {
-        #     padding: 0 5px;
-        #   }
-        #   .custom-spotify {
-        #     padding: 0 10px;
-        #     margin: 0 4px;
-        #     background-color: #1DB954;
-        #     color: black;
-        #   }
-        # '';
-      };
 
       home.packages = [
         pkgs.btrfs-progs
