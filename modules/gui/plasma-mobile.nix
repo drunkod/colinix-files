@@ -13,6 +13,7 @@ in
   };
 
   config = mkIf cfg.enable {
+    colinsane.gui.enable = true;
     # start plasma-mobile on boot
     services.xserver.enable = true;
     services.xserver.desktopManager.plasma5.mobile.enable = true;

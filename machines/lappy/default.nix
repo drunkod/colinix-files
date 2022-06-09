@@ -1,15 +1,8 @@
-{ pkgs, config, lib, ... }:
+{ ... }:
 {
   imports = [
     ./fs.nix
   ];
-
-  home-manager.users.colin = import ./../../helpers/home-manager-gen-colin.nix {
-    inherit pkgs config lib;
-    system = "x86_64-linux";
-    # gui = "gnome";
-    gui = "sway";
-  };
 
   colinsane.gui.sway.enable = true;
 

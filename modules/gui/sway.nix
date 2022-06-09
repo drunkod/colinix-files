@@ -13,6 +13,7 @@ in
     };
   };
   config = mkIf cfg.enable {
+    colinsane.gui.enable = true;
     programs.sway = {
       # we configure sway with home-manager, but this enable gets us e.g. opengl and fonts
       enable = true;

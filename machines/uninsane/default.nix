@@ -1,4 +1,4 @@
-{ pkgs, config, lib, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -20,12 +20,9 @@
     ./services/transmission.nix
   ];
 
-  home-manager.users.colin = import ../../helpers/home-manager-gen-colin.nix {
-    inherit pkgs config lib;
-    system = "aarch64-linux";
-    gui = null;
-    extraPackages = [ pkgs.matrix-synapse ];
-  };
+  colinsane.home-manager.extraPackages = [
+    pkgs.matrix-synapse
+  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

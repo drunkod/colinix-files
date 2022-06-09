@@ -13,6 +13,7 @@ in
   };
 
   config = mkIf cfg.enable {
+    colinsane.gui.enable = true;
     # docs: https://github.com/NixOS/nixpkgs/blob/nixos-22.05/nixos/modules/services/x11/desktop-managers/phosh.nix
     services.xserver.desktopManager.phosh = {
       enable = true;
