@@ -1,5 +1,3 @@
-after checking out, drop secrets into secrets/
-
 to build:
 ```sh
 nixos-rebuild --flake "/etc/nixos/#uninsane" {build,switch}
@@ -13,11 +11,8 @@ nix flake show
 
 # secrets
 
-`secrets/default.nix` declares the secrets exposed at evaluation time.
-these are defined *outside* git by writing the actual values to `secrets/local.nix`.
-
-*don't* check in the local.nix file. use `git update-index --assume-unchanged secrets/local.nix` to prevent it from ever being added.
-but after that you can set them to their real value and run `git update-index --assume-unchanged secrets/*`
+we use [sops](https://github.com/Mic92/sops-nix) for secrets.
+see helpers/universal/secrets.nix for some tips.
 
 ## building images
 

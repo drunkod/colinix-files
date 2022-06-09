@@ -2,7 +2,6 @@
 - set firefox default search engine
 - iron out video drivers
 - emoji picker application
-- emoji font (Font Awesome) for sway status bar
 - find a Masto/Pleroma app which works on mobile
 
 # cleanup
@@ -16,9 +15,3 @@
    overlays = [{ ... }: {
      nixpkgs.crossSystem.system = "aarch64-linux";
    }];
-
-# better secrets management? read:
-- decrypted at activation time: https://github.com/Mic92/sops-nix
-less promising:
-- https://christine.website/blog/nixos-encrypted-secrets-2021-01-20
-- git-crypt (https://github.com/bobbbay/dotfiles.git)

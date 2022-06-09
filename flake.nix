@@ -65,7 +65,7 @@
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
       in (nixosSystem {
         inherit system;
-        specialArgs = { inherit home-manager; inherit nurpkgs; secrets = import ./secrets/default.nix; };
+        specialArgs = { inherit home-manager nurpkgs; };
         modules = [
           ./configuration.nix
           ./modules
@@ -82,13 +82,13 @@
     #   boot, checkout this flake into /etc/nixos AND UPDATE THE UUIDS IT REFERENCES.
     #   then `nixos-rebuild ...`
     decl-img = { name, system, extraModules ? [] }: (
-      (self.decl-machine { inherit name; inherit system; extraModules = extraModules ++ [./image.nix]; })
+      (self.decl-machine { inherit name system; extraModules = extraModules ++ [./image.nix]; })
         .config.system.build.raw
     );
 
     decl-bootable-machine = { name, system }: {
-      nixosConfiguration = self.decl-machine { inherit name; inherit system; };
-      img = self.decl-img { inherit name; inherit system; };
+      nixosConfiguration = self.decl-machine { inherit name system; };
+      img = self.decl-img { inherit name system; };
     };
 
     overlaysModule = system: { config, pkgs, ...}: {
