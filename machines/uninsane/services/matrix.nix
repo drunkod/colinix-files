@@ -1,6 +1,6 @@
 # docs: https://nixos.wiki/wiki/Matrix
 # docs: https://nixos.org/manual/nixos/stable/index.html#module-services-matrix-synapse
-{ secrets, ... }:
+{ config, ... }:
 
 {
   services.matrix-synapse.enable = true;
@@ -29,29 +29,12 @@
     }
   ];
 
-  # services.matrix-synapse.extraConfig = ''
-  #   registration_requires_token: true
-  #   admin_contact: "admin.matrix@uninsane.org"
-  # '';
-
   services.matrix-synapse.settings.admin_contact = "admin.matrix@uninsane.org";
   services.matrix-synapse.settings.registrations_require_3pid = [ "email" ];
-  services.matrix-synapse.settings.email = {
-    smtp_host = "mx.uninsane.org";
-    smtp_port = 587;
-    smtp_user = "matrix-synapse";
-    smtp_pass = secrets.matrix-synapse.smtp_pass;
-    require_transport_security = true;
-    enable_tls = true;
-    notif_from = "%(app)s <notify.matrix@uninsane.org>";
-    app_name = "Uninsane Matrix";
-    enable_notifs = true;
-    validation_token_lifetime = "96h";
-    invite_client_location = "https://web.matrix.uninsane.org";
-    subjects = {
-      email_validation = "[%(server_name)s] Validate your email";
-    };
-  };
+
+  services.matrix-synapse.extraConfigFiles = [
+    config.sops.secrets.matrix_synapse_secrets.path
+  ];
 
   # services.matrix-synapse.extraConfigFiles = [builtins.toFile "matrix-synapse-extra-config" ''
   #   admin_contact: "admin.matrix@uninsane.org"
@@ -171,5 +154,10 @@
         };
       };
     };
+  };
+
+  sops.secrets.matrix_synapse_secrets = {
+    sopsFile = ../../../secrets/uninsane.yaml;
+    owner = config.users.users.matrix-synapse.name;
   };
 }
