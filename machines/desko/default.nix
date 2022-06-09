@@ -1,7 +1,6 @@
 { pkgs, config, lib, ... }:
 {
   imports = [
-    ./../../helpers/universal
     ./fs.nix
   ];
 
