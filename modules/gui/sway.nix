@@ -262,6 +262,16 @@ in
       #   }
       # '';
     };
+    colinsane.home-manager.extraPackages = [
+      pkgs.swaylock
+      pkgs.swayidle
+      pkgs.wl-clipboard
+      pkgs.mako # notification daemon
+      # pkgs.dmenu # todo: use wofi?
+      # user stuff
+      # pkgs.pavucontrol
+      pkgs.sway-contrib.grimshot
+    ];
   };
 }
 

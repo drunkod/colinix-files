@@ -238,18 +238,6 @@ in
         pkgs.whalebird # pleroma client. input is broken on phosh
         pkgs.xterm  # broken on phosh
       ] else [])
-      ++ (if config.colinsane.gui.sway.enable then
-      [
-        # TODO: move this to helpers/gui/sway.nix?
-        pkgs.swaylock
-        pkgs.swayidle
-        pkgs.wl-clipboard
-        pkgs.mako # notification daemon
-        # pkgs.dmenu # todo: use wofi?
-        # user stuff
-        # pkgs.pavucontrol
-        pkgs.sway-contrib.grimshot
-      ] else [])
       ++ (if config.colinsane.gui.enable && pkgs.system == "x86_64-linux" then
       [
         # x86_64 only
