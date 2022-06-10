@@ -18,8 +18,8 @@
     80   # HTTP
     143  # IMAP
     443  # HTTPS
-    465  # SMTPS (maybe not required?)
-    587  # SMTPS/submission (maybe not required?)
+    465  # SMTPS
+    587  # SMTPS/submission
     993  # IMAPS
   ];
   # DLNA ports: https://jellyfin.org/docs/general/networking/index.html

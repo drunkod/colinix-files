@@ -31,6 +31,10 @@ in
   };
 
   config = {
+    sops.secrets."colinsane_email_passwd" = {
+      owner = config.users.users.colin.name;
+    };
+
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
 
@@ -54,8 +58,38 @@ in
         videos = "$HOME/Videos";
       };
 
+      accounts.email.accounts.colinsane = {
+        address = "colin@uninsane.org";
+        userName = "colin";
+        imap = {
+          host = "imap.uninsane.org";
+          port = 993;
+        };
+        smtp = {
+          host = "mx.uninsane.org";
+          port = 465;
+        };
+        realName = "Colin Sane";
+        passwordCommand = "cat ${config.sops.secrets.colinsane_email_passwd.path}";
+
+        primary = true;
+
+        # mailbox synchronization
+        # mbsync = {
+        #   enable = true;
+        #   create = "maildir";
+        # };
+        # msmtp.enable = true;  # mail sender
+        # notmuch.enable = true;  # indexing; used by himalaya
+
+        # docs: https://github.com/soywod/himalaya
+        himalaya.enable = true;  # CLI email client
+      };
+
       programs = {
         home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
+
+        himalaya.enable = true;  # CLI email client
 
         zsh = {
           enable = true;
