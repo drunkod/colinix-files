@@ -25,3 +25,9 @@ creation_rules:
       - *user_desko_colin
       - *user_uninsane_colin
       - *host_uninsane
+  - path_regex: secrets/desko.yaml$
+    key_groups:
+    - age:
+      - *user_desko_colin
+      - *user_lappy_colin
+      - *host_desko

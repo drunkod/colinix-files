@@ -24,9 +24,8 @@
   ];
   colinsane.services.duplicity.enable = true;
 
-  sops.secrets."duplicity_passphrase" = {
+  sops.secrets.duplicity_passphrase = {
     sopsFile = ../../secrets/uninsane.yaml;
-    # owner = "duplicity";
   };
 
   # This value determines the NixOS release from which the default
