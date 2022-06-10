@@ -32,7 +32,7 @@
   # This will add secrets.yml to the nix store
   # You can avoid this by adding a string to the full path instead, i.e.
   # sops.defaultSopsFile = "/root/.sops/secrets/example.yaml";
-  sops.defaultSopsFile = ./../../secrets/example.yaml;
+  sops.defaultSopsFile = ./../../secrets/universal.yaml;
   # This will automatically import SSH keys as age keys
   sops.age.sshKeyPaths = [
     "/etc/ssh/ssh_host_ed25519_key"
@@ -44,9 +44,9 @@
   # This will generate a new key if the key specified above does not exist
   # sops.age.generateKey = true;
   # This is the actual specification of the secrets.
-  sops.secrets.example_key = {
-    owner = config.users.users.colin.name;
-  };
+  # sops.secrets.example_key = {
+  #   owner = config.users.users.colin.name;
+  # };
   # sops.secrets."myservice/my_subdir/my_secret" = {};
 }
 

@@ -7,6 +7,7 @@
     ./nix-cache.nix
     ./secrets.nix
     ./users.nix
+    ./vpn.nix
   ];
 
   time.timeZone = "America/Los_Angeles";
