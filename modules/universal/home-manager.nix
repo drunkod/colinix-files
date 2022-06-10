@@ -199,6 +199,7 @@ in
       wayland.windowManager = cfg.windowManager;
 
       home.packages = [
+        pkgs.backblaze-b2
         pkgs.btrfs-progs
         pkgs.dig
         pkgs.cryptsetup
