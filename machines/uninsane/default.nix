@@ -7,7 +7,6 @@
     ./net.nix
     ./users.nix
     ./services/ddns-he.nix
-    ./services/duplicity.nix
     ./services/gitea.nix
     ./services/jackett.nix
     ./services/jellyfin.nix
@@ -23,6 +22,12 @@
   colinsane.home-manager.extraPackages = [
     pkgs.matrix-synapse
   ];
+  colinsane.services.duplicity.enable = true;
+
+  sops.secrets."duplicity_passphrase" = {
+    sopsFile = ../../secrets/uninsane.yaml;
+    # owner = "duplicity";
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
