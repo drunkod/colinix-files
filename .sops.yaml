@@ -3,12 +3,12 @@ keys:
   - &user_lappy_colin age1ml8kkppftygu2wag57yld98jlrkh4avp54eheq7q0fa2rup843csqjajs6
   - &user_uninsane_colin age1z8fauff34cdecr6sjkre260luzxcca05kpcwvhx988d306tpcejsp63znu
   - &user_moby_colin age1lt739n2tq7dmpglvntjr9j2r7426md7rat7x9w930gagtx4jyvnqwts2al
-  - &host_desko age1s0v4fm203ap6mckcz3djw8hx30uqu87xfhfdajpmyf8rfrf5xs5swpz6m6
+  - &host_desko age1vnw7lnfpdpjn62l3u5nyv5xt2c965k96p98kc43mcnyzpetrts9q54mc9v
   - &host_lappy age1w7mectcjku6x3sd8plm8wkn2qfrhv9n6zhzlf329e2r2uycgke8qkf9dyn
   - &host_uninsane age1tzlyex2z6t88tg9h82943e39shxhmqeyr7ywhlwpdjmyqsndv3qq27x0rf
   - &host_moby age1t957gf0z865gya0khgc9x59wy76hzps3sgejjqtwcngn2xl273msxsmpe6
 creation_rules:
-  - path_regex: secrets/[^/]+\.yaml$
+  - path_regex: secrets/universal.yaml$
     key_groups:
     - age:
       - *user_desko_colin
@@ -19,7 +19,7 @@ creation_rules:
       - *host_lappy
       - *host_uninsane
       - *host_moby
-  - path_regex: secrets/uninsane/[^/]+\.yaml$
+  - path_regex: secrets/uninsane.yaml$
     key_groups:
     - age:
       - *user_desko_colin
