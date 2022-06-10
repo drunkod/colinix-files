@@ -79,6 +79,8 @@
     # this produces a EFI-bootable .img file (GPT with / and /boot).
     # after building this, steps are:
     #   run `btrfs-convert --uuid copy <device>`
+    #   resize the part (`cfdisk <device>`).
+    #   mount the device and resize the fs (`btrfs filesystem resize max <mountpoint>`)
     #   boot, checkout this flake into /etc/nixos AND UPDATE THE UUIDS IT REFERENCES.
     #   then `nixos-rebuild ...`
     decl-img = { name, system, extraModules ? [] }: (
