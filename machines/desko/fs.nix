@@ -2,7 +2,7 @@
 
 {
   fileSystems."/" = lib.mkDefault {
-    device = "/dev/disk/by-uuid/d969ee61-12cf-4490-be07-4440c7be593f";
+    device = "/dev/disk/by-uuid/985a0a32-da52-4043-9df7-615adec2e4ff";
     fsType = "btrfs";
     options = [
       "compress=zstd"
@@ -11,7 +11,7 @@
   };
 
   fileSystems."/boot" = {
-    device = lib.mkDefault "/dev/disk/by-uuid/F826-6192";
+    device = lib.mkDefault "/dev/disk/by-uuid/CAA7-E7D2";
     fsType = "vfat";
   };
 }
