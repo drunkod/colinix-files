@@ -24,6 +24,6 @@
   };
 
   sops.secrets."ddns_he" = {
-    sopsFile = ../../../secrets/uninsane.yaml;
+    sopsFile = ../../../secrets/servo.yaml;
   };
 }

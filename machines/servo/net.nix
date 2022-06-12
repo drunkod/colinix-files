@@ -88,7 +88,7 @@
   };
 
   sops.secrets."wg_ovpns_privkey" = {
-    sopsFile = ../../secrets/uninsane.yaml;
+    sopsFile = ../../secrets/servo.yaml;
   };
 
   # HURRICANE ELECTRIC CONFIG:

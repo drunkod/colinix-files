@@ -125,7 +125,7 @@
   # };
 
   sops.secrets.pleroma_secrets = {
-    sopsFile = ../../../secrets/uninsane.yaml;
+    sopsFile = ../../../secrets/servo.yaml;
     owner = config.users.users.pleroma.name;
   };
 }

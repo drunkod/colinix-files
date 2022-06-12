@@ -24,6 +24,7 @@ in
   };
   fileSystems."/mnt/media-uninsane-lan" = {
     # device = "sshfs#colin@uninsane.org:/opt/uninsane/media";
+    # TODO: use mdns, and replace this with `servo` instead
     device = "colin@192.168.0.5:/opt/uninsane/media";
     inherit (uninsane) fsType options;
   };

@@ -10,6 +10,6 @@
   };
 
   sops.secrets.nix_serve_privkey = {
-    sopsFile = ../../../secrets/uninsane.yaml;
+    sopsFile = ../../../secrets/servo.yaml;
   };
 }

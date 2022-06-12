@@ -19,7 +19,7 @@
   };
 
   outputs = { self, nixpkgs, mobile-nixos, home-manager, nurpkgs, sops-nix }: {
-    machines.uninsane = self.decl-bootable-machine { name = "uninsane"; system = "aarch64-linux"; };
+    machines.servo = self.decl-bootable-machine { name = "servo"; system = "aarch64-linux"; };
     machines.desko = self.decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
     machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
 

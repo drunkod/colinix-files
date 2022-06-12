@@ -29,10 +29,11 @@
     # XXX colin: create ssh key for THIS user by logging in and running:
     #   ssh-keygen -t ed25519
     openssh.authorizedKeys.keys = [
+      # TODO: is this key dead?
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSDe/y0e9PSeUwYlMPjzhW0UhNsGAGsW3lCG3apxrD5 colin@colin.desktop"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG+MZ/l5d8g5hbxMB9ed1uyvhV85jwNrSVNVxb5ujQjw colin@lappy"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPU5GlsSfbaarMvDA20bxpSZGWviEzXGD8gtrIowc1pX colin@desko"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPS1qFzKurAdB9blkWomq8gI1g0T3sTs9LsmFOj5VtqX colin@uninsane"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPS1qFzKurAdB9blkWomq8gI1g0T3sTs9LsmFOj5VtqX colin@servo"
       # TODO: should probably only let this authenticate to my server
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGCLCA9KbjXaXNNMJJvqbPO5KQQ64JCdG8sg88AfdKzi colin@moby"
     ];
