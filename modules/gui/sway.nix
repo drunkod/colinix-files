@@ -207,7 +207,7 @@ in
           height = 40;
           modules-left = ["sway/workspaces" "sway/mode"];
           modules-center = ["sway/window"];
-          modules-right = ["custom/mediaplayer" "clock" "cpu" "network"];
+          modules-right = ["custom/mediaplayer" "clock" "battery" "cpu" "network"];
           "sway/window" = {
             max-length = 50;
           };
@@ -235,6 +235,21 @@ in
           cpu = {
             format = "{usage}% ";
             tooltip = false;
+          };
+          battery = {
+            states = {
+              good = 95;
+              warning = 30;
+              critical = 10;
+            };
+            format = "{icon} {capacity}%";
+            format-icons = [
+              ""
+              ""
+              ""
+              ""
+              ""
+            ];
           };
           clock = {
             format-alt = "{:%a, %d. %b  %H:%M}";
