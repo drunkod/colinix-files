@@ -1,4 +1,5 @@
 { lib
+, pkgs
 , stdenv
 }:
 
@@ -8,7 +9,7 @@ stdenv.mkDerivation {
   src = ./src;
 
   # See: https://nixos.org/nixpkgs/manual/#ssec-stdenv-dependencies
-  buildInputs = [ ];
+  buildInputs = [ pkgs.rsync ];
 
   installPhase = ''
     mkdir -p "$out"

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -ex
+
+mnt=/mnt/media-uninsane
+if ! (test -d /mnt/media-uninsane-lan/Music)
+then
+  sudo mount /mnt/media-uninsane-lan && mnt=/mnt/media-uninsane-lan
+fi
+
+if ! (test -d $mnt/Music)
+then
+  sudo mount $mnt
+fi
+
+rsync -arv --delete --progress $mnt/Music/ ~/Music/
+
