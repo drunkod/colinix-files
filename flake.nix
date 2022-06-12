@@ -100,6 +100,8 @@
         #mobile-nixos.overlay
         nurpkgs.overlay
         (next: prev: {
+          #### my own, non-upstreamable packages:
+          sane-scripts = prev.callPackage ./pkgs/sane-scripts { };
           #### customized packages
           # nixos-unstable pleroma is too far out-of-date for our db
           pleroma = prev.callPackage ./pkgs/pleroma { };

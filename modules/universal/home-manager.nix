@@ -236,6 +236,7 @@ in
         pkgs.pulsemixer
         pkgs.python3
         pkgs.ripgrep
+        pkgs.sane-scripts
         pkgs.smartmontools
         pkgs.snapper
         pkgs.socat
