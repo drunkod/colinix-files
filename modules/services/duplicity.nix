@@ -58,5 +58,15 @@ in
     # set this for the FIRST backup, then remove it to enable incremental backups
     #   (that the first backup *isn't* full i think is a defect)
     # services.duplicity.fullIfOlderThan = "always";
+
+    systemd.services.duplicity.serviceConfig = {
+      # rate-limit the read bandwidth in an effort to thereby prevent net upload saturation
+      # this could perhaps be done better by adding a duplicity config option to replace the binary with `trickle`
+      IOReadBandwidthMax = [
+        "/dev/sda1 5M"
+        "/dev/nvme0n1 5M"
+        "/dev/mmc0 5M"
+      ];
+    };
   };
 }
