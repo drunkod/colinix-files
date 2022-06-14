@@ -4,7 +4,7 @@
   imports = [
     ./fs.nix
     ./home-manager.nix
-    ./nix-cache.nix
+    ./nix.nix
     ./secrets.nix
     ./users.nix
     ./vpn.nix
