@@ -223,7 +223,6 @@ in
         pkgs.netcat
         pkgs.networkmanager
         pkgs.nixpkgs-review
-        pkgs.nixUnstable  # TODO: still needed on 22.05?
         # pkgs.nixos-generators
         # pkgs.nettools
         pkgs.nmap

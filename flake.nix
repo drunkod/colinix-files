@@ -67,7 +67,6 @@
         inherit system;
         specialArgs = { inherit home-manager nurpkgs; };
         modules = [
-          ./configuration.nix
           ./modules
           ./machines/${name}
           (import ./helpers/set-hostname.nix name)
@@ -117,6 +116,7 @@
 
           # stable telegram doesn't build, so explicitly use the stable one.
           # TODO: apply this specifically to the moby build?
+          # TODO: all systems are using stable nixos. remove this?
           # tdesktop = pkgs-telegram.legacyPackages.${system}.tdesktop;
           tdesktop = nixpkgs.legacyPackages.${system}.tdesktop;
 
