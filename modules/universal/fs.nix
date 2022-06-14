@@ -17,11 +17,11 @@ let sshOpts = {
 };
 in
 {
-  fileSystems."/mnt/media-uninsane" = {
+  fileSystems."/mnt/servo-media-wan" = {
     device = "colin@uninsane.org:/opt/uninsane/media";
     inherit (sshOpts) fsType options;
   };
-  fileSystems."/mnt/media-uninsane-lan" = {
+  fileSystems."/mnt/servo-media-lan" = {
     device = "colin@servo:/opt/uninsane/media";
     inherit (sshOpts) fsType options;
   };
