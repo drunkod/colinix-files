@@ -1,6 +1,6 @@
 { pkgs, ... }:
 
-let uninsane = {
+let sshOpts = {
   fsType = "fuse.sshfs";
   options = [
     "x-systemd.automount"
@@ -18,16 +18,18 @@ let uninsane = {
 in
 {
   fileSystems."/mnt/media-uninsane" = {
-    # device = "sshfs#colin@uninsane.org:/opt/uninsane/media";
     device = "colin@uninsane.org:/opt/uninsane/media";
-    inherit (uninsane) fsType options;
+    inherit (sshOpts) fsType options;
   };
   fileSystems."/mnt/media-uninsane-lan" = {
-    # device = "sshfs#colin@uninsane.org:/opt/uninsane/media";
-    # TODO: use mdns, and replace this with `servo` instead
-    device = "colin@192.168.0.5:/opt/uninsane/media";
-    inherit (uninsane) fsType options;
+    device = "colin@servo:/opt/uninsane/media";
+    inherit (sshOpts) fsType options;
   };
+  fileSystems."/mnt/desko-home" = {
+    device = "colin@desko:/home/colin";
+    inherit (sshOpts) fsType options;
+  };
+
   environment.systemPackages = [
     pkgs.sshfs-fuse
   ];
