@@ -251,6 +251,7 @@ in
       ++ (if config.colinsane.gui.enable then
       [
         # GUI only
+        pkgs.audacity
         pkgs.chromium
         pkgs.clinfo
         pkgs.element-desktop  # broken on phosh
