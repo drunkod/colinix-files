@@ -175,13 +175,15 @@ in
 
           # NB: these must be manually enabled in the Firefox settings on first start
           # extensions can be found here: https://gitlab.com/rycee/nur-expressions/-/blob/master/pkgs/firefox-addons/addons.json
-          extensions = [
-            pkgs.nur.repos.rycee.firefox-addons.bypass-paywalls-clean
-            pkgs.nur.repos.rycee.firefox-addons.metamask
-            pkgs.nur.repos.rycee.firefox-addons.i-dont-care-about-cookies
-            pkgs.nur.repos.rycee.firefox-addons.sidebery
-            pkgs.nur.repos.rycee.firefox-addons.sponsorblock
-            pkgs.nur.repos.rycee.firefox-addons.ublock-origin
+          extensions = let
+            addons = pkgs.nur.repos.rycee.firefox-addons;
+          in [
+            addons.bypass-paywalls-clean
+            addons.metamask
+            addons.i-dont-care-about-cookies
+            addons.sidebery
+            addons.sponsorblock
+            addons.ublock-origin
           ];
         };
 
@@ -198,92 +200,94 @@ in
 
       wayland.windowManager = cfg.windowManager;
 
-      home.packages = [
-        pkgs.backblaze-b2
-        pkgs.btrfs-progs
-        pkgs.dig
-        pkgs.cryptsetup
-        pkgs.duplicity
-        pkgs.fatresize
-        pkgs.fd
-        pkgs.file
-        pkgs.gnumake
-        pkgs.gptfdisk
-        pkgs.hdparm
-        pkgs.htop
-        pkgs.iftop
-        pkgs.ifuse
-        pkgs.inetutils  # for telnet
-        pkgs.iotop
-        pkgs.iptables
-        pkgs.jq
-        pkgs.killall
-        pkgs.libimobiledevice
-        pkgs.lm_sensors  # for sensors-detect
-        pkgs.lsof
-        pkgs.mix2nix
-        pkgs.netcat
-        pkgs.networkmanager
-        pkgs.nixpkgs-review
-        # pkgs.nixos-generators
-        # pkgs.nettools
-        pkgs.nmap
-        pkgs.obsidian
-        pkgs.openssl
-        pkgs.parted
-        pkgs.pciutils
-        # pkgs.ponymix
-        pkgs.powertop
-        pkgs.pulsemixer
-        pkgs.python3
-        pkgs.ripgrep
-        pkgs.sane-scripts
-        pkgs.smartmontools
-        pkgs.snapper
-        pkgs.socat
-        pkgs.sops
-        pkgs.ssh-to-age
-        pkgs.sudo
-        pkgs.usbutils
-        pkgs.wget
-        pkgs.wireguard-tools
-        pkgs.youtube-dl
-        pkgs.zola
+      home.packages = with pkgs; [
+        backblaze-b2
+        btrfs-progs
+        dig
+        cryptsetup
+        duplicity
+        fatresize
+        fd
+        file
+        gnumake
+        gptfdisk
+        hdparm
+        htop
+        iftop
+        ifuse
+        inetutils  # for telnet
+        iotop
+        iptables
+        jq
+        killall
+        libimobiledevice
+        lm_sensors  # for sensors-detect
+        lsof
+        mix2nix
+        netcat
+        networkmanager
+        nixpkgs-review
+        # nixos-generators
+        # nettools
+        nmap
+        obsidian
+        openssl
+        parted
+        pciutils
+        # ponymix
+        powertop
+        pulsemixer
+        python3
+        ripgrep
+        sane-scripts
+        smartmontools
+        snapper
+        socat
+        sops
+        ssh-to-age
+        sudo
+        usbutils
+        wget
+        wireguard-tools
+        youtube-dl
+        zola
       ]
       ++ (if config.colinsane.gui.enable then
+      with pkgs;
       [
         # GUI only
-        pkgs.audacity
-        pkgs.chromium
-        pkgs.clinfo
-        pkgs.element-desktop  # broken on phosh
-        pkgs.evince  # works on phosh
-        pkgs.font-manager
-        pkgs.gimp  # broken on phosh
-        pkgs.gnome.dconf-editor
-        pkgs.gnome.file-roller
-        pkgs.gnome.gnome-maps  # works on phosh
-        pkgs.gnome.nautilus
-        pkgs.gnome-podcasts
-        pkgs.gnome.gnome-terminal  # works on phosh
-        pkgs.inkscape
-        pkgs.libreoffice-fresh  # XXX colin: maybe don't want this on mobile
-        pkgs.mesa-demos
-        pkgs.networkmanagerapplet
-        pkgs.playerctl
-        pkgs.tdesktop  # broken on phosh
-        pkgs.vlc  # works on phosh
-        pkgs.whalebird # pleroma client. input is broken on phosh
-        pkgs.xterm  # broken on phosh
+        audacity
+        chromium
+        clinfo
+        element-desktop  # broken on phosh
+        evince  # works on phosh
+        font-manager
+        gimp  # broken on phosh
+        gnome.dconf-editor
+        gnome.file-roller
+        gnome.gnome-maps  # works on phosh
+        gnome.nautilus
+        gnome-podcasts
+        gnome.gnome-terminal  # works on phosh
+        inkscape
+        libreoffice-fresh  # XXX colin: maybe don't want this on mobile
+        mesa-demos
+        networkmanagerapplet
+        playerctl
+        tdesktop  # broken on phosh
+        vlc  # works on phosh
+        whalebird # pleroma client. input is broken on phosh
+        xterm  # broken on phosh
       ] else [])
       ++ (if config.colinsane.gui.enable && pkgs.system == "x86_64-linux" then
+      with pkgs;
       [
         # x86_64 only
-        pkgs.discord
-        pkgs.kaiteki  # Pleroma client
-        pkgs.gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
-        pkgs.signal-desktop
-        pkgs.spotify
+        discord
+        kaiteki  # Pleroma client
+        gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
+        signal-desktop
+        spotify
       ] else [])
       ++ cfg.extraPackages;
     };
