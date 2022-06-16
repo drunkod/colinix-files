@@ -212,11 +212,13 @@ in
         pkgs.hdparm
         pkgs.htop
         pkgs.iftop
+        pkgs.ifuse
         pkgs.inetutils  # for telnet
         pkgs.iotop
         pkgs.iptables
         pkgs.jq
         pkgs.killall
+        pkgs.libimobiledevice
         pkgs.lm_sensors  # for sensors-detect
         pkgs.lsof
         pkgs.mix2nix

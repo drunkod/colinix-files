@@ -10,6 +10,9 @@
   colinsane.gui.sway.enable = true;
   colinsane.services.duplicity.enable = true;
 
+  # needed to use libimobiledevice/ifuse, for iphone sync
+  services.usbmuxd.enable = true;
+
   sops.secrets.duplicity_passphrase = {
     sopsFile = ../../secrets/desko.yaml;
   };
