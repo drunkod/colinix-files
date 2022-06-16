@@ -40,6 +40,9 @@ in
       pulse.enable = true;
     };
 
+    hardware.bluetooth.enable = true;
+    services.blueman.enable = true;
+
     networking.useDHCP = false;
     networking.networkmanager.enable = true;
     networking.wireless.enable = lib.mkForce false;
@@ -277,15 +280,16 @@ in
       #   }
       # '';
     };
-    colinsane.home-manager.extraPackages = [
-      pkgs.swaylock
-      pkgs.swayidle
-      pkgs.wl-clipboard
-      pkgs.mako # notification daemon
-      # pkgs.dmenu # todo: use wofi?
+    colinsane.home-manager.extraPackages = with pkgs; [
+      swaylock
+      swayidle
+      wl-clipboard
+      mako # notification daemon
+      # dmenu # todo: use wofi?
       # user stuff
-      # pkgs.pavucontrol
+      # pavucontrol
       pkgs.sway-contrib.grimshot
+      gnome.gnome-bluetooth
     ];
   };
 }
