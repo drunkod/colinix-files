@@ -49,7 +49,7 @@ in
         enable = true;
         createDirectories = false;  # on headless systems, most xdg dirs are noise
         desktop = "$HOME/.xdg/Desktop";
-        documents = "$HOME/src";
+        documents = "$HOME/dev";
         download = "$HOME/tmp";
         music = "$HOME/Music";
         pictures = "$HOME/Pictures";
