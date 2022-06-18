@@ -6,7 +6,6 @@
 
 # cleanup
 - remove helpers from outputs section (use `let .. in`)
-- port helpers/ to the module system and mkOption
 
 
 # speed up cross compiling
