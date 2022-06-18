@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+sudo systemctl stop pleroma gitea matrix-synapse jellyfin dovecot2 opendkim transmission jackett postfix nginx
+sudo systemctl stop postgresql
+sudo systemctl stop matrix-appservice-irc
+sudo systemctl stop duplicity.timer
+sudo systemctl stop duplicity
+sudo systemctl stop wg0veth wireguard-wg0
