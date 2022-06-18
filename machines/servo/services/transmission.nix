@@ -14,6 +14,8 @@
     rpc-whitelist-enabled = false;
 
     # download-dir = "/opt/uninsane/media/";
+    # hopefully, make the downloads world-readable
+    umask = 0;
 
     # force peer connections to be encrypted
     encryption = 2;
