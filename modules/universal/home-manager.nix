@@ -206,6 +206,7 @@ in
         dig
         cryptsetup
         duplicity
+        efibootmgr
         fatresize
         fd
         file

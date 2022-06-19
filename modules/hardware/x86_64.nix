@@ -10,7 +10,10 @@ with lib;
     ];
     boot.initrd.kernelModules = [ ];
     boot.initrd.supportedFilesystems = [ "ext4" "btrfs" "ext2" "ext3" "vfat" ];
-    # find more of these with sensors-detect
+    # useful emergency utils
+    boot.initrd.extraUtilsCommands = ''
+      copy_bin_and_libs ${pkgs.btrfs-progs}/bin/btrfstune
+    '';
     boot.kernelModules = [
       "coretemp"
       "kvm-intel"
