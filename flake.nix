@@ -56,8 +56,11 @@
           ./nixpatches/02-rpi4-uboot.patch
           # alternative to https://github.com/NixOS/nixpkgs/pull/173200
           ./nixpatches/04-dart-2.7.0.patch
-          # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176476
-          ./nixpatches/06-whalebird-4.6.0-aarch64.patch
+          # whalebird: suuport aarch64
+          (basePkgs.legacyPackages.${system}.fetchpatch {
+            url = "https://github.com/NixOS/nixpkgs/pull/176476.diff";
+            sha256 = "sha256-126DljM06hqPZ3fjLZ3LBZR64nFbeTfzSazEu72d4y8=";
+          })
           # TODO: upstream
           ./nixpatches/07-duplicity-rich-url.patch
         ];
