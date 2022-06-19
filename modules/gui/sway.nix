@@ -285,10 +285,10 @@ in
       swayidle
       wl-clipboard
       mako # notification daemon
-      # dmenu # todo: use wofi?
+      xdg-utils  # for xdg-open
       # user stuff
       # pavucontrol
-      pkgs.sway-contrib.grimshot
+      sway-contrib.grimshot
       gnome.gnome-bluetooth
     ];
   };
