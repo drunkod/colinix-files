@@ -18,9 +18,12 @@
       ${crl} "https://uninsane.org:$HE_PASSPHRASE@dyn.dns.he.net/nic/update?hostname=uninsane.org"
     '';
   };
-  systemd.timers.ddns-he.timerConfig = {
-    OnStartupSec = "2min";
-    OnUnitActiveSec = "10min";
+  systemd.timers.ddns-he = {
+    wantedBy = [ "multi-user.target" ];
+    timerConfig = {
+      OnStartupSec = "2min";
+      OnUnitActiveSec = "10min";
+    };
   };
 
   sops.secrets."ddns_he" = {
