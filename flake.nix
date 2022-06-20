@@ -16,9 +16,10 @@
     };
     nurpkgs.url = "github:nix-community/NUR";
     sops-nix.url = "github:Mic92/sops-nix";
+    impermanence.url = "github:nix-community/impermanence";
   };
 
-  outputs = { self, nixpkgs, mobile-nixos, home-manager, nurpkgs, sops-nix }: {
+  outputs = { self, nixpkgs, mobile-nixos, home-manager, nurpkgs, sops-nix, impermanence }: {
     machines.servo = self.decl-bootable-machine { name = "servo"; system = "aarch64-linux"; };
     machines.desko = self.decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
     machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
@@ -68,7 +69,7 @@
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
       in (nixosSystem {
         inherit system;
-        specialArgs = { inherit home-manager nurpkgs; };
+        specialArgs = { inherit home-manager nurpkgs impermanence; };
         modules = [
           ./modules
           ./machines/${name}
