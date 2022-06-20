@@ -240,6 +240,7 @@ in
         pulsemixer
         python3
         ripgrep
+        rmlint
         sane-scripts
         smartmontools
         snapper

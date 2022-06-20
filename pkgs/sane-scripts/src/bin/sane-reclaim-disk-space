@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -ex
+# script to reclaim some hard drive space
+sudo nix-collect-garbage
+# identify duplicate files in the nix store
+rmlint --types="duplicates" --config=sh:handler=clone --output=sh:/tmp/rmlint.sh --progress /nix/store
+# link the dupes together (uses ioctl_fideduperange)
+#   see: https://btrfs.wiki.kernel.org/index.php/Deduplication
+#   see: https://rmlint.readthedocs.io/en/latest/tutorial.html
+sudo mount -o remount,rw /nix/store
+/tmp/rmlint.sh -d || true  # on failure, we still want to remount ro
+# XXX this doesn't work: 'mount point is busy.'
+sudo mount -o remount,ro /nix/store
+
+# TODO: instead of using rmlint, could use dduper: https://github.com/Lakshmipathi/dduper
+#   better perf for btrfs (checksum tests)
+#   likely also better compression, on account of being block-based instead of whole-file based.
+#   however, not clearly actively maintained; uses custom btrfs-progs patch; riskier
+#     might not currently build on nix: https://github.com/NixOS/nixpkgs/issues/175730
