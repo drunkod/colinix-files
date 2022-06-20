@@ -231,6 +231,7 @@ in
         # nixos-generators
         # nettools
         nmap
+        oathToolkit  # for oathtool
         obsidian
         openssl
         parted
