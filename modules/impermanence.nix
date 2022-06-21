@@ -27,18 +27,20 @@ in
         "/etc/NetworkManager/system-connections"
         "/etc/nixos"
         "/etc/ssh"
-        # TODO: these individual files don't bind-mount. Xe shows the right way to handle files, i believe.
-        # "/etc/machine-id"
-        # # XXX these only need persistence because i have mutableUsers = true, i think
-        # "/etc/group"
-        # "/etc/passwd"
-        # "/etc/shadow"
         # TODO: more granular persistence of /var/lib
         "/var/lib"
         "/var/log"
         "/mnt"
         # TODO: what even GOES in /srv?
         "/srv"
+      ];
+      files = [
+        "/etc/machine-id"
+        # # XXX these only need persistence because i have mutableUsers = true, i think
+        # "/etc/group"
+        # "/etc/passwd"
+        # "/etc/shadow"
+        # { file = "/home/test2"; persistentStoragePath = "/nix/persist"; }
       ];
     };
   };
