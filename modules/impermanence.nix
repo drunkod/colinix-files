@@ -22,8 +22,23 @@ in
   config = mkIf cfg.enable {
     environment.persistence."/nix/persist" = {
       directories = [
-        # TODO: more granular persistence of /home
-        "/home/colin"
+        "/home/colin/archive"
+        "/home/colin/dev"
+        "/home/colin/ref"
+        "/home/colin/tmp"
+        "/home/colin/Music"
+        "/home/colin/Pictures"
+        "/home/colin/Videos"
+
+        # cache is probably too big to fit on the tmpfs
+        # TODO: we could bind-mount it to something which gets cleared per boot, though.
+        "/home/colin/.cache"
+        "/home/colin/.ssh"
+        # intentionally omitted:
+        # "/home/colin/.config"  # managed by home-manager
+        # "/home/colin/.local"   # nothing useful in here
+        # "/home/colin/.mozilla" # managed by home-manager
+
         "/etc/NetworkManager/system-connections"
         "/etc/nixos"
         "/etc/ssh"
@@ -36,6 +51,8 @@ in
       ];
       files = [
         "/etc/machine-id"
+        # "/home/colin/knowledge"
+        "/home/colin/.zsh_history"
         # # XXX these only need persistence because i have mutableUsers = true, i think
         # "/etc/group"
         # "/etc/passwd"
