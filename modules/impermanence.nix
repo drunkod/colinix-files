@@ -40,7 +40,7 @@ in
         # "/home/colin/.mozilla" # managed by home-manager
 
         "/etc/NetworkManager/system-connections"
-        "/etc/nixos"
+        # "/etc/nixos"
         "/etc/ssh"
         # TODO: more granular persistence of /var/lib
         "/var/lib"
