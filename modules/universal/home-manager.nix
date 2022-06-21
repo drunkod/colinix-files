@@ -259,6 +259,7 @@ in
       with pkgs;
       [
         # GUI only
+        aerc  # email client
         audacity
         chromium
         clinfo
