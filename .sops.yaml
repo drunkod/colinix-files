@@ -8,7 +8,7 @@ keys:
   - &host_servo age1tzlyex2z6t88tg9h82943e39shxhmqeyr7ywhlwpdjmyqsndv3qq27x0rf
   - &host_moby age1t957gf0z865gya0khgc9x59wy76hzps3sgejjqtwcngn2xl273msxsmpe6
 creation_rules:
-  - path_regex: secrets/universal.yaml$
+  - path_regex: secrets/universal*
     key_groups:
     - age:
       - *user_desko_colin

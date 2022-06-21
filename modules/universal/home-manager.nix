@@ -34,11 +34,18 @@ in
     sops.secrets."colinsane_email_passwd" = {
       owner = config.users.users.colin.name;
     };
+    sops.secrets."aerc_accounts" = {
+      owner = config.users.users.colin.name;
+      sopsFile = ../../secrets/universal/aerc_accounts.conf;
+      format = "binary";
+    };
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
 
-    home-manager.users.colin = {
+    # XXX this weird rename + closure is to get home-manager's `config.lib.file` to exist.
+    # see: https://github.com/nix-community/home-manager/issues/589#issuecomment-950474105
+    home-manager.users.colin = let sysconfig = config; in { config, ... }: {
       home.stateVersion = "21.11";
       home.username = "colin";
       home.homeDirectory = "/home/colin";
@@ -58,6 +65,9 @@ in
         videos = "$HOME/Videos";
       };
 
+      xdg.configFile."aerc/accounts.conf".source =
+        config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.aerc_accounts.path;
+
       accounts.email.accounts.colinsane = {
         address = "colin@uninsane.org";
         userName = "colin";
@@ -70,7 +80,7 @@ in
           port = 465;
         };
         realName = "Colin Sane";
-        passwordCommand = "cat ${config.sops.secrets.colinsane_email_passwd.path}";
+        passwordCommand = "cat ${sysconfig.sops.secrets.colinsane_email_passwd.path}";
 
         primary = true;
 
@@ -155,7 +165,7 @@ in
           '';
         };
 
-        firefox = lib.mkIf (config.colinsane.gui.enable) {
+        firefox = lib.mkIf (sysconfig.colinsane.gui.enable) {
           enable = true;
 
           profiles.default = {
@@ -255,7 +265,7 @@ in
         youtube-dl
         zola
       ]
-      ++ (if config.colinsane.gui.enable then
+      ++ (if sysconfig.colinsane.gui.enable then
       with pkgs;
       [
         # GUI only
@@ -283,7 +293,7 @@ in
         whalebird # pleroma client. input is broken on phosh
         xterm  # broken on phosh
       ] else [])
-      ++ (if config.colinsane.gui.enable && pkgs.system == "x86_64-linux" then
+      ++ (if sysconfig.colinsane.gui.enable && pkgs.system == "x86_64-linux" then
       with pkgs;
       [
         # x86_64 only
