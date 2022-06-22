@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+echo plain: $(curl https://ipinfo.io/ip)
+sudo systemctl start wg-quick-ovpnd
+echo vpn:   $(curl https://ipinfo.io/ip)
