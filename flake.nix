@@ -19,16 +19,10 @@
     impermanence.url = "github:nix-community/impermanence";
   };
 
-  outputs = { self, nixpkgs, mobile-nixos, home-manager, nurpkgs, sops-nix, impermanence }: {
-    machines.servo = self.decl-bootable-machine { name = "servo"; system = "aarch64-linux"; };
-    machines.desko = self.decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
-    machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
-    machines.moby = self.decl-bootable-machine { name = "moby"; system = "aarch64-linux"; };
-
-    nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) self.machines;
-    imgs = builtins.mapAttrs (name: value: value.img) self.machines;
-
-    decl-machine = { name, system }: let
+  outputs = { self, nixpkgs, mobile-nixos, home-manager, nurpkgs, sops-nix, impermanence }:
+  let
+    decl-machine = { name, system }:
+    let
       patchedPkgs = nixpkgs.legacyPackages.${system}.applyPatches {
         name = "nixpkgs-patched-uninsane";
         src = nixpkgs;
@@ -53,27 +47,27 @@
         ];
       };
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
-      in (nixosSystem {
-        inherit system;
-        specialArgs = { inherit nixpkgs mobile-nixos home-manager nurpkgs impermanence; };
-        modules = [
-          ./modules
-          ./machines/${name}
-          (import ./helpers/set-hostname.nix name)
-          sops-nix.nixosModules.sops
-          {
-            nixpkgs.config.allowUnfree = true;
-            nixpkgs.overlays = [
-              nurpkgs.overlay
-              (import "${mobile-nixos}/overlay/overlay.nix")
-              (import ./pkgs/overlay.nix)
-            ];
-          }
-        ];
+    in (nixosSystem {
+      inherit system;
+      specialArgs = { inherit nixpkgs mobile-nixos home-manager nurpkgs impermanence; };
+      modules = [
+        ./modules
+        ./machines/${name}
+        (import ./helpers/set-hostname.nix name)
+        sops-nix.nixosModules.sops
+        {
+          nixpkgs.config.allowUnfree = true;
+          nixpkgs.overlays = [
+            nurpkgs.overlay
+            (import "${mobile-nixos}/overlay/overlay.nix")
+            (import ./pkgs/overlay.nix)
+          ];
+        }
+      ];
     });
 
     decl-bootable-machine = { name, system }: rec {
-      nixosConfiguration = self.decl-machine { inherit name system; };
+      nixosConfiguration = decl-machine { inherit name system; };
       # this produces a EFI-bootable .img file (GPT with a /boot partition and a system (/ or /nix) partition).
       # after building this:
       #   - flash it to a bootable medium (SD card, flash drive)
@@ -82,6 +76,13 @@
       #   - `nixos-rebuild --flake './#<machine>' switch`
       img = nixosConfiguration.config.system.build.img;
     };
+    machines.servo = decl-bootable-machine { name = "servo"; system = "aarch64-linux"; };
+    machines.desko = decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
+    machines.lappy = decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
+    machines.moby = decl-bootable-machine { name = "moby"; system = "aarch64-linux"; };
+  in {
+    nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) machines;
+    imgs = builtins.mapAttrs (name: value: value.img) machines;
   };
 }
 
