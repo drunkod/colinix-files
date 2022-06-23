@@ -4,7 +4,7 @@
     ./fs.nix
   ];
 
-  # colinsane.gui.sway.enable = true;
+  colinsane.gui.sway.enable = true;
   colinsane.impermanence.enable = true;
   colinsane.extlinux.enable = true;
 

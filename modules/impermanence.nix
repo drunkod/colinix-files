@@ -10,6 +10,7 @@ let
 in
 {
   imports = [
+    # TODO: move to flake.nix?
     impermanence.nixosModule
   ];
   options = {
