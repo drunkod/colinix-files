@@ -1,5 +1,11 @@
-{ pkgs, ... }:
+{ pkgs, mobile-nixos, ... }:
 {
+  imports = [
+    (import "${mobile-nixos}/lib/configuration.nix" {
+      device = "pine64-pinephone";
+    })
+    ./fs.nix
+  ];
   # XXX colin: phosh doesn't work well with passwordless login
   users.users.colin.initialPassword = "147147";
 

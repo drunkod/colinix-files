@@ -23,21 +23,7 @@
     machines.servo = self.decl-bootable-machine { name = "servo"; system = "aarch64-linux"; };
     machines.desko = self.decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
     machines.lappy = self.decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
-
-    machines.moby =
-      let machine = self.decl-machine {
-        name = "moby";
-        system = "aarch64-linux";
-        extraModules = [
-          (import "${mobile-nixos}/lib/configuration.nix" {
-            device = "pine64-pinephone";
-          })
-        ];
-      };
-      in {
-        nixosConfiguration = machine;
-        img = machine.config.mobile.outputs.u-boot.disk-image;
-      };
+    machines.moby = self.decl-bootable-machine { name = "moby"; system = "aarch64-linux"; };
 
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) self.machines;
     imgs = builtins.mapAttrs (name: value: value.img) self.machines;
@@ -69,7 +55,7 @@
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
       in (nixosSystem {
         inherit system;
-        specialArgs = { inherit nixpkgs home-manager nurpkgs impermanence; };
+        specialArgs = { inherit nixpkgs mobile-nixos home-manager nurpkgs impermanence; };
         modules = [
           ./modules
           ./machines/${name}

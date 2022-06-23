@@ -234,7 +234,6 @@ in
         sops
         ssh-to-age
         sudo
-        syslinux
         usbutils
         wget
         wireguard-tools
