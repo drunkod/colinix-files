@@ -1,5 +1,15 @@
-{ config, lib, pkgs, mobile-nixos, ... }:
+{ config, lib, pkgs, mobile-nixos, utils, ... }:
 
+let
+  # fileSystems = lib.filter utils.fsNeededForBoot config.system.build.fileSystems;
+  fileSystems = config.fileSystems;
+  bootFs = fileSystems."/boot";
+  storeFs = fileSystems."/nix/store" or fileSystems."/nix" or fileSystems."/";
+  # yield e.g. "nix/store", "/store" or ""
+  storeRelPath = builtins.head (builtins.match "^${storeFs.mountPoint}(.+)" "/nix/store");
+  uuidFromFs = fs: builtins.head (builtins.match "/dev/disk/by-uuid/(.+)" fs.device);
+  vfatUuidFromFs = fs: builtins.replaceStrings ["-"] [""] (uuidFromFs fs);
+in
 {
   system.build.img-without-firmware = with pkgs; imageBuilder.diskImage.makeGPT {
     name = "nixos";
@@ -9,7 +19,8 @@
       (imageBuilder.fileSystem.makeESP {
         name = "ESP";
         partitionLabel = "ESP";
-        partitionID = "43021685";
+        partitionID = vfatUuidFromFs bootFs;
+        # TODO: should this even have a part uuid?
         partitionUUID = "CFB21B5C-A580-DE40-940F-B9644B4466E3";
         size = imageBuilder.size.MiB 256;
 
@@ -19,23 +30,24 @@
           echo "ran installBootLoader"
         '';
       })
+      # TODO: make format-aware
       (imageBuilder.fileSystem.makeExt4 {
         name = "NIXOS_SYSTEM";
         partitionLabel = "NIXOS_SYSTEM";
-        partitionID = "5A7FA69C-9394-8144-A74C-6726048B129F";
-        partitionUUID = "5A7FA69C-9394-8144-A74C-6726048B129F";
+        partitionID = uuidFromFs storeFs;
+        partitionUUID = uuidFromFs storeFs;
+        # TODO: what's this?
         partitionType = "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1";
-        # size = imagBuilder.size.GiB 6;
         populateCommands =
         let
           closureInfo = buildPackages.closureInfo { rootPaths = config.system.build.toplevel; };
         in
         ''
-          mkdir -p ./nix/store
+          mkdir -p ./${storeRelPath}
           echo "Copying system closure..."
           while IFS= read -r path; do
             echo "  Copying $path"
-            cp -prf "$path" ./nix/store
+            cp -prf "$path" ./${storeRelPath}
           done < "${closureInfo}/store-paths"
           echo "Done copying system closure..."
           cp -v ${closureInfo}/registration ./nix-path-registration

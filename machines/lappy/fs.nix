@@ -25,7 +25,7 @@
   #   fsType = "vfat";
   # };
 
-  fileSystems."/" = {
+  fileSystems."/nix" = {
     device = "/dev/disk/by-uuid/5a7fa69c-9394-8144-a74c-6726048b129f";
     fsType = "ext4";
   };
@@ -33,5 +33,15 @@
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/4302-1685";
     fsType = "vfat";
+  };
+
+  fileSystems."/" = {
+    device = "none";
+    fsType = "tmpfs";
+    options = [
+      "mode=755"
+      "size=1G"
+      "defaults"
+    ];
   };
 }
