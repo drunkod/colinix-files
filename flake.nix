@@ -26,25 +26,7 @@
       patchedPkgs = nixpkgs.legacyPackages.${system}.applyPatches {
         name = "nixpkgs-patched-uninsane";
         src = nixpkgs;
-        patches = [
-          # phosh: allow fractional scaling
-          (nixpkgs.legacyPackages.${system}.fetchpatch {
-            url = "https://github.com/NixOS/nixpkgs/pull/175872.diff";
-            sha256 = "sha256-mEmqhe8DqlyCxkFWQKQZu+2duz69nOkTANh9TcjEOdY=";
-          })
-          # for raspberry pi: allow building u-boot for rpi 4{,00}
-          # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
-          ./nixpatches/02-rpi4-uboot.patch
-          # alternative to https://github.com/NixOS/nixpkgs/pull/173200
-          ./nixpatches/04-dart-2.7.0.patch
-          # whalebird: suuport aarch64
-          (nixpkgs.legacyPackages.${system}.fetchpatch {
-            url = "https://github.com/NixOS/nixpkgs/pull/176476.diff";
-            sha256 = "sha256-126DljM06hqPZ3fjLZ3LBZR64nFbeTfzSazEu72d4y8=";
-          })
-          # TODO: upstream
-          ./nixpatches/07-duplicity-rich-url.patch
-        ];
+        patches = import ./nixpatches/list.nix nixpkgs.legacyPackages.${system}.fetchpatch;
       };
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
     in (nixosSystem {
