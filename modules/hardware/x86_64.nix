@@ -26,7 +26,6 @@ with lib;
 
     boot.loader.grub.enable = false;
     # boot.loader.generic-extlinux-compatible.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
 
     # enable cross compilation
     boot.binfmt.emulatedSystems = [ "aarch64-linux" ];

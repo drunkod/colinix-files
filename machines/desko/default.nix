@@ -19,6 +19,7 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 40;  # keep this many generations
+  boot.loader.efi.canTouchEfiVariables = true;
 
   # docs: https://nixos.org/manual/nixos/stable/options.html#opt-system.stateVersion
   system.stateVersion = "21.05";

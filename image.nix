@@ -4,13 +4,13 @@
   system.build.img-without-firmware = with pkgs; imageBuilder.diskImage.makeGPT {
     name = "nixos";
     diskID = "01234567";
-    headerHole = imageBuilder.size.MiB 16;
+    # headerHole = imageBuilder.size.MiB 16;
     partitions = [
       (imageBuilder.fileSystem.makeESP {
         name = "ESP";
         partitionLabel = "ESP";
-        partitionID = "4E021684";
-        partitionUUID = "CFB21B5C-A580-DE40-940F-B9644B4466E2";
+        partitionID = "43021685";
+        partitionUUID = "CFB21B5C-A580-DE40-940F-B9644B4466E3";
         size = imageBuilder.size.MiB 256;
 
         populateCommands = ''
@@ -22,9 +22,9 @@
       (imageBuilder.fileSystem.makeExt4 {
         name = "NIXOS_SYSTEM";
         partitionLabel = "NIXOS_SYSTEM";
-        partitionID = "5A7FA69C-9394-8144-A74C-6726048B129E";
-        partitionUUID = "5A7FA69C-9394-8144-A74C-6726048B129E";
-        # partitionType = "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1";
+        partitionID = "5A7FA69C-9394-8144-A74C-6726048B129F";
+        partitionUUID = "5A7FA69C-9394-8144-A74C-6726048B129F";
+        partitionType = "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1";
         # size = imagBuilder.size.GiB 6;
         populateCommands =
         let
