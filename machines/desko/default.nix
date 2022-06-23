@@ -17,6 +17,9 @@
     sopsFile = ../../secrets/desko.yaml;
   };
 
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 40;  # keep this many generations
+
   # docs: https://nixos.org/manual/nixos/stable/options.html#opt-system.stateVersion
   system.stateVersion = "21.05";
 }

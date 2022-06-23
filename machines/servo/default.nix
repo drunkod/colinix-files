@@ -19,6 +19,7 @@
     ./services/transmission.nix
   ];
 
+  colinsane.home-manager.enable = true;
   colinsane.home-manager.extraPackages = [
     pkgs.matrix-synapse
   ];

@@ -69,13 +69,18 @@
       nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
       in (nixosSystem {
         inherit system;
-        specialArgs = { inherit home-manager nurpkgs impermanence; };
+        specialArgs = { inherit nixpkgs home-manager nurpkgs impermanence; };
         modules = [
           ./modules
           ./machines/${name}
           (import ./helpers/set-hostname.nix name)
           (self.overlaysModule system)
           sops-nix.nixosModules.sops
+          {
+            nixpkgs.overlays = [
+              (import "${mobile-nixos}/overlay/overlay.nix")
+            ];
+          }
         ] ++ extraModules;
     });
 
@@ -88,7 +93,7 @@
     #   then `nixos-rebuild ...`
     decl-img = { name, system, extraModules ? [] }: (
       (self.decl-machine { inherit name system; extraModules = extraModules ++ [./image.nix]; })
-        .config.system.build.raw
+        .config.system.build.img
     );
 
     decl-bootable-machine = { name, system }: {
@@ -96,6 +101,7 @@
       img = self.decl-img { inherit name system; };
     };
 
+    # TODO: move this into pkgs/ dir
     overlaysModule = system: { config, pkgs, ...}: {
       nixpkgs.config.allowUnfree = true;
 

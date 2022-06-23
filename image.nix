@@ -1,21 +1,53 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{ config, lib, pkgs, mobile-nixos, ... }:
+
 {
-  fileSystems."/" = {
-    # boot by label instead of unpredictable uuid
-    device = "/dev/disk/by-label/nixos-img";
-    # make-disk-image only supports ext4
-    fsType = "ext4";
-  };
-  # fileSystems."/boot".device = "/dev/vda1";
-  fileSystems."/boot".device = "/dev/disk/by-label/ESP";
+  system.build.img-without-firmware = with pkgs; imageBuilder.diskImage.makeGPT {
+    name = "nixos";
+    diskID = "01234567";
+    headerHole = imageBuilder.size.MiB 16;
+    partitions = [
+      (imageBuilder.fileSystem.makeESP {
+        name = "ESP";
+        partitionLabel = "ESP";
+        partitionID = "4E021684";
+        partitionUUID = "CFB21B5C-A580-DE40-940F-B9644B4466E2";
+        size = imageBuilder.size.MiB 256;
 
-  system.build.raw = import "${toString modulesPath}/../lib/make-disk-image.nix" {
-    inherit lib config pkgs;
-    partitionTableType = "efi";
-    label = "nixos-img";
-    fsType = config.fileSystems."/".fsType;
-    diskSize = "auto";
-    format = "raw";
+        populateCommands = ''
+          echo "running installBootLoader"
+          ${config.system.build.installBootLoader} ${config.system.build.toplevel} -d .
+          echo "ran installBootLoader"
+        '';
+      })
+      (imageBuilder.fileSystem.makeExt4 {
+        name = "NIXOS_SYSTEM";
+        partitionLabel = "NIXOS_SYSTEM";
+        partitionID = "5A7FA69C-9394-8144-A74C-6726048B129E";
+        partitionUUID = "5A7FA69C-9394-8144-A74C-6726048B129E";
+        # partitionType = "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1";
+        # size = imagBuilder.size.GiB 6;
+        populateCommands =
+        let
+          closureInfo = buildPackages.closureInfo { rootPaths = config.system.build.toplevel; };
+        in
+        ''
+          mkdir -p ./nix/store
+          echo "Copying system closure..."
+          while IFS= read -r path; do
+            echo "  Copying $path"
+            cp -prf "$path" ./nix/store
+          done < "${closureInfo}/store-paths"
+          echo "Done copying system closure..."
+          cp -v ${closureInfo}/registration ./nix-path-registration
+        '';
+      })
+    ];
   };
+  system.build.img = lib.mkDefault config.system.build.img-without-firmware;
+  # TODO: pinephone build:
+  # system.build.img = pkgs.runCommandNoCC "nixos_full-disk-image.img" {} ''
+  #   cp -v ${config.system.build.without-bootloader}/nixos.img $out
+  #   chmod +w $out
+  #   dd if=${pkgs.tow-boot-pinephone}/Tow-Boot.noenv.bin of=$out bs=1024 seek=8 conv=notrunc
+  # '';
 }
-

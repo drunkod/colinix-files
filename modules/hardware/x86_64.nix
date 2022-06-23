@@ -24,9 +24,8 @@ with lib;
     boot.kernelParams = [ "boot.shell_on_fail" ];
     boot.consoleLogLevel = 7;
 
-    # Use the systemd-boot EFI boot loader.
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.systemd-boot.configurationLimit = 40;  # keep this many generations
+    boot.loader.grub.enable = false;
+    # boot.loader.generic-extlinux-compatible.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
     # enable cross compilation

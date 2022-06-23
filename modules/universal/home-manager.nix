@@ -16,6 +16,10 @@ in
   ];
 
   options = {
+    colinsane.home-manager.enable = mkOption {
+      default = false;
+      type = types.bool;
+    };
     colinsane.home-manager.extraPackages = mkOption {
       default = [ ];
       type = types.listOf types.package;
@@ -30,7 +34,7 @@ in
     };
   };
 
-  config = {
+  config = lib.mkIf cfg.enable {
     sops.secrets."aerc_accounts" = {
       owner = config.users.users.colin.name;
       sopsFile = ../../secrets/universal/aerc_accounts.conf;
@@ -230,6 +234,7 @@ in
         sops
         ssh-to-age
         sudo
+        syslinux
         usbutils
         wget
         wireguard-tools
