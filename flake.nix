@@ -60,11 +60,13 @@
           ./modules
           ./machines/${name}
           (import ./helpers/set-hostname.nix name)
-          (self.overlaysModule system)
           sops-nix.nixosModules.sops
           {
+            nixpkgs.config.allowUnfree = true;
             nixpkgs.overlays = [
+              nurpkgs.overlay
               (import "${mobile-nixos}/overlay/overlay.nix")
+              (import ./pkgs/overlay.nix)
             ];
           }
         ] ++ extraModules;
@@ -85,42 +87,6 @@
     decl-bootable-machine = { name, system }: {
       nixosConfiguration = self.decl-machine { inherit name system; };
       img = self.decl-img { inherit name system; };
-    };
-
-    # TODO: move this into pkgs/ dir
-    overlaysModule = system: { config, pkgs, ...}: {
-      nixpkgs.config.allowUnfree = true;
-
-      nixpkgs.overlays = [
-        #mobile-nixos.overlay
-        nurpkgs.overlay
-        (next: prev: {
-          #### my own, non-upstreamable packages:
-          sane-scripts = prev.callPackage ./pkgs/sane-scripts { };
-          #### customized packages
-          # nixos-unstable pleroma is too far out-of-date for our db
-          pleroma = prev.callPackage ./pkgs/pleroma { };
-          # jackett doesn't allow customization of the bind address: this will probably always be here.
-          jackett = next.callPackage ./pkgs/jackett { pkgs = prev; };
-          # fix abrupt HDD poweroffs as during reboot. patching systemd requires rebuilding nearly every package.
-          # systemd = import ./pkgs/systemd { pkgs = prev; };
-
-          # patch rpi uboot with something that fixes USB HDD boot
-          ubootRaspberryPi4_64bit = next.callPackage ./pkgs/ubootRaspberryPi4_64bit { pkgs = prev; };
-
-          #### TEMPORARY NIXOS-UNSTABLE PACKAGES
-
-          # stable telegram doesn't build, so explicitly use the stable one.
-          # TODO: apply this specifically to the moby build?
-          # TODO: all systems are using stable nixos. remove this?
-          # tdesktop = pkgs-telegram.legacyPackages.${system}.tdesktop;
-          tdesktop = nixpkgs.legacyPackages.${system}.tdesktop;
-
-          #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
-          # whalebird = prev.callPackage ./pkgs/whalebird { };
-          kaiteki = prev.callPackage ./pkgs/kaiteki { };
-        })
-      ];
     };
   };
 }
