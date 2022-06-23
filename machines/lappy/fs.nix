@@ -27,7 +27,7 @@
 
   fileSystems."/nix" = {
     device = "/dev/disk/by-uuid/5a7fa69c-9394-8144-a74c-6726048b129f";
-    fsType = "ext4";
+    fsType = "btrfs";
   };
 
   fileSystems."/boot" = {

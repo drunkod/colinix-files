@@ -26,19 +26,28 @@ let
 
   uuidFromFs = fs: builtins.head (builtins.match "/dev/disk/by-uuid/(.+)" fs.device);
   vfatUuidFromFs = fs: builtins.replaceStrings ["-"] [""] (uuidFromFs fs);
+
+  fsBuilderMapBoot = {
+    "vfat" = pkgs.imageBuilder.fileSystem.makeESP;
+  };
+  fsBuilderMapNix = {
+    "ext4" = pkgs.imageBuilder.fileSystem.makeExt4;
+    "btrfs" = pkgs.imageBuilder.fileSystem.makeBtrfs;
+  };
 in
 {
   system.build.img-without-firmware = with pkgs; imageBuilder.diskImage.makeGPT {
     name = "nixos";
-    diskID = "01234567";
+    diskID = vfatUuidFromFs bootFs;
     # headerHole = imageBuilder.size.MiB 16;
     partitions = [
-      (imageBuilder.fileSystem.makeESP {
+      (fsBuilderMapBoot."${bootFs.fsType}" {
+        # fs properties
         name = "ESP";
-        partitionLabel = "ESP";
         partitionID = vfatUuidFromFs bootFs;
-        # TODO: should this even have a part uuid?
-        partitionUUID = "CFB21B5C-A580-DE40-940F-B9644B4466E3";
+        # partition properties
+        partitionLabel = "EFI System";
+        partitionUUID = "44444444-4444-4444-4444-4444${vfatUuidFromFs bootFs}";
         size = imageBuilder.size.MiB 256;
 
         populateCommands = ''
@@ -47,14 +56,13 @@ in
           echo "ran installBootLoader"
         '';
       })
-      # TODO: make format-aware
-      (imageBuilder.fileSystem.makeExt4 {
+      (fsBuilderMapNix."${nixFs.fsType}" {
+        # fs properties
         name = "NIXOS_SYSTEM";
-        partitionLabel = "NIXOS_SYSTEM";
         partitionID = uuidFromFs nixFs;
+        # partition properties
+        partitionLabel = "Linux filesystem";
         partitionUUID = uuidFromFs nixFs;
-        # TODO: what's this?
-        partitionType = "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1";
         populateCommands =
         let
           closureInfo = buildPackages.closureInfo { rootPaths = config.system.build.toplevel; };
