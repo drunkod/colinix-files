@@ -39,7 +39,11 @@ in
   system.build.img-without-firmware = with pkgs; imageBuilder.diskImage.makeGPT {
     name = "nixos";
     diskID = vfatUuidFromFs bootFs;
-    # headerHole = imageBuilder.size.MiB 16;
+    # leave some space for firmware
+    # TODO: we'd prefer to turn this into a protected firmware partition, rather than reserving space in the GPT header itself
+    # Tow-Boot manages to do that; not sure how.
+    # TODO: does this method work on all systems (test on lappy)
+    headerHole = imageBuilder.size.MiB 16;
     partitions = [
       (fsBuilderMapBoot."${bootFs.fsType}" {
         # fs properties
@@ -83,10 +87,4 @@ in
     ];
   };
   system.build.img = lib.mkDefault config.system.build.img-without-firmware;
-  # TODO: pinephone build:
-  # system.build.img = pkgs.runCommandNoCC "nixos_full-disk-image.img" {} ''
-  #   cp -v ${config.system.build.without-bootloader}/nixos.img $out
-  #   chmod +w $out
-  #   dd if=${pkgs.tow-boot-pinephone}/Tow-Boot.noenv.bin of=$out bs=1024 seek=8 conv=notrunc
-  # '';
 }

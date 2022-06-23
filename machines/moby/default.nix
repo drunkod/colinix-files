@@ -4,6 +4,7 @@
     (import "${mobile-nixos}/lib/configuration.nix" {
       device = "pine64-pinephone";
     })
+    ./firmware.nix
     ./fs.nix
   ];
   # XXX colin: phosh doesn't work well with passwordless login
