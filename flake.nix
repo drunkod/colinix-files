@@ -92,7 +92,7 @@
     #   boot, checkout this flake into /etc/nixos AND UPDATE THE UUIDS IT REFERENCES.
     #   then `nixos-rebuild ...`
     decl-img = { name, system, extraModules ? [] }: (
-      (self.decl-machine { inherit name system; extraModules = extraModules ++ [./image.nix]; })
+      (self.decl-machine { inherit name system extraModules; })
         .config.system.build.img
     );
 
