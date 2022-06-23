@@ -1,12 +1,29 @@
 { config, lib, pkgs, mobile-nixos, utils, ... }:
 
 let
-  # fileSystems = lib.filter utils.fsNeededForBoot config.system.build.fileSystems;
+  # return true if super starts with sub
+  startsWith = super: sub: (
+    (builtins.substring 0 (builtins.stringLength sub) super) == sub
+  );
+  # return the (string) path to get from `stem` to `path`
+  relPath = stem: path: (
+    builtins.head (builtins.match "^${stem}(.+)" path)
+  );
+
   fileSystems = config.fileSystems;
   bootFs = fileSystems."/boot";
-  storeFs = fileSystems."/nix/store" or fileSystems."/nix" or fileSystems."/";
-  # yield e.g. "nix/store", "/store" or ""
-  storeRelPath = builtins.head (builtins.match "^${storeFs.mountPoint}(.+)" "/nix/store");
+  nixFs = fileSystems."/nix/store" or fileSystems."/nix" or fileSystems."/";
+  # resolves to e.g. "nix/store", "/store" or ""
+  storeRelPath = relPath nixFs.mountPoint "/nix/store";
+
+  # return a list of all the `device` values -- one for each fileSystems."$x"
+  devices = builtins.attrValues (builtins.mapAttrs (mount: entry: entry.device) fileSystems);
+  # filter the devices to just those which sit under nixFs
+  subNixMounts = builtins.filter (a: startsWith (builtins.toString a) nixFs.mountPoint) devices;
+  # e.g. ["/nix/persist/var"] -> ["/persist/var"] if nixFs sits at /nix
+  subNixRelMounts = builtins.map (m: relPath nixFs.mountPoint m) subNixMounts;
+  makeSubNixMounts = builtins.toString (builtins.map (m: "mkdir -p ./${m};") subNixRelMounts);
+
   uuidFromFs = fs: builtins.head (builtins.match "/dev/disk/by-uuid/(.+)" fs.device);
   vfatUuidFromFs = fs: builtins.replaceStrings ["-"] [""] (uuidFromFs fs);
 in
@@ -34,8 +51,8 @@ in
       (imageBuilder.fileSystem.makeExt4 {
         name = "NIXOS_SYSTEM";
         partitionLabel = "NIXOS_SYSTEM";
-        partitionID = uuidFromFs storeFs;
-        partitionUUID = uuidFromFs storeFs;
+        partitionID = uuidFromFs nixFs;
+        partitionUUID = uuidFromFs nixFs;
         # TODO: what's this?
         partitionType = "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1";
         populateCommands =
@@ -44,6 +61,8 @@ in
         in
         ''
           mkdir -p ./${storeRelPath}
+          # TODO: we should either fix up the owners (and perms?), or only create the bare minimum needed for boot (i.e. /var/*)
+          ${makeSubNixMounts}
           echo "Copying system closure..."
           while IFS= read -r path; do
             echo "  Copying $path"
