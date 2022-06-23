@@ -72,21 +72,15 @@
         ];
     });
 
-    # this produces a EFI-bootable .img file (GPT with / and /boot).
-    # after building this, steps are:
-    #   run `btrfs-convert --uuid copy <device>`
-    #   resize the part (`cfdisk <device>`).
-    #   mount the device and resize the fs (`btrfs filesystem resize max <mountpoint>`)
-    #   boot, checkout this flake into /etc/nixos AND UPDATE THE UUIDS IT REFERENCES.
-    #   then `nixos-rebuild ...`
-    decl-img = { name, system }: (
-      (self.decl-machine { inherit name system; })
-        .config.system.build.img
-    );
-
-    decl-bootable-machine = { name, system }: {
+    decl-bootable-machine = { name, system }: rec {
       nixosConfiguration = self.decl-machine { inherit name system; };
-      img = self.decl-img { inherit name system; };
+      # this produces a EFI-bootable .img file (GPT with a /boot partition and a system (/ or /nix) partition).
+      # after building this:
+      #   - flash it to a bootable medium (SD card, flash drive)
+      #   - boot
+      #   - checkout this flake into /etc/nixos AND UPDATE THE FS UUIDS.
+      #   - `nixos-rebuild --flake './#<machine>' switch`
+      img = nixosConfiguration.config.system.build.img;
     };
   };
 }
