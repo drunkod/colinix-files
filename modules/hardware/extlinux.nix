@@ -20,6 +20,8 @@ in
   };
 
   config = mkIf cfg.enable {
+    # XXX: i'm not 100% sure this is true. i saw some errors related to reading EFI vars though.
+    boot.loader.efi.canTouchEfiVariables = false;
     system.build.installBootLoader = let
       dtCfg = config.hardware.deviceTree;
       builderArgs = "-g 20 -t 5"
