@@ -28,13 +28,13 @@
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) self.machines;
     imgs = builtins.mapAttrs (name: value: value.img) self.machines;
 
-    decl-machine = { name, system, extraModules ? [], basePkgs ? nixpkgs }: let
-      patchedPkgs = basePkgs.legacyPackages.${system}.applyPatches {
+    decl-machine = { name, system }: let
+      patchedPkgs = nixpkgs.legacyPackages.${system}.applyPatches {
         name = "nixpkgs-patched-uninsane";
-        src = basePkgs;
+        src = nixpkgs;
         patches = [
           # phosh: allow fractional scaling
-          (basePkgs.legacyPackages.${system}.fetchpatch {
+          (nixpkgs.legacyPackages.${system}.fetchpatch {
             url = "https://github.com/NixOS/nixpkgs/pull/175872.diff";
             sha256 = "sha256-mEmqhe8DqlyCxkFWQKQZu+2duz69nOkTANh9TcjEOdY=";
           })
@@ -44,7 +44,7 @@
           # alternative to https://github.com/NixOS/nixpkgs/pull/173200
           ./nixpatches/04-dart-2.7.0.patch
           # whalebird: suuport aarch64
-          (basePkgs.legacyPackages.${system}.fetchpatch {
+          (nixpkgs.legacyPackages.${system}.fetchpatch {
             url = "https://github.com/NixOS/nixpkgs/pull/176476.diff";
             sha256 = "sha256-126DljM06hqPZ3fjLZ3LBZR64nFbeTfzSazEu72d4y8=";
           })
@@ -69,7 +69,7 @@
               (import ./pkgs/overlay.nix)
             ];
           }
-        ] ++ extraModules;
+        ];
     });
 
     # this produces a EFI-bootable .img file (GPT with / and /boot).
@@ -79,8 +79,8 @@
     #   mount the device and resize the fs (`btrfs filesystem resize max <mountpoint>`)
     #   boot, checkout this flake into /etc/nixos AND UPDATE THE UUIDS IT REFERENCES.
     #   then `nixos-rebuild ...`
-    decl-img = { name, system, extraModules ? [] }: (
-      (self.decl-machine { inherit name system extraModules; })
+    decl-img = { name, system }: (
+      (self.decl-machine { inherit name system; })
         .config.system.build.img
     );
 
