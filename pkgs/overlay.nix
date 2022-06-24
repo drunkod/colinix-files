@@ -3,6 +3,7 @@
   sane-scripts = prev.callPackage ./sane-scripts { };
   tow-boot-pinephone = prev.callPackage ./tow-boot-pinephone { };
   tow-boot-rpi4 = prev.callPackage ./tow-boot-rpi4 { };
+  bootpart-uefi-x86_64 = prev.callPackage ./bootpart-uefi-x86_64 { pkgs = prev; };
 
 
   #### customized packages
