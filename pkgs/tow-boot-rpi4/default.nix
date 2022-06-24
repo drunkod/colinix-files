@@ -6,7 +6,7 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://github.com/Tow-Boot/Tow-Boot/releases/download/release-2021.10-004/raspberryPi-aarch64-2021.10-004.tar.xz";
-    sha256 = "sha256-UZSzzzTp9PQ/wuLUA3RJyTa/vbQ0HdhfagJ8574leoA=";
+    sha256 = "sha256-dO8dFRF8BpJbmWYHAdeLEHZFwcaYcsqgUnA3gLYb2po=";
   };
 
   unpackPhase = ''
