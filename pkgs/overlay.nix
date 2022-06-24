@@ -2,6 +2,7 @@
   #### my own, non-upstreamable packages:
   sane-scripts = prev.callPackage ./sane-scripts { };
   tow-boot-pinephone = prev.callPackage ./tow-boot-pinephone { };
+  tow-boot-rpi4 = prev.callPackage ./tow-boot-rpi4 { };
 
 
   #### customized packages
