@@ -8,7 +8,8 @@ flutter.mkFlutterApp rec {
   pname = "kaiteki";
   version = "unstable-2022-06-03";
 
-  vendorHash = "sha256-y22Fvkm2sV0Gso7Z8yHlMU4wiHocytonGCB6GWhaqZo=";
+  # this hash seems unstable -- depends on other nixpkgs, perhaps?
+  vendorHash = "sha256-IC3FAPFASuMcNOpUuaB+MDcm9nqGCtq/6A2dCxIXHEg=";
 
   src = fetchFromGitHub {
     owner = "Kaiteki-Fedi";
