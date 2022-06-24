@@ -56,8 +56,15 @@
       nixosConfiguration = decl-machine { inherit name system; };
       # this produces a EFI-bootable .img file (GPT with a /boot partition and a system (/ or /nix) partition).
       # after building this:
-      #   - flash it to a bootable medium (SD card, flash drive)
+      #   - flash it to a bootable medium (SD card, flash drive, HDD)
+      #   - resize the root partition (use cfdisk)
+      #   - mount the part
+      #     chown root:nixblkd <part>/nix/store
+      #     chmod 775 <part>/nix/store
+      #     chown root:root -R <part>/nix/store/*
+      #     populate any important things (persist/, home/colin/.ssh, etc)
       #   - boot
+      #   - if fs wasn't resized automatically, then `sudo btrfs filesystem resize max /`
       #   - checkout this flake into /etc/nixos AND UPDATE THE FS UUIDS.
       #   - `nixos-rebuild --flake './#<machine>' switch`
       img = nixosConfiguration.config.system.build.img;
