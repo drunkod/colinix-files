@@ -21,14 +21,18 @@
 
   outputs = { self, nixpkgs, mobile-nixos, home-manager, nurpkgs, sops-nix, impermanence }:
   let
+    patchedPkgs = system: nixpkgs.legacyPackages.${system}.applyPatches {
+      name = "nixpkgs-patched-uninsane";
+      src = nixpkgs;
+      patches = import ./nixpatches/list.nix nixpkgs.legacyPackages.${system}.fetchpatch;
+    };
+    # return something which behaves like `pkgs`, for the provided system
+    nixpkgsFor = system: import (patchedPkgs system) { inherit system; };
+    # evaluate ONLY our overlay, for the provided system
+    customPackagesFor = system: import ./pkgs/overlay.nix (nixpkgsFor system) (nixpkgsFor system);
     decl-machine = { name, system }:
     let
-      patchedPkgs = nixpkgs.legacyPackages.${system}.applyPatches {
-        name = "nixpkgs-patched-uninsane";
-        src = nixpkgs;
-        patches = import ./nixpatches/list.nix nixpkgs.legacyPackages.${system}.fetchpatch;
-      };
-      nixosSystem = import (patchedPkgs + "/nixos/lib/eval-config.nix");
+      nixosSystem = import ((patchedPkgs system) + "/nixos/lib/eval-config.nix");
     in (nixosSystem {
       inherit system;
       specialArgs = { inherit nixpkgs mobile-nixos home-manager nurpkgs impermanence; };
@@ -65,6 +69,8 @@
   in {
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) machines;
     imgs = builtins.mapAttrs (name: value: value.img) machines;
+    packages.x86_64-linux = customPackagesFor "x86_64-linux";
+    packages.aarch64-linux = customPackagesFor "aarch64-linux";
   };
 }
 
