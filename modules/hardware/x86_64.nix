@@ -6,7 +6,8 @@ with lib;
     boot.initrd.availableKernelModules = [
       "xhci_pci" "ahci" "sd_mod" "sdhci_pci"  # nixos-generate-config defaults
       "usb_storage"   # rpi needed this to boot from usb storage, i think.
-      # "usbhid" "hid-generic"  # hopefully these will fix USB HID auto-sleep ?
+      "nvme"  # to boot from nvme devices
+      # efi_pstore evivars
     ];
     boot.initrd.kernelModules = [ ];
     boot.initrd.supportedFilesystems = [ "ext4" "btrfs" "ext2" "ext3" "vfat" ];
