@@ -16,12 +16,12 @@ done
 @genericBuilder@ $@
 
 # populate the EFI directory with syslinux, and configure it to read that extlinux.conf file managed by nixos
-mkdir -p $target/EFI/syslinux
+mkdir -p $target/EFI/syslinux  $target/EFI/BOOT
 cp @syslinux@/share/syslinux/efi64/* $target/EFI/syslinux/
 echo "DEFAULT trampoline" > $target/EFI/syslinux/syslinux.cfg
 echo "LABEL trampoline" >> $target/EFI/syslinux/syslinux.cfg
 echo "CONFIG ../../extlinux/extlinux.conf ../../extlinux" >> $target/EFI/syslinux/syslinux.cfg
 
 # create the EFI/BOOT/BOOTX64.EFI default entry
-cp -R $target/EFI/syslinux $target/EFI/BOOT
+cp $target/EFI/syslinux/* $target/EFI/BOOT
 mv $target/EFI/BOOT/syslinux.efi $target/EFI/BOOT/BOOTX64.EFI
