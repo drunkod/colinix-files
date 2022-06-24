@@ -1,12 +1,12 @@
-{ lib, ... }:
+{ ... }:
 
 {
-  fileSystems."/" = lib.mkDefault {
+  fileSystems."/" = {
     device = "/dev/disk/by-uuid/2be70d38-79f4-41b6-bee2-bce5a25f8f7b";
     fsType = "ext4";
   };
   fileSystems."/boot" = {
-    device = lib.mkDefault "/dev/disk/by-uuid/B318-A67E";
+    device = "/dev/disk/by-uuid/B318-A67E";
     fsType = "vfat";
   };
 

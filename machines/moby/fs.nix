@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ ... }:
 
 {
   fileSystems."/" = {
@@ -11,7 +11,7 @@
   };
 
   fileSystems."/boot" = {
-    device = lib.mkDefault "/dev/disk/by-uuid/0299-F1E5";
+    device = "/dev/disk/by-uuid/0299-F1E5";
     fsType = "vfat";
   };
 }
