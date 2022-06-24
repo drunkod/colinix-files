@@ -33,6 +33,9 @@
   ];
 
   colinsane.gui.phosh.enable = true;
+  boot.loader.grub.enable = false;
+  mobile.bootloader.enable = false;
+  boot.loader.generic-extlinux-compatible.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
