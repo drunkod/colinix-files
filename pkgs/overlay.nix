@@ -1,10 +1,13 @@
-(next: prev: {
+(next: prev: rec {
   #### my own, non-upstreamable packages:
   sane-scripts = prev.callPackage ./sane-scripts { };
   tow-boot-pinephone = prev.callPackage ./tow-boot-pinephone { };
   tow-boot-rpi4 = prev.callPackage ./tow-boot-rpi4 { };
   bootpart-uefi-x86_64 = prev.callPackage ./bootpart-uefi-x86_64 { pkgs = prev; };
-
+  bootpart-tow-boot-rpi-aarch64 = prev.callPackage ./bootpart-tow-boot-rpi-aarch64 {
+    # not sure why i can't just do pkgs = next here
+    pkgs = prev // { inherit tow-boot-rpi4; };
+  };
 
   #### customized packages
   # nixos-unstable pleroma is too far out-of-date for our db
