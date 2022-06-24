@@ -1,6 +1,7 @@
 { ... }:
 
 {
+  # root is a tmpfs so that we have an ephemeral system ("impermanence" handles the state)
   fileSystems."/" = {
     device = "none";
     fsType = "tmpfs";

@@ -14,6 +14,10 @@ in
       default = 0;
       type = types.int;
     };
+    colinsane.image.bootPartSize = mkOption {
+      default = 512 * 1024 * 1024;
+      type = types.int;
+    };
   };
   config = let
     # return true if super starts with sub
@@ -65,7 +69,7 @@ in
           # partition properties
           partitionLabel = "EFI System";
           partitionUUID = "44444444-4444-4444-4444-4444${vfatUuidFromFs bootFs}";
-          size = imageBuilder.size.MiB 256;
+          size = cfg.bootPartSize;
 
           populateCommands = let
             extras = builtins.toString (builtins.map (d: "cp -R ${d}/* ./") cfg.extraBootFiles);
