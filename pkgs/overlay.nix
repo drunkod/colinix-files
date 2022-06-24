@@ -1,7 +1,7 @@
 (next: prev: {
   #### my own, non-upstreamable packages:
   sane-scripts = prev.callPackage ./sane-scripts { };
-  tow-boot-pinephone = prev.callPackage ./pkgs/tow-boot-pinephone { };
+  tow-boot-pinephone = prev.callPackage ./tow-boot-pinephone { };
 
 
   #### customized packages
