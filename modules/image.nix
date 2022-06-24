@@ -10,6 +10,10 @@ in
       default = [];
       type = types.listOf types.package;
     };
+    colinsane.image.extraGPTPadding = mkOption {
+      default = 0;
+      type = types.int;
+    };
   };
   config = let
     # return true if super starts with sub
@@ -52,8 +56,7 @@ in
       # leave some space for firmware
       # TODO: we'd prefer to turn this into a protected firmware partition, rather than reserving space in the GPT header itself
       # Tow-Boot manages to do that; not sure how.
-      # TODO: does this method work on all systems (test on lappy)
-      headerHole = imageBuilder.size.MiB 16;
+      headerHole = cfg.extraGPTPadding;
       partitions = [
         (fsBuilderMapBoot."${bootFs.fsType}" {
           # fs properties
