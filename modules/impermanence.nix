@@ -65,7 +65,6 @@ in
         # "/var/lib/udisks2"           # empty on lappy
         # "/var/lib/upower"            # historic charge data. unnecessary, but maybe used somewhere?
         "/var/log"
-        "/mnt"
         # TODO: what even GOES in /srv?
         "/srv"
       ];
