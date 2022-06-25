@@ -44,7 +44,26 @@ in
         # "/etc/nixos"
         "/etc/ssh"
         # TODO: more granular persistence of /var/lib
-        "/var/lib"
+        # "/var/lib/AccountsService"   # not sure what this is, but it's empty
+        "/var/lib/alsa"                # preserve output levels, default devices
+        # "/var/lib/blueman"           # files aren't human readable
+        "/var/lib/bluetooth"           # preserve bluetooth handshakes
+        "/var/lib/colord"              # preserve color calibrations (?)
+        # "/var/lib/dhclient"          # empty on lappy; dunno about desko
+        # "/var/lib/fwupd"             # not sure why this would need persistent state
+        # "/var/lib/geoclue"           # empty on lappy
+        # "/var/lib/logrotate.status"  # seems redundant with what's in /var/log?
+        "/var/lib/machines"            # maybe not needed, but would be painful to add a VM and forget.
+        # "/var/lib/misc"              # empty on lappy
+        # "/var/lib/NetworkManager"    # looks to be mostly impermanent state?
+        # "/var/lib/NetworkManager-fortisslvpn" # empty on lappy
+        "/var/lib/nixos"               # has some uid/gid maps; not sure what happens if we lose this.
+        # "/var/lib/PackageKit"        # wtf is this?
+        # "/var/lib/power-profiles-daemon"  # redundant with nixos declarations
+        # "/var/lib/private"           # empty on lappy
+        # "/var/lib/systemd"           # nothing obviously necessary
+        # "/var/lib/udisks2"           # empty on lappy
+        # "/var/lib/upower"            # historic charge data. unnecessary, but maybe used somewhere?
         "/var/log"
         "/mnt"
         # TODO: what even GOES in /srv?
