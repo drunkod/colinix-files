@@ -52,6 +52,7 @@ in
         # "/var/lib/dhclient"          # empty on lappy; dunno about desko
         # "/var/lib/fwupd"             # not sure why this would need persistent state
         # "/var/lib/geoclue"           # empty on lappy
+        # "/var/lib/lockdown"          # empty on desko; might store secrets after iOS handshake?
         # "/var/lib/logrotate.status"  # seems redundant with what's in /var/log?
         "/var/lib/machines"            # maybe not needed, but would be painful to add a VM and forget.
         # "/var/lib/misc"              # empty on lappy
