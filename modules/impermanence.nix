@@ -39,11 +39,11 @@ in
         # "/home/colin/.config"  # managed by home-manager
         # "/home/colin/.local"   # nothing useful in here
         # "/home/colin/.mozilla" # managed by home-manager
+        "/home/colin/.config/spotify"  # TODO: can i manage this with home-manager?
 
         "/etc/NetworkManager/system-connections"
         # "/etc/nixos"
         "/etc/ssh"
-        # TODO: more granular persistence of /var/lib
         # "/var/lib/AccountsService"   # not sure what this is, but it's empty
         "/var/lib/alsa"                # preserve output levels, default devices
         # "/var/lib/blueman"           # files aren't human readable
