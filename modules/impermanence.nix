@@ -39,7 +39,10 @@ in
         # "/home/colin/.config"  # managed by home-manager
         # "/home/colin/.local"   # nothing useful in here
         # "/home/colin/.mozilla" # managed by home-manager
-        "/home/colin/.config/spotify"  # TODO: can i manage this with home-manager?
+        # creds. TODO: can i manage this with home-manager?
+        "/home/colin/.config/spotify"
+        # creds, but also 200 MB of node modules, etc
+        "/home/colin/.config/discord"
 
         "/etc/NetworkManager/system-connections"
         # "/etc/nixos"
