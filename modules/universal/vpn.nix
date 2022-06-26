@@ -25,5 +25,7 @@
     autostart = false;
   };
 
-  sops.secrets."wg_ovpnd_privkey" = {};
+  sops.secrets."wg_ovpnd_privkey" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
 }
