@@ -4,9 +4,6 @@
 - emoji picker application
 - find a Masto/Pleroma app which works on mobile
 
-# cleanup
-- remove helpers from outputs section (use `let .. in`)
-
 
 # speed up cross compiling
    https://nixos.wiki/wiki/Cross_Compiling
