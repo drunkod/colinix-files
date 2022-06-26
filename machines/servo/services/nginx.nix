@@ -7,7 +7,10 @@
   # web blog/personal site
   services.nginx.virtualHosts."uninsane.org" = {
     root = "/opt/uninsane/root";
-    addSSL = true;
+    # a lot of places hardcode https://uninsane.org,
+    # and then when we mix http + non-https, we get CORS violations
+    # and things don't look right. so force SSL.
+    forceSSL = true;
     enableACME = true;
 
     # allow matrix users to discover that @user:uninsane.org is reachable via matrix.uninsane.org
