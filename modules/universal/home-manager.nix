@@ -203,6 +203,7 @@ in
         ifuse
         inetutils  # for telnet
         iotop
+        ipfs
         iptables
         jq
         killall
