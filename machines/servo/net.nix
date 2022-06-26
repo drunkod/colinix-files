@@ -21,9 +21,12 @@
     465  # SMTPS
     587  # SMTPS/submission
     993  # IMAPS
+    4001 # IPFS
   ];
-  # DLNA ports: https://jellyfin.org/docs/general/networking/index.html
-  networking.firewall.allowedUDPPorts = [ 1900 7359 ];
+  networking.firewall.allowedUDPPorts = [
+    1900 7359 # DLNA: https://jellyfin.org/docs/general/networking/index.html
+    4001      # IPFS
+  ];
 
   # we need to use externally-visible nameservers in order for VPNs to be able to resolve hosts.
   networking.nameservers = [
