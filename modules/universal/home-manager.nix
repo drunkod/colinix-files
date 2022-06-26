@@ -212,6 +212,7 @@ in
         lsof
         mix2nix
         netcat
+        nethogs
         networkmanager
         nixpkgs-review
         # nixos-generators
