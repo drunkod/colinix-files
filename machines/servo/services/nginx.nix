@@ -210,6 +210,23 @@
     };
   };
 
+  services.nginx.virtualHosts."ipfs.uninsane.org" = {
+    # don't default to ssl upgrades, since this may be dnslink'd from a different domain.
+    # ideally we'd disable ssl entirely, but some places assume it?
+    addSSL = true;
+    enableACME = true;
+
+    default = true;
+
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:8080";
+      extraConfig = ''
+        proxy_set_header Host $host;
+        proxy_set_header X-Ipfs-Gateway-Prefix "";
+      '';
+    };
+  };
+
   # exists only to manage certs for dovecot
   services.nginx.virtualHosts."imap.uninsane.org" = {
     forceSSL = true;

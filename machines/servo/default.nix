@@ -8,6 +8,7 @@
     ./users.nix
     ./services/ddns-he.nix
     ./services/gitea.nix
+    ./services/ipfs.nix
     ./services/jackett.nix
     ./services/jellyfin.nix
     ./services/matrix.nix
@@ -27,6 +28,12 @@
 
   sops.secrets.duplicity_passphrase = {
     sopsFile = ../../secrets/servo.yaml;
+  };
+
+  # both transmission and ipfs try to set different net defaults.
+  # we just use the most aggressive of the two here:
+  boot.kernel.sysctl = {
+    "net.core.rmem_max" = "4194304";  # 4MB
   };
 
   # This value determines the NixOS release from which the default
