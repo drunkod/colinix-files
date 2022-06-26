@@ -27,6 +27,7 @@ in
         "/home/colin/dev"
         "/home/colin/ref"
         "/home/colin/tmp"
+        "/home/colin/use"
         "/home/colin/Music"
         "/home/colin/Pictures"
         "/home/colin/Videos"
