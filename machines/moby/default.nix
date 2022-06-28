@@ -32,6 +32,7 @@
     # pkgs.alacritty  # terminal; crashes phosh
   ];
 
+  colinsane.nixcache.enable = true;
   colinsane.gui.phosh.enable = true;
   boot.loader.grub.enable = false;
   mobile.bootloader.enable = false;
