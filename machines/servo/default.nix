@@ -25,6 +25,8 @@
     pkgs.matrix-synapse
   ];
   colinsane.services.duplicity.enable = true;
+  # TODO: validate this
+  colinsane.image.extraBootFiles = [ pkgs.bootpart-tow-boot-rpi-aarch64 ];
 
   sops.secrets.duplicity_passphrase = {
     sopsFile = ../../secrets/servo.yaml;
