@@ -24,9 +24,14 @@
   colinsane.home-manager.extraPackages = [
     pkgs.matrix-synapse
   ];
+  colinsane.impermanence.enable = true;
   colinsane.services.duplicity.enable = true;
+
   # TODO: validate this
-  colinsane.image.extraBootFiles = [ pkgs.bootpart-tow-boot-rpi-aarch64 ];
+  boot.loader.grub.enable = false;
+  boot.loader.generic-extlinux-compatible.enable = true;
+  boot.loader.efi.canTouchEfiVariables = false;
+  colinsane.image.extraBootFiles = [ pkgs.bootpart-u-boot-rpi-aarch64 ];
 
   sops.secrets.duplicity_passphrase = {
     sopsFile = ../../secrets/servo.yaml;

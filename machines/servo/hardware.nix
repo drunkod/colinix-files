@@ -12,15 +12,9 @@
   # see: https://github.com/raspberrypi/linux
   boot.kernelPackages = pkgs.linuxPackages_rpi4;
 
-  # NixOS defaults to grub: we don't want that.
-  boot.loader.grub.enable = false;
   # raspberryPi boot loader creates extlinux.conf.
   #   otherwise, enable the generic-extlinux-compatible loader below.
   # note: THESE ARE MUTUALLY EXCLUSIVE. generic-extlinux-compatible causes uboot to not be built
-  # boot.loader.generic-extlinux-compatible.enable = true;
-  boot.loader.raspberryPi.enable = true;
-  boot.loader.raspberryPi.uboot.enable = true;
-  boot.loader.raspberryPi.version = 4;
 
   boot.initrd.availableKernelModules = [
     "bcm2711_thermal"

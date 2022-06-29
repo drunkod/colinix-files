@@ -37,17 +37,15 @@ in
       "/sys"
       "/tmp"
       # bind mounted (dupes):
-      "/var/lib/pleroma"
-      "/var/lib/transmission/Downloads"
-      "/var/lib/transmission/.incomplete"
+      "/var/lib"
       # other mounts
       "/mnt"
       # data that's not worth the cost to backup:
-      "/opt/uninsane/media"
+      "/nix/persist/var/lib/uninsane/media"
+      "/nix/persist/home/colin/tmp"
+      "/nix/persist/home/colin/Videos"
       "/home/colin/tmp"
       "/home/colin/Videos"
-      # TODO: transitional
-      "/home/colin/internal"
     ];
 
     services.duplicity.extraFlags = [

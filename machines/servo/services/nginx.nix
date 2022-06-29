@@ -6,7 +6,7 @@
 
   # web blog/personal site
   services.nginx.virtualHosts."uninsane.org" = {
-    root = "/opt/uninsane/root";
+    root = "/var/lib/uninsane/root";
     # a lot of places hardcode https://uninsane.org,
     # and then when we mix http + non-https, we get CORS violations
     # and things don't look right. so force SSL.

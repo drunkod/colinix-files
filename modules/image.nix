@@ -12,7 +12,19 @@ in
     };
     colinsane.image.extraGPTPadding = mkOption {
       default = 0;
+      # NB: rpi doesn't like non-zero values for this.
+      # at the same time, spinning disks REALLY need partitions to be aligned to 4KiB boundaries.
+      # maybe there's some imageBuilder.fileSystem type which represents empty space?
+      # default = 2014 * 512;  # standard is to start part0 at sector 2048  (versus 34 if no padding)
       type = types.int;
+    };
+    colinsane.image.firstPartGap = mkOption {
+      # align the first part to 16 MiB.
+      # do this by inserting a gap of 16 MiB - gptHeaderSize
+      # and then multiply by 1MiB and subtract 1 because mobile-nixos
+      # has a bug which will divide this by 1 MiB (and round up)
+      default = (16 * 1024 * 1024 - 34 * 512) * 1024 * 1024 - 1;
+      type = types.nullOr types.int;
     };
     colinsane.image.bootPartSize = mkOption {
       default = 512 * 1024 * 1024;
@@ -62,6 +74,7 @@ in
       # Tow-Boot manages to do that; not sure how.
       headerHole = cfg.extraGPTPadding;
       partitions = [
+        (pkgs.imageBuilder.gap cfg.firstPartGap)
         (fsBuilderMapBoot."${bootFs.fsType}" {
           # fs properties
           name = "ESP";

@@ -69,6 +69,24 @@ in
         # "/var/lib/systemd"           # nothing obviously necessary
         # "/var/lib/udisks2"           # empty on lappy
         # "/var/lib/upower"            # historic charge data. unnecessary, but maybe used somewhere?
+        #
+        # servo additions:
+        "/var/lib/acme"
+        # "/var/lib/dhparams"          # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/security/dhparams.nix
+        # "/var/lib/dovecot"
+        # "/var/lib/duplicity"
+        "/var/lib/gitea"               # TODO: could be more granular
+        "/var/lib/ipfs"                # TODO: could be more granular
+        "/var/lib/jackett"             # TODO: we only need this to save Indexer creds ==> migrate to config?
+        "/var/lib/jellyfin"            # TODO: could be more granular
+        "/var/lib/matrix-appservice-irc"
+        "/var/lib/matrix-synapse"
+        "/var/lib/opendkim"            # TODO: move this to the nix config (SOPS)
+        "/var/lib/pleroma"             # TODO: could be more granular
+        "/var/lib/postgresql"
+        "/var/lib/postfix"             # TODO: could be more granular
+        "/var/lib/transmission"        # we need this specifically for the stats tracking in .config/
+        "/var/lib/uninsane"
         "/var/log"
         # TODO: what even GOES in /srv?
         "/srv"
