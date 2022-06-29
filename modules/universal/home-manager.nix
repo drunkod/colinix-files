@@ -185,11 +185,19 @@ in
 
       wayland.windowManager = cfg.windowManager;
 
+      # devtools:
+      # bison
+      # dtc
+      # flex
+      # gcc-arm-embedded
+      # gcc_multi
+      # swig
+
       home.packages = with pkgs; [
         backblaze-b2
         btrfs-progs
-        dig
         cryptsetup
+        dig
         duplicity
         efibootmgr
         fatresize
@@ -255,6 +263,7 @@ in
         font-manager
         gimp  # broken on phosh
         gnome.dconf-editor
+        gnome-feeds  # RSS reader (with claimed mobile support)
         gnome.file-roller
         gnome.gnome-maps  # works on phosh
         gnome.nautilus
