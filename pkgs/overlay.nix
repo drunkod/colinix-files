@@ -8,6 +8,10 @@
     # not sure why i can't just do pkgs = next here
     pkgs = prev // { inherit tow-boot-rpi4; };
   };
+  bootpart-u-boot-rpi-aarch64 = prev.callPackage ./bootpart-u-boot-rpi-aarch64 {
+    # not sure why i can't just do pkgs = next here
+    pkgs = prev // { inherit ubootRaspberryPi4_64bit; };
+  };
 
   #### customized packages
   # nixos-unstable pleroma is too far out-of-date for our db

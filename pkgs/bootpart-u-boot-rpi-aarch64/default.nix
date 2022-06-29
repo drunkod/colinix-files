@@ -1,7 +1,7 @@
 { stdenv, pkgs }:
 
 stdenv.mkDerivation rec {
-  pname = "bootpart-tow-boot-rpi-aarch64";
+  pname = "bootpart-u-boot-rpi-aarch64";
   version = "1";
 
   buildInputs = with pkgs; [ 
@@ -18,7 +18,9 @@ stdenv.mkDerivation rec {
   installPhase = with pkgs; ''
     mkdir "$out"
     cp ${ubootRaspberryPi4_64bit}/u-boot.bin "$out"/
-    cp -R ${raspberrypifw}/share/raspberrypi/boot/*.dtb "$out"/
+    cp ${ubootRaspberryPi4_64bit}/*.dtb "$out"/
+    # NB: raspberrypifw dtb's are meant for the kernel, not for u-boot
+    # cp -R ${raspberrypifw}/share/raspberrypi/boot/*.dtb "$out"/
     cp -R ${raspberrypifw}/share/raspberrypi/boot/*.bin "$out"/
     cp -R ${raspberrypifw}/share/raspberrypi/boot/*.dat "$out"/
     cp -R ${raspberrypifw}/share/raspberrypi/boot/*.img "$out"/
