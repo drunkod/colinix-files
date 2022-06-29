@@ -52,8 +52,27 @@
     enable = true;
   };
 
+  # btrfs doesn't easily support swapfiles
+  # swapDevices = [
+  #   { device = "/nix/persist/swapfile"; size = 4096; }
+  # ];
+
+  # this can be a partition. create with:
+  #   fdisk <dev>
+  #     n
+  #     <default partno>
+  #     <start>
+  #     <end>
+  #     t
+  #     <partno>
+  #     19  # set part type to Linux swap
+  #     w   # write changes
+  #   mkswap -L swap <part>
   swapDevices = [
-    { device = "/nix/persist/swapfile"; size = 4096; }
+    {
+      label = "swap";
+      # TODO: randomEncryption.enable = true;
+    }
   ];
 }
 
