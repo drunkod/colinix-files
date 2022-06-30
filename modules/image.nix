@@ -107,8 +107,8 @@ in
           in
           ''
             mkdir -p ./${storeRelPath}
-            # TODO: we should either fix up the owners (and perms?), or only create the bare minimum needed for boot (i.e. /var/*)
-            ${makeSubNixMounts}
+            # TODO: we should create the dirs required for boot (/var/log?). the rest are populated automatically.
+            # $(makeSubNixMounts)
             echo "Copying system closure..."
             while IFS= read -r path; do
               echo "  Copying $path"
