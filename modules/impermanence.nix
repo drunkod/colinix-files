@@ -25,6 +25,7 @@ in
       directories = [
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/archive"; }
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/dev"; }
+        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/records"; }
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/ref"; }
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/tmp"; }
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/use"; }
