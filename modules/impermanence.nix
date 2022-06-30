@@ -102,6 +102,13 @@ in
         # { file = "/home/test2"; persistentStoragePath = "/nix/persist"; }
       ];
     };
+
+    systemd.services.sane-sops = {
+      description = "sops relies on /etc/ssh being available, so re-run its activation AFTER fs-local";
+      script = config.system.activationScripts.setupSecrets.text;
+      after = [ "fs-local.target" ];
+      wantedBy = [ "multi-user.target" ];
+    };
   };
 }
 
