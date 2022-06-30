@@ -109,7 +109,10 @@ in
             };
           };
         };
-        kitty.enable = true;
+        kitty = {
+          enable = true;
+          settings.enable_audio_bell = false;
+        };
         git = {
           enable = true;
           userName = "colin";
