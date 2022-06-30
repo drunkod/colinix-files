@@ -54,6 +54,7 @@ in
         # "/var/lib/blueman"           # files aren't human readable
         { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/bluetooth"; }           # preserve bluetooth handshakes
         { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/colord"; }              # preserve color calibrations (?)
+        { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/duplicity"; }           # we need this mostly because of the size of duplicity's cache
         # "/var/lib/dhclient"          # empty on lappy; dunno about desko
         # "/var/lib/fwupd"             # not sure why this would need persistent state
         # "/var/lib/geoclue"           # empty on lappy
@@ -89,6 +90,7 @@ in
         { user = "70"; group = "70"; mode = "0755"; directory = "/var/lib/transmission"; } # TODO: mode? we need this specifically for the stats tracking in .config/
         { user = "colin"; group = "users"; mode = "0755"; directory = "/var/lib/uninsane"; }
         { user = "root"; group = "root"; mode = "0755"; directory = "/var/log"; }
+        { user = "root"; group = "root"; mode = "0755"; directory = "/var/backup"; }  # for e.g. postgres dumps
         # TODO: what even GOES in /srv?
         { user = "root"; group = "root"; mode = "0755"; directory = "/srv"; }
       ];
