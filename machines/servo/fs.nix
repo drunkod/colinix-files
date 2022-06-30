@@ -11,11 +11,12 @@
       "defaults"
     ];
   };
-  # we need a /tmp of default size (half RAM) for building large nix things
+  # we need a /tmp for building large nix things
   fileSystems."/tmp" = {
     device = "none";
     fsType = "tmpfs";
     options = [
+      "size=16G"
       "mode=777"
       "defaults"
     ];
