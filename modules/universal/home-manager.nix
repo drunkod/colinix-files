@@ -230,7 +230,6 @@ in
         # nettools
         nmap
         oathToolkit  # for oathtool
-        obsidian
         openssl
         parted
         pciutils
@@ -276,6 +275,7 @@ in
         libreoffice-fresh  # XXX colin: maybe don't want this on mobile
         mesa-demos
         networkmanagerapplet
+        obsidian
         playerctl
         tdesktop  # broken on phosh
         vlc  # works on phosh
