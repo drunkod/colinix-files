@@ -240,6 +240,7 @@ in
         ripgrep
         rmlint
         sane-scripts
+        screen
         smartmontools
         snapper
         socat
