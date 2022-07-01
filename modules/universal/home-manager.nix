@@ -213,6 +213,10 @@ in
                   url = "https://fed.uninsane.org/";
                 }
                 {
+                  name = "Home Manager Config";
+                  url = "https://nix-community.github.io/home-manager/options.html";
+                }
+                {
                   name = "Delightful Apps";
                   url = "https://delightful.club/";
                 }
