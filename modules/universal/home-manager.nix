@@ -143,22 +143,42 @@ in
           '';
         };
 
-        # librewolf is able to set the default search engine by using mozilla policies.
-        # they do this by removing the "enterprise" gate on some features and building a patched Firefox.
-        # some of the settings below assume those patches have been applied to firefox.
-        # see: https://gitlab.com/librewolf-community/settings/-/blob/master/distribution/policies.json
         firefox = lib.mkIf (sysconfig.colinsane.gui.enable) {
           enable = true;
-
-          # https://discourse.nixos.org/t/infinite-recursion-with-wrapfirefox/11579
-          package = pkgs.wrapFirefox pkgs.firefox-unwrapped {
+          # librewolf is a forked firefox which patches firefox to allow more things
+          # (like default search engines) to be configurable at runtime.
+          # many of the settings below won't have effect without those patches.
+          # see: https://gitlab.com/librewolf-community/settings/-/blob/master/distribution/policies.json
+          package = pkgs.wrapFirefox pkgs.librewolf-unwrapped {
+            # inherit the default librewolf.cfg
+            # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
+            inherit (pkgs.librewolf-unwrapped) extraPrefsFiles;
+            libName = "librewolf";
             extraPolicies = {
+              NoDefaultBookmarks = true;
+              SearchEngines = {
+                Default = "DuckDuckGo";
+              };
+              AppUpdateURL = "https://localhost";
               DisableAppUpdate = true;
-              DisablePocket = true;
+              OverrideFirstRunPage = "";
+              OverridePostUpdatePage = "";
+              DisableSystemAddonUpdate = true;
               DisableFirefoxStudies = true;
               DisableTelemetry = true;
               DisableFeedbackCommands = true;
+              DisablePocket = true;
+              DisableSetDesktopBackground = false;
               Extensions = {
+                Install = [
+                  "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
+                  "https://addons.mozilla.org/firefox/downloads/latest/i-dont-care-about-cookies/latest.xpi"
+                  "https://addons.mozilla.org/firefox/downloads/latest/sponsorblock/latest.xpi"
+                  "https://addons.mozilla.org/firefox/downloads/latest/bypass-paywalls-clean/latest.xpi"
+                  "https://addons.mozilla.org/firefox/downloads/latest/sidebery/latest.xpi"
+                  "https://addons.mozilla.org/firefox/downloads/latest/metamask/latest.xpi"
+                ];
+                # remove many default search providers
                 Uninstall = [
                   "google@search.mozilla.org"
                   "bing@search.mozilla.org"
@@ -167,64 +187,42 @@ in
                   "twitter@search.mozilla.org"
                 ];
               };
-              SearchEngines = {
-                Default = "DuckDuckGo";
-                Remove = [
-                  "Google"
-                  "Bing"
-                  "Amazon.com"
-                  "eBay"
-                  "Twitter"
-                ];
-                Add = [
-                  {
-                    Name = "DuckDuckGo Lite";
-                    Description = "Minimal, ad-free version of DuckDuckGo";
-                    Alias = "";
-                    Method = "POST";
-                    URLTemplate = "https://duckduckgo.com/lite/?q={searchTerms}";
-                    PostData = "q={searchTerms}";
-                  }
-                ];
-              };
-            };
-
-            extraPrefs = ''
-              lockPref("devtools.theme","dark");
-              lockPref("browser.search.defaultenginename","DuckDuckGo");
-              lockPref("browser.search.selectedEngine","DuckDuckGo");
-              lockPref("browser.search.defaulturl","https://duckduckgo.com/?q=");
-              lockPref("browser.search.searchEnginesURL","https://duckduckgo.com/?q=");
-              lockPref("browser.search.selectedEngineInDialog","DuckDuckGo");
-              lockPref("browser.search.hiddenOneOffs","Google,eBay,Yahoo,Bing,Amazon.com,Twitter");
-              lockPref("browser.search.update",false);
-              lockPref("browser.urlbar.update2.engineAliasRefresh",false);
-              lockPref("browser.urlbar.update2.oneOffsRefresh",false);
-            '';
-          };
-
-          profiles.default = {
-            bookmarks = {
-              fed_uninsane.url = "https://fed.uninsane.org/";
-              delightful.url = "https://delightful.club/";
-              crowdsupply.url = "https://www.crowdsupply.com/";
-              linux_phone_apps.url = "https://linuxphoneapps.org/mobile-compatibility/5/";
-              mempool.url = "https://jochen-hoenicke.de/queue";
+              # XXX doesn't seem to have any effect...
+              # docs: https://github.com/mozilla/policy-templates#homepage
+              # Homepage = {
+              #   HomepageURL = "https://uninsane.org/";
+              #   StartPage = "homepage";
+              # };
+              # NewTabPage = true;
+              # docs: https://chromeenterprise.google/policies/?policy=ManagedBookmarks
+              # docs: https://github.com/mozilla/policy-templates#managedbookmarks
+              ManagedBookmarks = [
+                {
+                  toplevel_name = "bookmarks";
+                }
+                {
+                  name = "Pleroma";
+                  url = "https://fed.uninsane.org/";
+                }
+                {
+                  name = "Delightful Apps";
+                  url = "https://delightful.club/";
+                }
+                {
+                  name = "Linux Phone Apps";
+                  url = "https://linuxphoneapps.org/mobile-compatibility/5/";
+                }
+                {
+                  name = "Crowdsupply";
+                  url = "https://www.crowdsupply.com/";
+                }
+                {
+                  name = "Mempool";
+                  url = "https://jochen-hoenicke.de/queue";
+                }
+              ];
             };
           };
-
-          # NB: these must be manually enabled in the Firefox settings on first start
-          # extensions can be found here: https://gitlab.com/rycee/nur-expressions/-/blob/master/pkgs/firefox-addons/addons.json
-          extensions = let
-            addons = pkgs.nur.repos.rycee.firefox-addons;
-          in [
-            addons.bypass-paywalls-clean
-            addons.metamask
-            addons.i-dont-care-about-cookies
-            addons.sidebery
-            addons.sponsorblock
-            addons.ublock-origin
-          ];
         };
 
         # "command not found" will cause the command to be searched in nixpkgs
