@@ -65,6 +65,14 @@ in
         templates = "$HOME/.xdg/Templates";
         videos = "$HOME/Videos";
       };
+      xdg.mimeApps.enable = true;
+      xdg.mimeApps.defaultApplications = {
+        "text/html" = [ "librewolf.desktop" ];
+        "x-scheme-handler/http" = [ "librewolf.desktop" ];
+        "x-scheme-handler/https" = [ "librewolf.desktop" ];
+        "x-scheme-handler/about" = [ "librewolf.desktop" ];
+        "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
+      };
 
       # convenience
       home.file."knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/knowledge";
