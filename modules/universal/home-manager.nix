@@ -143,8 +143,65 @@ in
           '';
         };
 
+        # librewolf is able to set the default search engine by using mozilla policies.
+        # they do this by removing the "enterprise" gate on some features and building a patched Firefox.
+        # some of the settings below assume those patches have been applied to firefox.
+        # see: https://gitlab.com/librewolf-community/settings/-/blob/master/distribution/policies.json
         firefox = lib.mkIf (sysconfig.colinsane.gui.enable) {
           enable = true;
+
+          # https://discourse.nixos.org/t/infinite-recursion-with-wrapfirefox/11579
+          package = pkgs.wrapFirefox pkgs.firefox-unwrapped {
+            extraPolicies = {
+              DisableAppUpdate = true;
+              DisablePocket = true;
+              DisableFirefoxStudies = true;
+              DisableTelemetry = true;
+              DisableFeedbackCommands = true;
+              Extensions = {
+                Uninstall = [
+                  "google@search.mozilla.org"
+                  "bing@search.mozilla.org"
+                  "amazondotcom@search.mozilla.org"
+                  "ebay@search.mozilla.org"
+                  "twitter@search.mozilla.org"
+                ];
+              };
+              SearchEngines = {
+                Default = "DuckDuckGo";
+                Remove = [
+                  "Google"
+                  "Bing"
+                  "Amazon.com"
+                  "eBay"
+                  "Twitter"
+                ];
+                Add = [
+                  {
+                    Name = "DuckDuckGo Lite";
+                    Description = "Minimal, ad-free version of DuckDuckGo";
+                    Alias = "";
+                    Method = "POST";
+                    URLTemplate = "https://duckduckgo.com/lite/?q={searchTerms}";
+                    PostData = "q={searchTerms}";
+                  }
+                ];
+              };
+            };
+
+            extraPrefs = ''
+              lockPref("devtools.theme","dark");
+              lockPref("browser.search.defaultenginename","DuckDuckGo");
+              lockPref("browser.search.selectedEngine","DuckDuckGo");
+              lockPref("browser.search.defaulturl","https://duckduckgo.com/?q=");
+              lockPref("browser.search.searchEnginesURL","https://duckduckgo.com/?q=");
+              lockPref("browser.search.selectedEngineInDialog","DuckDuckGo");
+              lockPref("browser.search.hiddenOneOffs","Google,eBay,Yahoo,Bing,Amazon.com,Twitter");
+              lockPref("browser.search.update",false);
+              lockPref("browser.urlbar.update2.engineAliasRefresh",false);
+              lockPref("browser.urlbar.update2.oneOffsRefresh",false);
+            '';
+          };
 
           profiles.default = {
             bookmarks = {
@@ -155,11 +212,6 @@ in
               mempool.url = "https://jochen-hoenicke.de/queue";
             };
           };
-
-          # firefox profile support seems to be broken :shrug:
-          # profiles.other = {
-          #   id = 2;
-          # };
 
           # NB: these must be manually enabled in the Firefox settings on first start
           # extensions can be found here: https://gitlab.com/rycee/nur-expressions/-/blob/master/pkgs/firefox-addons/addons.json
