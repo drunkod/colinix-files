@@ -47,6 +47,8 @@ in
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.config/spotify"; }
         # creds, but also 200 MB of node modules, etc
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.config/discord"; }
+        # creds/session keys, etc
+        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.config/Element"; }
 
         { user = "root"; group = "root"; mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
         # "/etc/nixos"
