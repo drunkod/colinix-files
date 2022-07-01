@@ -206,6 +206,7 @@ in
         fatresize
         fd
         file
+        gcc
         gnumake
         gptfdisk
         hdparm
@@ -239,6 +240,7 @@ in
         python3
         ripgrep
         rmlint
+        rustup
         sane-scripts
         screen
         smartmontools

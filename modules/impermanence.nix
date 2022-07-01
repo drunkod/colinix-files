@@ -36,6 +36,8 @@ in
         # cache is probably too big to fit on the tmpfs
         # TODO: we could bind-mount it to something which gets cleared per boot, though.
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.cache"; }
+        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.cargo"; }
+        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.rustup"; }
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.ssh"; }
         # intentionally omitted:
         # "/home/colin/.config"  # managed by home-manager
