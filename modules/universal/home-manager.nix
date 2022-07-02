@@ -152,6 +152,8 @@ in
         };
 
         firefox = lib.mkIf (sysconfig.colinsane.gui.enable) {
+          # common settings to toggle (at runtime, in about:config):
+          #   > security.ssl.require_safe_negotiation
           enable = true;
           # librewolf is a forked firefox which patches firefox to allow more things
           # (like default search engines) to be configurable at runtime.
@@ -184,7 +186,7 @@ in
                   "https://addons.mozilla.org/firefox/downloads/latest/sponsorblock/latest.xpi"
                   "https://addons.mozilla.org/firefox/downloads/latest/bypass-paywalls-clean/latest.xpi"
                   "https://addons.mozilla.org/firefox/downloads/latest/sidebery/latest.xpi"
-                  "https://addons.mozilla.org/firefox/downloads/latest/metamask/latest.xpi"
+                  "https://addons.mozilla.org/firefox/downloads/latest/ether-metamask/latest.xpi"
                 ];
                 # remove many default search providers
                 Uninstall = [
