@@ -5,7 +5,7 @@
   ];
 
   colinsane.home-manager.extraPackages = [
-    pkgs.electron
+    pkgs.electrum
   ];
   colinsane.gui.sway.enable = true;
   colinsane.services.duplicity.enable = true;
