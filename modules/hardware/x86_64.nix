@@ -40,15 +40,16 @@ with lib;
     # powertop will default to putting USB devices -- including HID -- to sleep after TWO SECONDS
     powerManagement.powertop.enable = false;
 
-    hardware.opengl.extraPackages = [
+    hardware.opengl.extraPackages = with pkgs; [
       # laptop
-      pkgs.intel-compute-runtime
-      pkgs.intel-media-driver  # new
-      pkgs.libvdpau-va-gl      # new
-      pkgs.vaapiIntel
+      intel-compute-runtime
+      intel-media-driver  # new
+      libvdpau-va-gl      # new
+      vaapiIntel
       # desktop
-      pkgs.rocm-opencl-icd
-      pkgs.rocm-opencl-runtime
+      rocm-opencl-icd
+      rocm-opencl-runtime
+      amdvlk
     ];
     hardware.opengl.driSupport = true;
     # For 32 bit applications
