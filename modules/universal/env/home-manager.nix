@@ -262,59 +262,29 @@ in
 
       home.packages = with pkgs; [
         backblaze-b2
-        btrfs-progs
-        cryptsetup
-        dig
         duplicity
-        efibootmgr
-        fatresize
-        fd
-        file
         gcc
         gnumake
-        gptfdisk
-        hdparm
-        htop
-        iftop
         ifuse
-        inetutils  # for telnet
-        iotop
         ipfs
-        iptables
-        jq
-        killall
         libimobiledevice
         lm_sensors  # for sensors-detect
-        lsof
         mix2nix
-        netcat
-        nethogs
         networkmanager
         nixpkgs-review
         # nixos-generators
         # nettools
-        nmap
         oathToolkit  # for oathtool
-        openssl
-        parted
-        pciutils
         # ponymix
-        powertop
         pulsemixer
         python3
-        ripgrep
         rmlint
         rustup
         sane-scripts
-        screen
-        smartmontools
         snapper
-        socat
         sops
         ssh-to-age
         sudo
-        usbutils
-        wget
         wireguard-tools
         youtube-dl
         zola

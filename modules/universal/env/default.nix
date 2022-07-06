@@ -4,6 +4,7 @@
   imports = [
     ./users.nix
     ./home-manager.nix
+    ./system-packages.nix
   ];
 
   # programs.vim.defaultEditor = true;
