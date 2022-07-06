@@ -14,12 +14,11 @@
       url = "github:nix-community/home-manager/release-22.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nurpkgs.url = "github:nix-community/NUR";
     sops-nix.url = "github:Mic92/sops-nix";
     impermanence.url = "github:nix-community/impermanence";
   };
 
-  outputs = { self, nixpkgs, mobile-nixos, home-manager, nurpkgs, sops-nix, impermanence }:
+  outputs = { self, nixpkgs, mobile-nixos, home-manager, sops-nix, impermanence }:
   let
     patchedPkgs = system: nixpkgs.legacyPackages.${system}.applyPatches {
       name = "nixpkgs-patched-uninsane";
@@ -35,7 +34,7 @@
       nixosSystem = import ((patchedPkgs system) + "/nixos/lib/eval-config.nix");
     in (nixosSystem {
       inherit system;
-      specialArgs = { inherit nixpkgs mobile-nixos home-manager nurpkgs impermanence; };
+      specialArgs = { inherit nixpkgs mobile-nixos home-manager impermanence; };
       modules = [
         ./modules
         ./machines/${name}
@@ -44,7 +43,6 @@
         {
           nixpkgs.config.allowUnfree = true;
           nixpkgs.overlays = [
-            nurpkgs.overlay
             (import "${mobile-nixos}/overlay/overlay.nix")
             (import ./pkgs/overlay.nix)
           ];
