@@ -15,12 +15,6 @@ with lib;
     boot.initrd.extraUtilsCommands = ''
       copy_bin_and_libs ${pkgs.btrfs-progs}/bin/btrfstune
     '';
-    boot.kernelModules = [
-      "coretemp"
-      "kvm-intel"
-      "kvm-amd"  # desktop
-      "amdgpu"   # desktop
-    ];
     boot.extraModulePackages = [ ];
     boot.kernelParams = [ "boot.shell_on_fail" ];
     boot.consoleLogLevel = 7;
