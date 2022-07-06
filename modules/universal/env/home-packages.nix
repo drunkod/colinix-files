@@ -5,14 +5,16 @@
 # bison
 # dtc
 # flex
+# gcc
 # gcc-arm-embedded
 # gcc_multi
+# rustup
 # swig
 with pkgs;
 [
   backblaze-b2
   duplicity
-  gcc
+  # TODO: this should be moved into `nix develop` in blog repo
   gnumake
   ifuse
   ipfs
@@ -28,7 +30,6 @@ with pkgs;
   pulsemixer
   python3
   rmlint
-  rustup
   sane-scripts
   snapper
   sops
@@ -36,6 +37,7 @@ with pkgs;
   sudo
   wireguard-tools
   youtube-dl
+  # TODO: this should be moved into `nix develop` in blog repo
   zola
 ]
 ++ (if config.colinsane.gui.enable then
