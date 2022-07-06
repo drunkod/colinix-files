@@ -38,9 +38,6 @@ with lib;
     # For 32 bit applications
     hardware.opengl.driSupport32Bit = true;
 
-    # TODO colin: does this *do* anything?
-    swapDevices = [ ];
-
     # services.snapper.configs = {
     #   root = {
     #     subvolume = "/";
