@@ -1,5 +1,4 @@
 # features/tweaks
-- iron out video drivers
 - emoji picker application
 - find a Masto/Pleroma app which works on mobile
 
