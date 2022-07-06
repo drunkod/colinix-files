@@ -12,8 +12,7 @@
     isNormalUser = true;
     home = "/home/colin";
     uid = 1000;
-    # XXX colin: this is what the installer has, but is it necessary?
-    # group = "users";
+    group = "users";
     extraGroups = [
       "wheel"
       "nixbuild"
