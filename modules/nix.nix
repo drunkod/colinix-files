@@ -12,9 +12,9 @@ in
     };
   };
 
-  config = {
+  config = mkIf cfg.enable {
     # use our own binary cache
-    nix.settings = mkIf cfg.enable {
+    nix.settings = {
       substituters = [
         "https://nixcache.uninsane.org"
         "https://nix-community.cachix.org"
@@ -25,10 +25,5 @@ in
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       ];
     };
-
-    # allow `nix flake ...` command
-    nix.extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
   };
 }

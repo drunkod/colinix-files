@@ -29,5 +29,10 @@
     # git claims it should use EDITOR, but it doesn't!
     GIT_EDITOR = "vim";
   };
+
+  # allow `nix flake ...` command
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+  '';
 }
 
