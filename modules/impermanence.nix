@@ -45,6 +45,8 @@ in
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.config/discord"; }
         # creds/session keys, etc
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.config/Element"; }
+        # creds, media
+        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.config/Signal"; }
 
         { user = "root"; group = "root"; mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
         # "/etc/nixos"
