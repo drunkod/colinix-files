@@ -2,10 +2,9 @@
 
 {
   imports = [
+    ./env
     ./fs.nix
-    ./home-manager.nix
     ./secrets.nix
-    ./users.nix
     ./vpn.nix
   ];
 
@@ -21,13 +20,6 @@
       serif = [ "DejaVu Serif" ];
       sansSerif = [ "DejaVu Sans" ];
     };
-  };
-
-  # programs.vim.defaultEditor = true;
-  environment.variables = {
-    EDITOR = "vim";
-    # git claims it should use EDITOR, but it doesn't!
-    GIT_EDITOR = "vim";
   };
 
   # allow `nix flake ...` command

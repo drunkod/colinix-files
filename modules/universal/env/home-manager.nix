@@ -37,7 +37,7 @@ in
   config = lib.mkIf cfg.enable {
     sops.secrets."aerc_accounts" = {
       owner = config.users.users.colin.name;
-      sopsFile = ../../secrets/universal/aerc_accounts.conf;
+      sopsFile = ../../../secrets/universal/aerc_accounts.conf;
       format = "binary";
     };
 
