@@ -4,17 +4,13 @@
 #   man home-configuration.nix
 #
 
-{ home-manager, lib, config, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 
 with lib;
 let
   cfg = config.colinsane.home-manager;
 in
 {
-  imports = [
-    home-manager.nixosModule
-  ];
-
   options = {
     colinsane.home-manager.enable = mkOption {
       default = false;
