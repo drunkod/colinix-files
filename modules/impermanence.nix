@@ -9,10 +9,6 @@ let
   cfg = config.colinsane.impermanence;
 in
 {
-  imports = [
-    # TODO: move to flake.nix?
-    impermanence.nixosModule
-  ];
   options = {
     colinsane.impermanence.enable = mkOption {
       default = false;

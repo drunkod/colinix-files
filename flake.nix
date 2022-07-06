@@ -39,6 +39,7 @@
         ./machines/${name}
         (import ./helpers/set-hostname.nix name)
         sops-nix.nixosModules.sops
+        impermanence.nixosModule
         {
           nixpkgs.config.allowUnfree = true;
           nixpkgs.overlays = [
