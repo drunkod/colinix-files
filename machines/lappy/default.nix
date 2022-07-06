@@ -10,13 +10,6 @@
   boot.loader.efi.canTouchEfiVariables = false;
   colinsane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
-  hardware.opengl.extraPackages = with pkgs; [
-    intel-compute-runtime
-    intel-media-driver  # new
-    libvdpau-va-gl      # new
-    vaapiIntel
-  ];
-
   # default config: https://man.archlinux.org/man/snapper-configs.5
   # defaults to something like:
   #   - hourly snapshots

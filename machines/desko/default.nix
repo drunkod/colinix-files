@@ -15,12 +15,6 @@
   boot.loader.efi.canTouchEfiVariables = false;
   colinsane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
-  hardware.opengl.extraPackages = with pkgs; [
-    rocm-opencl-icd
-    rocm-opencl-runtime
-    amdvlk
-  ];
-
   # needed to use libimobiledevice/ifuse, for iphone sync
   services.usbmuxd.enable = true;
 
