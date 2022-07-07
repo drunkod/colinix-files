@@ -4,9 +4,6 @@
     ./fs.nix
   ];
 
-  colinsane.home-manager.extraPackages = [
-    pkgs.electrum
-  ];
   colinsane.gui.sway.enable = true;
   colinsane.services.duplicity.enable = true;
   colinsane.impermanence.enable = true;

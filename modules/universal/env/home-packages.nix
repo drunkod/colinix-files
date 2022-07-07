@@ -48,6 +48,7 @@ with pkgs;
   audacity
   chromium
   clinfo
+  electrum
   element-desktop  # broken on phosh
   evince  # works on phosh
   font-manager
