@@ -35,6 +35,7 @@ with pkgs;
   sops
   ssh-to-age
   sudo
+  tor-browser-bundle-bin
   wireguard-tools
   youtube-dl
   # TODO: this should be moved into `nix develop` in blog repo
