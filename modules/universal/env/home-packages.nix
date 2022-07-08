@@ -16,6 +16,7 @@ with pkgs;
   duplicity
   # TODO: this should be moved into `nix develop` in blog repo
   gnumake
+  gnupg
   ifuse
   ipfs
   libimobiledevice
@@ -31,6 +32,7 @@ with pkgs;
   python3
   rmlint
   sane-scripts
+  sequoia
   snapper
   sops
   ssh-to-age
