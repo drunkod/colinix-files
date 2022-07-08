@@ -37,7 +37,8 @@ with pkgs;
   sops
   ssh-to-age
   sudo
-  tor-browser-bundle-bin
+  # hardenedMalloc solves a crash at startup
+  (tor-browser-bundle-bin.override { useHardenedMalloc = false; })
   wireguard-tools
   youtube-dl
   # TODO: this should be moved into `nix develop` in blog repo
