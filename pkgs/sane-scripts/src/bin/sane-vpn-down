@@ -6,7 +6,7 @@ case $1 in
 ukr)
   iface=wg-quick-ovpnd-ukr;;
 us)
-  iface=wg-quick-ovpnd;;
+  iface=wg-quick-ovpnd-us;;
 *)
   echo "invalid vpn name '$1'"; exit 1;;
 esac

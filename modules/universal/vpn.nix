@@ -1,7 +1,7 @@
 { config, ... }:
 
 {
-  networking.wg-quick.interfaces.ovpnd = {
+  networking.wg-quick.interfaces.ovpnd-us = {
     address = [
       "172.27.237.218/32"
       "fd00:0000:1337:cafe:1111:1111:ab00:4c8f/128"
@@ -20,8 +20,8 @@
         publicKey = "VW6bEWMOlOneta1bf6YFE25N/oMGh1E1UFBCfyggd0k=";
       }
     ];
-    privateKeyFile = config.sops.secrets.wg_ovpnd_privkey.path;
-    # to start: `systemctl start wg-quick-ovpnd`
+    privateKeyFile = config.sops.secrets.wg_ovpnd_us_privkey.path;
+    # to start: `systemctl start wg-quick-ovpnd-us`
     autostart = false;
   };
 
@@ -49,7 +49,7 @@
     autostart = false;
   };
 
-  sops.secrets."wg_ovpnd_privkey" = {
+  sops.secrets."wg_ovpnd_us_privkey" = {
     sopsFile = ../../secrets/universal.yaml;
   };
   sops.secrets."wg_ovpnd_ukr_privkey" = {
