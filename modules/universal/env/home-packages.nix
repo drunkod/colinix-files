@@ -85,5 +85,6 @@ with pkgs;
   spotify
   # hardenedMalloc solves a crash at startup
   (tor-browser-bundle-bin.override { useHardenedMalloc = false; })
+  zecwallet-lite
 ] else [])
 
