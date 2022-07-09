@@ -52,36 +52,5 @@ pkgs.wrapFirefox pkgs.librewolf-unwrapped {
     #   StartPage = "homepage";
     # };
     # NewTabPage = true;
-    # docs: https://chromeenterprise.google/policies/?policy=ManagedBookmarks
-    # docs: https://github.com/mozilla/policy-templates#managedbookmarks
-    ManagedBookmarks = [
-      {
-        toplevel_name = "bookmarks";
-      }
-      {
-        name = "Pleroma";
-        url = "https://fed.uninsane.org/";
-      }
-      {
-        name = "Home Manager Config";
-        url = "https://nix-community.github.io/home-manager/options.html";
-      }
-      {
-        name = "Delightful Apps";
-        url = "https://delightful.club/";
-      }
-      {
-        name = "Linux Phone Apps";
-        url = "https://linuxphoneapps.org/mobile-compatibility/5/";
-      }
-      {
-        name = "Crowdsupply";
-        url = "https://www.crowdsupply.com/";
-      }
-      {
-        name = "Mempool";
-        url = "https://jochen-hoenicke.de/queue";
-      }
-    ];
   };
 }
