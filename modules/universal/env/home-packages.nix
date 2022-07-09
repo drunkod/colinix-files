@@ -1,6 +1,5 @@
 { config, pkgs }:
 
-
 # useful devtools:
 # bison
 # dtc
@@ -8,20 +7,20 @@
 # gcc
 # gcc-arm-embedded
 # gcc_multi
+# gnumake
+# mix2nix
 # rustup
 # swig
+
 with pkgs;
 [
   backblaze-b2
   duplicity
-  # TODO: this should be moved into `nix develop` in blog repo
-  gnumake
   gnupg
   ifuse
   ipfs
   libimobiledevice
   lm_sensors  # for sensors-detect
-  mix2nix
   networkmanager
   nixpkgs-review
   # nixos-generators
@@ -39,8 +38,6 @@ with pkgs;
   sudo
   wireguard-tools
   youtube-dl
-  # TODO: this should be moved into `nix develop` in blog repo
-  zola
 ]
 ++ (if config.colinsane.gui.enable then
 with pkgs;
