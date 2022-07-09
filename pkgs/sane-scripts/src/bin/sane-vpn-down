@@ -1,4 +1,16 @@
 #!/usr/bin/env bash
+
+# first arg should be the region, e.g. `us` or `ukr`
+
+case $1 in
+ukr)
+  iface=wg-quick-ovpnd-ukr;;
+us)
+  iface=wg-quick-ovpnd;;
+*)
+  echo "invalid vpn name '$1'"; exit 1;;
+esac
+
 echo vpn: $(curl https://ipinfo.io/ip)
-sudo systemctl stop wg-quick-ovpnd
+sudo systemctl stop $iface
 echo plain:   $(curl https://ipinfo.io/ip)
