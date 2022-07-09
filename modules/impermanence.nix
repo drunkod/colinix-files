@@ -29,6 +29,8 @@ in
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/Pictures"; }
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/Videos"; }
 
+        # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
+        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.bitmonero"; }
         # cache is probably too big to fit on the tmpfs
         # TODO: we could bind-mount it to something which gets cleared per boot, though.
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.cache"; }

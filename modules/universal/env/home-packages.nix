@@ -67,6 +67,7 @@ with pkgs;
   inkscape
   libreoffice-fresh  # XXX colin: maybe don't want this on mobile
   mesa-demos
+  monero-gui
   networkmanagerapplet
   obsidian
   playerctl
