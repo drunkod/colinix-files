@@ -37,6 +37,8 @@ in
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.cargo"; }
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.rustup"; }
         { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.ssh"; }
+        # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
+        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.zcash"; }
         # intentionally omitted:
         # "/home/colin/.config"  # managed by home-manager
         # "/home/colin/.local"   # nothing useful in here
