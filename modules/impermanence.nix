@@ -17,9 +17,15 @@ in
   };
 
   config = let
-    map-home-dirs = dirs: builtins.map
-      (d: { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/${d}"; })
-      dirs;
+    map-dir = defaults: dir: if isString dir then
+        map-dir defaults { directory = "${defaults.directory}${dir}"; }
+      else
+        defaults // dir
+      ;
+    map-dirs = defaults: dirs: builtins.map (map-dir defaults) dirs;
+
+    map-home-dirs = map-dirs { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/"; };
+    map-sys-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
   in mkIf cfg.enable {
     environment.persistence."/nix/persist" = {
       directories = (map-home-dirs [
@@ -54,10 +60,15 @@ in
         ".config/Element"
         # creds, media
         ".config/Signal"
-      ]) ++ [
-        { user = "root"; group = "root"; mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
+      ]) ++ (map-sys-dirs [
+        { mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
         # "/etc/nixos"
-        { user = "root"; group = "root"; mode = "0755"; directory = "/etc/ssh"; }
+        "/etc/ssh"
+        "/var/log"
+        "/var/backup"  # for e.g. postgres dumps
+        # TODO: what even GOES in /srv?
+        "/srv"
+      ]) ++ [
         # "/var/lib/AccountsService"   # not sure what this is, but it's empty
         { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/alsa"; }                # preserve output levels, default devices
         # "/var/lib/blueman"           # files aren't human readable
@@ -98,10 +109,6 @@ in
         { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/postfix"; } # TODO: mode? could be more granular
         { user = "70"; group = "70"; mode = "0755"; directory = "/var/lib/transmission"; } # TODO: mode? we need this specifically for the stats tracking in .config/
         { user = "colin"; group = "users"; mode = "0755"; directory = "/var/lib/uninsane"; }
-        { user = "root"; group = "root"; mode = "0755"; directory = "/var/log"; }
-        { user = "root"; group = "root"; mode = "0755"; directory = "/var/backup"; }  # for e.g. postgres dumps
-        # TODO: what even GOES in /srv?
-        { user = "root"; group = "root"; mode = "0755"; directory = "/srv"; }
       ];
       files = [
         "/etc/machine-id"
