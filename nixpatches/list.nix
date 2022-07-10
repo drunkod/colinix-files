@@ -16,4 +16,6 @@ fetchpatch: [
   })
   # TODO: upstream
   ./07-duplicity-rich-url.patch
+  # TODO: upstream
+  ./08-zecwallet-lite.patch
 ]

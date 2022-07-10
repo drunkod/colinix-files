@@ -1,0 +1,49 @@
+diff --git a/pkgs/applications/blockchains/zecwallet-lite/default.nix b/pkgs/applications/blockchains/zecwallet-lite/default.nix
+new file mode 100644
+index 00000000000..2a15d2fa923
+--- /dev/null
++++ b/pkgs/applications/blockchains/zecwallet-lite/default.nix
+@@ -0,0 +1,30 @@
++{ lib, fetchurl, appimageTools }:
++
++appimageTools.wrapType2 rec {
++  pname = "zecwallet-lite";
++  version = "1.7.13";
++
++  src = fetchurl {
++    url = "https://github.com/adityapk00/zecwallet-lite/releases/download/v${version}/Zecwallet.Lite-${version}.AppImage";
++    hash = "sha256-uBiLGHBgm0vurfvOJjJ+RqVoGnVccEHTFO2T7LDqUzU=";
++  };
++
++  extraInstallCommands =
++    let contents = appimageTools.extract { inherit pname version src; };
++    in ''
++      mv $out/bin/${pname}-${version} $out/bin/${pname}
++
++      install -m 444 -D ${contents}/${pname}.desktop -t $out/share/applications
++      substituteInPlace $out/share/applications/${pname}.desktop \
++        --replace 'Exec=AppRun' 'Exec=${pname}'
++      cp -r ${contents}/usr/share/icons $out/share
++    '';
++
++  meta = with lib; {
++    description = "A fully featured shielded wallet for Zcash";
++    homepage = "https://www.zecwallet.co/";
++    license = licenses.mit;
++    maintainers = with maintainers; [ colinsane ];
++    platforms = [ "x86_64-linux" ];
++  };
++}
+diff --git a/pkgs/top-level/all-packages.nix b/pkgs/top-level/all-packages.nix
+index 1c384a14b81..a7955f27117 100644
+--- a/pkgs/top-level/all-packages.nix
++++ b/pkgs/top-level/all-packages.nix
+@@ -31776,6 +31776,8 @@ with pkgs;
+ 
+   zcash = callPackage ../applications/blockchains/zcash { };
+ 
++  zecwallet-lite = callPackage ../applications/blockchains/zecwallet-lite { };
++
+   lightwalletd = callPackage ../applications/blockchains/lightwalletd { };
+ 
+   openethereum = callPackage ../applications/blockchains/openethereum { };

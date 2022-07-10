@@ -28,6 +28,6 @@
 
   #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
   kaiteki = prev.callPackage ./kaiteki { };
-  zecwallet-lite = prev.callPackage ./zecwallet-lite { };
+  # zecwallet-lite = prev.callPackage ./zecwallet-lite { };
 })
 
