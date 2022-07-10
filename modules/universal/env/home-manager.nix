@@ -37,6 +37,18 @@ in
       format = "binary";
     };
 
+    colinsane.impermanence.home-dirs = [
+      "archive"
+      "dev"
+      "records"
+      "ref"
+      "tmp"
+      "use"
+      "Music"
+      "Pictures"
+      "Videos"
+    ];
+
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
 

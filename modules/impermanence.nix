@@ -14,6 +14,10 @@ in
       default = false;
       type = types.bool;
     };
+    colinsane.impermanence.home-dirs = mkOption {
+      default = [];
+      type = types.listOf (types.either types.str (types.attrsOf types.str));
+    };
   };
 
   config = let
@@ -29,16 +33,7 @@ in
     map-service-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
   in mkIf cfg.enable {
     environment.persistence."/nix/persist" = {
-      directories = (map-home-dirs [
-        "archive"
-        "dev"
-        "records"
-        "ref"
-        "tmp"
-        "use"
-        "Music"
-        "Pictures"
-        "Videos"
+      directories = (map-home-dirs ([
         # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
         ".bitmonero"
         # cache is probably too big to fit on the tmpfs
@@ -61,7 +56,7 @@ in
         ".config/Element"
         # creds, media
         ".config/Signal"
-      ]) ++ (map-sys-dirs [
+      ] ++ cfg.home-dirs)) ++ (map-sys-dirs [
         { mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
         # "/etc/nixos"
         "/etc/ssh"
