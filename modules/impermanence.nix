@@ -16,42 +16,45 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
+  config = let
+    map-home-dirs = dirs: builtins.map
+      (d: { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/${d}"; })
+      dirs;
+  in mkIf cfg.enable {
     environment.persistence."/nix/persist" = {
-      directories = [
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/archive"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/dev"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/records"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/ref"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/tmp"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/use"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/Music"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/Pictures"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/Videos"; }
-
+      directories = (map-home-dirs [
+        "archive"
+        "dev"
+        "records"
+        "ref"
+        "tmp"
+        "use"
+        "Music"
+        "Pictures"
+        "Videos"
         # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.bitmonero"; }
+        ".bitmonero"
         # cache is probably too big to fit on the tmpfs
         # TODO: we could bind-mount it to something which gets cleared per boot, though.
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.cache"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.cargo"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.rustup"; }
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.ssh"; }
+        ".cache"
+        ".cargo"
+        ".rustup"
+        ".ssh"
         # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.zcash"; }
+        ".zcash"
         # intentionally omitted:
-        # "/home/colin/.config"  # managed by home-manager
-        # "/home/colin/.local"   # nothing useful in here
-        # "/home/colin/.mozilla" # managed by home-manager
+        # ".config"  # managed by home-manager
+        # ".local"   # nothing useful in here
+        # ".mozilla" # managed by home-manager
         # creds. TODO: can i manage this with home-manager?
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.config/spotify"; }
+        ".config/spotify"
         # creds, but also 200 MB of node modules, etc
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.config/discord"; }
+        ".config/discord"
         # creds/session keys, etc
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.config/Element"; }
+        ".config/Element"
         # creds, media
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/.config/Signal"; }
-
+        ".config/Signal"
+      ]) ++ [
         { user = "root"; group = "root"; mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
         # "/etc/nixos"
         { user = "root"; group = "root"; mode = "0755"; directory = "/etc/ssh"; }
