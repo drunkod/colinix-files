@@ -26,6 +26,7 @@ in
 
     map-home-dirs = map-dirs { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/"; };
     map-sys-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
+    map-service-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
   in mkIf cfg.enable {
     environment.persistence."/nix/persist" = {
       directories = (map-home-dirs [
@@ -68,23 +69,23 @@ in
         "/var/backup"  # for e.g. postgres dumps
         # TODO: what even GOES in /srv?
         "/srv"
-      ]) ++ [
+      ]) ++ (map-service-dirs [
         # "/var/lib/AccountsService"   # not sure what this is, but it's empty
-        { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/alsa"; }                # preserve output levels, default devices
+        "/var/lib/alsa"                # preserve output levels, default devices
         # "/var/lib/blueman"           # files aren't human readable
-        { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/bluetooth"; }           # preserve bluetooth handshakes
-        { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/colord"; }              # preserve color calibrations (?)
-        { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/duplicity"; }           # we need this mostly because of the size of duplicity's cache
+        "/var/lib/bluetooth"           # preserve bluetooth handshakes
+        "/var/lib/colord"              # preserve color calibrations (?)
+        "/var/lib/duplicity"           # we need this mostly because of the size of duplicity's cache
         # "/var/lib/dhclient"          # empty on lappy; dunno about desko
         # "/var/lib/fwupd"             # not sure why this would need persistent state
         # "/var/lib/geoclue"           # empty on lappy
         # "/var/lib/lockdown"          # empty on desko; might store secrets after iOS handshake?
         # "/var/lib/logrotate.status"  # seems redundant with what's in /var/log?
-        { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/machines"; }            # maybe not needed, but would be painful to add a VM and forget.
+        "/var/lib/machines"            # maybe not needed, but would be painful to add a VM and forget.
         # "/var/lib/misc"              # empty on lappy
         # "/var/lib/NetworkManager"    # looks to be mostly impermanent state?
         # "/var/lib/NetworkManager-fortisslvpn" # empty on lappy
-        { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/nixos"; }               # has some uid/gid maps; not sure what happens if we lose this.
+        "/var/lib/nixos"               # has some uid/gid maps; not sure what happens if we lose this.
         # "/var/lib/PackageKit"        # wtf is this?
         # "/var/lib/power-profiles-daemon"  # redundant with nixos declarations
         # "/var/lib/private"           # empty on lappy
@@ -93,23 +94,23 @@ in
         # "/var/lib/upower"            # historic charge data. unnecessary, but maybe used somewhere?
         #
         # servo additions:
-        { user = "998"; group = "996"; mode = "0755"; directory = "/var/lib/acme"; }  # TODO: mode?
+        { user = "998"; group = "996"; directory = "/var/lib/acme"; }  # TODO: mode?
         # "/var/lib/dhparams"          # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/security/dhparams.nix
         # "/var/lib/dovecot"
         # "/var/lib/duplicity"
-        { user = "994"; group = "993"; mode = "0755"; directory = "/var/lib/gitea"; } # TODO: mode? could be more granular
-        { user = "261"; group = "261"; mode = "0755"; directory = "/var/lib/ipfs"; }  # TODO: mode? could be more granular
-        { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/jackett"; } # TODO: mode? we only need this to save Indexer creds ==> migrate to config?
-        { user = "996"; group = "994"; mode = "0755"; directory = "/var/lib/jellyfin"; } # TODO: mode? could be more granular
-        { user = "993"; group = "992"; mode = "0755"; directory = "/var/lib/matrix-appservice-irc"; } # TODO: mode?
-        { user = "224"; group = "224"; mode = "0755"; directory = "/var/lib/matrix-synapse"; } # TODO: mode?
-        { user = "221"; group = "221"; mode = "0755"; directory = "/var/lib/opendkim"; } # TODO: mode? move this to the nix config (SOPS)
-        { user = "997"; group = "995"; mode = "0755"; directory = "/var/lib/pleroma"; } # TODO: mode? could be more granular
-        { user = "71"; group = "71"; mode = "0755"; directory = "/var/lib/postgresql"; } # TODO: mode?
-        { user = "root"; group = "root"; mode = "0755"; directory = "/var/lib/postfix"; } # TODO: mode? could be more granular
-        { user = "70"; group = "70"; mode = "0755"; directory = "/var/lib/transmission"; } # TODO: mode? we need this specifically for the stats tracking in .config/
-        { user = "colin"; group = "users"; mode = "0755"; directory = "/var/lib/uninsane"; }
-      ];
+        { user = "994"; group = "993"; directory = "/var/lib/gitea"; } # TODO: mode? could be more granular
+        { user = "261"; group = "261"; directory = "/var/lib/ipfs"; }  # TODO: mode? could be more granular
+        { user = "root"; group = "root"; directory = "/var/lib/jackett"; } # TODO: mode? we only need this to save Indexer creds ==> migrate to config?
+        { user = "996"; group = "994"; directory = "/var/lib/jellyfin"; } # TODO: mode? could be more granular
+        { user = "993"; group = "992"; directory = "/var/lib/matrix-appservice-irc"; } # TODO: mode?
+        { user = "224"; group = "224"; directory = "/var/lib/matrix-synapse"; } # TODO: mode?
+        { user = "221"; group = "221"; directory = "/var/lib/opendkim"; } # TODO: mode? move this to the nix config (SOPS)
+        { user = "997"; group = "995"; directory = "/var/lib/pleroma"; } # TODO: mode? could be more granular
+        { user = "71"; group = "71"; directory = "/var/lib/postgresql"; } # TODO: mode?
+        { user = "root"; group = "root"; directory = "/var/lib/postfix"; } # TODO: mode? could be more granular
+        { user = "70"; group = "70"; directory = "/var/lib/transmission"; } # TODO: mode? we need this specifically for the stats tracking in .config/
+        { user = "colin"; group = "users"; directory = "/var/lib/uninsane"; }
+      ]);
       files = [
         "/etc/machine-id"
         # "/home/colin/knowledge"
