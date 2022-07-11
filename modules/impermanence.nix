@@ -18,6 +18,10 @@ in
       default = [];
       type = types.listOf (types.either types.str (types.attrsOf types.str));
     };
+    colinsane.impermanence.service-dirs = mkOption {
+      default = [];
+      type = types.listOf (types.either types.str (types.attrsOf types.str));
+    };
   };
 
   config = let
@@ -51,13 +55,12 @@ in
         "/var/backup"  # for e.g. postgres dumps
         # TODO: what even GOES in /srv?
         "/srv"
-      ]) ++ (map-service-dirs [
+      ]) ++ (map-service-dirs ([
         # "/var/lib/AccountsService"   # not sure what this is, but it's empty
         "/var/lib/alsa"                # preserve output levels, default devices
         # "/var/lib/blueman"           # files aren't human readable
         "/var/lib/bluetooth"           # preserve bluetooth handshakes
         "/var/lib/colord"              # preserve color calibrations (?)
-        "/var/lib/duplicity"           # we need this mostly because of the size of duplicity's cache
         # "/var/lib/dhclient"          # empty on lappy; dunno about desko
         # "/var/lib/fwupd"             # not sure why this would need persistent state
         # "/var/lib/geoclue"           # empty on lappy
@@ -76,23 +79,10 @@ in
         # "/var/lib/upower"            # historic charge data. unnecessary, but maybe used somewhere?
         #
         # servo additions:
-        { user = "998"; group = "996"; directory = "/var/lib/acme"; }  # TODO: mode?
         # "/var/lib/dhparams"          # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/security/dhparams.nix
         # "/var/lib/dovecot"
         # "/var/lib/duplicity"
-        { user = "994"; group = "993"; directory = "/var/lib/gitea"; } # TODO: mode? could be more granular
-        { user = "261"; group = "261"; directory = "/var/lib/ipfs"; }  # TODO: mode? could be more granular
-        { user = "root"; group = "root"; directory = "/var/lib/jackett"; } # TODO: mode? we only need this to save Indexer creds ==> migrate to config?
-        { user = "996"; group = "994"; directory = "/var/lib/jellyfin"; } # TODO: mode? could be more granular
-        { user = "993"; group = "992"; directory = "/var/lib/matrix-appservice-irc"; } # TODO: mode?
-        { user = "224"; group = "224"; directory = "/var/lib/matrix-synapse"; } # TODO: mode?
-        { user = "221"; group = "221"; directory = "/var/lib/opendkim"; } # TODO: mode? move this to the nix config (SOPS)
-        { user = "997"; group = "995"; directory = "/var/lib/pleroma"; } # TODO: mode? could be more granular
-        { user = "71"; group = "71"; directory = "/var/lib/postgresql"; } # TODO: mode?
-        { user = "root"; group = "root"; directory = "/var/lib/postfix"; } # TODO: mode? could be more granular
-        { user = "70"; group = "70"; directory = "/var/lib/transmission"; } # TODO: mode? we need this specifically for the stats tracking in .config/
-        { user = "colin"; group = "users"; directory = "/var/lib/uninsane"; }
-      ]);
+      ] ++ cfg.service-dirs));
       files = [
         "/etc/machine-id"
         # "/home/colin/knowledge"

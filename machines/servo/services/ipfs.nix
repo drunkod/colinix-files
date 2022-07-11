@@ -1,5 +1,9 @@
 { ... }:
 {
+  colinsane.impermanence.service-dirs = [
+    # TODO: mode? could be more granular
+    { user = "261"; group = "261"; directory = "/var/lib/ipfs"; }
+  ];
   services.ipfs.enable = true;
   services.ipfs.localDiscovery = true;
   services.ipfs.swarmAddress = [

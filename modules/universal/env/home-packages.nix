@@ -103,5 +103,6 @@ in
   # rustup
   # swig
   colinsane.home-manager.extraPackages = pkglist;
+  # TODO: this should be gated behind home-manager being enabled...
   colinsane.impermanence.home-dirs = dirlist;
 }

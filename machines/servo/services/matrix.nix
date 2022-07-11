@@ -3,6 +3,11 @@
 { config, ... }:
 
 {
+  colinsane.impermanence.service-dirs = [
+    # TODO: mode?
+    { user = "993"; group = "992"; directory = "/var/lib/matrix-appservice-irc"; }
+    { user = "224"; group = "224"; directory = "/var/lib/matrix-synapse"; }
+  ];
   services.matrix-synapse.enable = true;
   services.matrix-synapse.settings.server_name = "uninsane.org";
 

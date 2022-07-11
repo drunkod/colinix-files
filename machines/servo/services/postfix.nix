@@ -16,6 +16,11 @@ let
   };
 in
 {
+  colinsane.impermanence.service-dirs = [
+    # TODO: mode? could be more granular
+    { user = "221"; group = "221"; directory = "/var/lib/opendkim"; }
+    { user = "root"; group = "root"; directory = "/var/lib/postfix"; }
+  ];
   services.postfix.enable = true;
   services.postfix.hostname = "mx.uninsane.org";
   services.postfix.origin = "uninsane.org";

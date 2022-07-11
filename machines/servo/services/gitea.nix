@@ -1,6 +1,10 @@
 { pkgs, lib, ... }:
 
 {
+  colinsane.impermanence.service-dirs = [
+    # TODO: mode? could be more granular
+    { user = "994"; group = "993"; directory = "/var/lib/gitea"; }
+  ];
   services.gitea.enable = true;
   services.gitea.user = "git";  # default is 'gitea'
   services.gitea.database.type = "postgres";

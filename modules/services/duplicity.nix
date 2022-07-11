@@ -14,6 +14,9 @@ in
   };
 
   config = mkIf cfg.enable {
+    # we need this mostly because of the size of duplicity's cache
+    colinsane.impermanence.service-dirs = [ "/var/lib/duplicity" ];
+
     services.duplicity.enable = true;
     services.duplicity.targetUrl = ''"$DUPLICITY_URL"'';
     services.duplicity.escapeUrl = false;
