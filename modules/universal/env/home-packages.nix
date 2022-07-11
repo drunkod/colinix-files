@@ -1,19 +1,8 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with pkgs;
-{
-  # useful devtools:
-  # bison
-  # dtc
-  # flex
-  # gcc
-  # gcc-arm-embedded
-  # gcc_multi
-  # gnumake
-  # mix2nix
-  # rustup
-  # swig
-  colinsane.home-manager.extraPackages = [
+let
+  pkgspec = [
     backblaze-b2
     duplicity
     gnupg
@@ -40,7 +29,6 @@ with pkgs;
     youtube-dl
   ]
   ++ (if config.colinsane.gui.enable then
-  with pkgs;
   [
     # GUI only
     aerc  # email client
@@ -48,7 +36,10 @@ with pkgs;
     chromium
     clinfo
     electrum
-    element-desktop  # broken on phosh
+
+    # creds/session keys, etc
+    { pkg = element-desktop; dir = ".config/Element"; }
+
     evince  # works on phosh
     font-manager
     gimp  # broken on phosh
@@ -62,7 +53,6 @@ with pkgs;
     inkscape
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     mesa-demos
-    monero-gui
     networkmanagerapplet
     obsidian
     playerctl
@@ -72,16 +62,46 @@ with pkgs;
     xterm  # broken on phosh
   ] else [])
   ++ (if config.colinsane.gui.enable && pkgs.system == "x86_64-linux" then
-  with pkgs;
   [
     # x86_64 only
-    discord
+
+    # creds, but also 200 MB of node modules, etc
+    { pkg = discord; dir = ".config/discord"; }
+
     kaiteki  # Pleroma client
     gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
-    signal-desktop
-    spotify
+
+    # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
+    { pkg = monero-gui; dir = ".bitmonero"; }
+
+    # creds, media
+    { pkg = signal-desktop; dir = ".config/Signal"; }
+
+    # creds. TODO: can i manage this with home-manager?
+    { pkg = spotify; dir = ".config/spotify"; }
+
     # hardenedMalloc solves a crash at startup
     (tor-browser-bundle-bin.override { useHardenedMalloc = false; })
-    zecwallet-lite
+
+    # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
+    { pkg = zecwallet-lite; dir = ".zcash"; }
   ] else []);
+
+  pkglist = builtins.map (e: e.pkg or e) pkgspec;
+  dirlist = builtins.concatLists (builtins.map (e: if e ? "dir" then [ e.dir ] else []) pkgspec);
+in
+{
+  # useful devtools:
+  # bison
+  # dtc
+  # flex
+  # gcc
+  # gcc-arm-embedded
+  # gcc_multi
+  # gnumake
+  # mix2nix
+  # rustup
+  # swig
+  colinsane.home-manager.extraPackages = pkglist;
+  colinsane.impermanence.home-dirs = dirlist;
 }

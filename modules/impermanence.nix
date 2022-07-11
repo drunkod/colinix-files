@@ -34,28 +34,15 @@ in
   in mkIf cfg.enable {
     environment.persistence."/nix/persist" = {
       directories = (map-home-dirs ([
-        # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
-        ".bitmonero"
         # cache is probably too big to fit on the tmpfs
         # TODO: we could bind-mount it to something which gets cleared per boot, though.
         ".cache"
         ".cargo"
         ".rustup"
         ".ssh"
-        # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
-        ".zcash"
         # intentionally omitted:
         # ".config"  # managed by home-manager
         # ".local"   # nothing useful in here
-        # ".mozilla" # managed by home-manager
-        # creds. TODO: can i manage this with home-manager?
-        ".config/spotify"
-        # creds, but also 200 MB of node modules, etc
-        ".config/discord"
-        # creds/session keys, etc
-        ".config/Element"
-        # creds, media
-        ".config/Signal"
       ] ++ cfg.home-dirs)) ++ (map-sys-dirs [
         { mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
         # "/etc/nixos"
