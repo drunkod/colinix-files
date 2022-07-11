@@ -4,6 +4,7 @@
   imports = [
     ./users.nix
     ./home-manager.nix
+    ./home-packages.nix
     ./system-packages.nix
   ];
 

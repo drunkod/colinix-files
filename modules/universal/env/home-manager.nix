@@ -177,8 +177,7 @@ in
 
       wayland.windowManager = cfg.windowManager;
 
-      home.packages = (import ./home-packages.nix { config = sysconfig; inherit pkgs; })
-        ++ cfg.extraPackages;
+      home.packages = cfg.extraPackages;
     };
   };
 }
