@@ -38,16 +38,6 @@
   #   options = [ "bind" ];
   # };
 
-  # TODO: does transmission handle symlinks?
-  fileSystems."/var/lib/transmission/Downloads" = {
-    device = "/var/lib/uninsane/media";
-    options = [ "bind" ];
-  };
-  fileSystems."/var/lib/transmission/.incomplete" = {
-    device = "/var/lib/uninsane/media/incomplete";
-    options = [ "bind" ];
-  };
-
   # in-memory compressed RAM (seems to be dynamically sized)
   zramSwap = {
     enable = true;

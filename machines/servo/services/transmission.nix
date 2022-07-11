@@ -33,6 +33,9 @@
     # see: https://git.zknt.org/mirror/transmission/commit/cfce6e2e3a9b9d31a9dafedd0bdc8bf2cdb6e876?lang=bg-BG
     anti-brute-force-enabled = false;
 
+    download-dir = "/var/lib/uninsane/media";
+    incomplete-dir = "/var/lib/uninsane/media/incomplete";
+
   };
   # transmission will by default not allow the world to read its files.
   services.transmission.downloadDirPermissions = "775";
