@@ -62,6 +62,7 @@
       #     chmod 775 <part>/nix/store
       #     chown root:root -R <part>/nix/store/*
       #     populate any important things (persist/, home/colin/.ssh, etc)
+      #       (`mkdir /var/{lib,log}` at a minimum)
       #   - boot
       #   - if fs wasn't resized automatically, then `sudo btrfs filesystem resize max /`
       #   - checkout this flake into /etc/nixos AND UPDATE THE FS UUIDS.
