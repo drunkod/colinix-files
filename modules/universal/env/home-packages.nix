@@ -50,6 +50,7 @@ let
     gnome.nautilus
     gnome-podcasts
     gnome.gnome-terminal  # works on phosh
+    gthumb
     inkscape
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     mesa-demos
