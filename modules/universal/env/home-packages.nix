@@ -46,6 +46,7 @@ let
     gnome.dconf-editor
     gnome-feeds  # RSS reader (with claimed mobile support)
     gnome.file-roller
+    gnome.gnome-disk-utility
     gnome.gnome-maps  # works on phosh
     gnome.nautilus
     gnome-podcasts
