@@ -72,6 +72,7 @@
     machines.desko = decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
     machines.lappy = decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
     machines.moby = decl-bootable-machine { name = "moby"; system = "aarch64-linux"; };
+    machines.rescue = decl-bootable-machine { name = "rescue"; system = "x86_64-linux"; };
   in {
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) machines;
     imgs = builtins.mapAttrs (name: value: value.img) machines;
