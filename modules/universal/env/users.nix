@@ -33,13 +33,11 @@
     # XXX colin: create ssh key for THIS user by logging in and running:
     #   ssh-keygen -t ed25519
     openssh.authorizedKeys.keys = [
-      # TODO: is this key dead?
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSDe/y0e9PSeUwYlMPjzhW0UhNsGAGsW3lCG3apxrD5 colin@colin.desktop"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDpmFdNSVPRol5hkbbCivRhyeENzb9HVyf9KutGLP2Zu colin@lappy"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPU5GlsSfbaarMvDA20bxpSZGWviEzXGD8gtrIowc1pX colin@desko"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPS1qFzKurAdB9blkWomq8gI1g0T3sTs9LsmFOj5VtqX colin@servo"
-      # TODO: should probably only let this authenticate to my server
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGCLCA9KbjXaXNNMJJvqbPO5KQQ64JCdG8sg88AfdKzi colin@moby"
+      # moby doesn't need to login to any other devices yet
+      # "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICrR+gePnl0nV/vy7I5BzrGeyVL+9eOuXHU1yNE3uCwU colin@moby"
     ];
   };
 
