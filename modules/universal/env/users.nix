@@ -12,6 +12,11 @@
     isNormalUser = true;
     home = "/home/colin";
     uid = 1000;
+    # i don't get exactly what this is, but nixos defaults to this non-deterministically
+    # in /var/lib/nixos/auto-subuid-map and i don't want that.
+    subUidRanges = [
+      { startUid=100000; count=1; }
+    ];
     group = "users";
     extraGroups = [
       "wheel"
@@ -67,12 +72,16 @@
   assertions = let
     uidAssertions = builtins.attrValues (builtins.mapAttrs (name: user: {
       assertion = user.uid != null;
-      message = "non-deterministic user config detected: ${name}";
+      message = "non-deterministic uid detected for: ${name}";
     }) config.users.users);
     gidAssertions = builtins.attrValues (builtins.mapAttrs (name: group: {
       assertion = group.gid != null;
-      message = "non-deterministic group config detected: ${name}";
+      message = "non-deterministic gid detected for: ${name}";
     }) config.users.groups);
-  in uidAssertions ++ gidAssertions;
+    autoSubAssertions = builtins.attrValues (builtins.mapAttrs (name: user: {
+      assertion = !user.autoSubUidGidRange;
+      message = "non-deterministic subUids/Guids detected for: ${name}";
+    }) config.users.users);
+  in uidAssertions ++ gidAssertions ++ autoSubAssertions;
 
 }
