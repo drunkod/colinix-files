@@ -255,8 +255,8 @@
   security.acme.acceptTerms = true;
   security.acme.defaults.email = "admin.acme@uninsane.org";
 
-  users.users.acme.uid = 998;
-  users.groups.acme.gid = 996;
+  users.users.acme.uid = config.colinsane.allocations.acme-uid;
+  users.groups.acme.gid = config.colinsane.allocations.acme-gid;
   colinsane.impermanence.service-dirs = [
     # TODO: mode?
     { user = "acme"; group = "acme"; directory = "/var/lib/acme"; }

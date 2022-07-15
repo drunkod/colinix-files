@@ -8,8 +8,8 @@
     # TODO: mode? could be more granular
     { user = "pleroma"; group = "pleroma"; directory = "/var/lib/pleroma"; }
   ];
-  users.users.pleroma.uid = 997;
-  users.groups.pleroma.gid = 995;
+  users.users.pleroma.uid = config.colinsane.allocations.pleroma-uid;
+  users.groups.pleroma.gid = config.colinsane.allocations.pleroma-gid;
   services.pleroma.enable = true;
   services.pleroma.secretConfigFile = config.sops.secrets.pleroma_secrets.path;
   services.pleroma.configs = [

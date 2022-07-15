@@ -11,9 +11,21 @@ in
   options = {
     colinsane.allocations.dhcpcd-gid = mkId 991;
     colinsane.allocations.dhcpcd-uid = mkId 992;
-    colinsane.allocations.usbmux-uid = mkId 996;  # desko
+    colinsane.allocations.gitea-gid = mkId 993;  # servo
+    colinsane.allocations.git-uid = mkId 994;  # servo
+    colinsane.allocations.jellyfin-gid = mkId 994;  # servo
+
     colinsane.allocations.usbmux-gid = mkId 995;  # desko
-    colinsane.allocations.nm-iodine-uid = mkId 998;
+    colinsane.allocations.usbmux-uid = mkId 996;  # desko
+
+    colinsane.allocations.pleroma-gid = mkId 995;  # servo
+    colinsane.allocations.jellyfin-uid = mkId 996;  # servo
+    colinsane.allocations.acme-gid = mkId 996;  # servo
+    colinsane.allocations.pleroma-uid = mkId 997;  # servo
+
+    colinsane.allocations.nm-iodine-uid = mkId 998;  # desko/moby/lappy
+
+    colinsane.allocations.acme-uid = mkId 998;  # servo
     colinsane.allocations.greeter-uid = mkId 999;
     colinsane.allocations.greeter-gid = mkId 999;
     colinsane.allocations.colin-uid = mkId 1000;
