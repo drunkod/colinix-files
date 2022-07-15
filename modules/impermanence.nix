@@ -70,7 +70,7 @@ in
         # "/var/lib/misc"              # empty on lappy
         # "/var/lib/NetworkManager"    # looks to be mostly impermanent state?
         # "/var/lib/NetworkManager-fortisslvpn" # empty on lappy
-        "/var/lib/nixos"               # has some uid/gid maps; not sure what happens if we lose this.
+        # "/var/lib/nixos"             # has some uid/gid maps, but we enforce these to be deterministic.
         # "/var/lib/PackageKit"        # wtf is this?
         # "/var/lib/power-profiles-daemon"  # redundant with nixos declarations
         # "/var/lib/private"           # empty on lappy
