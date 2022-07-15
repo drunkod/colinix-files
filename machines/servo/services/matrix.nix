@@ -5,6 +5,7 @@
 {
   colinsane.impermanence.service-dirs = [
     # TODO: mode?
+    # user and group are both "matrix-appservice-irc"
     { user = "993"; group = "992"; directory = "/var/lib/matrix-appservice-irc"; }
     { user = "224"; group = "224"; directory = "/var/lib/matrix-synapse"; }
   ];
