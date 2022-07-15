@@ -21,6 +21,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    colinsane.home-manager.enable = true;
+   colinsane.home-manager.enable = true;
+   # all GUIs use network manager?
+   users.users.nm-iodine.uid = config.colinsane.allocations.nm-iodine-uid;
   };
 }

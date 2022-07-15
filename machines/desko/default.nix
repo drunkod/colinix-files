@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   imports = [
     ./fs.nix
@@ -14,6 +14,8 @@
 
   # needed to use libimobiledevice/ifuse, for iphone sync
   services.usbmuxd.enable = true;
+  users.users.usbmux.uid = config.colinsane.allocations.usbmux-uid;
+  users.groups.usbmux.gid = config.colinsane.allocations.usbmux-gid;
 
   # default config: https://man.archlinux.org/man/snapper-configs.5
   # defaults to something like:

@@ -14,6 +14,8 @@ in
   };
   config = mkIf cfg.enable {
     colinsane.gui.enable = true;
+    users.users.greeter.uid = config.colinsane.allocations.greeter-uid;
+    users.groups.greeter.gid = config.colinsane.allocations.greeter-gid;
     programs.sway = {
       # we configure sway with home-manager, but this enable gets us e.g. opengl and fonts
       enable = true;

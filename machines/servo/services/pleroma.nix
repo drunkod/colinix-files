@@ -6,8 +6,10 @@
 {
   colinsane.impermanence.service-dirs = [
     # TODO: mode? could be more granular
-    { user = "997"; group = "995"; directory = "/var/lib/pleroma"; }
+    { user = "pleroma"; group = "pleroma"; directory = "/var/lib/pleroma"; }
   ];
+  users.users.pleroma.uid = 997;
+  users.groups.pleroma.gid = 995;
   services.pleroma.enable = true;
   services.pleroma.secretConfigFile = config.sops.secrets.pleroma_secrets.path;
   services.pleroma.configs = [

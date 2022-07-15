@@ -1,4 +1,4 @@
-{ pkgs, mobile-nixos, ... }:
+{ config, pkgs, mobile-nixos, ... }:
 {
   imports = [
     (import "${mobile-nixos}/lib/configuration.nix" {
@@ -54,4 +54,15 @@
 
   # enable rotation sensor
   hardware.sensor.iio.enable = true;
+
+  # TODO: this probably lives in the wrong spot (are these groups created by phosh?)
+  users.users.avahi.uid = config.colinsane.allocations.avahi-uid;
+  users.users.colord.uid = config.colinsane.allocations.colord-uid;
+  users.users.geoclue.uid = config.colinsane.allocations.geoclue-uid;
+  users.users.rtkit.uid = config.colinsane.allocations.rtkit-uid;
+  users.groups.avahi.gid = config.colinsane.allocations.avahi-gid;
+  users.groups.colord.gid = config.colinsane.allocations.colord-gid;
+  users.groups.geoclue.gid = config.colinsane.allocations.geoclue-gid;
+  users.groups.rtkit.gid = config.colinsane.allocations.rtkit-gid;
+  users.groups.feedbackd.gid = config.colinsane.allocations.feedbackd-gid;
 }

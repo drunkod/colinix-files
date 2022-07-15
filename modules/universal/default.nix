@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./allocations.nix
     ./env
     ./fs.nix
     ./secrets.nix
