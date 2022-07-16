@@ -43,6 +43,7 @@ let
     evince  # works on phosh
     font-manager
     gimp  # broken on phosh
+    gnome.cheese
     gnome.dconf-editor
     gnome-feeds  # RSS reader (with claimed mobile support)
     gnome.file-roller
