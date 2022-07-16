@@ -35,6 +35,17 @@
     sopsFile = ../../secrets/desko.yaml;
   };
 
+  programs.steam = {
+    enable = true;
+    # not sure if needed: stole this whole snippet from the wiki
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+  };
+  colinsane.impermanence.home-dirs = [
+    ".steam"
+    ".local/share/Steam"
+  ];
+
   # docs: https://nixos.org/manual/nixos/stable/options.html#opt-system.stateVersion
   system.stateVersion = "21.05";
 }
