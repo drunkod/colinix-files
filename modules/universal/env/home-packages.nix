@@ -55,6 +55,7 @@ let
     gthumb
     inkscape
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
+    lollypop
     mesa-demos
     networkmanagerapplet
     obsidian
