@@ -10,6 +10,7 @@ let
     ipfs
     libimobiledevice
     lm_sensors  # for sensors-detect
+    nb
     networkmanager
     nixpkgs-review
     # nixos-generators
@@ -25,6 +26,7 @@ let
     sops
     ssh-to-age
     sudo
+    w3m
     wireguard-tools
     youtube-dl
   ]
