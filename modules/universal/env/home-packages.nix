@@ -61,7 +61,10 @@ let
     lollypop
     mesa-demos
     networkmanagerapplet
-    obsidian
+
+    # settings (electron app). TODO: can i manage these settings with home-manager?
+    { pkg = obsidian; dir = ".config/obsidian"; }
+
     playerctl
     tdesktop  # broken on phosh
     vlc  # works on phosh
