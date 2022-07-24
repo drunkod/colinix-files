@@ -165,7 +165,8 @@ in
             # names = [ "monospace" "Noto Color Emoji" ];
             # size = 8.0;
             # names = [ "Font Awesome 6 Free" "DejaVu Sans" "Hack" ];
-            names = with config.fonts.fontconfig.defaultFonts; (emoji ++ monospace ++ serif ++ sansSerif);
+            # names = with config.fonts.fontconfig.defaultFonts; (emoji ++ monospace ++ serif ++ sansSerif);
+            names = with config.fonts.fontconfig.defaultFonts; (emoji ++ monospace);
             size = 24.0;
           };
           trayOutput = "primary";
@@ -234,11 +235,13 @@ in
             on-scroll-down = "${pkgs.playerctl}/bin/playerctl previous";
           };
           network = {
-            interval = 1;
-            format-ethernet = "{ifname}: {ipaddr}/{cidr}   up: {bandwidthUpBits} down: {bandwidthDownBits}";
+            interval = 5;
+            # custom :> format specifier explained here: https://github.com/Alexays/Waybar/pull/472
+            format-ethernet = "  {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
+            max-length = 40;
           };
           cpu = {
-            format = "{usage}% ";
+            format = " {usage:2}%";
             tooltip = false;
           };
           battery = {
@@ -261,6 +264,11 @@ in
           };
         };
       };
+      style = ''
+        * {
+          font-family: monospace;
+        }
+      '';
       # style = ''
       #   * {
       #     border: none;
