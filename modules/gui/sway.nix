@@ -66,6 +66,7 @@ in
         down = "j";
         up = "k";
         right = "l";
+        # XKB key names: https://wiki.linuxquestions.org/wiki/List_of_Keysyms_Recognised_by_Xmodmap
         keybindings = {
           "${modifier}+Return" = "exec ${terminal}";
           "${modifier}+Shift+q" = "kill";
@@ -148,6 +149,9 @@ in
           XF86AudioRaiseVolume = "exec '${pkgs.pulsemixer}/bin/pulsemixer --change-volume +5'";
           XF86AudioLowerVolume = "exec '${pkgs.pulsemixer}/bin/pulsemixer --change-volume -5'";
           XF86AudioMute = "exec '${pkgs.pulsemixer}/bin/pulsemixer --toggle-mute'";
+
+          "${modifier}+Page_Up" = "exec '${pkgs.pulsemixer}/bin/pulsemixer --change-volume +5'";
+          "${modifier}+Page_Down" = "exec '${pkgs.pulsemixer}/bin/pulsemixer --change-volume -5'";
 
           "${modifier}+Print" = "exec '${pkgs.sway-contrib.grimshot}/bin/grimshot copy area'";
         };
