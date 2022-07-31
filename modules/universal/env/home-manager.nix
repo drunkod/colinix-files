@@ -9,6 +9,7 @@
 with lib;
 let
   cfg = config.colinsane.home-manager;
+  vim-swap-dir = ".cache/vim-swap";
 in
 {
   options = {
@@ -47,6 +48,7 @@ in
       "Music"
       "Pictures"
       "Videos"
+      vim-swap-dir
     ];
 
     home-manager.useGlobalPkgs = true;
@@ -140,19 +142,30 @@ in
           extraConfig = ''
             " wtf vim project: NOBODY LIKES MOUSE FOR VISUAL MODE
             set mouse-=a
+
             " copy/paste to system clipboard
             set clipboard=unnamedplus
+
+            " swap files stored out-of-tree.
+            " // means to encode swap files in this dir by absolute fs path to avoid collisions
+            set directory^=$HOME/${vim-swap-dir}//
+
             " <tab> completion menu settings
             set wildmenu
             set wildmode=longest,list,full
+
             " highlight all matching searches (using / and ?)
             set hlsearch
+
             " allow backspace to delete empty lines in insert mode
             set backspace=indent,eol,start
+
             " built-in syntax highlighting
             syntax enable
+
             " show line/col number in bottom right
             set ruler
+
             " highlight trailing space & related syntax errors (does this work?)
             let c_space_errors=1
             let python_space_errors=1
