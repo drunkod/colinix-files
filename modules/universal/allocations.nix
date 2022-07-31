@@ -24,6 +24,7 @@ in
     colinsane.allocations.greeter-gid = mkId 999;
 
     colinsane.allocations.colin-uid = mkId 1000;
+    colinsane.allocations.guest-uid = mkId 1100;
 
     # found on all machines
     colinsane.allocations.sshd-uid = mkId 2001;  # 997

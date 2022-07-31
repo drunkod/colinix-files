@@ -4,6 +4,7 @@
     ./fs.nix
   ];
 
+  colinsane.users.guest.enable = true;
   colinsane.gui.sway.enable = true;
   colinsane.impermanence.enable = true;
   boot.loader.generic-extlinux-compatible.enable = true;
