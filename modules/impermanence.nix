@@ -36,6 +36,7 @@ in
     map-sys-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
     map-service-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
   in mkIf cfg.enable {
+    sane.image.extraDirectories = [ "/nix/persist/var/log" ];
     environment.persistence."/nix/persist" = {
       directories = (map-home-dirs ([
         # cache is probably too big to fit on the tmpfs

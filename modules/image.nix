@@ -12,6 +12,12 @@ in
       default = [];
       type = types.listOf types.package;
     };
+    # extra (empty) directories to create in the rootfs.
+    # for example, /var/log might be required by the boot process, so ensure it exists.
+    sane.image.extraDirectories = mkOption {
+      default = [];
+      type = types.listOf types.str;
+    };
 
     # the GPT header is fixed to Logical Block Address 1,
     # but we can actually put the partition entries anywhere.
@@ -46,6 +52,7 @@ in
       (builtins.substring 0 (builtins.stringLength sub) super) == sub
     );
     # return the (string) path to get from `stem` to `path`
+    # XXX: not sure how this behaves if the path doesn't contain the stem.
     relPath = stem: path: (
       builtins.head (builtins.match "^${stem}(.+)" path)
     );
@@ -55,14 +62,6 @@ in
     nixFs = fileSystems."/nix/store" or fileSystems."/nix" or fileSystems."/";
     # resolves to e.g. "nix/store", "/store" or ""
     storeRelPath = relPath nixFs.mountPoint "/nix/store";
-
-    # return a list of all the `device` values -- one for each fileSystems."$x"
-    devices = builtins.attrValues (builtins.mapAttrs (mount: entry: entry.device) fileSystems);
-    # filter the devices to just those which sit under nixFs
-    subNixMounts = builtins.filter (a: startsWith (builtins.toString a) nixFs.mountPoint) devices;
-    # e.g. ["/nix/persist/var"] -> ["/persist/var"] if nixFs sits at /nix
-    subNixRelMounts = builtins.map (m: relPath nixFs.mountPoint m) subNixMounts;
-    makeSubNixMounts = builtins.toString (builtins.map (m: "mkdir -p ./${m};") subNixRelMounts);
 
     uuidFromFs = fs: builtins.head (builtins.match "/dev/disk/by-uuid/(.+)" fs.device);
     vfatUuidFromFs = fs: builtins.replaceStrings ["-"] [""] (uuidFromFs fs);
@@ -113,11 +112,10 @@ in
           populateCommands =
           let
             closureInfo = buildPackages.closureInfo { rootPaths = config.system.build.toplevel; };
+            extraRelPaths = builtins.map (p: relPath nixFs.mountPoint m) cfg.extraDirectories;
           in
           ''
-            mkdir -p ./${storeRelPath}
-            # TODO: we should create the dirs required for boot (/var/log?). the rest are populated automatically.
-            # $(makeSubNixMounts)
+            mkdir -p ./${storeRelPath} ${extraRelPaths}
             echo "Copying system closure..."
             while IFS= read -r path; do
               echo "  Copying $path"
