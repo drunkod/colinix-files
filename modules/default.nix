@@ -6,7 +6,7 @@
     ./hardware
     ./image.nix
     ./impermanence.nix
-    ./nix.nix
+    ./nixcache.nix
     ./services/duplicity.nix
     ./universal
   ];
