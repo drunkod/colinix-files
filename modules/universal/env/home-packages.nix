@@ -58,7 +58,6 @@ let
     gthumb
     inkscape
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
-    logseq
     lollypop
     mesa-demos
     networkmanagerapplet
@@ -85,6 +84,8 @@ let
 
     kaiteki  # Pleroma client
     gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
+
+    logseq
 
     # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
     { pkg = monero-gui; dir = ".bitmonero"; }
