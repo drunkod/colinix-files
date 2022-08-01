@@ -25,6 +25,19 @@ fetchpatch: [
   #   sha256 = "sha256-EojqEVNBIyM4DJYLMiY+UKey8RV4tuIv0uyTMEhKiRo=";
   # })
 
+  # discord updates
+  # (fetchpatch {
+  #   # "fix desktop icon location": required only so subsequent patches apply
+  #   url = "https://github.com/NixOS/nixpkgs/pull/171002.diff";
+  #   sha256 = "sha256-7JauhPBqEXoml6ppzwABAWNq8AcmV6Gso7LV4QQVRBI=";
+  # })
+  # (fetchpatch {
+  #   # "add openasar option"
+  #   url = "https://github.com/NixOS/nixpkgs/pull/178507.diff";
+  #   sha256 = "sha256-X+ql7NyhP7ksFRHSQ/NKS6gFdAP5d1jL8WRYX4tbuhI=";
+  # })
+  # if using the above Discord patches, need apply 179906 to get xdg-open to work again
+
   # TODO: upstream
   ./07-duplicity-rich-url.patch
   # TODO: upstream
