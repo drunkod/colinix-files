@@ -6,10 +6,18 @@ let
 in
 {
   options = {
+    # packages whose contents should be copied directly into the /boot partition.
+    # e.g. EFI loaders, u-boot bootloader, etc.
     sane.image.extraBootFiles = mkOption {
       default = [];
       type = types.listOf types.package;
     };
+
+    # the GPT header is fixed to Logical Block Address 1,
+    # but we can actually put the partition entries anywhere.
+    # this option reserves so many bytes after LBA 1 but *before* the partition entries.
+    # this is not universally supported, but is an easy hack to claim space near the start
+    # of the disk for other purposes (e.g. firmware blobs)
     sane.image.extraGPTPadding = mkOption {
       default = 0;
       # NB: rpi doesn't like non-zero values for this.
@@ -18,6 +26,7 @@ in
       # default = 2014 * 512;  # standard is to start part0 at sector 2048  (versus 34 if no padding)
       type = types.int;
     };
+    # optional space (in bytes) to leave unallocated after the GPT structure and before the first partition.
     sane.image.firstPartGap = mkOption {
       # align the first part to 16 MiB.
       # do this by inserting a gap of 16 MiB - gptHeaderSize
