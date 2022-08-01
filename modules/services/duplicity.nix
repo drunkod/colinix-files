@@ -3,11 +3,11 @@
 
 with lib;
 let
-  cfg = config.colinsane.services.duplicity;
+  cfg = config.sane.services.duplicity;
 in
 {
   options = {
-    colinsane.services.duplicity.enable = mkOption {
+    sane.services.duplicity.enable = mkOption {
       default = false;
       type = types.bool;
     };
@@ -15,7 +15,7 @@ in
 
   config = mkIf cfg.enable {
     # we need this mostly because of the size of duplicity's cache
-    colinsane.impermanence.service-dirs = [ "/var/lib/duplicity" ];
+    sane.impermanence.service-dirs = [ "/var/lib/duplicity" ];
 
     services.duplicity.enable = true;
     services.duplicity.targetUrl = ''"$DUPLICITY_URL"'';

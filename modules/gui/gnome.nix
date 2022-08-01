@@ -2,18 +2,18 @@
 
 with lib;
 let
-  cfg = config.colinsane.gui.gnome;
+  cfg = config.sane.gui.gnome;
 in
 {
   options = {
-    colinsane.gui.gnome.enable = mkOption {
+    sane.gui.gnome.enable = mkOption {
       default = false;
       type = types.bool;
     };
   };
 
   config = mkIf cfg.enable {
-    colinsane.gui.enable = true;
+    sane.gui.enable = true;
     # start gnome/gdm on boot
     services.xserver.enable = true;
     services.xserver.desktopManager.gnome.enable = true;

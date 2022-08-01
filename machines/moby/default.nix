@@ -10,7 +10,7 @@
   # XXX colin: phosh doesn't work well with passwordless login
   users.users.colin.initialPassword = "147147";
 
-  colinsane.home-manager.extraPackages = [
+  sane.home-manager.extraPackages = [
     # for web browsers see: https://forum.pine64.org/showthread.php?tid=13669
     pkgs.angelfish  # plasma mobile web browser; broken on phosh (poor wayland support)
     # pkgs.plasma5Packages.index  # file browser
@@ -32,8 +32,8 @@
     # pkgs.alacritty  # terminal; crashes phosh
   ];
 
-  colinsane.nixcache.enable = true;
-  colinsane.gui.phosh.enable = true;
+  sane.nixcache.enable = true;
+  sane.gui.phosh.enable = true;
   boot.loader.grub.enable = false;
   mobile.bootloader.enable = false;
   boot.loader.generic-extlinux-compatible.enable = true;
@@ -56,13 +56,13 @@
   hardware.sensor.iio.enable = true;
 
   # TODO: this probably lives in the wrong spot (are these groups created by phosh?)
-  users.users.avahi.uid = config.colinsane.allocations.avahi-uid;
-  users.users.colord.uid = config.colinsane.allocations.colord-uid;
-  users.users.geoclue.uid = config.colinsane.allocations.geoclue-uid;
-  users.users.rtkit.uid = config.colinsane.allocations.rtkit-uid;
-  users.groups.avahi.gid = config.colinsane.allocations.avahi-gid;
-  users.groups.colord.gid = config.colinsane.allocations.colord-gid;
-  users.groups.geoclue.gid = config.colinsane.allocations.geoclue-gid;
-  users.groups.rtkit.gid = config.colinsane.allocations.rtkit-gid;
-  users.groups.feedbackd.gid = config.colinsane.allocations.feedbackd-gid;
+  users.users.avahi.uid = config.sane.allocations.avahi-uid;
+  users.users.colord.uid = config.sane.allocations.colord-uid;
+  users.users.geoclue.uid = config.sane.allocations.geoclue-uid;
+  users.users.rtkit.uid = config.sane.allocations.rtkit-uid;
+  users.groups.avahi.gid = config.sane.allocations.avahi-gid;
+  users.groups.colord.gid = config.sane.allocations.colord-gid;
+  users.groups.geoclue.gid = config.sane.allocations.geoclue-gid;
+  users.groups.rtkit.gid = config.sane.allocations.rtkit-gid;
+  users.groups.feedbackd.gid = config.sane.allocations.feedbackd-gid;
 }

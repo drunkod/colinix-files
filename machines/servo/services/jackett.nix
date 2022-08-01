@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  colinsane.impermanence.service-dirs = [
+  sane.impermanence.service-dirs = [
     # TODO: mode? we only need this to save Indexer creds ==> migrate to config?
     { user = "root"; group = "root"; directory = "/var/lib/jackett"; }
   ];

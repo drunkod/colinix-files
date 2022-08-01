@@ -31,7 +31,7 @@ let
     wireguard-tools
     youtube-dl
   ]
-  ++ (if config.colinsane.gui.enable then
+  ++ (if config.sane.gui.enable then
   [
     # GUI only
     aerc  # email client
@@ -72,7 +72,7 @@ let
     whalebird # pleroma client. input is broken on phosh
     xterm  # broken on phosh
   ] else [])
-  ++ (if config.colinsane.gui.enable && pkgs.system == "x86_64-linux" then
+  ++ (if config.sane.gui.enable && pkgs.system == "x86_64-linux" then
   [
     # x86_64 only
 
@@ -117,7 +117,7 @@ in
   # mix2nix
   # rustup
   # swig
-  colinsane.home-manager.extraPackages = pkglist;
+  sane.home-manager.extraPackages = pkglist;
   # TODO: this should be gated behind home-manager being enabled...
-  colinsane.impermanence.home-dirs = dirlist;
+  sane.impermanence.home-dirs = dirlist;
 }

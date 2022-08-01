@@ -3,19 +3,19 @@
 # docs: https://nixos.wiki/wiki/Sway
 with lib;
 let
-  cfg = config.colinsane.gui.sway;
+  cfg = config.sane.gui.sway;
 in
 {
   options = {
-    colinsane.gui.sway.enable = mkOption {
+    sane.gui.sway.enable = mkOption {
       default = false;
       type = types.bool;
     };
   };
   config = mkIf cfg.enable {
-    colinsane.gui.enable = true;
-    users.users.greeter.uid = config.colinsane.allocations.greeter-uid;
-    users.groups.greeter.gid = config.colinsane.allocations.greeter-gid;
+    sane.gui.enable = true;
+    users.users.greeter.uid = config.sane.allocations.greeter-uid;
+    users.groups.greeter.gid = config.sane.allocations.greeter-gid;
     programs.sway = {
       # we configure sway with home-manager, but this enable gets us e.g. opengl and fonts
       enable = true;
@@ -49,7 +49,7 @@ in
     networking.networkmanager.enable = true;
     networking.wireless.enable = lib.mkForce false;
 
-    colinsane.home-manager.windowManager.sway = {
+    sane.home-manager.windowManager.sway = {
       enable = true;
       wrapperFeatures.gtk = true;
       config = rec {
@@ -208,7 +208,7 @@ in
       };
     };
 
-    colinsane.home-manager.programs.waybar = {
+    sane.home-manager.programs.waybar = {
       enable = true;
       # docs: https://github.com/Alexays/Waybar/wiki/Configuration
       settings = {
@@ -545,7 +545,7 @@ in
       #   }
       # '';
     };
-    colinsane.home-manager.extraPackages = with pkgs; [
+    sane.home-manager.extraPackages = with pkgs; [
       swaylock
       swayidle
       wl-clipboard

@@ -2,11 +2,11 @@
 
 with lib;
 let
-  cfg = config.colinsane.nixcache;
+  cfg = config.sane.nixcache;
 in
 {
   options = {
-    colinsane.nixcache.enable = mkOption {
+    sane.nixcache.enable = mkOption {
       default = false;
       type = types.bool;
     };

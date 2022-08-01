@@ -6,19 +6,19 @@
 
 with lib;
 let
-  cfg = config.colinsane.impermanence;
+  cfg = config.sane.impermanence;
 in
 {
   options = {
-    colinsane.impermanence.enable = mkOption {
+    sane.impermanence.enable = mkOption {
       default = false;
       type = types.bool;
     };
-    colinsane.impermanence.home-dirs = mkOption {
+    sane.impermanence.home-dirs = mkOption {
       default = [];
       type = types.listOf (types.either types.str (types.attrsOf types.str));
     };
-    colinsane.impermanence.service-dirs = mkOption {
+    sane.impermanence.service-dirs = mkOption {
       default = [];
       type = types.listOf (types.either types.str (types.attrsOf types.str));
     };

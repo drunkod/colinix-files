@@ -2,18 +2,18 @@
 
 with lib;
 let
-  cfg = config.colinsane.gui.phosh;
+  cfg = config.sane.gui.phosh;
 in
 {
   options = {
-    colinsane.gui.phosh.enable = mkOption {
+    sane.gui.phosh.enable = mkOption {
       default = false;
       type = types.bool;
     };
   };
 
   config = mkIf cfg.enable {
-    colinsane.gui.enable = true;
+    sane.gui.enable = true;
     # docs: https://github.com/NixOS/nixpkgs/blob/nixos-22.05/nixos/modules/services/x11/desktop-managers/phosh.nix
     services.xserver.desktopManager.phosh = {
       enable = true;

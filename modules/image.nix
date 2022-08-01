@@ -2,15 +2,15 @@
 
 with lib;
 let
-  cfg = config.colinsane.image;
+  cfg = config.sane.image;
 in
 {
   options = {
-    colinsane.image.extraBootFiles = mkOption {
+    sane.image.extraBootFiles = mkOption {
       default = [];
       type = types.listOf types.package;
     };
-    colinsane.image.extraGPTPadding = mkOption {
+    sane.image.extraGPTPadding = mkOption {
       default = 0;
       # NB: rpi doesn't like non-zero values for this.
       # at the same time, spinning disks REALLY need partitions to be aligned to 4KiB boundaries.
@@ -18,7 +18,7 @@ in
       # default = 2014 * 512;  # standard is to start part0 at sector 2048  (versus 34 if no padding)
       type = types.int;
     };
-    colinsane.image.firstPartGap = mkOption {
+    sane.image.firstPartGap = mkOption {
       # align the first part to 16 MiB.
       # do this by inserting a gap of 16 MiB - gptHeaderSize
       # and then multiply by 1MiB and subtract 1 because mobile-nixos
@@ -26,7 +26,7 @@ in
       default = (16 * 1024 * 1024 - 34 * 512) * 1024 * 1024 - 1;
       type = types.nullOr types.int;
     };
-    colinsane.image.bootPartSize = mkOption {
+    sane.image.bootPartSize = mkOption {
       default = 512 * 1024 * 1024;
       type = types.int;
     };

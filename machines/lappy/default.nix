@@ -4,12 +4,12 @@
     ./fs.nix
   ];
 
-  colinsane.users.guest.enable = true;
-  colinsane.gui.sway.enable = true;
-  colinsane.impermanence.enable = true;
+  sane.users.guest.enable = true;
+  sane.gui.sway.enable = true;
+  sane.impermanence.enable = true;
   boot.loader.generic-extlinux-compatible.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
-  colinsane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
+  sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
   # default config: https://man.archlinux.org/man/snapper-configs.5
   # defaults to something like:

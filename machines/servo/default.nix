@@ -20,18 +20,18 @@
     ./services/transmission.nix
   ];
 
-  colinsane.home-manager.enable = true;
-  colinsane.home-manager.extraPackages = [
+  sane.home-manager.enable = true;
+  sane.home-manager.extraPackages = [
     pkgs.matrix-synapse
   ];
-  colinsane.impermanence.enable = true;
-  colinsane.services.duplicity.enable = true;
+  sane.impermanence.enable = true;
+  sane.services.duplicity.enable = true;
 
   # TODO: validate this
   boot.loader.grub.enable = false;
   boot.loader.generic-extlinux-compatible.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
-  colinsane.image.extraBootFiles = [ pkgs.bootpart-u-boot-rpi-aarch64 ];
+  sane.image.extraBootFiles = [ pkgs.bootpart-u-boot-rpi-aarch64 ];
 
   sops.secrets.duplicity_passphrase = {
     sopsFile = ../../secrets/servo.yaml;

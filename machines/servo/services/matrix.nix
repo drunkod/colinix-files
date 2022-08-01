@@ -3,7 +3,7 @@
 { config, ... }:
 
 {
-  colinsane.impermanence.service-dirs = [
+  sane.impermanence.service-dirs = [
     # TODO: mode?
     # user and group are both "matrix-appservice-irc"
     { user = "993"; group = "992"; directory = "/var/lib/matrix-appservice-irc"; }

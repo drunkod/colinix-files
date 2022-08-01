@@ -3,11 +3,11 @@
 # installer docs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/profiles/installation-device.nix
 with lib;
 let
-  cfg = config.colinsane.users;
+  cfg = config.sane.users;
 in
 {
   options = {
-    colinsane.users.guest.enable = mkOption {
+    sane.users.guest.enable = mkOption {
       default = false;
       type = types.bool;
     };
@@ -23,7 +23,7 @@ in
       # sets group to "users" (?)
       isNormalUser = true;
       home = "/home/colin";
-      uid = config.colinsane.allocations.colin-uid;
+      uid = config.sane.allocations.colin-uid;
       # i don't get exactly what this is, but nixos defaults to this non-deterministically
       # in /var/lib/nixos/auto-subuid-map and i don't want that.
       subUidRanges = [
@@ -53,13 +53,13 @@ in
       ];
     };
 
-    colinsane.impermanence.service-dirs = mkIf cfg.guest.enable [
+    sane.impermanence.service-dirs = mkIf cfg.guest.enable [
       { user = "guest"; group = "users"; directory = "/home/guest"; }
     ];
     users.users.guest = mkIf cfg.guest.enable {
       isNormalUser = true;
       home = "/home/guest";
-      uid = config.colinsane.allocations.guest-uid;
+      uid = config.sane.allocations.guest-uid;
       subUidRanges = [
         { startUid=200000; count=1; }
       ];
@@ -83,10 +83,10 @@ in
     };
 
     # affix some UIDs which were historically auto-generated
-    users.users.sshd.uid = config.colinsane.allocations.sshd-uid;
-    users.groups.polkituser.gid = config.colinsane.allocations.polkituser-gid;
-    users.groups.sshd.gid = config.colinsane.allocations.sshd-gid;
-    users.groups.systemd-coredump.gid = config.colinsane.allocations.systemd-coredump-gid;
+    users.users.sshd.uid = config.sane.allocations.sshd-uid;
+    users.groups.polkituser.gid = config.sane.allocations.polkituser-gid;
+    users.groups.sshd.gid = config.sane.allocations.sshd-gid;
+    users.groups.systemd-coredump.gid = config.sane.allocations.systemd-coredump-gid;
 
     # guarantee determinism in uid/gid generation for users:
     assertions = let

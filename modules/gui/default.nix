@@ -2,7 +2,7 @@
 
 with lib;
 let
-  cfg = config.colinsane.gui;
+  cfg = config.sane.gui;
 in
 {
   imports = [
@@ -14,15 +14,15 @@ in
 
   options = {
     # doesn't directly create outputs. consumed by e.g. home-manager.nix module
-    colinsane.gui.enable = mkOption {
+    sane.gui.enable = mkOption {
       default = false;
       type = types.bool;
     };
   };
 
   config = lib.mkIf cfg.enable {
-   colinsane.home-manager.enable = true;
+   sane.home-manager.enable = true;
    # all GUIs use network manager?
-   users.users.nm-iodine.uid = config.colinsane.allocations.nm-iodine-uid;
+   users.users.nm-iodine.uid = config.sane.allocations.nm-iodine-uid;
   };
 }

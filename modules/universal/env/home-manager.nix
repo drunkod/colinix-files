@@ -8,24 +8,24 @@
 
 with lib;
 let
-  cfg = config.colinsane.home-manager;
+  cfg = config.sane.home-manager;
   vim-swap-dir = ".cache/vim-swap";
 in
 {
   options = {
-    colinsane.home-manager.enable = mkOption {
+    sane.home-manager.enable = mkOption {
       default = false;
       type = types.bool;
     };
-    colinsane.home-manager.extraPackages = mkOption {
+    sane.home-manager.extraPackages = mkOption {
       default = [ ];
       type = types.listOf types.package;
     };
-    colinsane.home-manager.windowManager = mkOption {
+    sane.home-manager.windowManager = mkOption {
       default = {};
       type = types.attrs;
     };
-    colinsane.home-manager.programs = mkOption {
+    sane.home-manager.programs = mkOption {
       default = {};
       type = types.attrs;
     };
@@ -38,7 +38,7 @@ in
       format = "binary";
     };
 
-    colinsane.impermanence.home-dirs = [
+    sane.impermanence.home-dirs = [
       "archive"
       "dev"
       "records"
@@ -214,7 +214,7 @@ in
 	  '';
         };
 
-        firefox = lib.mkIf (sysconfig.colinsane.gui.enable) {
+        firefox = lib.mkIf (sysconfig.sane.gui.enable) {
           enable = true;
           package = import ./web-browser.nix pkgs;
         };

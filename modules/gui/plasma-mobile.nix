@@ -2,18 +2,18 @@
  
 with lib;
 let
-  cfg = config.colinsane.gui.plasma-mobile;
+  cfg = config.sane.gui.plasma-mobile;
 in
 {
   options = {
-    colinsane.gui.plasma-mobile.enable = mkOption {
+    sane.gui.plasma-mobile.enable = mkOption {
       default = false;
       type = types.bool;
     };
   };
 
   config = mkIf cfg.enable {
-    colinsane.gui.enable = true;
+    sane.gui.enable = true;
     # start plasma-mobile on boot
     services.xserver.enable = true;
     services.xserver.desktopManager.plasma5.mobile.enable = true;

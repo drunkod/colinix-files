@@ -12,7 +12,7 @@
     home = "/var/lib/gitea";
     useDefaultShell = true;
     group = "gitea";
-    uid = config.colinsane.allocations.git-uid;
+    uid = config.sane.allocations.git-uid;
     isSystemUser = true;
     # sendmail access (not 100% sure if this is necessary)
     extraGroups = [ "postdrop" ];
@@ -22,6 +22,6 @@
   # raw `sendmail` works, but i think pleroma's passing it some funny flags or something, idk.
   # hack to fix that.
   users.users.pleroma.extraGroups = [ "postdrop" ];
-  users.users.dhcpcd.uid = config.colinsane.allocations.dhcpcd-uid;
-  users.groups.dhcpcd.gid = config.colinsane.allocations.dhcpcd-gid;
+  users.users.dhcpcd.uid = config.sane.allocations.dhcpcd-uid;
+  users.groups.dhcpcd.gid = config.sane.allocations.dhcpcd-gid;
 }

@@ -1,6 +1,6 @@
 { ... }:
 {
-  colinsane.impermanence.service-dirs = [
+  sane.impermanence.service-dirs = [
     # TODO: mode? could be more granular
     { user = "261"; group = "261"; directory = "/var/lib/ipfs"; }
   ];
