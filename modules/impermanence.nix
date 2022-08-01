@@ -53,8 +53,6 @@ in
         "/etc/ssh"
         "/var/log"
         "/var/backup"  # for e.g. postgres dumps
-        # TODO: what even GOES in /srv?
-        "/srv"
       ]) ++ (map-service-dirs ([
         # "/var/lib/AccountsService"   # not sure what this is, but it's empty
         "/var/lib/alsa"                # preserve output levels, default devices
