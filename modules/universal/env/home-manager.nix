@@ -139,7 +139,15 @@ in
         };
         kitty = {
           enable = true;
-          settings.enable_audio_bell = false;
+          # docs: https://sw.kovidgoyal.net/kitty/conf/
+          settings = {
+            # disable terminal bell (when e.g. you backspace too many times)
+            enable_audio_bell = false;
+          };
+          keybindings = {
+            "ctrl+n" = "new_os_window_with_cwd";
+          };
+          # extraConfig = "";
         };
         git = {
           enable = true;
