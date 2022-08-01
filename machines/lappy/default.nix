@@ -4,7 +4,7 @@
     ./fs.nix
   ];
 
-  sane.users.guest.enable = true;
+  # sane.users.guest.enable = true;
   sane.gui.sway.enable = true;
   sane.impermanence.enable = true;
   boot.loader.generic-extlinux-compatible.enable = true;
