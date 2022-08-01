@@ -32,6 +32,7 @@
   ];
 
   sane.nixcache.enable = true;
+  sane.impermanence.enable = true;  # XXX experimental
   sane.gui.phosh.enable = true;
   boot.loader.grub.enable = false;
   mobile.bootloader.enable = false;
