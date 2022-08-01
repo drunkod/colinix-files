@@ -82,12 +82,22 @@ in
         "x-scheme-handler/https" = [ "librewolf.desktop" ];
         "x-scheme-handler/about" = [ "librewolf.desktop" ];
         "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
+        "image/png" = [ "org.gnome.gThumb.desktop" ];
       };
 
       # convenience
       home.file."knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/knowledge";
       home.file."nixos".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/nixos";
 
+      # nb markdown/personal knowledge manager
+      home.file.".nb/knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/knowledge";
+      home.file.".nb/.current".text = "knowledge";
+      home.file.".nbrc".text = ''
+        # manage with `nb settings`
+        export NB_AUTO_SYNC=0
+      '';
+
+      # aerc TUI mail client
       xdg.configFile."aerc/accounts.conf".source =
         config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.aerc_accounts.path;
 
@@ -137,39 +147,63 @@ in
           userEmail = "colin@uninsane.org";
         };
 
-        vim = {
+        neovim = {
+          # neovim: https://github.com/neovim/neovim
           enable = true;
-          extraConfig = ''
-            " wtf vim project: NOBODY LIKES MOUSE FOR VISUAL MODE
-            set mouse-=a
+          viAlias = true;
+          vimAlias = true;
+          plugins = with pkgs.vimPlugins; [
+	    # docs: surround-nvim: https://github.com/ur4ltz/surround.nvim/
+            # docs: vim-surround: https://github.com/tpope/vim-surround
+            vim-surround
+            # docs: fzf-vim (fuzzy finder): https://github.com/junegunn/fzf.vim
+            fzf-vim
+	    # treesitter syntax highlighting: https://nixos.wiki/wiki/Tree_sitters
+	    # config taken from: https://github.com/i077/system/blob/master/modules/home/neovim/default.nix
+	    # this is required for tree-sitter to even highlight
+	    ({
+	      plugin = (nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars));
+	      type = "lua";
+	      config = ''
+                require'nvim-treesitter.configs'.setup {
+                  highlight = {
+                    enable = true,
+                    disable = {}
+                  },
+                  incremental_selection = {
+                    enable = true,
+                    keymaps = {
+                      init_selection = "gnn",
+                      node_incremental = "grn",
+                      mcope_incremental = "grc",
+                      node_decremental = "grm"
+                    }
+                  },
+                  indent = {
+                    enable = true,
+                    disable = {}
+                  }
+                }
 
+                vim.o.foldmethod = 'expr'
+                vim.o.foldexpr = 'nvim_treesitter#foldexpr()'
+              '';
+	    })
+          ];
+	  extraConfig = ''
             " copy/paste to system clipboard
             set clipboard=unnamedplus
 
-            " swap files stored out-of-tree.
-            " // means to encode swap files in this dir by absolute fs path to avoid collisions
-            set directory^=$HOME/${vim-swap-dir}//
+	    " at least don't open files with sections folded by default
+	    set nofoldenable
 
-            " <tab> completion menu settings
-            set wildmenu
-            set wildmode=longest,list,full
+            " horizontal rule under the active line
+	    " set cursorline
 
-            " highlight all matching searches (using / and ?)
-            set hlsearch
-
-            " allow backspace to delete empty lines in insert mode
-            set backspace=indent,eol,start
-
-            " built-in syntax highlighting
-            syntax enable
-
-            " show line/col number in bottom right
-            set ruler
-
-            " highlight trailing space & related syntax errors (does this work?)
-            let c_space_errors=1
-            let python_space_errors=1
-          '';
+            " highlight trailing space & related syntax errors (doesn't seem to work??)
+            " let c_space_errors=1
+            " let python_space_errors=1
+	  '';
         };
 
         firefox = lib.mkIf (sysconfig.colinsane.gui.enable) {
