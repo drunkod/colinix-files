@@ -27,7 +27,6 @@
     # pkgs.plasma5Packages.plasma-settings
     pkgs.plasma5Packages.bomber  # arcade game; broken on phosh
     pkgs.plasma5Packages.kapman  # pacman
-    pkgs.w3m  # text-based web browser; works!
     pkgs.st  # suckless terminal; broken on phosh
     # pkgs.alacritty  # terminal; crashes phosh
   ];
@@ -38,13 +37,7 @@
   mobile.bootloader.enable = false;
   boot.loader.generic-extlinux-compatible.enable = true;
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "21.11"; # Did you read the comment?
+  system.stateVersion = "21.11";
 
   # defined: https://www.freedesktop.org/software/systemd/man/machine-info.html
   # XXX colin: not sure which, if any, software makes use of this
