@@ -211,6 +211,7 @@ in
     sane.home-manager.programs.waybar = {
       enable = true;
       # docs: https://github.com/Alexays/Waybar/wiki/Configuration
+      # format specifiers: https://fmt.dev/latest/syntax.html#syntax
       settings = {
         mainBar = {
           layer = "top";
@@ -239,10 +240,17 @@ in
             on-scroll-down = "${pkgs.playerctl}/bin/playerctl previous";
           };
           network = {
+            # docs: https://github.com/Alexays/Waybar/blob/master/man/waybar-network.5.scd
             interval = 2;
+            max-length = 40;
             # custom :> format specifier explained here: https://github.com/Alexays/Waybar/pull/472
             format-ethernet = "  {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
-            max-length = 40;
+            tooltip-format-ethernet = "{ifname} {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
+
+            format-wifi = "{ifname} ({signalStrength}%) {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
+            tooltip-format-wifi = "{essid} ({signalStrength}%) {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
+
+            format-disconnected = "";
           };
           cpu = {
             format = " {usage:2}%";
