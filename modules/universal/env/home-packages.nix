@@ -26,6 +26,7 @@ let
     sops
     ssh-to-age
     sudo
+    unar
     visidata
     w3m
     wireguard-tools
