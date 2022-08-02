@@ -14,6 +14,16 @@ in
 
   config = mkIf cfg.enable {
     sane.gui.enable = true;
+
+    users.users.avahi.uid = config.sane.allocations.avahi-uid;
+    users.users.colord.uid = config.sane.allocations.colord-uid;
+    users.users.geoclue.uid = config.sane.allocations.geoclue-uid;
+    users.users.rtkit.uid = config.sane.allocations.rtkit-uid;
+    users.groups.avahi.gid = config.sane.allocations.avahi-gid;
+    users.groups.colord.gid = config.sane.allocations.colord-gid;
+    users.groups.geoclue.gid = config.sane.allocations.geoclue-gid;
+    users.groups.rtkit.gid = config.sane.allocations.rtkit-gid;
+
     # docs: https://github.com/NixOS/nixpkgs/blob/nixos-22.05/nixos/modules/services/x11/desktop-managers/phosh.nix
     services.xserver.desktopManager.phosh = {
       enable = true;

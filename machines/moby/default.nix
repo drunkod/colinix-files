@@ -49,14 +49,5 @@
   # enable rotation sensor
   hardware.sensor.iio.enable = true;
 
-  # TODO: this probably lives in the wrong spot (are these groups created by phosh?)
-  users.users.avahi.uid = config.sane.allocations.avahi-uid;
-  users.users.colord.uid = config.sane.allocations.colord-uid;
-  users.users.geoclue.uid = config.sane.allocations.geoclue-uid;
-  users.users.rtkit.uid = config.sane.allocations.rtkit-uid;
-  users.groups.avahi.gid = config.sane.allocations.avahi-gid;
-  users.groups.colord.gid = config.sane.allocations.colord-gid;
-  users.groups.geoclue.gid = config.sane.allocations.geoclue-gid;
-  users.groups.rtkit.gid = config.sane.allocations.rtkit-gid;
   users.groups.feedbackd.gid = config.sane.allocations.feedbackd-gid;
 }
