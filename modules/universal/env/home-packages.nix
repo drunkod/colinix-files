@@ -15,6 +15,7 @@ let
     nixpkgs-review
     # nixos-generators
     # nettools
+    nmon
     oathToolkit  # for oathtool
     # ponymix
     pulsemixer
