@@ -52,7 +52,7 @@ in
       (builtins.substring 0 (builtins.stringLength sub) super) == sub
     );
     # return the (string) path to get from `stem` to `path`
-    # XXX: not sure how this behaves if the path doesn't contain the stem.
+    # or errors if not a sub-path
     relPath = stem: path: (
       builtins.head (builtins.match "^${stem}(.+)" path)
     );
