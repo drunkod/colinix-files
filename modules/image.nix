@@ -112,7 +112,7 @@ in
           populateCommands =
           let
             closureInfo = buildPackages.closureInfo { rootPaths = config.system.build.toplevel; };
-            extraRelPaths = builtins.map (p: relPath nixFs.mountPoint m) cfg.extraDirectories;
+            extraRelPaths = builtins.toString (builtins.map (p: relPath nixFs.mountPoint p) cfg.extraDirectories);
           in
           ''
             mkdir -p ./${storeRelPath} ${extraRelPaths}
