@@ -32,6 +32,7 @@ in
     services.duplicity.secretFile = config.sops.secrets.duplicity_passphrase.path;
     # NB: manually trigger with `systemctl start duplicity`
     services.duplicity.frequency = "daily";
+    # TODO: this needs updating to handle impermanence changes
     services.duplicity.exclude = [
       # impermanent/inconsequential data:
       "/dev"
