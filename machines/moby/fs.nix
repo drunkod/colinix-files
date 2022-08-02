@@ -1,7 +1,18 @@
 { ... }:
 
 {
+  # root is a tmpfs so that we have an ephemeral system ("impermanence" handles the state)
   fileSystems."/" = {
+    device = "none";
+    fsType = "tmpfs";
+    options = [
+      "mode=755"
+      "size=1G"
+      "defaults"
+    ];
+  };
+
+  fileSystems."/nix" = {
     device = "/dev/disk/by-uuid/1f1271f8-53ce-4081-8a29-60a4a6b5d6f9";
     fsType = "btrfs";
     options = [
