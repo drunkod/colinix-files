@@ -58,8 +58,7 @@
       #   - flash it to a bootable medium (SD card, flash drive, HDD)
       #   - resize the root partition (use cfdisk)
       #   - mount the part
-      #     chown root:nixblkd <part>/nix/store
-      #     chmod 775 <part>/nix/store
+      #     chown root:nixbld <part>/nix/store
       #     chown root:root -R <part>/nix/store/*
       #     populate any important things (persist/, home/colin/.ssh, etc)
       #       (`mkdir /var/{lib,log}` at a minimum)
