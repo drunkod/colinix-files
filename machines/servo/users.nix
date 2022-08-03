@@ -22,6 +22,4 @@
   # raw `sendmail` works, but i think pleroma's passing it some funny flags or something, idk.
   # hack to fix that.
   users.users.pleroma.extraGroups = [ "postdrop" ];
-  users.users.dhcpcd.uid = config.sane.allocations.dhcpcd-uid;
-  users.groups.dhcpcd.gid = config.sane.allocations.dhcpcd-gid;
 }

@@ -4,6 +4,10 @@
 with lib;
 let
   cfg = config.sane.users;
+  # see nixpkgs/nixos/modules/services/networking/dhcpcd.nix
+  hasDHCP = config.networking.dhcpcd.enable &&
+    (config.networking.useDHCP || any (i: i.useDHCP == true) (attrValues config.networking.interfaces));
+
 in
 {
   options = {
@@ -69,6 +73,13 @@ in
       openssh.authorizedKeys.keys = [
         # TODO: insert pubkeys that should be allowed in
       ];
+    };
+
+    users.users.dhcpcd = mkIf hasDHCP {
+      uid = config.sane.allocations.dhcpcd-uid;
+    };
+    users.groups.dhcpcd = mkIf hasDHCP {
+      gid = config.sane.allocations.dhcpcd-gid;
     };
 
     security.sudo = {
