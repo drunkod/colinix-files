@@ -49,9 +49,10 @@ in
         # ".config"  # managed by home-manager
         # ".local"   # nothing useful in here
       ] ++ cfg.home-dirs)) ++ (map-sys-dirs [
+        # TODO: this `0700` here clobbers the perms for /persist/etc, breaking boot on freshly-deployed devices
         { mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
         # "/etc/nixos"
-        "/etc/ssh"
+        # "/etc/ssh"  # persist only the specific files we want, instead
         "/var/log"
         "/var/backup"  # for e.g. postgres dumps
       ]) ++ (map-service-dirs ([
@@ -84,13 +85,16 @@ in
       ] ++ cfg.service-dirs));
       files = [
         "/etc/machine-id"
-        # "/home/colin/knowledge"
+        "/etc/ssh/authorized_keys.d"  # XXX: might want to remove this; the authorized_keys in ~/.ssh should work.
+        "/etc/ssh/ssh_host_ed25519_key"
+        "/etc/ssh/ssh_host_ed25519_key.pub"
+        "/etc/ssh/ssh_host_rsa_key"
+        "/etc/ssh/ssh_host_rsa_key.pub"
         "/home/colin/.zsh_history"
         # # XXX these only need persistence because i have mutableUsers = true, i think
         # "/etc/group"
         # "/etc/passwd"
         # "/etc/shadow"
-        # { file = "/home/test2"; persistentStoragePath = "/nix/persist"; }
       ];
     };
 
