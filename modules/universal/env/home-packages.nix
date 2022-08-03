@@ -2,7 +2,7 @@
 
 with pkgs;
 let
-  pkgspec = [
+  universalPkgs = [
     backblaze-b2
     duplicity
     gnupg
@@ -32,9 +32,9 @@ let
     w3m
     wireguard-tools
     youtube-dl
-  ]
-  ++ (if config.sane.gui.enable then
-  [
+  ];
+
+  guiPkgs = [
     # GUI only
     aerc  # email client
     audacity
@@ -72,8 +72,8 @@ let
     vlc  # works on phosh
     whalebird # pleroma client. input is broken on phosh
     xterm  # broken on phosh
-  ] else [])
-  ++ (if config.sane.gui.enable && pkgs.system == "x86_64-linux" then
+  ]
+  ++ (if pkgs.system == "x86_64-linux" then
   [
     # x86_64 only
 
@@ -117,5 +117,6 @@ in
   # mix2nix
   # rustup
   # swig
-  sane.home-manager.extraPackages = pkgspec;
+  sane.home-manager.extraPackages = universalPkgs
+    ++ (if config.sane.gui.enable then guiPkgs else []);
 }

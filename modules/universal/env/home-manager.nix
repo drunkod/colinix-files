@@ -21,17 +21,21 @@ in
       default = false;
       type = types.bool;
     };
+
+    # packages to deploy to the user's home
     sane.home-manager.extraPackages = mkOption {
       default = [ ];
       # each entry can be either a package, or attrs:
-      #   { pkg = package; dir = optional string; 
+      #   { pkg = package; dir = optional string;
       type = types.listOf (types.either types.package types.attrs);
     };
+
     # attributes to copy directly to home-manager's `wayland.windowManager` option
     sane.home-manager.windowManager = mkOption {
       default = {};
       type = types.attrs;
     };
+
     # extra attributes to include in home-manager's `programs` option
     sane.home-manager.programs = mkOption {
       default = {};
