@@ -63,6 +63,7 @@ let
     inkscape
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     lollypop
+    losslesscut-bin
     mesa-demos
     networkmanagerapplet
 
