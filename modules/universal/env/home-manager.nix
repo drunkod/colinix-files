@@ -21,10 +21,12 @@ in
       default = [ ];
       type = types.listOf types.package;
     };
+    # attributes to copy directly to home-manager's `wayland.windowManager` option
     sane.home-manager.windowManager = mkOption {
       default = {};
       type = types.attrs;
     };
+    # extra attributes to include in home-manager's `programs` option
     sane.home-manager.programs = mkOption {
       default = {};
       type = types.attrs;
@@ -137,7 +139,7 @@ in
             };
           };
         };
-        kitty = {
+        kitty = lib.mkIf (sysconfig.sane.gui.enable) {
           enable = true;
           # docs: https://sw.kovidgoyal.net/kitty/conf/
           settings = {
@@ -268,6 +270,7 @@ in
 	  '';
         };
 
+        # XXX: although home-manager calls this option `firefox`, we can use other browsers and it still mostly works.
         firefox = lib.mkIf (sysconfig.sane.gui.enable) {
           enable = true;
           package = import ./web-browser.nix pkgs;
