@@ -1,7 +1,9 @@
 { config, lib, pkgs, ... }:
 
+with lib;
 with pkgs;
 let
+  cfg = config.sane.home-packages;
   universalPkgs = [
     backblaze-b2
     duplicity
@@ -104,8 +106,7 @@ let
     # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
     { pkg = zecwallet-lite; dir = ".zcash"; }
   ] else []);
-in
-{
+
   # useful devtools:
   # bison
   # dtc
@@ -117,6 +118,16 @@ in
   # mix2nix
   # rustup
   # swig
-  sane.home-manager.extraPackages = universalPkgs
-    ++ (if config.sane.gui.enable then guiPkgs else []);
+in
+{
+  options = {
+    sane.home-packages.enableGuiPkgs = mkOption {
+      default = false;
+      type = types.bool;
+    };
+  };
+  config = {
+    sane.home-manager.extraPackages = universalPkgs
+      ++ (if cfg.enableGuiPkgs then guiPkgs else []);
+  };
 }

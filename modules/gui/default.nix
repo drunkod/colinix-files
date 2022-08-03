@@ -21,8 +21,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-   sane.home-manager.enable = true;
-   # all GUIs use network manager?
-   users.users.nm-iodine.uid = config.sane.allocations.nm-iodine-uid;
+    sane.home-packages.enableGuiPkgs = lib.mkDefault true;
+    sane.home-manager.enable = lib.mkDefault true;
+    # all GUIs use network manager?
+    users.users.nm-iodine.uid = config.sane.allocations.nm-iodine-uid;
   };
 }
