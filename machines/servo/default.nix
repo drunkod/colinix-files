@@ -22,6 +22,7 @@
 
   sane.home-manager.enable = true;
   sane.home-manager.extraPackages = [
+    # for administering matrix
     pkgs.matrix-synapse
   ];
   sane.impermanence.enable = true;
