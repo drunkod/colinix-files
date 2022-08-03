@@ -10,6 +10,10 @@ with lib;
 let
   cfg = config.sane.home-manager;
   vim-swap-dir = ".cache/vim-swap";
+  # extract package from `extraPackages`
+  pkglist = pkgspec: builtins.map (e: e.pkg or e) pkgspec;
+  # extract `dir` from `extraPackages`
+  dirlist = pkgspec: builtins.concatLists (builtins.map (e: if e ? "dir" then [ e.dir ] else []) pkgspec);
 in
 {
   options = {
@@ -19,7 +23,9 @@ in
     };
     sane.home-manager.extraPackages = mkOption {
       default = [ ];
-      type = types.listOf types.package;
+      # each entry can be either a package, or attrs:
+      #   { pkg = package; dir = optional string; 
+      type = types.listOf (types.either types.package types.attrs);
     };
     # attributes to copy directly to home-manager's `wayland.windowManager` option
     sane.home-manager.windowManager = mkOption {
@@ -51,7 +57,7 @@ in
       "Pictures"
       "Videos"
       vim-swap-dir
-    ];
+    ] ++ (dirlist cfg.extraPackages);
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
@@ -59,6 +65,10 @@ in
     # XXX this weird rename + closure is to get home-manager's `config.lib.file` to exist.
     # see: https://github.com/nix-community/home-manager/issues/589#issuecomment-950474105
     home-manager.users.colin = let sysconfig = config; in { config, ... }: {
+
+      home.packages = pkglist cfg.extraPackages;
+      wayland.windowManager = cfg.windowManager;
+
       home.stateVersion = "21.11";
       home.username = "colin";
       home.homeDirectory = "/home/colin";
@@ -286,10 +296,6 @@ in
         "cd.." = "cd ..";
         "cd../" = "cd ../";
       };
-
-      wayland.windowManager = cfg.windowManager;
-
-      home.packages = cfg.extraPackages;
     };
   };
 }

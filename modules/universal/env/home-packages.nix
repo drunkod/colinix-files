@@ -104,9 +104,6 @@ let
     # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
     { pkg = zecwallet-lite; dir = ".zcash"; }
   ] else []);
-
-  pkglist = builtins.map (e: e.pkg or e) pkgspec;
-  dirlist = builtins.concatLists (builtins.map (e: if e ? "dir" then [ e.dir ] else []) pkgspec);
 in
 {
   # useful devtools:
@@ -120,7 +117,5 @@ in
   # mix2nix
   # rustup
   # swig
-  sane.home-manager.extraPackages = pkglist;
-  # TODO: this should be gated behind home-manager being enabled...
-  sane.impermanence.home-dirs = dirlist;
+  sane.home-manager.extraPackages = pkgspec;
 }
