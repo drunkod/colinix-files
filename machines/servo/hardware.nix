@@ -3,9 +3,6 @@
 { pkgs, ... }:
 
 {
-  # enables non-free firmware
-  hardware.enableRedistributableFirmware = true;
-
   # i changed this becuse linux 5.10 didn't have rpi-400 device tree blob.
   # nixos-22.05 linux 5.15 DOES have these now.
   # it should be possible to remove this if desired, but i'm not sure how the rpi-specific kernel differs.
@@ -38,16 +35,6 @@
     "xhci_pci_renesas"
   ];
   # boot.initrd.compressor = "gzip";  # defaults to zstd
-  # hack in the `boot.shell_on_fail` arg since it doesn't seem to work otherwise
-  boot.initrd.preFailCommands = "allowShell=1";
-  # default: 4 (warn). 7 is debug
-  boot.consoleLogLevel = 7;
-  # boot.kernelParams = [
-  #   "boot.shell_on_fail"
-  #   # "boot.trace"
-  #   # "systemd.log_level=debug"
-  #   # "systemd.log_target=console"
-  # ];
 
   # ondemand power scaling keeps the cpu at low frequency when idle, and sets to max frequency
   # when load is detected. (v.s. the "performance" default, which always uses the max frequency)

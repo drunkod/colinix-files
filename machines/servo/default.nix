@@ -27,7 +27,7 @@
   sane.impermanence.enable = true;
   sane.services.duplicity.enable = true;
 
-  # TODO: validate this
+  # TODO: look into the EFI stuff
   boot.loader.grub.enable = false;
   boot.loader.generic-extlinux-compatible.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;

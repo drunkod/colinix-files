@@ -7,7 +7,6 @@
   # sane.users.guest.enable = true;
   sane.gui.sway.enable = true;
   sane.impermanence.enable = true;
-  boot.loader.generic-extlinux-compatible.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
