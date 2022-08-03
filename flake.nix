@@ -58,10 +58,10 @@
       #   - flash it to a bootable medium (SD card, flash drive, HDD)
       #   - resize the root partition (use cfdisk)
       #   - mount the part
-      #     chown root:nixbld <part>/nix/store
-      #     chown root:root -R <part>/nix/store/*
-      #     populate any important things (persist/, home/colin/.ssh, etc)
-      #       (`mkdir /var/{lib,log}` at a minimum)
+      #      - chown root:nixbld <part>/nix/store
+      #      - chown root:root -R <part>/nix/store/*
+      #      - chown root:root -R <part>/persist  # if using impermanence
+      #      - populate any important things (persist/, home/colin/.ssh, etc)
       #   - boot
       #   - if fs wasn't resized automatically, then `sudo btrfs filesystem resize max /`
       #   - checkout this flake into /etc/nixos AND UPDATE THE FS UUIDS.
