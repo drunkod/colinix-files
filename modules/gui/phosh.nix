@@ -38,6 +38,11 @@ in
       };
     };
 
+    # XXX: phosh enables networkmanager by default; can probably disable these lines
+    networking.useDHCP = false;
+    networking.networkmanager.enable = true;
+    networking.wireless.enable = lib.mkForce false;
+
     hardware.opengl.enable = true;
     hardware.opengl.driSupport = true;
 
