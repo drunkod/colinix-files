@@ -153,7 +153,7 @@ in
             };
           };
         };
-        kitty = lib.mkIf (sysconfig.sane.gui.enable) {
+        kitty = {
           enable = true;
           # docs: https://sw.kovidgoyal.net/kitty/conf/
           settings = {
