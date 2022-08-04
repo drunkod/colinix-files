@@ -18,6 +18,11 @@
   users.users.colin.initialPassword = "147147";
   services.getty.autologinUser = "root";  # allows for emergency maintenance?
 
+  # usability compromises
+  sane.impermanence.home-dirs = [
+    ".librewolf"
+  ];
+
   # sane.home-manager.extraPackages = [
   #   # for web browsers see: https://forum.pine64.org/showthread.php?tid=13669
   #   pkgs.angelfish  # plasma mobile web browser; broken on phosh (poor wayland support)
@@ -44,7 +49,7 @@
   ];
 
   sane.nixcache.enable = true;
-  sane.impermanence.enable = true;  # XXX experimental
+  sane.impermanence.enable = true;
   sane.gui.phosh.enable = true;
 
   boot.loader.efi.canTouchEfiVariables = false;
