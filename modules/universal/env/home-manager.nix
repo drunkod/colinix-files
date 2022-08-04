@@ -124,24 +124,25 @@ in
         };
         dark_reader = false;
         new_first = true;
-        windowsize = {
-          width = 350;
-          height = 650;
-        };
+        # windowsize = {
+        #   width = 350;
+        #   height = 650;
+        # };
         max_article_age_days = 30;
         enable_js = false;
         max_refresh_threads = 2;
-        saved_items = {};
-        read_items = [];
+        # saved_items = {};
+        # read_items = [];
         show_read_items = true;
         full_article_title = true;
         default_view = "webview";
         open_links_externally = true;
         full_feed_name = false;
-        refresh_on_startup = false;
-        tags = [];
+        refresh_on_startup = true;
+        # tags = [];
         open_youtube_externally = false;
-        media_player = "mpv";
+	# oh, can i use this for podcasts too?
+        # media_player = "mpv";
       };
 
       programs = {
