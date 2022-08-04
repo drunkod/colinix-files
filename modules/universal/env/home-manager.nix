@@ -121,63 +121,63 @@ in
       xdg.configFile."org.gabmus.gfeeds.json".text = builtins.toJSON {
         feeds = {
           # AGGREGATORS (> 1 post/day)
-          "https://www.lesswrong.com/feed.xml" = {};
-          "http://www.econlib.org/index.xml" = {};
+          "https://www.lesswrong.com/feed.xml" = { tags = ["hourly"]; };
+          "http://www.econlib.org/index.xml" = { tags = ["hourly"]; };
           # AGREEGATORS (< 1 post/day)
-          "https://palladiummag.com/feed" = {};
-          "https://profectusmag.com/feed" = {};
+          "https://palladiummag.com/feed" = { tags = ["weekly"]; };
+          "https://profectusmag.com/feed" = { tags = ["weekly"]; };
 
-          "https://semiaccurate.com/feed" = {};
-          "https://linuxphoneapps.org/blog/atom.xml" = {};
+          "https://semiaccurate.com/feed" = { tags = ["weekly"]; };
+          "https://linuxphoneapps.org/blog/atom.xml" = { tags = ["infrequent"]; };
 
           ## No Moods, Ads or Cutesy Fucking Icons
-          "https://www.rifters.com/crawl/?feed=rss2" = {};
+          "https://www.rifters.com/crawl/?feed=rss2" = { tags = ["weekly"]; };
 
           # DEVELOPERS
-          "https://mg.lol/blog/rss/" = {};
+          "https://mg.lol/blog/rss/" = { tags = ["infrequent"]; };
           ## Ken Shirriff
-          "https://www.righto.com/feeds/posts/default" = {};
+          "https://www.righto.com/feeds/posts/default" = { tags = ["infrequent"]; };
           ## Vitalik Buterin
-          "https://vitalik.ca/feed.xml" = {};
+          "https://vitalik.ca/feed.xml" = { tags = ["infrequent"]; };
           ## ian (Sanctuary)
-          "https://sagacioussuricata.com/feed.xml" = {};
+          "https://sagacioussuricata.com/feed.xml" = { tags = ["infrequent"]; };
           ## Bunnie Juang
-          "https://www.bunniestudios.com/blog/?feed=rss2" = {};
-          "https://bitbashing.io/feed.xml" = {};
-          "https://idiomdrottning.org/feed.xml" = {};
+          "https://www.bunniestudios.com/blog/?feed=rss2" = { tags = ["infrequent"]; };
+          "https://bitbashing.io/feed.xml" = { tags = ["infrequent"]; };
+          "https://idiomdrottning.org/feed.xml" = { tags = ["daily"]; };
 
           # (TECH; POL) COMMENTATORS
-          "http://benjaminrosshoffman.com/feed" = {};
+          "http://benjaminrosshoffman.com/feed" = { tags = ["weekly"]; };
           ## Ben Thompson
-          "https://www.stratechery.com/rss" = {};
+          "https://www.stratechery.com/rss" = { tags = ["weekly"]; };
           ## Balaji
-          "https://balajis.com/rss" = {};
-          "https://www.ben-evans.com/benedictevans/rss.xml" = {};
-          "https://www.lynalden.com/feed" = {};
-          "https://austinvernon.site/rss.xml" = {};
-          "https://oversharing.substack.com/feed" = {};
+          "https://balajis.com/rss" = { tags = ["weekly"]; };
+          "https://www.ben-evans.com/benedictevans/rss.xml" = { tags = ["weekly"]; };
+          "https://www.lynalden.com/feed" = { tags = ["infrequent"]; };
+          "https://austinvernon.site/rss.xml" = { tags = ["infrequent"]; };
+          "https://oversharing.substack.com/feed" = { tags = ["daily"]; };
           ## Matt Levine
-          "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" = {};
+          "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" = { tags = ["weekly"]; };
 
           # RATIONALITY/PHILOSOPHY/ETC
-          "https://unintendedconsequenc.es/feed" = {};
+          "https://unintendedconsequenc.es/feed" = { tags = ["infrequent"]; };
 
-          "https://applieddivinitystudies.com/atom.xml" = {};
-          "https://slimemoldtimemold.com/feed.xml" = {};
+          "https://applieddivinitystudies.com/atom.xml" = { tags = ["weekly"]; };
+          "https://slimemoldtimemold.com/feed.xml" = { tags = ["weekly"]; };
 
-          "https://www.richardcarrier.info/feed" = {};
-          "https://www.gwern.net/feed.xml" = {};
+          "https://www.richardcarrier.info/feed" = { tags = ["weekly"]; };
+          "https://www.gwern.net/feed.xml" = { tags = ["infrequent"]; };
 
           ## Jason Crawford
-          "https://rootsofprogress.org/feed.xml" = {};
+          "https://rootsofprogress.org/feed.xml" = { tags = ["weekly"]; };
           ## Robin Hanson
-          "https://www.overcomingbias.com/feed" = {};
+          "https://www.overcomingbias.com/feed" = { tags = ["daily"]; };
           ## Scott Alexander
-          "https://astralcodexten.substack.com/feed.xml" = {};
+          "https://astralcodexten.substack.com/feed.xml" = { tags = ["daily"]; };
           ## Paul Christiano
-          "https://sideways-view.com/feed" = {};
+          "https://sideways-view.com/feed" = { tags = ["infrequent"];};
           ## Sean Carroll
-          "https://www.preposterousuniverse.com/rss" = {};
+          "https://www.preposterousuniverse.com/rss" = { tags = ["infrequent"]; };
         };
         dark_reader = false;
         new_first = true;
@@ -187,16 +187,23 @@ in
         # };
         max_article_age_days = 30;
         enable_js = false;
-        max_refresh_threads = 2;
+        max_refresh_threads = 6;
         # saved_items = {};
         # read_items = [];
         show_read_items = true;
         full_article_title = true;
-        default_view = "webview";
+        # views: "webview", "reader", "rsscont"
+        default_view = "rsscont";
         open_links_externally = true;
         full_feed_name = false;
         refresh_on_startup = true;
-        # tags = [];
+        tags = [
+          # hourly => aggregator
+          # daily => prolifiq writer
+          # weekly => i can keep up with most -- but maybe not all -- of their content
+          # infrequent => i can read everything in this category
+          "hourly" "daily" "weekly" "infrequent"
+	];
         open_youtube_externally = false;
 	# oh, can i use this for podcasts too?
         # media_player = "mpv";
