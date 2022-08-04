@@ -12,6 +12,7 @@ let
     ipfs
     libimobiledevice
     lm_sensors  # for sensors-detect
+    ffmpeg
     nb
     networkmanager
     nixpkgs-review
