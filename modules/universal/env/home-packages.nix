@@ -63,7 +63,6 @@ let
     inkscape
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     lollypop
-    losslesscut-bin
     mesa-demos
     networkmanagerapplet
 
@@ -91,6 +90,7 @@ let
     gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
 
     logseq
+    losslesscut-bin
 
     # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
     { pkg = monero-gui; dir = ".bitmonero"; }
