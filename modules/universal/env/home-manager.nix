@@ -117,6 +117,33 @@ in
       xdg.configFile."aerc/accounts.conf".source =
         config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.aerc_accounts.path;
 
+      # gnome feeds RSS viewer
+      xdg.configFile."org.gabmus.gfeeds.json".text = builtins.toJSON {
+        feeds = {
+          "https://www.lesswrong.com/feed.xml" = {};
+        };
+        dark_reader = false;
+        new_first = true;
+        windowsize = {
+          width = 350;
+          height = 650;
+        };
+        max_article_age_days = 30;
+        enable_js = false;
+        max_refresh_threads = 2;
+        saved_items = {};
+        read_items = [];
+        show_read_items = true;
+        full_article_title = true;
+        default_view = "webview";
+        open_links_externally = true;
+        full_feed_name = false;
+        refresh_on_startup = false;
+        tags = [];
+        open_youtube_externally = false;
+        media_player = "mpv";
+      };
+
       programs = {
         home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
 
