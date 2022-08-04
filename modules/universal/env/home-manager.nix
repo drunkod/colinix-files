@@ -121,63 +121,63 @@ in
       xdg.configFile."org.gabmus.gfeeds.json".text = builtins.toJSON {
         feeds = {
           # AGGREGATORS (> 1 post/day)
-          "https://www.lesswrong.com/feed.xml" = { tags = ["hourly"]; };
-          "http://www.econlib.org/index.xml" = { tags = ["hourly"]; };
+          "https://www.lesswrong.com/feed.xml" = { tags = [ "hourly" "rat" ]; };
+          "http://www.econlib.org/index.xml" = { tags = [ "hourly" "pol" ]; };
           # AGREEGATORS (< 1 post/day)
-          "https://palladiummag.com/feed" = { tags = ["weekly"]; };
-          "https://profectusmag.com/feed" = { tags = ["weekly"]; };
+          "https://palladiummag.com/feed" = { tags = [ "weekly" "uncat" ]; };
+          "https://profectusmag.com/feed" = { tags = [ "weekly" "uncat" ]; };
 
-          "https://semiaccurate.com/feed" = { tags = ["weekly"]; };
-          "https://linuxphoneapps.org/blog/atom.xml" = { tags = ["infrequent"]; };
+          "https://semiaccurate.com/feed" = { tags = [ "weekly" "tech" ]; };
+          "https://linuxphoneapps.org/blog/atom.xml" = { tags = [ "infrequent" "tech" ]; };
 
           ## No Moods, Ads or Cutesy Fucking Icons
-          "https://www.rifters.com/crawl/?feed=rss2" = { tags = ["weekly"]; };
+          "https://www.rifters.com/crawl/?feed=rss2" = { tags = [ "weekly" "uncat" ]; };
 
           # DEVELOPERS
-          "https://mg.lol/blog/rss/" = { tags = ["infrequent"]; };
+          "https://mg.lol/blog/rss/" = { tags = [ "infrequent" "tech" ]; };
           ## Ken Shirriff
-          "https://www.righto.com/feeds/posts/default" = { tags = ["infrequent"]; };
+          "https://www.righto.com/feeds/posts/default" = { tags = [ "infrequent" "tech" ]; };
           ## Vitalik Buterin
-          "https://vitalik.ca/feed.xml" = { tags = ["infrequent"]; };
+          "https://vitalik.ca/feed.xml" = { tags = [ "infrequent" "tech" ]; };
           ## ian (Sanctuary)
-          "https://sagacioussuricata.com/feed.xml" = { tags = ["infrequent"]; };
+          "https://sagacioussuricata.com/feed.xml" = { tags = [ "infrequent" "tech" ]; };
           ## Bunnie Juang
-          "https://www.bunniestudios.com/blog/?feed=rss2" = { tags = ["infrequent"]; };
-          "https://bitbashing.io/feed.xml" = { tags = ["infrequent"]; };
-          "https://idiomdrottning.org/feed.xml" = { tags = ["daily"]; };
+          "https://www.bunniestudios.com/blog/?feed=rss2" = { tags = [ "infrequent" "tech" ]; };
+          "https://bitbashing.io/feed.xml" = { tags = [ "infrequent" "tech" ]; };
+          "https://idiomdrottning.org/feed.xml" = { tags = [ "daily" "uncat" ]; };
 
           # (TECH; POL) COMMENTATORS
-          "http://benjaminrosshoffman.com/feed" = { tags = ["weekly"]; };
+          "http://benjaminrosshoffman.com/feed" = { tags = [ "weekly" "pol" ]; };
           ## Ben Thompson
-          "https://www.stratechery.com/rss" = { tags = ["weekly"]; };
+          "https://www.stratechery.com/rss" = { tags = [ "weekly" "pol" ]; };
           ## Balaji
-          "https://balajis.com/rss" = { tags = ["weekly"]; };
-          "https://www.ben-evans.com/benedictevans/rss.xml" = { tags = ["weekly"]; };
-          "https://www.lynalden.com/feed" = { tags = ["infrequent"]; };
-          "https://austinvernon.site/rss.xml" = { tags = ["infrequent"]; };
-          "https://oversharing.substack.com/feed" = { tags = ["daily"]; };
+          "https://balajis.com/rss" = { tags = [ "weekly" "pol" ]; };
+          "https://www.ben-evans.com/benedictevans/rss.xml" = { tags = [ "weekly" "pol" ]; };
+          "https://www.lynalden.com/feed" = { tags = [ "infrequent" "pol" ]; };
+          "https://austinvernon.site/rss.xml" = { tags = [ "infrequent" "tech" ]; };
+          "https://oversharing.substack.com/feed" = { tags = [ "daily" "pol" ]; };
           ## Matt Levine
-          "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" = { tags = ["weekly"]; };
+          "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" = { tags = [ "weekly" "pol" ]; };
 
           # RATIONALITY/PHILOSOPHY/ETC
-          "https://unintendedconsequenc.es/feed" = { tags = ["infrequent"]; };
+          "https://unintendedconsequenc.es/feed" = { tags = [ "infrequent" "rat" ]; };
 
-          "https://applieddivinitystudies.com/atom.xml" = { tags = ["weekly"]; };
-          "https://slimemoldtimemold.com/feed.xml" = { tags = ["weekly"]; };
+          "https://applieddivinitystudies.com/atom.xml" = { tags = [ "weekly" "rat" ]; };
+          "https://slimemoldtimemold.com/feed.xml" = { tags = [ "weekly" "rat" ]; };
 
-          "https://www.richardcarrier.info/feed" = { tags = ["weekly"]; };
-          "https://www.gwern.net/feed.xml" = { tags = ["infrequent"]; };
+          "https://www.richardcarrier.info/feed" = { tags = [ "weekly" "rat" ]; };
+          "https://www.gwern.net/feed.xml" = { tags = [ "infrequent" "uncat" ]; };
 
           ## Jason Crawford
-          "https://rootsofprogress.org/feed.xml" = { tags = ["weekly"]; };
+          "https://rootsofprogress.org/feed.xml" = { tags = [ "weekly" "rat" ]; };
           ## Robin Hanson
-          "https://www.overcomingbias.com/feed" = { tags = ["daily"]; };
+          "https://www.overcomingbias.com/feed" = { tags = [ "daily" "rat" ]; };
           ## Scott Alexander
-          "https://astralcodexten.substack.com/feed.xml" = { tags = ["daily"]; };
+          "https://astralcodexten.substack.com/feed.xml" = { tags = [ "daily" "rat" ]; };
           ## Paul Christiano
-          "https://sideways-view.com/feed" = { tags = ["infrequent"];};
+          "https://sideways-view.com/feed" = { tags = [ "infrequent" "rat" ]; };
           ## Sean Carroll
-          "https://www.preposterousuniverse.com/rss" = { tags = ["infrequent"]; };
+          "https://www.preposterousuniverse.com/rss" = { tags = [ "infrequent" "rat" ]; };
         };
         dark_reader = false;
         new_first = true;
@@ -185,7 +185,7 @@ in
         #   width = 350;
         #   height = 650;
         # };
-        max_article_age_days = 30;
+        max_article_age_days = 90;
         enable_js = false;
         max_refresh_threads = 6;
         # saved_items = {};
@@ -203,6 +203,9 @@ in
           # weekly => i can keep up with most -- but maybe not all -- of their content
           # infrequent => i can read everything in this category
           "hourly" "daily" "weekly" "infrequent"
+	  # rat[ionality] gets used interchangably with philosophy, here.
+	  # pol[itical] gets used for social commentary and economics as well.
+	  "uncat" "rat" "tech" "pol"
 	];
         open_youtube_externally = false;
 	# oh, can i use this for podcasts too?
