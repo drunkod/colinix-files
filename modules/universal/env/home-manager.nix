@@ -120,7 +120,64 @@ in
       # gnome feeds RSS viewer
       xdg.configFile."org.gabmus.gfeeds.json".text = builtins.toJSON {
         feeds = {
+          # AGGREGATORS (> 1 post/day)
           "https://www.lesswrong.com/feed.xml" = {};
+          "http://www.econlib.org/index.xml" = {};
+          # AGREEGATORS (< 1 post/day)
+          "https://palladiummag.com/feed" = {};
+          "https://profectusmag.com/feed" = {};
+
+          "https://semiaccurate.com/feed" = {};
+          "https://linuxphoneapps.org/blog/atom.xml" = {};
+
+          ## No Moods, Ads or Cutesy Fucking Icons
+          "https://www.rifters.com/crawl/?feed=rss2" = {};
+
+          # DEVELOPERS
+          "https://mg.lol/blog/rss/" = {};
+          ## Ken Shirriff
+          "https://www.righto.com/feeds/posts/default" = {};
+          ## Vitalik Buterin
+          "https://vitalik.ca/feed.xml" = {};
+          ## ian (Sanctuary)
+          "https://sagacioussuricata.com/feed.xml" = {};
+          ## Bunnie Juang
+          "https://www.bunniestudios.com/blog/?feed=rss2" = {};
+          "https://bitbashing.io/feed.xml" = {};
+          "https://idiomdrottning.org/feed.xml" = {};
+
+          # (TECH; POL) COMMENTATORS
+          "http://benjaminrosshoffman.com/feed" = {};
+          ## Ben Thompson
+          "https://www.stratechery.com/rss" = {};
+          ## Balaji
+          "https://balajis.com/rss" = {};
+          "https://www.ben-evans.com/benedictevans/rss.xml" = {};
+          "https://www.lynalden.com/feed" = {};
+          "https://austinvernon.site/rss.xml" = {};
+          "https://oversharing.substack.com/feed" = {};
+          ## Matt Levine
+          "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" = {};
+
+          # RATIONALITY/PHILOSOPHY/ETC
+          "https://unintendedconsequenc.es/feed" = {};
+
+          "https://applieddivinitystudies.com/atom.xml" = {};
+          "https://slimemoldtimemold.com/feed.xml" = {};
+
+          "https://www.richardcarrier.info/feed" = {};
+          "https://www.gwern.net/feed.xml" = {};
+
+          ## Jason Crawford
+          "https://rootsofprogress.org/feed.xml" = {};
+          ## Robin Hanson
+          "https://www.overcomingbias.com/feed" = {};
+          ## Scott Alexander
+          "https://astralcodexten.substack.com/feed.xml" = {};
+          ## Paul Christiano
+          "https://sideways-view.com/feed" = {};
+          ## Sean Carroll
+          "https://www.preposterousuniverse.com/rss" = {};
         };
         dark_reader = false;
         new_first = true;
