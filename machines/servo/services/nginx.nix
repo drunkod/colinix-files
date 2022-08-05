@@ -213,6 +213,12 @@
     };
   };
 
+  services.nginx.virtualHosts."music.uninsane.org" = {
+    forceSSL = true;
+    enableACME = true;
+    locations."/".proxyPass = "http://127.0.0.1:4533";
+  };
+
   services.nginx.virtualHosts."ipfs.uninsane.org" = {
     # don't default to ssl upgrades, since this may be dnslink'd from a different domain.
     # ideally we'd disable ssl entirely, but some places assume it?

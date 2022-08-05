@@ -12,6 +12,7 @@
     ./services/jackett.nix
     ./services/jellyfin.nix
     ./services/matrix.nix
+    ./services/navidrome.nix
     ./services/nginx.nix
     ./services/nix-serve.nix
     ./services/pleroma.nix
