@@ -58,12 +58,11 @@
   # boot.initrd.systemd.enable = false;
   # boot.initrd.services.swraid.enable = false;  # attempt to fix dm_mod stuff
 
-  # TODO: try enabling mobile-nixos' /lib/firmware?
-  # includes:
+  # mobile-nixos' /lib/firmware includes:
   #   rtl_bt          (bluetooth)
   #   anx7688-fw.bin  (USB-C -> HDMI bridge)
   #   ov5640_af.bin   (camera module)
-  # hardware.firmware = [ config.mobile.device.firmware ];
+  hardware.firmware = [ config.mobile.device.firmware ];
 
   system.stateVersion = "21.11";
 
