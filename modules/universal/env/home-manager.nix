@@ -190,6 +190,8 @@ in
           "https://www.lynalden.com/feed" = { tags = [ "infrequent" "pol" ]; };
           "https://austinvernon.site/rss.xml" = { tags = [ "infrequent" "tech" ]; };
           "https://oversharing.substack.com/feed" = { tags = [ "daily" "pol" ]; };
+          ## David Rosenthal
+          "https://blog.dshr.org/rss.xml" = { tags = [ "weekly" "pol" ]; };
           ## Matt Levine
           "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" = { tags = [ "weekly" "pol" ]; };
 
