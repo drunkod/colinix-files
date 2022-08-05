@@ -178,6 +178,29 @@ in
           "https://sideways-view.com/feed" = { tags = [ "infrequent" "rat" ]; };
           ## Sean Carroll
           "https://www.preposterousuniverse.com/rss" = { tags = [ "infrequent" "rat" ]; };
+
+          # PODCASTS
+          "https://lexfridman.com/feed/podcast/" = { tags = [ "audio" ]; };
+          ## Astral Codex Ten
+          "http://feeds.libsyn.com/108018/rss" = { tags = [ "audio" ]; };
+          ## Econ Talk
+          "https://feeds.simplecast.com/wgl4xEgL" = { tags = [ "audio" ]; };
+          ## Cory Doctorow
+          "https://feeds.feedburner.com/doctorow_podcast" = { tags = [ "audio" ]; };
+          "https://congressionaldish.libsyn.com/rss" = { tags = [ "audio" ]; };
+          ## Civboot
+          "https://anchor.fm/s/34c7232c/podcast/rss" = { tags = [ "audio" ]; };
+          "https://feeds.feedburner.com/80000HoursPodcast" = { tags = [ "audio" ]; };
+          "https://allinchamathjason.libsyn.com/rss" = { tags = [ "audio" ]; };
+          ## Eric Weinstein
+          "https://rss.art19.com/the-portal" = { tags = [ "audio" ]; };
+          "https://feeds.megaphone.fm/darknetdiaries" = { tags = [ "audio" ]; };
+          "http://feeds.wnyc.org/radiolab" = { tags = [ "audio" ]; };
+          "https://wakingup.libsyn.com/rss" = { tags = [ "audio" ]; };
+          ## 99% Invisible
+          "https://feeds.simplecast.com/BqbsxVfO" = { tags = [ "audio" ]; };
+          "https://rss.acast.com/ft-tech-tonic" = { tags = [ "audio" ]; };
+          "https://feeds.feedburner.com/dancarlin/history?format=xml" = { tags = [ "audio" ]; };
         };
         dark_reader = false;
         new_first = true;
@@ -205,11 +228,10 @@ in
           "hourly" "daily" "weekly" "infrequent"
 	  # rat[ionality] gets used interchangably with philosophy, here.
 	  # pol[itical] gets used for social commentary and economics as well.
-	  "uncat" "rat" "tech" "pol"
+	  "uncat" "rat" "tech" "pol" "audio"
 	];
         open_youtube_externally = false;
-	# oh, can i use this for podcasts too?
-        # media_player = "mpv";
+        media_player = "vlc";  # default: mpv
       };
 
       programs = {
