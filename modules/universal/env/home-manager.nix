@@ -117,6 +117,40 @@ in
       xdg.configFile."aerc/accounts.conf".source =
         config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.aerc_accounts.path;
 
+      xdg.configFile."vlc/vlcrc".text =
+      let
+        podcast_urls = lib.strings.concatStringsSep "|" [
+          "https://lexfridman.com/feed/podcast/"
+          ## Astral Codex Ten
+          "http://feeds.libsyn.com/108018/rss"
+          ## Econ Talk
+          "https://feeds.simplecast.com/wgl4xEgL"
+          ## Cory Doctorow
+          "https://feeds.feedburner.com/doctorow_podcast"
+          "https://congressionaldish.libsyn.com/rss"
+          ## Civboot
+          "https://anchor.fm/s/34c7232c/podcast/rss"
+          "https://feeds.feedburner.com/80000HoursPodcast"
+          "https://allinchamathjason.libsyn.com/rss"
+          ## Eric Weinstein
+          "https://rss.art19.com/the-portal"
+          "https://feeds.megaphone.fm/darknetdiaries"
+          "http://feeds.wnyc.org/radiolab"
+          "https://wakingup.libsyn.com/rss"
+          ## 99% Invisible
+          "https://feeds.simplecast.com/BqbsxVfO"
+          "https://rss.acast.com/ft-tech-tonic"
+          "https://feeds.feedburner.com/dancarlin/history?format=xml"
+	];
+      in ''
+      [podcast]
+      podcast-urls=${podcast_urls}
+      [core]
+      metadata-network-access=0
+      [qt]
+      qt-privacy-ask=0
+      '';
+
       # gnome feeds RSS viewer
       xdg.configFile."org.gabmus.gfeeds.json".text = builtins.toJSON {
         feeds = {
@@ -178,29 +212,6 @@ in
           "https://sideways-view.com/feed" = { tags = [ "infrequent" "rat" ]; };
           ## Sean Carroll
           "https://www.preposterousuniverse.com/rss" = { tags = [ "infrequent" "rat" ]; };
-
-          # PODCASTS
-          "https://lexfridman.com/feed/podcast/" = { tags = [ "audio" ]; };
-          ## Astral Codex Ten
-          "http://feeds.libsyn.com/108018/rss" = { tags = [ "audio" ]; };
-          ## Econ Talk
-          "https://feeds.simplecast.com/wgl4xEgL" = { tags = [ "audio" ]; };
-          ## Cory Doctorow
-          "https://feeds.feedburner.com/doctorow_podcast" = { tags = [ "audio" ]; };
-          "https://congressionaldish.libsyn.com/rss" = { tags = [ "audio" ]; };
-          ## Civboot
-          "https://anchor.fm/s/34c7232c/podcast/rss" = { tags = [ "audio" ]; };
-          "https://feeds.feedburner.com/80000HoursPodcast" = { tags = [ "audio" ]; };
-          "https://allinchamathjason.libsyn.com/rss" = { tags = [ "audio" ]; };
-          ## Eric Weinstein
-          "https://rss.art19.com/the-portal" = { tags = [ "audio" ]; };
-          "https://feeds.megaphone.fm/darknetdiaries" = { tags = [ "audio" ]; };
-          "http://feeds.wnyc.org/radiolab" = { tags = [ "audio" ]; };
-          "https://wakingup.libsyn.com/rss" = { tags = [ "audio" ]; };
-          ## 99% Invisible
-          "https://feeds.simplecast.com/BqbsxVfO" = { tags = [ "audio" ]; };
-          "https://rss.acast.com/ft-tech-tonic" = { tags = [ "audio" ]; };
-          "https://feeds.feedburner.com/dancarlin/history?format=xml" = { tags = [ "audio" ]; };
         };
         dark_reader = false;
         new_first = true;
@@ -228,7 +239,7 @@ in
           "hourly" "daily" "weekly" "infrequent"
 	  # rat[ionality] gets used interchangably with philosophy, here.
 	  # pol[itical] gets used for social commentary and economics as well.
-	  "uncat" "rat" "tech" "pol" "audio"
+	  "uncat" "rat" "tech" "pol"
 	];
         open_youtube_externally = false;
         media_player = "vlc";  # default: mpv
