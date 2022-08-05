@@ -71,6 +71,11 @@ let
     { pkg = obsidian; dir = ".config/obsidian"; }
 
     playerctl
+    # sublime music persists any downloaded albums here.
+    # it doesn't obey a conventional ~/Music/{Artist}/{Album}/{Track} notation, so no symlinking
+    # config (e.g. server connection details) is persisted in ~/.config/sublime-music/config.json
+    #   possible to pass config as a CLI arg (sublime-music -c config.json)
+    { pkg = sublime-music; dir = ".local/share/sublime-music"; }
     tdesktop  # broken on phosh
     vlc  # works on phosh
     whalebird # pleroma client. input is broken on phosh
