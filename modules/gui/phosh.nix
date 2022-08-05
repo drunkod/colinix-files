@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 
 with lib;
 let
@@ -43,6 +43,10 @@ in
     networking.networkmanager.enable = true;
     networking.wireless.enable = lib.mkForce false;
 
+    # XXX: not clear if these are actually needed?
+    hardware.bluetooth.enable = true;
+    services.blueman.enable = true;
+
     hardware.opengl.enable = true;
     hardware.opengl.driSupport = true;
 
@@ -54,5 +58,10 @@ in
       # phocConfig.xwayland should be disabled if you do this
       NIXOS_OZONE_WL = "1";
     };
+
+    sane.home-manager.extraPackages = with pkgs; [
+      # TODO: see about removing this if the in-built gnome-settings bluetooth manager can work
+      gnome.gnome-bluetooth
+    ];
   };
 }
