@@ -1,19 +1,19 @@
 { config, pkgs, mobile-nixos, ... }:
 {
   imports = [
-    (import "${mobile-nixos}/lib/configuration.nix" {
-      device = "pine64-pinephone";
-    })
+    # (import "${mobile-nixos}/lib/configuration.nix" {
+    #   device = "pine64-pinephone";
+    # })
     ./firmware.nix
     ./fs.nix
   ];
-  nixpkgs.overlays = [(next: prev: {
-    # without this, kernel module build fails due to lacking dm_mod.
-    # see: https://github.com/NixOS/nixpkgs/issues/126755#issuecomment-869149243
-    # dm_mod appears to still be loaded, though? maybe some weird thing between compiled and dynamically-loaded mods?
-    makeModulesClosure = x:
-      prev.makeModulesClosure (x // { allowMissing = true; });
-  })];
+  # nixpkgs.overlays = [(next: prev: {
+  #   # without this, kernel module build fails due to lacking dm_mod.
+  #   # see: https://github.com/NixOS/nixpkgs/issues/126755#issuecomment-869149243
+  #   # dm_mod appears to still be loaded, though? maybe some weird thing between compiled and dynamically-loaded mods?
+  #   makeModulesClosure = x:
+  #     prev.makeModulesClosure (x // { allowMissing = true; });
+  # })];
   # XXX colin: phosh doesn't work well with passwordless login
   users.users.colin.initialPassword = "147147";
   services.getty.autologinUser = "root";  # allows for emergency maintenance?
@@ -53,8 +53,8 @@
   sane.gui.phosh.enable = true;
 
   boot.loader.efi.canTouchEfiVariables = false;
-  mobile.bootloader.enable = false;
-  mobile.boot.stage-1.enable = false;
+  # mobile.bootloader.enable = false;
+  # mobile.boot.stage-1.enable = false;
   # boot.initrd.systemd.enable = false;
   # boot.initrd.services.swraid.enable = false;  # attempt to fix dm_mod stuff
 
@@ -62,7 +62,7 @@
   #   rtl_bt          (bluetooth)
   #   anx7688-fw.bin  (USB-C -> HDMI bridge)
   #   ov5640_af.bin   (camera module)
-  hardware.firmware = [ config.mobile.device.firmware ];
+  # hardware.firmware = [ config.mobile.device.firmware ];
 
   system.stateVersion = "21.11";
 
