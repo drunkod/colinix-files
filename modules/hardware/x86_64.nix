@@ -2,7 +2,6 @@
 
 with lib;
 {
-  # TODO: some of this might generalize beyond just x86
   config = mkIf (pkgs.system == "x86_64-linux") { 
     boot.initrd.availableKernelModules = [
       "xhci_pci" "ahci" "sd_mod" "sdhci_pci"  # nixos-generate-config defaults
@@ -10,8 +9,6 @@ with lib;
       "nvme"  # to boot from nvme devices
       # efi_pstore evivars
     ];
-    boot.initrd.kernelModules = [ ];
-    boot.extraModulePackages = [ ];
 
     # enable cross compilation
     boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
