@@ -52,7 +52,7 @@
   sane.impermanence.enable = true;
   sane.gui.phosh.enable = true;
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_5_18;
 
   boot.loader.efi.canTouchEfiVariables = false;
   # mobile.bootloader.enable = false;
