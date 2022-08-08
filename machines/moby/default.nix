@@ -109,12 +109,38 @@
       patch = null;
       extraStructuredConfig = with lib.kernel; {
         CONFIG_RTL8723CS = module;
+        CONFIG_BT_HCIUART_3WIRE = yes;
+        CONFIG_BT_HCIUART_RTL = yes;
+        CONFIG_RTL8XXXU_UNTESTED = yes;
+        # relevant configs inherited from nixos defaults (or above additions):
+        # CONFIG_BT=m
+        # CONFIG_BT_HIDP=m
+        # CONFIG_BT_RTL=m
+        # CONFIG_BT_HCIBTUSB=m
+        # CONFIG_BT_HCIBTUSB_BCM=y
+        # CONFIG_BT_HCIBTUSB_RTL=y
+        # CONFIG_BT_HCIUART=m
+        # CONFIG_BT_HCIUART_SERDEV=y
+        # CONFIG_BT_HCIUART_H4=y
+        # CONFIG_BT_HCIUART_LL=y
+        # CONFIG_RTL_CARDS=m
+        # CONFIG_RTLWIFI=m
+        # CONFIG_RTLWIFI_PCI=m
+        # CONFIG_RTLWIFI_USB=m
+        # CONFIG_RTLWIFI_DEBUG=y
+        # CONFIG_RTL8723_COMMON=m
+        # CONFIG_RTLBTCOEXIST=m
+        # CONFIG_RTL8XXXU=m
+        # CONFIG_RTLLIB=m
+        # consider adding:
+        # maybe: CONFIG_BT_HCIUART_3WIRE=y
+        # maybe: CONFIG_BT_HCIUART_RTL=y
+        # maybe: CONFIG_RTL8XXXU_UNTESTED=y
+        # these are referenced in the rtl8723 source, but not known to config (and not in mobile-nixos config
         # maybe: CONFIG_RTL_ODM_WLAN_DRIVER
         # maybe: CONFIG_RTL_TRIBAND_SUPPORT
         # maybe: CONFIG_SDIO_HCI
         # maybe: CONFIG_USB_HCI
-        # maybe: CONFIG_RTL8XXXU=m
-        # maybe: CONFIG_RTL8XXXU_UNTESTED=y
       };
     }
   ];
