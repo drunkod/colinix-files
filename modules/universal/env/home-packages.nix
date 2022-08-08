@@ -12,6 +12,7 @@ let
     ipfs
     libimobiledevice
     lm_sensors  # for sensors-detect
+    lshw
     ffmpeg
     nb
     networkmanager
