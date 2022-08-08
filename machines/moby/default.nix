@@ -112,8 +112,16 @@
         CONFIG_BT_HCIUART_3WIRE = yes;
         CONFIG_BT_HCIUART_RTL = yes;
         CONFIG_RTL8XXXU_UNTESTED = yes;
+        CONFIG_BT_BNEP_MC_FILTER = yes;
+        CONFIG_BT_BNEP_PROTO_FILTER = yes;
+        CONFIG_BT_HS = yes;
+        CONFIG_BT_LE = yes;
         # relevant configs inherited from nixos defaults (or above additions):
         # CONFIG_BT=m
+        # CONFIG_BT_BREDR=y
+        # CONFIG_BT_RFCOMM=m
+        # CONFIG_BT_RFCOMM_TTY=y
+        # CONFIG_BT_BNEP=m
         # CONFIG_BT_HIDP=m
         # CONFIG_BT_RTL=m
         # CONFIG_BT_HCIBTUSB=m
@@ -132,10 +140,12 @@
         # CONFIG_RTLBTCOEXIST=m
         # CONFIG_RTL8XXXU=m
         # CONFIG_RTLLIB=m
-        # consider adding:
+        # consider adding (from mobile-nixos):
         # maybe: CONFIG_BT_HCIUART_3WIRE=y
         # maybe: CONFIG_BT_HCIUART_RTL=y
         # maybe: CONFIG_RTL8XXXU_UNTESTED=y
+        # consider adding (from manjaro):
+        # CONFIG_BT_6LOWPAN=m  (not listed as option in nixos kernel)
         # these are referenced in the rtl8723 source, but not known to config (and not in mobile-nixos config
         # maybe: CONFIG_RTL_ODM_WLAN_DRIVER
         # maybe: CONFIG_RTL_TRIBAND_SUPPORT
