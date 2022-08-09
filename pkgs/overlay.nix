@@ -13,6 +13,12 @@
     pkgs = prev // { inherit ubootRaspberryPi4_64bit; };
   };
   rtl8723cs-firmware = prev.callPackage ./rtl8723cs-firmware { };
+  linux-megous = prev.callPackage ./linux-megous {
+    kernelPatches = [
+      prev.kernelPatches.bridge_stp_helper
+      prev.kernelPatches.request_key_helper
+    ];
+  };
 
   #### customized packages
   # nixos-unstable pleroma is too far out-of-date for our db
