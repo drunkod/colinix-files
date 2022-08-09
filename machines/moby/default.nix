@@ -170,6 +170,7 @@
   #   anx7688-fw.bin  (USB-C -> HDMI bridge)
   #   ov5640_af.bin   (camera module)
   # hardware.firmware = [ config.mobile.device.firmware ];
+  hardware.firmware = [ pkgs.rtl8723cs-firmware ];
 
   system.stateVersion = "21.11";
 

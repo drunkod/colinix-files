@@ -12,6 +12,7 @@
     # not sure why i can't just do pkgs = next here
     pkgs = prev // { inherit ubootRaspberryPi4_64bit; };
   };
+  rtl8723cs-firmware = prev.callPackage ./rtl8723cs-firmware { };
 
   #### customized packages
   # nixos-unstable pleroma is too far out-of-date for our db
