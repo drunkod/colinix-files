@@ -12,3 +12,5 @@
      nixpkgs.crossSystem.system = "aarch64-linux";
    }];
 ```
+- <https://github.com/nix-community/aarch64-build-box>
+	- apply for access to the community arm build box

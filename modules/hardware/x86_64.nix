@@ -12,6 +12,7 @@ with lib;
 
     # enable cross compilation
     boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+    # nixpkgs.config.allowUnsupportedSystem = true;
     # nixpkgs.crossSystem.system = "aarch64-linux";
 
     powerManagement.cpuFreqGovernor = "powersave";

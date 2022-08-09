@@ -1,4 +1,4 @@
-{ config, pkgs, lib, mobile-nixos, ... }:
+{ config, pkgs, nixpkgs, lib, mobile-nixos, ... }:
 {
   imports = [
     # (import "${mobile-nixos}/lib/configuration.nix" {
@@ -57,7 +57,10 @@
   # - and sun50i-a64-cpu-opp.dtsi
   # - no need to touch the allwinner-h6 stuff: that's the SBC pine product
   # - i think it's safe to ignore sun9i stuff, but i don't know what it is
-  boot.kernelPackages = pkgs.linuxPackages_5_18;
+  # boot.kernelPackages = pkgs.linuxPackages_5_18;
+  boot.kernelPackages =
+    let p = (import nixpkgs { localSystem = "x86_64-linux"; });
+    in p.pkgsCross.aarch64-multiplatform.linuxPackages_5_18;
   boot.kernelPatches =
   let
     # use the last commit on the 5.18 branch (5.18.14)
