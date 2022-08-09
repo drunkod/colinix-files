@@ -111,14 +111,15 @@
       name = "sane-moby-defconfig";
       patch = null;
       extraStructuredConfig = with lib.kernel; {
-        CONFIG_RTL8723CS = module;
-        CONFIG_BT_HCIUART_3WIRE = yes;
-        CONFIG_BT_HCIUART_RTL = yes;
-        CONFIG_RTL8XXXU_UNTESTED = yes;
-        CONFIG_BT_BNEP_MC_FILTER = yes;
-        CONFIG_BT_BNEP_PROTO_FILTER = yes;
-        CONFIG_BT_HS = yes;
-        CONFIG_BT_LE = yes;
+        # NB: nix adds the CONFIG_ prefix to each of these.
+        RTL8723CS = module;
+        BT_HCIUART_3WIRE = yes;
+        BT_HCIUART_RTL = yes;
+        RTL8XXXU_UNTESTED = yes;
+        BT_BNEP_MC_FILTER = yes;
+        BT_BNEP_PROTO_FILTER = yes;
+        BT_HS = yes;
+        BT_LE = yes;
         # relevant configs inherited from nixos defaults (or above additions):
         # CONFIG_BT=m
         # CONFIG_BT_BREDR=y
