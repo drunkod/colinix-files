@@ -93,8 +93,8 @@ let
       nss = pkgs.nss_latest;
     }); in { pkg = discord; dir = ".config/discord"; })
 
-    kaiteki  # Pleroma client
-    gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
+    # kaiteki  # Pleroma client
+    # gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
 
     logseq
     losslesscut-bin
