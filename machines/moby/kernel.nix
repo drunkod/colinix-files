@@ -108,50 +108,56 @@ let
   };
 in
 {
-  # # TODO: if i plumbed a nixpkgs cross with my overlay here,
-  # #   i could use `pkgs.linuxPackagesFor pkgs.linux-megous` instead.
-  # # XXX: compilation (even emulated) fails with:
-  # # ```
-  # # CC [M]  drivers/video/fbdev/sun5i-eink-neon.o
-  # # aarch64-unknown-linux-gnu-gcc: error: unrecognized command line option '-mfloat-abi=softfp'
-  # # aarch64-unknown-linux-gnu-gcc: error: unrecognized command line option '-mfpu=neon'
-  # # make[3]: *** [../scripts/Makefile.build:289: drivers/video/fbdev/sun5i-eink-neon.o] Error 1
-  # # ```
-  # boot.kernelPackages = let
-  #   nixpkgsCross = (import nixpkgs { localSystem = "x86_64-linux"; });
-  #   linux_5_18 = nixpkgsCross.pkgsCross.aarch64-multiplatform.linux_5_18;
-  # in
-  #   pkgs.linuxPackagesFor (linux_5_18.override {
-  #     argsOverride = rec {
-  #       src = pkgs.fetchFromGitHub {
-  #         owner = "megous";
-  #         repo = "linux";
-  #         # branch: orange-pi-5.18
-  #         rev = "3ef835b665191e4833ae1363245be48e96013df6";
-  #         sha256 = "sha256-nQsBXeGLZhpem1p7Vnc8z7XB354AO1mn7VTj/hH5twY=";
-  #       };
-  #       version = "5.18.14";
-  #       modDirVersion = "5.18.14";
-  #     };
-  #   });
-  # # non-cross compiled equivalent.
-  # # boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux-megous;
-  #
-  # boot.kernelPatches = [
-  #   (patchDefconfig (kernelConfig // with lib.kernel; {
-  #     FB_SUN5I_EINK = no;
-  #   }))
-  # ];
+  # use Megi's kernel:
+  # even with the Manjaro patches, stock 5.18 has a few issues on Pinephone:
+  # - no battery charging
+  # - phone rotation sensor is off by 90 degrees
+  # - ambient light sensor causes screen brightness to be shakey
+  # - phosh greeter may not appear after wake from sleep
+  # TODO: if i plumbed a nixpkgs cross with my overlay here,
+  #   i could use `pkgs.linuxPackagesFor pkgs.linux-megous` instead.
+  boot.kernelPackages = let
+    nixpkgsCross = (import nixpkgs { localSystem = "x86_64-linux"; });
+    linux_5_18 = nixpkgsCross.pkgsCross.aarch64-multiplatform.linux_5_18;
+  in
+    pkgs.linuxPackagesFor (linux_5_18.override {
+      argsOverride = rec {
+        src = pkgs.fetchFromGitHub {
+          owner = "megous";
+          repo = "linux";
+          # branch: orange-pi-5.18
+          rev = "3ef835b665191e4833ae1363245be48e96013df6";
+          sha256 = "sha256-nQsBXeGLZhpem1p7Vnc8z7XB354AO1mn7VTj/hH5twY=";
+        };
+        version = "5.18.14";
+        modDirVersion = "5.18.14";
+      };
+    });
+  # non-cross compiled equivalent.
+  # boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux-megous;
+
+  boot.kernelPatches = [
+    (patchDefconfig (kernelConfig //
+      (with lib.kernel; {
+        # disabling the sun5i_eink driver avoids this compilation error:
+        # CC [M]  drivers/video/fbdev/sun5i-eink-neon.o
+        # aarch64-unknown-linux-gnu-gcc: error: unrecognized command line option '-mfloat-abi=softfp'
+        # aarch64-unknown-linux-gnu-gcc: error: unrecognized command line option '-mfpu=neon'
+        # make[3]: *** [../scripts/Makefile.build:289: drivers/video/fbdev/sun5i-eink-neon.o] Error 1
+        FB_SUN5I_EINK = no;
+      })
+    ))
+  ];
 
   # use nixos' kernel and add the stuff we want:
-  # cross-compilation optimization:
-  boot.kernelPackages =
-    let p = (import nixpkgs { localSystem = "x86_64-linux"; });
-    in p.pkgsCross.aarch64-multiplatform.linuxPackages_5_18;
-  # non-cross:
-  # boot.kernelPackages = pkgs.linuxPackages_5_18;
+  # # cross-compilation optimization:
+  # boot.kernelPackages =
+  #   let p = (import nixpkgs { localSystem = "x86_64-linux"; });
+  #   in p.pkgsCross.aarch64-multiplatform.linuxPackages_5_18;
+  # # non-cross:
+  # # boot.kernelPackages = pkgs.linuxPackages_5_18;
 
-  boot.kernelPatches = manjaroPatches ++ [
-    (patchDefconfig kernelConfig)
-  ];
+  # boot.kernelPatches = manjaroPatches ++ [
+  #   (patchDefconfig kernelConfig)
+  # ];
 }
