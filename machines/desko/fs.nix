@@ -11,12 +11,14 @@
       "defaults"
     ];
   };
-  # we need a /tmp of default size (half RAM) for building large nix things
+  # we need a /tmp for building large nix things.
+  # a cross-compiled kernel, particularly, will easily use 30+GB of tmp
   fileSystems."/tmp" = {
     device = "none";
     fsType = "tmpfs";
     options = [
       "mode=777"
+      "size=64G"
       "defaults"
     ];
   };
