@@ -49,6 +49,7 @@ let
     # creds/session keys, etc
     { pkg = element-desktop; dir = ".config/Element"; }
 
+    emote  # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
     evince  # works on phosh
     font-manager
     gimp  # broken on phosh
