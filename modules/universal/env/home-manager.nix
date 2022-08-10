@@ -49,6 +49,11 @@ in
       sopsFile = ../../../secrets/universal/aerc_accounts.conf;
       format = "binary";
     };
+    sops.secrets."sublime_music_config" = {
+      owner = config.users.users.colin.name;
+      sopsFile = ../../../secrets/universal/sublime_music_config.json.bin;
+      format = "binary";
+    };
 
     sane.impermanence.home-dirs = [
       "archive"
@@ -116,6 +121,10 @@ in
       # aerc TUI mail client
       xdg.configFile."aerc/accounts.conf".source =
         config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.aerc_accounts.path;
+
+      # sublime music player
+      xdg.configFile."sublime-music/config.json".source =
+        config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.sublime_music_config.path;
 
       xdg.configFile."vlc/vlcrc".text =
       let
