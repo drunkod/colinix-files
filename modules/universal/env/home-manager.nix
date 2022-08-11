@@ -172,7 +172,7 @@ in
 
           "https://semiaccurate.com/feed" = { tags = [ "weekly" "tech" ]; };
           "https://linuxphoneapps.org/blog/atom.xml" = { tags = [ "infrequent" "tech" ]; };
-	  "https://spectrum.ieee.org/rss" = { tags = [ "weekly" "tech" ]; };
+          "https://spectrum.ieee.org/rss" = { tags = [ "weekly" "tech" ]; };
 
           ## No Moods, Ads or Cutesy Fucking Icons
           "https://www.rifters.com/crawl/?feed=rss2" = { tags = [ "weekly" "uncat" ]; };
