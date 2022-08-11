@@ -166,12 +166,13 @@ in
           # AGGREGATORS (> 1 post/day)
           "https://www.lesswrong.com/feed.xml" = { tags = [ "hourly" "rat" ]; };
           "http://www.econlib.org/index.xml" = { tags = [ "hourly" "pol" ]; };
-          # AGREEGATORS (< 1 post/day)
+          # AGGREGATORS (< 1 post/day)
           "https://palladiummag.com/feed" = { tags = [ "weekly" "uncat" ]; };
           "https://profectusmag.com/feed" = { tags = [ "weekly" "uncat" ]; };
 
           "https://semiaccurate.com/feed" = { tags = [ "weekly" "tech" ]; };
           "https://linuxphoneapps.org/blog/atom.xml" = { tags = [ "infrequent" "tech" ]; };
+	  "https://spectrum.ieee.org/rss" = { tags = [ "weekly" "tech" ]; };
 
           ## No Moods, Ads or Cutesy Fucking Icons
           "https://www.rifters.com/crawl/?feed=rss2" = { tags = [ "weekly" "uncat" ]; };
