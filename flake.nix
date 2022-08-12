@@ -35,7 +35,7 @@
     in (nixosSystem {
       # by default the local system is the same as the target, employing emulation when they differ
       system = target;
-      specialArgs = { inherit nixpkgs mobile-nixos home-manager impermanence; };
+      specialArgs = { inherit mobile-nixos home-manager impermanence; };
       modules = [
         ./modules
         ./machines/${name}

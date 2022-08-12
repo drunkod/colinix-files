@@ -1,4 +1,4 @@
-{ lib, pkgs, nixpkgs, ... }:
+{ lib, pkgs, ... }:
 let
   # use the last commit on the 5.18 branch (5.18.14)
   # manjaro's changes between kernel patch versions tend to be minimal if any.
