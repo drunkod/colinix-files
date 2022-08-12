@@ -72,6 +72,7 @@ let
     # settings (electron app). TODO: can i manage these settings with home-manager?
     { pkg = obsidian; dir = ".config/obsidian"; }
 
+    pavucontrol
     playerctl
     # sublime music persists any downloaded albums here.
     # it doesn't obey a conventional ~/Music/{Artist}/{Album}/{Track} notation, so no symlinking
