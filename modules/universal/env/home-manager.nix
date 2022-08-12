@@ -224,6 +224,10 @@ in
           "https://sideways-view.com/feed" = { tags = [ "infrequent" "rat" ]; };
           ## Sean Carroll
           "https://www.preposterousuniverse.com/rss" = { tags = [ "infrequent" "rat" ]; };
+
+          # COMICS
+          "https://www.smbc-comics.com/comic/rss" = { tags = [ "daily" "visual" ]; };
+          "https://xkcd.com/atom.xml" = { tags = [ "daily" "visual" ]; };
         };
         dark_reader = false;
         new_first = true;
@@ -249,9 +253,10 @@ in
           # weekly => i can keep up with most -- but maybe not all -- of their content
           # infrequent => i can read everything in this category
           "hourly" "daily" "weekly" "infrequent"
-	  # rat[ionality] gets used interchangably with philosophy, here.
-	  # pol[itical] gets used for social commentary and economics as well.
-	  "uncat" "rat" "tech" "pol"
+          # rat[ionality] gets used interchangably with philosophy, here.
+          # pol[itical] gets used for social commentary and economics as well.
+          # visual gets used for comics/art
+          "uncat" "rat" "tech" "pol" "visual"
 	];
         open_youtube_externally = false;
         media_player = "vlc";  # default: mpv
