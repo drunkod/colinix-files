@@ -114,27 +114,7 @@ in
   # - phone rotation sensor is off by 90 degrees
   # - ambient light sensor causes screen brightness to be shakey
   # - phosh greeter may not appear after wake from sleep
-  # TODO: if i plumbed a nixpkgs cross with my overlay here,
-  #   i could use `pkgs.linuxPackagesFor pkgs.linux-megous` instead.
-  boot.kernelPackages = let
-    nixpkgsCross = (import nixpkgs { localSystem = "x86_64-linux"; });
-    linux_5_18 = nixpkgsCross.pkgsCross.aarch64-multiplatform.linux_5_18;
-  in
-    pkgs.linuxPackagesFor (linux_5_18.override {
-      argsOverride = rec {
-        src = pkgs.fetchFromGitHub {
-          owner = "megous";
-          repo = "linux";
-          # branch: orange-pi-5.18
-          rev = "3ef835b665191e4833ae1363245be48e96013df6";
-          sha256 = "sha256-nQsBXeGLZhpem1p7Vnc8z7XB354AO1mn7VTj/hH5twY=";
-        };
-        version = "5.18.14";
-        modDirVersion = "5.18.14";
-      };
-    });
-  # non-cross compiled equivalent.
-  # boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux-megous;
+  boot.kernelPackages = pkgs.linuxPackagesFor pkgs.cross.linux-megous;
 
   boot.kernelPatches = [
     (patchDefconfig (kernelConfig //
@@ -149,7 +129,7 @@ in
     ))
   ];
 
-  # use nixos' kernel and add the stuff we want:
+  # alternatively, use nixos' kernel and add the stuff we want:
   # # cross-compilation optimization:
   # boot.kernelPackages =
   #   let p = (import nixpkgs { localSystem = "x86_64-linux"; });

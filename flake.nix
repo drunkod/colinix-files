@@ -25,14 +25,16 @@
       patches = import ./nixpatches/list.nix nixpkgs.legacyPackages.${system}.fetchpatch;
     };
     # return something which behaves like `pkgs`, for the provided system
-    nixpkgsFor = system: import (patchedPkgs system) { inherit system; };
+    # `local` = architecture of builder. `target` = architecture of the system beying deployed to
+    nixpkgsFor = local: target: import (patchedPkgs target) { crossSystem = target; localSystem = local; };
     # evaluate ONLY our overlay, for the provided system
-    customPackagesFor = system: import ./pkgs/overlay.nix (nixpkgsFor system) (nixpkgsFor system);
-    decl-machine = { name, system }:
+    customPackagesFor = local: target: import ./pkgs/overlay.nix (nixpkgsFor local target) (nixpkgsFor local target);
+    decl-machine = { name, local, target }:
     let
-      nixosSystem = import ((patchedPkgs system) + "/nixos/lib/eval-config.nix");
+      nixosSystem = import ((patchedPkgs target) + "/nixos/lib/eval-config.nix");
     in (nixosSystem {
-      inherit system;
+      # by default the local system is the same as the target, employing emulation when they differ
+      system = target;
       specialArgs = { inherit nixpkgs mobile-nixos home-manager impermanence; };
       modules = [
         ./modules
@@ -46,13 +48,19 @@
           nixpkgs.overlays = [
             (import "${mobile-nixos}/overlay/overlay.nix")
             (import ./pkgs/overlay.nix)
+            (next: prev: {
+              # non-emulated packages build *from* local *for* target.
+              # for large packages like the linux kernel which are expensive to build under emulation,
+              # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
+              cross = (nixpkgsFor local target) // (customPackagesFor local target);
+            })
           ];
         }
       ];
     });
 
-    decl-bootable-machine = { name, system }: rec {
-      nixosConfiguration = decl-machine { inherit name system; };
+    decl-bootable-machine = { name, local, target }: rec {
+      nixosConfiguration = decl-machine { inherit name local target; };
       # this produces a EFI-bootable .img file (GPT with a /boot partition and a system (/ or /nix) partition).
       # after building this:
       #   - flash it to a bootable medium (SD card, flash drive, HDD)
@@ -68,16 +76,21 @@
       #   - `nixos-rebuild --flake './#<machine>' switch`
       img = nixosConfiguration.config.system.build.img;
     };
-    machines.servo = decl-bootable-machine { name = "servo"; system = "aarch64-linux"; };
-    machines.desko = decl-bootable-machine { name = "desko"; system = "x86_64-linux"; };
-    machines.lappy = decl-bootable-machine { name = "lappy"; system = "x86_64-linux"; };
-    machines.moby = decl-bootable-machine { name = "moby"; system = "aarch64-linux"; };
-    machines.rescue = decl-bootable-machine { name = "rescue"; system = "x86_64-linux"; };
+    machines.servo = decl-bootable-machine { name = "servo"; local = "aarch64-linux"; target = "aarch64-linux"; };
+    machines.desko = decl-bootable-machine { name = "desko"; local = "x86_64-linux"; target = "x86_64-linux"; };
+    machines.lappy = decl-bootable-machine { name = "lappy"; local = "x86_64-linux"; target = "x86_64-linux"; };
+    machines.moby = decl-bootable-machine { name = "moby"; local = "aarch64-linux"; target = "aarch64-linux"; };
+    # special cross-compiled variant, to speed up deploys from an x86 box to the arm target
+    # note that these *do* produce different store paths, because the closure for the tools used to cross compile
+    # v.s. emulate differ.
+    # so deploying moby-cross and then moby incurs some rebuilding.
+    machines.moby-cross = decl-bootable-machine { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
+    machines.rescue = decl-bootable-machine { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
   in {
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) machines;
     imgs = builtins.mapAttrs (name: value: value.img) machines;
-    packages.x86_64-linux = customPackagesFor "x86_64-linux";
-    packages.aarch64-linux = customPackagesFor "aarch64-linux";
+    packages.x86_64-linux = customPackagesFor "x86_64-linux" "x86_64-linux";
+    packages.aarch64-linux = customPackagesFor "aarch64-linux" "aarch64-linux";
   };
 }
 

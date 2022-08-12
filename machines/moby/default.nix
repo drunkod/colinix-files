@@ -8,13 +8,6 @@
     ./fs.nix
     ./kernel.nix
   ];
-  # nixpkgs.overlays = [(next: prev: {
-  #   # without this, kernel module build fails due to lacking dm_mod.
-  #   # see: https://github.com/NixOS/nixpkgs/issues/126755#issuecomment-869149243
-  #   # dm_mod appears to still be loaded, though? maybe some weird thing between compiled and dynamically-loaded mods?
-  #   makeModulesClosure = x:
-  #     prev.makeModulesClosure (x // { allowMissing = true; });
-  # })];
   # XXX colin: phosh doesn't work well with passwordless login
   users.users.colin.initialPassword = "147147";
   services.getty.autologinUser = "root";  # allows for emergency maintenance?
