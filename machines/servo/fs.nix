@@ -16,7 +16,7 @@
     device = "none";
     fsType = "tmpfs";
     options = [
-      "size=16G"
+      "size=40G"
       "mode=777"
       "defaults"
     ];
