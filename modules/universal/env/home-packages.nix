@@ -51,6 +51,7 @@ let
 
     emote  # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
     evince  # works on phosh
+    foliate
     font-manager
     gimp  # broken on phosh
     gnome.cheese
