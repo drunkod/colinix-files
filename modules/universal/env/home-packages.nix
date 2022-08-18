@@ -75,6 +75,7 @@ let
 
     pavucontrol
     playerctl
+    soundconverter
     # sublime music persists any downloaded albums here.
     # it doesn't obey a conventional ~/Music/{Artist}/{Album}/{Track} notation, so no symlinking
     # config (e.g. server connection details) is persisted in ~/.config/sublime-music/config.json
