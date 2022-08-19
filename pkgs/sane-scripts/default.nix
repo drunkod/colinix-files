@@ -14,6 +14,7 @@ resholve.mkDerivation {
 
   solutions = {
     default = {
+      # note: `scripts` refers to the store path here
       scripts = [ "bin/*" ];
       interpreter = "${pkgs.bash}/bin/bash";
       inputs = with pkgs; [
@@ -63,8 +64,8 @@ resholve.mkDerivation {
   };
 
   installPhase = ''
-    mkdir -p "$out"
-    cp -R * "$out"/
+    mkdir -p "$out/bin"
+    cp -R * "$out"/bin/
   '';
 
   meta = {
