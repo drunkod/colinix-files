@@ -5,13 +5,26 @@
 external_cmd="cargo build --all"
 if [ "x$1" != "x" ]
 then
-       external_cmd=$1
+        external_cmd=$1
 fi
 
-inotifywait -mr \
+# run this once before starting the inotify
+$external_cmd
+
+# other interesting commands to monitor:
+# - -e move
+# - -e create
+# - -e delete
+# - -e close_write
+# but most (except close_write) seem to cause multiple events per vim :w
+# TODO: consider using watchman: https://facebook.github.io/watchman/
+# - watchman waits for the root to settle before invoking my command
+#   so, fewer runs
+inotifywait --monitor --recursive \
   --timefmt '%d/%m/%y %H:%M' --format '%T %w %f' \
-  -e close_write ./ |
+  -e modify ./ |
 while read -r date time dir file
 do
-       $external_cmd
+        tput reset
+        $external_cmd
 done

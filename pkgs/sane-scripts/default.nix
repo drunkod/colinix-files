@@ -24,6 +24,7 @@ resholve.mkDerivation {
         gnugrep
         ifuse
         inotifyTools
+        ncurses
         oath-toolkit
         openssh
         rmlint
