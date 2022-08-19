@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# watches PWD for any changes underneath it and re-runs `cargo build --a>
+# optionally, provide your own build command as the first argument
+
+external_cmd="cargo build --all"
+if [ "x$1" != "x" ]
+then
+       external_cmd=$1
+fi
+
+inotifywait -mr \
+  --timefmt '%d/%m/%y %H:%M' --format '%T %w %f' \
+  -e close_write ./ |
+while read -r date time dir file
+do
+       $external_cmd
+done

@@ -35,6 +35,8 @@ resholve.mkDerivation {
       keep = {
         # we write here: keep it
         "/tmp/rmlint.sh" = true;
+        # intentionally escapes (into user code)
+        "$external_cmd" = true;
       };
       fake = {
         external = [
