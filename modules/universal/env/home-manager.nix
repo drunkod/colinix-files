@@ -187,6 +187,7 @@ in
           "https://sagacioussuricata.com/feed.xml" = { tags = [ "infrequent" "tech" ]; };
           ## Bunnie Juang
           "https://www.bunniestudios.com/blog/?feed=rss2" = { tags = [ "infrequent" "tech" ]; };
+          "https://blog.danieljanus.pl/atom.xml" = { tags = [ "infrequent" "tech" ]; };
           "https://bitbashing.io/feed.xml" = { tags = [ "infrequent" "tech" ]; };
           "https://idiomdrottning.org/feed.xml" = { tags = [ "daily" "uncat" ]; };
 
