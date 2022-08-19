@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# traces a PATH lookup by printing the source, resolution, and any symlinks traversed
+# finally, prints the content of the file
+echo $1
+
+v=$(which $1)
+# this probably doesn't handle paths with spaces
+while [ "$(readlink $v || echo $v)" != "$v" ]
+do
+	echo '->' "$v"
+	v=$(readlink "$v")
+done
+
+echo '->' "$v"
+echo ''
+# TODO: it'd be nice if we checked file type and only cat'd it if it's text
+cat "$v"
