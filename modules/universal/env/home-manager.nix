@@ -239,7 +239,7 @@ in
         # };
         max_article_age_days = 90;
         enable_js = false;
-        max_refresh_threads = 6;
+        max_refresh_threads = 3;
         # saved_items = {};
         # read_items = [];
         show_read_items = true;
