@@ -35,7 +35,8 @@ let
     visidata
     w3m
     wireguard-tools
-    youtube-dl
+    # youtube-dl
+    yt-dlp
   ];
 
   guiPkgs = [
