@@ -386,12 +386,22 @@ in
             vim-surround
             # docs: fzf-vim (fuzzy finder): https://github.com/junegunn/fzf.vim
             fzf-vim
+            # docs: https://github.com/KeitaNakamura/tex-conceal.vim/
+            ({
+              plugin = tex-conceal-vim;
+              type = "viml";
+              config = ''
+                " present prettier fractions
+                let g:tex_conceal_frac=1
+              '';
+            })
             ({
               plugin = vim-SyntaxRange;
               type = "viml";
               config = ''
                 " enable markdown-style codeblock highlighting for tex code
                 autocmd BufEnter * call SyntaxRange#Include('```tex', '```', 'tex', 'NonText')
+                " autocmd Syntax tex set conceallevel=2
               '';
             })
             # nabla renders inline math in any document, but it's buggy.
@@ -447,6 +457,12 @@ in
             
             " at least don't open files with sections folded by default
             set nofoldenable
+
+            " allow text substitutions for certain glyphs.
+            " higher number = more aggressive substitution (0, 1, 2, 3)
+            " i only make use of this for tex, but it's unclear how to
+            " apply that *just* to tex and retain the SyntaxRange stuff.
+            set conceallevel=2
             
             " horizontal rule under the active line
             " set cursorline
