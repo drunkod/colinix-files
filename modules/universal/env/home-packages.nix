@@ -63,6 +63,7 @@ let
     gnome.gnome-maps  # works on phosh
     gnome.nautilus
     gnome-podcasts
+    gnome.gnome-system-monitor
     gnome.gnome-terminal  # works on phosh
     gthumb
     inkscape
