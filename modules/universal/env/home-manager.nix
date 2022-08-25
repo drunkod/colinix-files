@@ -150,7 +150,7 @@ in
           "https://feeds.simplecast.com/BqbsxVfO"
           "https://rss.acast.com/ft-tech-tonic"
           "https://feeds.feedburner.com/dancarlin/history?format=xml"
-	];
+        ];
       in ''
       [podcast]
       podcast-urls=${podcast_urls}
@@ -445,7 +445,7 @@ in
                     disable = {}
                   }
                 }
-        
+
                 vim.o.foldmethod = 'expr'
                 vim.o.foldexpr = 'nvim_treesitter#foldexpr()'
               '';
@@ -454,7 +454,10 @@ in
           extraConfig = ''
             " copy/paste to system clipboard
             set clipboard=unnamedplus
-            
+
+            " screw tabs; always expand them into spaces
+            set expandtab
+
             " at least don't open files with sections folded by default
             set nofoldenable
 
@@ -463,13 +466,19 @@ in
             " i only make use of this for tex, but it's unclear how to
             " apply that *just* to tex and retain the SyntaxRange stuff.
             set conceallevel=2
-            
+
             " horizontal rule under the active line
             " set cursorline
-            
+
             " highlight trailing space & related syntax errors (doesn't seem to work??)
             " let c_space_errors=1
             " let python_space_errors=1
+
+            " enable highlighting of leading/trailing spaces,
+            " and especially tabs
+            " source: https://www.reddit.com/r/neovim/comments/chlmfk/highlight_trailing_whitespaces_in_neovim/
+            set list
+            set listchars=tab:▷\·,trail:·,extends:◣,precedes:◢,nbsp:○
           '';
         };
 
