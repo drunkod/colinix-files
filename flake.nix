@@ -1,6 +1,6 @@
 # docs:
-#   https://nixos.wiki/wiki/Flakes
-#   https://serokell.io/blog/practical-nix-flakes
+# - <https://nixos.wiki/wiki/Flakes>
+# - <https://serokell.io/blog/practical-nix-flakes>
 
 {
   inputs = {

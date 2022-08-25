@@ -9,7 +9,7 @@ nix flake show
 ```
 
 
-# secrets
+## secrets
 
 i use [sops](https://github.com/Mic92/sops-nix) for secrets.
 see `modules/universal/secrets.nix` for some tips.
