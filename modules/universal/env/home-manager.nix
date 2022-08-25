@@ -383,7 +383,16 @@ in
             vim-surround
             # docs: fzf-vim (fuzzy finder): https://github.com/junegunn/fzf.vim
             fzf-vim
-	    # treesitter syntax highlighting: https://nixos.wiki/wiki/Tree_sitters
+            # nabla renders inline math in any document, but it's buggy.
+            #   https://github.com/jbyuki/nabla.nvim
+            # ({
+            #   plugin = pkgs.nabla;
+            #   type = "lua";
+            #   config = ''
+            #     require'nabla'.enable_virt()
+            #   '';
+            # })
+            # treesitter syntax highlighting: https://nixos.wiki/wiki/Tree_sitters
 	    # config taken from: https://github.com/i077/system/blob/master/modules/home/neovim/default.nix
 	    # this is required for tree-sitter to even highlight
 	    ({
