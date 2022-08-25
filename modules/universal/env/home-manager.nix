@@ -262,7 +262,7 @@ in
           # pol[itical] gets used for social commentary and economics as well.
           # visual gets used for comics/art
           "uncat" "rat" "tech" "pol" "visual"
-	];
+        ];
         open_youtube_externally = false;
         media_player = "vlc";  # default: mpv
       };
@@ -381,11 +381,19 @@ in
           viAlias = true;
           vimAlias = true;
           plugins = with pkgs.vimPlugins; [
-	    # docs: surround-nvim: https://github.com/ur4ltz/surround.nvim/
+            # docs: surround-nvim: https://github.com/ur4ltz/surround.nvim/
             # docs: vim-surround: https://github.com/tpope/vim-surround
             vim-surround
             # docs: fzf-vim (fuzzy finder): https://github.com/junegunn/fzf.vim
             fzf-vim
+            ({
+              plugin = vim-SyntaxRange;
+              type = "viml";
+              config = ''
+                " enable markdown-style codeblock highlighting for tex code
+                autocmd BufEnter * call SyntaxRange#Include('```tex', '```', 'tex', 'NonText')
+              '';
+            })
             # nabla renders inline math in any document, but it's buggy.
             #   https://github.com/jbyuki/nabla.nvim
             # ({
@@ -396,16 +404,22 @@ in
             #   '';
             # })
             # treesitter syntax highlighting: https://nixos.wiki/wiki/Tree_sitters
-	    # config taken from: https://github.com/i077/system/blob/master/modules/home/neovim/default.nix
-	    # this is required for tree-sitter to even highlight
-	    ({
-	      plugin = (nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars));
-	      type = "lua";
-	      config = ''
+            # docs: https://github.com/nvim-treesitter/nvim-treesitter
+            # config taken from: https://github.com/i077/system/blob/master/modules/home/neovim/default.nix
+            # this is required for tree-sitter to even highlight
+            ({
+              plugin = (nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars));
+              type = "lua";
+              config = ''
                 require'nvim-treesitter.configs'.setup {
                   highlight = {
                     enable = true,
-                    disable = {}
+                    -- disable treesitter on Rust so that we can use SyntaxRange
+                    -- and leverage TeX rendering in rust projects
+                    disable = { "rust", "tex", "latex" },
+                    -- disable = { "tex", "latex" },
+                    -- true to also use builtin vim syntax highlighting when treesitter fails
+                    additional_vim_regex_highlighting = false
                   },
                   incremental_selection = {
                     enable = true,
@@ -421,26 +435,26 @@ in
                     disable = {}
                   }
                 }
-
+        
                 vim.o.foldmethod = 'expr'
                 vim.o.foldexpr = 'nvim_treesitter#foldexpr()'
               '';
-	    })
+            })
           ];
-	  extraConfig = ''
+          extraConfig = ''
             " copy/paste to system clipboard
             set clipboard=unnamedplus
-
-	    " at least don't open files with sections folded by default
-	    set nofoldenable
-
+            
+            " at least don't open files with sections folded by default
+            set nofoldenable
+            
             " horizontal rule under the active line
-	    " set cursorline
-
+            " set cursorline
+            
             " highlight trailing space & related syntax errors (doesn't seem to work??)
             " let c_space_errors=1
             " let python_space_errors=1
-	  '';
+          '';
         };
 
         # XXX: although home-manager calls this option `firefox`, we can use other browsers and it still mostly works.
