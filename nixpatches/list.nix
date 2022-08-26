@@ -20,4 +20,6 @@ fetchpatch: [
   ./07-duplicity-rich-url.patch
   # TODO: upstream
   ./08-zecwallet-lite.patch
+  # upstream PR: https://github.com/NixOS/nixpkgs/pull/188342
+  ./09-makemkv-1.17.1.patch
 ]
