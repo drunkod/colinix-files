@@ -69,7 +69,6 @@ let
     inkscape
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     lollypop
-    makemkv
     mesa-demos
     networkmanagerapplet
 
@@ -105,6 +104,7 @@ let
 
     logseq
     losslesscut-bin
+    makemkv
 
     # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
     { pkg = monero-gui; dir = ".bitmonero"; }
