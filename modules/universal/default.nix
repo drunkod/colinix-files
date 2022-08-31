@@ -6,6 +6,7 @@
     ./env
     ./fs.nix
     ./secrets.nix
+    ./users.nix
     ./vpn.nix
   ];
 
