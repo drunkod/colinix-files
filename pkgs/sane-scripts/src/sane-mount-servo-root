@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -ex
+
+mnt=/mnt/servo-root-wan
+# if lan not mounted, then try to mount it
+if ! (test -d /mnt/servo-root-lan/nix)
+then
+  sudo mount /mnt/servo-root-lan && mnt=/mnt/servo-root-lan
+fi
+
+# if the needed mount isn't mounted, mount it
+if ! (test -d $mnt/nix)
+then
+  sudo mount $mnt
+fi
+
+# symlink the fastest mount point into place
+sudo ln -sf $mnt /mnt/servo-root
