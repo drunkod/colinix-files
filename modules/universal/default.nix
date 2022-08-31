@@ -5,6 +5,7 @@
     ./allocations.nix
     ./env
     ./fs.nix
+    ./net.nix
     ./secrets.nix
     ./users.nix
     ./vpn.nix
