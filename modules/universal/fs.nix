@@ -6,18 +6,20 @@ let sshOpts = rec {
     "x-systemd.automount"
     "_netdev"
     "user"
-    "transform_symlinks"
     "identityfile=/home/colin/.ssh/id_ed25519"
     "allow_other"
     "default_permissions"
   ];
   optionsColin = optionsBase ++ [
+    "transform_symlinks"
     "idmap=user"
     "uid=1000"
     "gid=100"
   ];
+
   optionsRoot = optionsBase ++ [
-    "sftp_server=/run/wrappers/bin/sudo\\040/nix/store/96idbd49a410sm35kfz7j8rzp5g983qb-openssh-9.0p1/libexec/sftp-server"
+    # we don't transform_symlinks because that breaks the validity of remote /nix stores
+    "sftp_server=/run/wrappers/bin/sudo\\040${pkgs.openssh}/libexec/sftp-server"
   ];
 };
 in
