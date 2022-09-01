@@ -85,7 +85,6 @@ in
       ] ++ cfg.service-dirs));
       files = [
         "/etc/machine-id"
-        "/etc/ssh/authorized_keys.d"  # XXX: might want to remove this; the authorized_keys in ~/.ssh should work.
         "/etc/ssh/ssh_host_ed25519_key"
         "/etc/ssh/ssh_host_ed25519_key.pub"
         "/etc/ssh/ssh_host_rsa_key"
