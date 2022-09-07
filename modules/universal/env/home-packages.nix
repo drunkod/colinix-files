@@ -29,6 +29,7 @@ let
     sequoia
     snapper
     sops
+    speedtest-cli
     ssh-to-age
     sudo
     unar
