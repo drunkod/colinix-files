@@ -58,6 +58,12 @@ in
           border = 3; # pixel boundary between windows
           hideEdgeBorders = "smart"; # don't show border if only window on workspace
         };
+        output = {
+          # "Samsung Electric Company S22C300 0x00007F35"
+          HDMI-A-1 = { pos = "0,0"; res = "1920x1080"; };
+          # "Goldstar Company Ltd LG ULTRAWIDE 0x00004E94"
+          DP-2 = { pos = "1920,0"; res = "3440x1440"; };
+        };
 
         # defaults; required for keybindings decl.
         modifier = "Mod1";
