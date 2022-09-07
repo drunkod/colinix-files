@@ -54,7 +54,10 @@ in
       wrapperFeatures.gtk = true;
       config = rec {
         terminal = "${pkgs.kitty}/bin/kitty";
-        window.border = 3;  # pixel boundary between windows
+        window = {
+          border = 3; # pixel boundary between windows
+          hideEdgeBorders = "smart"; # don't show border if only window on workspace
+        };
 
         # defaults; required for keybindings decl.
         modifier = "Mod1";
