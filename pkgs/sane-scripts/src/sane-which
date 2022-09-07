@@ -7,11 +7,18 @@ v=$(which $1)
 # this probably doesn't handle paths with spaces
 while [ "$(readlink $v || echo $v)" != "$v" ]
 do
-	echo '->' "$v"
-	v=$(readlink "$v")
+  # TODO: this doesn't handle relative symlinks
+  echo '->' "$v"
+  v=$(readlink "$v")
 done
 
 echo '->' "$v"
 echo ''
-# TODO: it'd be nice if we checked file type and only cat'd it if it's text
-cat "$v"
+case $(file --brief --mime "$v") in
+  (*text*)
+    cat "$v"
+    ;;
+  (*)
+    echo $(file "$v")
+    ;;
+esac
