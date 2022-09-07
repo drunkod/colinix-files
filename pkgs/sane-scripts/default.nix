@@ -20,6 +20,7 @@ resholve.mkDerivation {
       inputs = with pkgs; [
         coreutils
         curl
+        file
         findutils
         gnugrep
         ifuse
