@@ -59,10 +59,15 @@ in
           hideEdgeBorders = "smart"; # don't show border if only window on workspace
         };
         output = {
-          # "Samsung Electric Company S22C300 0x00007F35"
-          HDMI-A-1 = { pos = "0,0"; res = "1920x1080"; };
-          # "Goldstar Company Ltd LG ULTRAWIDE 0x00004E94"
-          DP-2 = { pos = "1920,0"; res = "3440x1440"; };
+          ### DESKTOP
+          "Samsung Electric Company S22C300 0x00007F35" = { pos = "0,0"; res = "1920x1080"; };
+          "Goldstar Company Ltd LG ULTRAWIDE 0x00004E94" = { pos = "1920,0"; res = "3440x1440"; };
+
+          ### LAPTOP
+          # shen TV
+          "Pioneer Electronic Corporation VSX-524 0x00000101" = { pos = "0,0"; res = "1920x1080"; };
+          # internal display
+          "Unknown 0x0637 0x00000000" = { pos = "1920,0"; res = "1920x1080"; };
         };
 
         # defaults; required for keybindings decl.
