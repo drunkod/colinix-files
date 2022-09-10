@@ -577,6 +577,7 @@ in
       # pavucontrol
       sway-contrib.grimshot
       gnome.gnome-bluetooth
+      gnome.gnome-control-center
     ];
   };
 }
