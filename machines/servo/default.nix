@@ -14,7 +14,6 @@
     ./services/matrix.nix
     ./services/navidrome.nix
     ./services/nginx.nix
-    ./services/nix-serve.nix
     ./services/pleroma.nix
     ./services/postfix.nix
     ./services/postgres.nix
@@ -28,6 +27,7 @@
   ];
   sane.impermanence.enable = true;
   sane.services.duplicity.enable = true;
+  sane.services.nixserve.enable = true;
 
   # TODO: look into the EFI stuff
   boot.loader.grub.enable = false;
