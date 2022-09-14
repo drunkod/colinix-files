@@ -6,6 +6,8 @@
 
   sane.gui.sway.enable = true;
   sane.services.duplicity.enable = true;
+  sane.services.nixserve.enable = true;
+  sane.services.nixserve.sopsFile = ../../secrets/desko.yaml;
   sane.impermanence.enable = true;
 
   boot.loader.efi.canTouchEfiVariables = false;

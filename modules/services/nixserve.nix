@@ -13,6 +13,10 @@ in
       default = false;
       type = types.bool;
     };
+    sane.services.nixserve.sopsFile = mkOption {
+      default = ../../secrets/servo.yaml;
+      type = types.path;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -22,7 +26,7 @@ in
     };
 
     sops.secrets.nix_serve_privkey = {
-      sopsFile = ../../secrets/servo.yaml;
+      sopsFile = cfg.sopsFile;
     };
   };
 }
