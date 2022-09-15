@@ -30,7 +30,6 @@ pkgs.wrapFirefox pkgs.librewolf-unwrapped {
     Extensions = {
       Install = [
         "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
-        "https://addons.mozilla.org/firefox/downloads/latest/i-dont-care-about-cookies/latest.xpi"
         "https://addons.mozilla.org/firefox/downloads/latest/sponsorblock/latest.xpi"
         "https://addons.mozilla.org/firefox/downloads/latest/bypass-paywalls-clean/latest.xpi"
         "https://addons.mozilla.org/firefox/downloads/latest/sidebery/latest.xpi"
