@@ -23,6 +23,7 @@ in
     services.nix-serve = {
       enable = true;
       secretKeyFile = config.sops.secrets.nix_serve_privkey.path;
+      openFirewall = true;  # not needed for servo; only desko
     };
 
     sops.secrets.nix_serve_privkey = {
