@@ -18,11 +18,16 @@ fetchpatch: [
 
   # TODO: upstream
   ./07-duplicity-rich-url.patch
+
   # zecwallet-lite: init at 1.7.13
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/180960.diff";
     sha256 = "sha256-HVVj/T3yQtjYBoxXpoPiG9Zar/eik9IoDVDhTOehBdY=";
   })
-  # upstream PR: https://github.com/NixOS/nixpkgs/pull/188342
-  ./09-makemkv-1.17.1.patch
+
+  # makemkv: 1.16.7 -> 1.17.1
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/188342.diff";
+    sha256 = "sha256-3M4DpvXf5Us70FX5geE0L1Ns23Iw2NG82YNlwSd+WzI=";
+  })
 ]
