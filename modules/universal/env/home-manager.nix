@@ -118,6 +118,25 @@ in
         export NB_AUTO_SYNC=0
       '';
 
+      # uBlock filter list configuration.
+      # specifically, enable the GDPR cookie prompt blocker.
+      # data.toOverwrite.filterLists is additive (i.e. it supplements the default filters)
+      # this configuration method is documented here:
+      # - <https://github.com/gorhill/uBlock/issues/2986#issuecomment-364035002>
+      # the specific attribute path is found via scraping ublock code here:
+      # - <https://github.com/gorhill/uBlock/blob/master/src/js/storage.js>
+      # - <https://github.com/gorhill/uBlock/blob/master/assets/assets.json>
+      home.file.".librewolf/managed-storage/uBlock0@raymondhill.net.json".text = ''
+        {
+         "name": "uBlock0@raymondhill.net",
+         "description": "ignored",
+         "type": "storage",
+         "data": {
+            "toOverwrite": "{\"filterLists\": [\"fanboy-cookiemonster\"]}"
+         }
+        }
+      '';
+
       # aerc TUI mail client
       xdg.configFile."aerc/accounts.conf".source =
         config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.aerc_accounts.path;
