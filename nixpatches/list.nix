@@ -4,12 +4,20 @@ fetchpatch: [
     url = "https://github.com/NixOS/nixpkgs/pull/175872.diff";
     sha256 = "sha256-mEmqhe8DqlyCxkFWQKQZu+2duz69nOkTANh9TcjEOdY=";
   })
+
   # for raspberry pi: allow building u-boot for rpi 4{,00}
   # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
   #   (it's a dupe of https://github.com/NixOS/nixpkgs/pull/112677 )
   ./02-rpi4-uboot.patch
+
   # alternative to https://github.com/NixOS/nixpkgs/pull/173200
-  ./04-dart-2.7.0.patch
+  # ./04-dart-2.7.0.patch
+  # TODO: more patches are required prior to this one
+  # (fetchpatch {
+  #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/173200.diff";
+  #   sha256 = "sha256-g1tZdLTrAJx3ijgabqz8XInC20PQM3FYRENQ7c6NfQw=";
+  # })
+
   # whalebird: support aarch64
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/176476.diff";
