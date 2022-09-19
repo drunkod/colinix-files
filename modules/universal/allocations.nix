@@ -31,6 +31,8 @@ in
     sane.allocations.sshd-gid = mkId 2001;  # 997
     sane.allocations.polkituser-gid = mkId 2002;  # 998
     sane.allocations.systemd-coredump-gid = mkId 2003;  # 996
+    sane.allocations.nscd-uid = mkId 2004;
+    sane.allocations.nscd-gid = mkId 2004;
 
     # found on graphical machines
     sane.allocations.nm-iodine-uid = mkId 2101;  # desko/moby/lappy

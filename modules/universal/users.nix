@@ -98,6 +98,8 @@ in
     users.groups.polkituser.gid = config.sane.allocations.polkituser-gid;
     users.groups.sshd.gid = config.sane.allocations.sshd-gid;
     users.groups.systemd-coredump.gid = config.sane.allocations.systemd-coredump-gid;
+    users.users.nscd.uid = config.sane.allocations.nscd-uid;
+    users.groups.nscd.gid = config.sane.allocations.nscd-gid;
 
     # guarantee determinism in uid/gid generation for users:
     assertions = let
