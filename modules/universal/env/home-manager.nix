@@ -141,6 +141,13 @@ in
       xdg.configFile."aerc/accounts.conf".source =
         config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.aerc_accounts.path;
 
+      # make Discord usable even when client is "outdated"
+      xdg.configFile."discord/settings.json".text = ''
+      {
+        "SKIP_HOST_UPDATE": true
+      }
+      '';
+
       # sublime music player
       xdg.configFile."sublime-music/config.json".source =
         config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.sublime_music_config.path;
