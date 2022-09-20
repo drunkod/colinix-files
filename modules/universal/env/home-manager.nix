@@ -169,6 +169,8 @@ in
           "https://feeds.simplecast.com/BqbsxVfO"
           "https://rss.acast.com/ft-tech-tonic"
           "https://feeds.feedburner.com/dancarlin/history?format=xml"
+          ## 60 minutes (NB: this features more than *just* audio?)
+          "https://www.cbsnews.com/latest/rss/60-minutes"
         ];
       in ''
       [podcast]
