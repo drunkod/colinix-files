@@ -69,6 +69,7 @@ let
     gnome.gnome-terminal  # works on phosh
     gthumb
     inkscape
+    krita
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     lollypop
     mesa-demos
