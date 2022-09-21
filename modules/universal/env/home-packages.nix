@@ -90,6 +90,7 @@ let
     tdesktop  # broken on phosh
     vlc  # works on phosh
     whalebird # pleroma client. input is broken on phosh
+    xdg-utils  # for xdg-open
     xterm  # broken on phosh
   ]
   ++ (if pkgs.system == "x86_64-linux" then
