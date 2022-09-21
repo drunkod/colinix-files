@@ -53,7 +53,7 @@ let
 
     emote  # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
     evince  # works on phosh
-    # fluffychat
+    fluffychat
     foliate
     font-manager
     gimp  # broken on phosh
