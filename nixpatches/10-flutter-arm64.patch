@@ -11,7 +11,7 @@ index 565c44f72e9..f20a3d4e9be 100644
  
 +let vendorHashes = {
 +  x86_64-linux = "sha256-PSZK5frmQGeiTuEJNZ6Fh8NXSLIrLnoOzQk1Xa4jqHw=";
-+  aarch64-linux = "sha256-gPz/j7oHO2f3DVNNy7DpY/8XTjWt2Kcf3XjFmH81HDs=";
++  aarch64-linux = "sha256-tU83EeFwakTNkEaLo90ZJV55CnmN+NcicHgBJ0u/RKM=";
 +};
 +in
  flutter.mkFlutterApp rec {
@@ -33,7 +33,7 @@ index 9eba6773448..e9d352169b2 100644
        };
 +      "${dartVersion}-aarch64-linux" = fetchurl {
 +        url = "${dartSourceBase}/stable/release/${dartVersion}/sdk/dartsdk-linux-arm64-release.zip";
-+        sha256 = "sha256-3p0cUoNn+Du9GSvVZa9bfZ1I9295uqTA5M9kcj4/uL4=";
++        sha256 = "sha256-BIK6kUx+m+/GfR/wBXv8rjVNbP6w1HFvH/RGIwiaJog=";
 +      };
      };
    };
