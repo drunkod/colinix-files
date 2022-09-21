@@ -47,6 +47,8 @@
   sane.gui.phosh.enable = true;
 
   boot.loader.efi.canTouchEfiVariables = false;
+  # /boot space is at a premium. default was 20.
+  boot.loader.generic-extlinux-compatible.configurationLimit = 10;
   # mobile.bootloader.enable = false;
   # mobile.boot.stage-1.enable = false;
   # boot.initrd.systemd.enable = false;
