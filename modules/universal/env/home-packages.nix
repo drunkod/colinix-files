@@ -53,7 +53,7 @@ let
 
     emote  # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
     evince  # works on phosh
-    fluffychat-moby  # TODO: ship normal fluffychat on non-moby?
+    { pkg = fluffychat-moby; dir = ".local/share/chat.fluffy.fluffychat"; }  # TODO: ship normal fluffychat on non-moby?
     foliate
     font-manager
     gimp  # broken on phosh
