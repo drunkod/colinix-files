@@ -21,6 +21,7 @@
   };
 
   #### customized packages
+  fluffychat-moby = prev.callPackage ./fluffychat-moby { pkgs = prev; };
   # nixos-unstable pleroma is too far out-of-date for our db
   pleroma = prev.callPackage ./pleroma { };
   # jackett doesn't allow customization of the bind address: this will probably always be here.
