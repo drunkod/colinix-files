@@ -29,7 +29,7 @@
   #   $ cat /run/secrets/example_key
 
   # sops.age.sshKeyPaths = [ "/home/colin/.ssh/id_ed25519_dec" ];
-  # This will add secrets.yml to the nix store
+  # This will add secrets.yaml to the nix store
   # You can avoid this by adding a string to the full path instead, i.e.
   # sops.defaultSopsFile = "/root/.sops/secrets/example.yaml";
   sops.defaultSopsFile = ./../../secrets/universal.yaml;

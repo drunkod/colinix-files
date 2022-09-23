@@ -50,7 +50,7 @@ in
         # ".local"   # nothing useful in here
       ] ++ cfg.home-dirs)) ++ (map-sys-dirs [
         # TODO: this `0700` here clobbers the perms for /persist/etc, breaking boot on freshly-deployed devices
-        { mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
+        # { mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
         # "/etc/nixos"
         # "/etc/ssh"  # persist only the specific files we want, instead
         "/var/log"
