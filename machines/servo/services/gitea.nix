@@ -13,7 +13,7 @@
   services.gitea.appName = "Perfectly Sane Git";
   services.gitea.domain = "git.uninsane.org";
   services.gitea.rootUrl = "https://git.uninsane.org/";
-  services.gitea.cookieSecure = true;
+  services.gitea.settings.session.COOKIE_SECURE = true;
   # services.gitea.disableRegistration = true;
 
   services.gitea.settings = {
@@ -60,7 +60,7 @@
     };
   };
   # options: "Trace", "Debug", "Info", "Warn", "Error", "Critical"
-  services.gitea.log.level = "Info";
+  services.gitea.settings.log.LEVEL = "Info";
 
   systemd.services.gitea.serviceConfig = {
     # nix default is AF_UNIX AF_INET AF_INET6.
