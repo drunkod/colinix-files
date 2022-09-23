@@ -60,7 +60,7 @@
     };
   };
   # options: "Trace", "Debug", "Info", "Warn", "Error", "Critical"
-  services.gitea.settings.log.LEVEL = "Info";
+  services.gitea.settings.log.LEVEL = "Warn";
 
   systemd.services.gitea.serviceConfig = {
     # nix default is AF_UNIX AF_INET AF_INET6.
