@@ -21,4 +21,9 @@ fetchpatch: [
   # TODO: upstream
   ./07-duplicity-rich-url.patch
 
+  # navidrome: adhoc hack to fix the build
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/191467.diff";
+    sha256 = "sha256-Np0J06RER/0GGUhL/PDuVjpYYIPzB9A3EPWwTWpS/D4=";
+  })
 ]
