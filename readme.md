@@ -24,3 +24,10 @@ this can then be `dd`'d onto a disk and directly booted from a EFI system.
 there's some post-processing to do before running a rebuild on the deployed system (deploying ssh keys, optionally changing fs UUIDs, etc).
 refer to flake.nix for more details.
 
+## building packages
+
+to build one of the custom sane packages, just name it:
+
+```
+nix build ./#fluffychat-moby
+```
