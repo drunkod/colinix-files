@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./feeds.nix
     ./home-manager.nix
     ./home-packages.nix
     ./system-packages.nix

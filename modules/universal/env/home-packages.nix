@@ -67,7 +67,7 @@ let
     gnome-podcasts
     gnome.gnome-system-monitor
     gnome.gnome-terminal  # works on phosh
-    gpodder
+    gpodder-configured
     gthumb
     inkscape
     krita
