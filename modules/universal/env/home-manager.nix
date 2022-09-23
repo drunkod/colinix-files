@@ -236,6 +236,7 @@ in
           "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" = { tags = [ "weekly" "pol" ]; };
 
           # RATIONALITY/PHILOSOPHY/ETC
+          "https://samkriss.substack.com/feed" = { tags = [ "infrequent" "uncat" ]; };  # ... satire? phil?
           "https://unintendedconsequenc.es/feed" = { tags = [ "infrequent" "rat" ]; };
 
           "https://applieddivinitystudies.com/atom.xml" = { tags = [ "weekly" "rat" ]; };
