@@ -15,13 +15,13 @@
   services.pleroma.configs = [
     ''
     import Config
-    
+
     config :pleroma, Pleroma.Web.Endpoint,
       url: [host: "fed.uninsane.org", scheme: "https", port: 443],
       http: [ip: {127, 0, 0, 1}, port: 4000]
     #   secret_key_base: "{secrets.pleroma.secret_key_base}",
     #   signing_salt: "{secrets.pleroma.signing_salt}"
-    
+
     config :pleroma, :instance,
       name: "Perfectly Sane",
       description: "Single-user Pleroma instance",
@@ -47,7 +47,7 @@
       enabled: false,
       redirect_on_failure: true
       #base_url: "https://cache.pleroma.social"
-    
+
     config :pleroma, Pleroma.Repo,
       adapter: Ecto.Adapters.Postgres,
       username: "pleroma",
@@ -67,7 +67,7 @@
     #   private_key: "{secrets.pleroma.vapid_private_key}"
 
     # config :joken, default_signer: "{secrets.pleroma.joken_default_signer}"
-    
+
     config :pleroma, :database, rum_enabled: false
     config :pleroma, :instance, static_dir: "/var/lib/pleroma/instance/static"
     config :pleroma, Pleroma.Uploaders.Local, uploads: "/var/lib/pleroma/uploads"
@@ -86,14 +86,14 @@
     # Enable Strict-Transport-Security once SSL is working:
     config :pleroma, :http_security,
       sts: true
-    
+
     # docs: https://docs.pleroma.social/backend/configuration/cheatsheet/#logger
     config :logger,
       backends: [{ExSyslogger, :ex_syslogger}]
-    
+
     config :logger, :ex_syslogger,
-      level: :warn
-    #  level: :debug
+      level: :debug
+    #  level: :warn
 
     # XXX colin: not sure if this actually _does_ anything
     config :pleroma, :emoji,
