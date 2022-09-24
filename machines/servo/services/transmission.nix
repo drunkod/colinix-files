@@ -44,6 +44,7 @@
   systemd.services.transmission.serviceConfig = {
     # run this behind the OVPN static VPN
     NetworkNamespacePath = "/run/netns/ovpns";
+    LogLevelMax = "warning";
   };
 }
 

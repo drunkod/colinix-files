@@ -10,6 +10,7 @@
     { user = "224"; group = "224"; directory = "/var/lib/matrix-synapse"; }
   ];
   services.matrix-synapse.enable = true;
+  services.matrix-synapse.settings.log_config = ./synapse-log_level.yaml;
   services.matrix-synapse.settings.server_name = "uninsane.org";
 
   # services.matrix-synapse.enable_registration_captcha = true;
@@ -163,7 +164,7 @@
   };
 
   sops.secrets.matrix_synapse_secrets = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../../secrets/servo.yaml;
     owner = config.users.users.matrix-synapse.name;
   };
 }
