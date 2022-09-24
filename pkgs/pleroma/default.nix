@@ -49,6 +49,8 @@ beamPackages.mixRelease rec {
     done
   '' else "";
 
+  stripDebug = false;
+
   mixNixDeps = import ./mix.nix {
     inherit beamPackages lib;
     overrides = (final: prev: {

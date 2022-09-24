@@ -26,15 +26,4 @@ fetchpatch: [
     url = "https://github.com/NixOS/nixpkgs/pull/191467.diff";
     sha256 = "sha256-Np0J06RER/0GGUhL/PDuVjpYYIPzB9A3EPWwTWpS/D4=";
   })
-
-  # (fetchpatch {
-  #   url = "https://github.com/NixOS/nixpkgs/pull/192472.diff";
-  #   sha256 = "sha256-J4Vp2yErNZkKqZbpLY4mMo9n0Qtai1mAh6kZ8DOV4v4=";
-  # })
-  # (fetchpatch {
-  #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/192472.diff";
-  #   sha256 = "sha256-J5Vp2yErNZkKqZbpLY4mMo9n0Qtai1mAh6kZ8DOV4v4=";
-  # })
-
-  ./192472-pleroma-no-strip-debug.patch
 ]
