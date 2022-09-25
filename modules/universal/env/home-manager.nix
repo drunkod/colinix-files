@@ -248,6 +248,7 @@ in
           # COMICS
           "https://www.smbc-comics.com/comic/rss" = { tags = [ "daily" "visual" ]; };
           "https://xkcd.com/atom.xml" = { tags = [ "daily" "visual" ]; };
+          "http://dilbert.com/feed" = { tags = ["daily" "visual" ]; };
 
           # ART
           "https://miniature-calendar.com/feed" = { tags = [ "daily" "visual" ]; };
