@@ -96,14 +96,29 @@ in
         templates = "$HOME/.xdg/Templates";
         videos = "$HOME/Videos";
       };
+
+      # the xdg mime type for a file can be found with:
+      # - `xdg-mime query filetype path/to/thing.ext`
       xdg.mimeApps.enable = true;
       xdg.mimeApps.defaultApplications = {
+        # HTML
         "text/html" = [ "librewolf.desktop" ];
         "x-scheme-handler/http" = [ "librewolf.desktop" ];
         "x-scheme-handler/https" = [ "librewolf.desktop" ];
         "x-scheme-handler/about" = [ "librewolf.desktop" ];
         "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
+        # IMAGES
+        "image/heif" = [ "org.gnome.gThumb.desktop" ];  # apple codec
         "image/png" = [ "org.gnome.gThumb.desktop" ];
+        "image/jpeg" = [ "org.gnome.gThumb.desktop" ];
+        # VIDEO
+        "video/mp4" = [ "vlc.desktop" ];
+        "video/quicktime" = [ "vlc.desktop" ];
+        "video/x-matroska" = [ "vlc.desktop" ];
+        # AUDIO
+        "audio/flag" = [ "vlc.desktop" ];
+        "audio/mpeg" = [ "vlc.desktop" ];
+        "audio/x-vorbis+ogg" = [ "vlc.desktop" ];
       };
 
       # convenience
