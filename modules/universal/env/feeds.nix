@@ -18,6 +18,12 @@ with lib;
         "https://anchor.fm/s/34c7232c/podcast/rss"
         "https://feeds.feedburner.com/80000HoursPodcast"
         "https://allinchamathjason.libsyn.com/rss"
+        "https://acquired.libsyn.com/rss"
+        "https://rss.acast.com/deconstructed"
+        ## The Daily
+        "https://feeds.simplecast.com/54nAGcIl"
+        "https://rss.acast.com/intercepted-with-jeremy-scahill"
+        "https://podcast.posttv.com/itunes/post-reports.xml"
         ## Eric Weinstein
         "https://rss.art19.com/the-portal"
         "https://feeds.megaphone.fm/darknetdiaries"
