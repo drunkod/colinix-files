@@ -4,6 +4,8 @@ fetchpatch: [
   #   (it's a dupe of https://github.com/NixOS/nixpkgs/pull/112677 )
   ./02-rpi4-uboot.patch
 
+  # Fix mk flutter app
+  # closed. updates fluffychat 1.2.0 -> 1.6.1, but unstable hashing
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/186839.diff";
     sha256 = "sha256-NdIfie+eTy4V1vgqiiRPtWdnxZ5ZHsvCMfkEDUv9SC8=";
@@ -20,10 +22,4 @@ fetchpatch: [
 
   # TODO: upstream
   ./07-duplicity-rich-url.patch
-
-  # navidrome: adhoc hack to fix the build
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/191467.diff";
-    sha256 = "sha256-Np0J06RER/0GGUhL/PDuVjpYYIPzB9A3EPWwTWpS/D4=";
-  })
 ]
