@@ -21,6 +21,7 @@
   };
 
   #### customized packages
+  alsa-ucm-conf = prev.callPackage ./alsa-ucm-conf { pkgs = prev; };
   fluffychat-moby = prev.callPackage ./fluffychat-moby { pkgs = prev; };
   gpodder-configured = prev.callPackage ./gpodder-configured { pkgs = prev; };
   # nixos-unstable pleroma is too far out-of-date for our db

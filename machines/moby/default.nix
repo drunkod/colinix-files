@@ -72,14 +72,5 @@
   # enable rotation sensor
   hardware.sensor.iio.enable = true;
 
-  # from https://gitlab.manjaro.org/manjaro-arm/packages/community/phosh/alsa-ucm-pinephone
-  # mobile-nixos does this same thing, with *slightly different settings*.
-  # i trust manjaro more because the guy maintaining that is actively trying to upstream into alsa-ucm-conf.
-  # an alternative may be to build a custom alsa with the PinePhone config patch applied:
-  # - <https://github.com/alsa-project/alsa-ucm-conf/pull/134>
-  # that would make this be not device-specific
-  environment.variables.ALSA_CONFIG_UCM2 = "${./ucm2}";
-  systemd.services.pulseaudio.environment.ALSA_CONFIG_UCM2 = "${./ucm2}";
-
   users.groups.feedbackd.gid = config.sane.allocations.feedbackd-gid;
 }
