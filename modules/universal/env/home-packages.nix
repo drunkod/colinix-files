@@ -53,7 +53,9 @@ let
 
     emote  # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
     evince  # works on phosh
+
     { pkg = fluffychat-moby; dir = ".local/share/chat.fluffy.fluffychat"; }  # TODO: ship normal fluffychat on non-moby?
+
     foliate
     font-manager
     gimp  # broken on phosh
@@ -67,7 +69,10 @@ let
     gnome-podcasts
     gnome.gnome-system-monitor
     gnome.gnome-terminal  # works on phosh
+    gnome.gnome-weather
+
     { pkg = gpodder-configured; dir = "gPodder/Downloads"; }
+
     gthumb
     inkscape
     krita
