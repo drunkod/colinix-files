@@ -107,6 +107,9 @@ in
         "x-scheme-handler/https" = [ "librewolf.desktop" ];
         "x-scheme-handler/about" = [ "librewolf.desktop" ];
         "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
+        # RICH-TEXT DOCUMENTS
+        "application/pdf" = [ "org.gnome.Evince.desktop" ];
+        "text/markdown" = [ "obsidian.desktop" ];
         # IMAGES
         "image/heif" = [ "org.gnome.gThumb.desktop" ];  # apple codec
         "image/png" = [ "org.gnome.gThumb.desktop" ];
