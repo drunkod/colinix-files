@@ -67,7 +67,7 @@ let
     gnome-podcasts
     gnome.gnome-system-monitor
     gnome.gnome-terminal  # works on phosh
-    gpodder-configured
+    { pkg = gpodder-configured; dir = "gPodder/Downloads"; }
     gthumb
     inkscape
     krita
