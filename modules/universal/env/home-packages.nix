@@ -88,7 +88,10 @@ let
     #   possible to pass config as a CLI arg (sublime-music -c config.json)
     { pkg = sublime-music; dir = ".local/share/sublime-music"; }
     tdesktop  # broken on phosh
-    vlc  # works on phosh
+
+    # vlc remembers play position in ~/.config/vlc/vlc-qt-interface.conf
+    { pkg = vlc; persist-files = [ ".config/vlc/vlc-qt-interface.conf" ]; }
+
     whalebird # pleroma client. input is broken on phosh
     xdg-utils  # for xdg-open
     xterm  # broken on phosh
