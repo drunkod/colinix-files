@@ -24,7 +24,7 @@ resholve.mkDerivation {
         findutils
         gnugrep
         ifuse
-        inotifyTools
+        inotify-tools
         ncurses
         oath-toolkit
         openssh
