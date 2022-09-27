@@ -28,31 +28,37 @@ in
     device = "colin@uninsane.org:/var/lib/uninsane/media";
     inherit (sshOpts) fsType;
     options = sshOpts.optionsColin;
+    noCheck = true;
   };
   fileSystems."/mnt/servo-media-lan" = {
     device = "colin@servo:/var/lib/uninsane/media";
     inherit (sshOpts) fsType;
     options = sshOpts.optionsColin;
+    noCheck = true;
   };
   fileSystems."/mnt/servo-root-wan" = {
     device = "colin@uninsane.org:/";
     inherit (sshOpts) fsType;
     options = sshOpts.optionsRoot;
+    noCheck = true;
   };
   fileSystems."/mnt/servo-root-lan" = {
     device = "colin@servo:/";
     inherit (sshOpts) fsType;
     options = sshOpts.optionsRoot;
+    noCheck = true;
   };
   fileSystems."/mnt/desko-home" = {
     device = "colin@desko:/home/colin";
     inherit (sshOpts) fsType;
     options = sshOpts.optionsColin;
+    noCheck = true;
   };
   fileSystems."/mnt/desko-root" = {
     device = "colin@desko:/";
     inherit (sshOpts) fsType;
     options = sshOpts.optionsRoot;
+    noCheck = true;
   };
 
   environment.systemPackages = [
