@@ -2,6 +2,7 @@
 , fetchFromGitHub
 , flutter
 , makeDesktopItem
+, imagemagick
 , xdg-user-dirs
 }:
 
@@ -23,9 +24,9 @@ flutter.mkFlutterApp rec {
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [ xdg-user-dirs ];
+  nativeBuildInputs = [ imagemagick ];
 
-  desktopItems = [ (makeDesktopItem {
+  desktopItem = makeDesktopItem {
     name = "Kaiteki";
     exec = "@out@/bin/kaiteki";
     icon = "kaiteki";
@@ -33,13 +34,28 @@ flutter.mkFlutterApp rec {
     genericName = "Micro-blogging client";
     comment = meta.description;
     categories = [ "Network" "InstantMessaging" "GTK" ];
-  }) ];
+  };
 
   sourceRoot = "source/src/kaiteki";
 
   postInstall = ''
     wrapProgram $out/bin/kaiteki \
       --prefix PATH : "${xdg-user-dirs}/bin"
+
+    FAV=$out/app/data/flutter_assets/assets/icon.png
+    ICO=$out/share/icons
+
+    install -D $FAV $ICO/kaiteki.png
+    for s in 24 32 42 64 128 256 512; do
+      D=$ICO/hicolor/''${s}x''${s}/apps
+      mkdir -p $D
+      convert $FAV -resize ''${s}x''${s} $D/kaiteki.png
+    done
+
+    mkdir $out/share/applications
+    cp $desktopItem/share/applications/*.desktop $out/share/applications
+    substituteInPlace $out/share/applications/*.desktop \
+      --subst-var out
   '';
 
   meta = with lib; {
