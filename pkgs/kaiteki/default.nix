@@ -7,10 +7,9 @@
 
 flutter.mkFlutterApp rec {
   pname = "kaiteki";
-  version = "unstable-2022-08-31";
+  version = "unstable-2022-09-03";
 
   # this hash seems unstable -- depends on other nixpkgs, perhaps?
-  # vendorHash = "sha256-4DdtceIxj89ta12EhfxA2B5K9++LrKSA7ZzUb/NaaGs=";
   vendorHash = "sha256-OEDJSnXDNut/YZ+3cQ76KUBW/MaXcnirZDHu/n97108=";
 
   src = fetchFromGitHub {
@@ -18,9 +17,10 @@ flutter.mkFlutterApp rec {
     repo = "Kaiteki";
     # rev = "cf94ec55063cd7af20a37103fc40c588a634962f";
     # hash = "sha256-jtRT0Q4/i3dxRYcC6HPClL9Iw1PizkIUgswU1eusKig=";
-    # past this hash Kaiteki introduces submodules for l10n stuff; not sure how to account for that yet.
-    rev = "324077e4716ce996531457ec9c45fb3cc82820a0";
-    hash = "sha256-qqVePcDnuc7SdPUhZtfcMGPzpemmZEvCNLqEbUDi2SA=";
+    # this is the last hash before the code uses features not apparently supported by our version of dart.
+    rev = "fd1e26c98f37ad6a98ed549da879c91721f997d0";
+    hash = "sha256-N7n6o/B9s0DCYf9HFMZSCPShpE65wKl9FaQ5dbFnr1E=";
+    fetchSubmodules = true;
   };
 
   nativeBuildInputs = [ xdg-user-dirs ];
