@@ -11,7 +11,7 @@ flutter.mkFlutterApp rec {
   version = "unstable-2022-09-03";
 
   # this hash seems unstable -- depends on other nixpkgs, perhaps?
-  vendorHash = "sha256-OEDJSnXDNut/YZ+3cQ76KUBW/MaXcnirZDHu/n97108=";
+  vendorHash = "sha256-+kVwa5FObRYOdkPrF7jd0qOB+wwBm+OvdJP8NdSXTJ8=";
 
   src = fetchFromGitHub {
     owner = "Kaiteki-Fedi";
