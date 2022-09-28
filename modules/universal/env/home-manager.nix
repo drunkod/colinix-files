@@ -274,6 +274,9 @@ in
 
           # ART
           "https://miniature-calendar.com/feed" = { tags = [ "daily" "visual" ]; };
+
+          # CODE
+          "https://github.com/Kaiteki-Fedi/Kaiteki/commits/master.atom" = { tags = [ "infrequent" "tech" ]; };
         };
         dark_reader = false;
         new_first = true;
