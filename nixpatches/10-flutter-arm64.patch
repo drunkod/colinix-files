@@ -10,8 +10,8 @@ index 565c44f72e9..f20a3d4e9be 100644
  }:
  
 +let vendorHashes = {
-+  x86_64-linux = "sha256-hMfZL7aq5w2tkkzOZZjgxn9SS1Hby+swxQGS9UGWh4I=";
-+  aarch64-linux = "sha256-cEeykQANUgih7e8BQLHoO5zAf35p5y0I052ND3RZqjk=";
++  x86_64-linux = "sha256-PSZK5frmQGeiTuEJNZ6Fh8NXSLIrLnoOzQk1Xa4jqHw=";
++  aarch64-linux = "sha256-tU83EeFwakTNkEaLo90ZJV55CnmN+NcicHgBJ0u/RKM=";
 +};
 +in
  flutter.mkFlutterApp rec {
