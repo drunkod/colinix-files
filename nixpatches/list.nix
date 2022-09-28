@@ -29,4 +29,10 @@ fetchpatch: [
     url = "https://github.com/NixOS/nixpkgs/pull/193169.diff";
     sha256 = "sha256-1O9vC/r3jpvGhHGp7d2r3oL7C8kFX2Ph214JV0vWZA0=";
   })
+
+  # zecwallet: 1.7.13 -> 1.8.8
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/193276.diff";
+    sha256 = "sha256-tgwX/Tb1jQIcao8nTVJt4Y20iiHIeu+g8vCb5OOMIyQ=";
+  })
 ]
