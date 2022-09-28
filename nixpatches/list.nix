@@ -38,7 +38,8 @@ fetchpatch: [
 
   # whalebird: 4.6.0 -> 4.6.5
   (fetchpatch {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/5f410db5e0bc24521ad413c33285a3175517941c.diff";
+    # url = "https://git.uninsane.org/colin/nixpkgs/commit/5f410db5e0bc24521ad413c33285a3175517941c.diff";
+    url = "https://github.com/NixOS/nixpkgs/pull/193281.diff";
     sha256 = "sha256-222ZhU3l9fUTeqJvkk/1MhIMzzPaxthZpThYHi3rjV8=";
   })
 ]
