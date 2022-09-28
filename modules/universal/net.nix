@@ -11,6 +11,13 @@
     "192.168.0.48" = [ "moby" ];
   };
 
+  # the default backend is "wpa_supplicant".
+  # wpa_supplicant reliably picks weak APs to connect to.
+  # see: <https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/474>
+  # iwd shouldn't have this problem
+  # TODO: this requires more work; network is managable via nmtui, but defaults disconnected
+  # networking.networkmanager.wifi.backend = "iwd";
+
   sops.secrets."nm-community-university" = {
     sopsFile = ../../secrets/universal/net/community-university.nmconnection.bin;
     format = "binary";
