@@ -33,13 +33,13 @@ fetchpatch: [
   # zecwallet: 1.7.13 -> 1.8.8
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/193276.diff";
-    sha256 = "sha256-tgwX/Tb1jQIcao8nTVJt4Y20iiHIeu+g8vCb5OOMIyQ=";
+    sha256 = "sha256-rSWllDAxL8E42vYPR3vgGZklU5cKp9dqYowMJkPoYlY=";
   })
 
   # whalebird: 4.6.0 -> 4.6.5
   (fetchpatch {
     # url = "https://git.uninsane.org/colin/nixpkgs/commit/5f410db5e0bc24521ad413c33285a3175517941c.diff";
     url = "https://github.com/NixOS/nixpkgs/pull/193281.diff";
-    sha256 = "sha256-222ZhU3l9fUTeqJvkk/1MhIMzzPaxthZpThYHi3rjV8=";
+    sha256 = "sha256-SY+pJPNEB6gJDkEbFgWVjMf7Grrt05INoBtQVp2af1w=";
   })
 ]
