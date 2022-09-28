@@ -53,6 +53,9 @@
   # mobile.boot.stage-1.enable = false;
   # boot.initrd.systemd.enable = false;
   # boot.initrd.services.swraid.enable = false;  # attempt to fix dm_mod stuff
+  # disable proximity sensor.
+  # the filtering/calibration is bad that it causes the screen to go fully dark at times.
+  boot.blacklistedKernelModules = [ "stk3310" ];
 
   # mobile-nixos' /lib/firmware includes:
   #   rtl_bt          (bluetooth)
