@@ -17,6 +17,7 @@
     #   https://nixos.wiki/wiki/Slack#Wayland
     # Discord under sway crashes with this.
     # NIXOS_OZONE_WL = "1";
+    # LIBGL_ALWAYS_SOFTWARE = "1";
   };
 }
 

@@ -82,4 +82,6 @@
   systemd.services.pulseaudio.environment.ALSA_CONFIG_UCM2 = "${./ucm2}";
 
   users.groups.feedbackd.gid = config.sane.allocations.feedbackd-gid;
+
+  hardware.opengl.driSupport = true;
 }
