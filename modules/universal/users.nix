@@ -100,6 +100,8 @@ in
     users.groups.systemd-coredump.gid = config.sane.allocations.systemd-coredump-gid;
     users.users.nscd.uid = config.sane.allocations.nscd-uid;
     users.groups.nscd.gid = config.sane.allocations.nscd-gid;
+    users.users.systemd-oom.uid = config.sane.allocations.systemd-oom-uid;
+    users.groups.systemd-oom.gid = config.sane.allocations.systemd-oom-gid;
 
     # guarantee determinism in uid/gid generation for users:
     assertions = let

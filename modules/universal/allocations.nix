@@ -33,6 +33,8 @@ in
     sane.allocations.systemd-coredump-gid = mkId 2003;  # 996
     sane.allocations.nscd-uid = mkId 2004;
     sane.allocations.nscd-gid = mkId 2004;
+    sane.allocations.systemd-oom-uid = mkId 2005;
+    sane.allocations.systemd-oom-gid = mkId 2005;
 
     # found on graphical machines
     sane.allocations.nm-iodine-uid = mkId 2101;  # desko/moby/lappy
