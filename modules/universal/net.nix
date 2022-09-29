@@ -14,41 +14,48 @@
   # the default backend is "wpa_supplicant".
   # wpa_supplicant reliably picks weak APs to connect to.
   # see: <https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/474>
-  # iwd shouldn't have this problem
-  # TODO: this requires more work; network is managable via nmtui, but defaults disconnected
+  # iwd is an alternative that shouldn't have this problem
+  # docs:
+  # - <https://nixos.wiki/wiki/Iwd>
+  # - <https://iwd.wiki.kernel.org/networkmanager>
+  # use `iwctl` to control
+  # networking.wireless.iwd.enable = true;
   # networking.networkmanager.wifi.backend = "iwd";
+  # # autoconnect means NM will manage the connecting, not iwd (?)
+  # # this lets us reuse nmconnection files, but the result is that we don't connect to the strongest AP anymore
+  # networking.networkmanager.extraConfig = ''
+  # [device]
+  # wifi.iwd.autoconnect=no
+  # '';
 
   sops.secrets."nm-community-university" = {
     sopsFile = ../../secrets/universal/net/community-university.nmconnection.bin;
     format = "binary";
+    path = "/etc/NetworkManager/system-connections/nm-community-university.nmconnection";
   };
   sops.secrets."nm-friend-libertarian-dod" = {
     sopsFile = ../../secrets/universal/net/friend-libertarian-dod.nmconnection.bin;
     format = "binary";
+    path = "/etc/NetworkManager/system-connections/friend-libertarian-dod.nmconnection";
   };
   sops.secrets."nm-friend-rationalist-empathist" = {
     sopsFile = ../../secrets/universal/net/friend-rationalist-empathist.nmconnection.bin;
     format = "binary";
+    path = "/etc/NetworkManager/system-connections/friend-rationalist-empathist.nmconnection";
   };
   sops.secrets."nm-home-bedroom" = {
     sopsFile = ../../secrets/universal/net/home-bedroom.nmconnection.bin;
     format = "binary";
+    path = "/etc/NetworkManager/system-connections/home-bedroom.nmconnection";
   };
   sops.secrets."nm-home-shared-24G" = {
     sopsFile = ../../secrets/universal/net/home-shared-24G.nmconnection.bin;
     format = "binary";
+    path = "/etc/NetworkManager/system-connections/home-shared-24G.nmconnection";
   };
   sops.secrets."nm-home-shared" = {
     sopsFile = ../../secrets/universal/net/home-shared.nmconnection.bin;
     format = "binary";
-  };
-
-  environment.etc = {
-    "NetworkManager/system-connections/nm-community-university".source = config.sops.secrets.nm-community-university.path;
-    "NetworkManager/system-connections/nm-friend-libertarian-dod".source = config.sops.secrets.nm-friend-libertarian-dod.path;
-    "NetworkManager/system-connections/nm-friend-rationalist-empathist".source = config.sops.secrets.nm-friend-rationalist-empathist.path;
-    "NetworkManager/system-connections/nm-home-bedroom".source = config.sops.secrets.nm-home-bedroom.path;
-    "NetworkManager/system-connections/nm-home-shared-24G".source = config.sops.secrets.nm-home-shared-24G.path;
-    "NetworkManager/system-connections/nm-home-shared".source = config.sops.secrets.nm-home-shared.path;
+    path = "/etc/NetworkManager/system-connections/home-shared.nmconnection";
   };
 }
