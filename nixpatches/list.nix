@@ -42,4 +42,16 @@ fetchpatch: [
     url = "https://github.com/NixOS/nixpkgs/pull/193281.diff";
     sha256 = "sha256-SY+pJPNEB6gJDkEbFgWVjMf7Grrt05INoBtQVp2af1w=";
   })
+
+  # (merged into master 2022/09/28): element-{web,desktop}: 1.11.5 -> 1.11.7
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/193342.diff";
+    sha256 = "sha256-A9TUmabRl4BC6dGmo0e1c4YdAyUG4o097GYdMChepfw=";
+  })
+
+  # (merged into master 2022/09/28): element-{desktop,web}: 1.11.7 -> 1.11.8
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/193362.diff";
+    sha256 = "sha256-ZkkbNdCKh905fDe9QHrP/alRkDfenoPc6XrLg3Hf2dI=";
+  })
 ]
