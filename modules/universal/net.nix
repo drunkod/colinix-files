@@ -38,27 +38,27 @@
   );
 
   sops.secrets."iwd/community-university.psk" = {
-    sopsFile = ../../secrets/universal/net/community-university.psk;
+    sopsFile = ../../secrets/universal/net/community-university.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/friend-libertarian-dod.psk" = {
-    sopsFile = ../../secrets/universal/net/friend-libertarian-dod.psk;
+    sopsFile = ../../secrets/universal/net/friend-libertarian-dod.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/friend-rationalist-empathist.psk" = {
-    sopsFile = ../../secrets/universal/net/friend-rationalist-empathist.psk;
+    sopsFile = ../../secrets/universal/net/friend-rationalist-empathist.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/home-bedroom.psk" = {
-    sopsFile = ../../secrets/universal/net/home-bedroom.psk;
+    sopsFile = ../../secrets/universal/net/home-bedroom.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/home-shared-24G.psk" = {
-    sopsFile = ../../secrets/universal/net/home-shared-24G.psk;
+    sopsFile = ../../secrets/universal/net/home-shared-24G.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/home-shared.psk" = {
-    sopsFile = ../../secrets/universal/net/home-shared.psk;
+    sopsFile = ../../secrets/universal/net/home-shared.psk.bin;
     format = "binary";
   };
 }
