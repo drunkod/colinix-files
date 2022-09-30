@@ -57,7 +57,8 @@ fetchpatch: [
 
   # phosh: 0.21.0 -> 0.21.1
   (fetchpatch {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/0b81457690fce39b14c5d3463af0d6331b73b850.diff";
+    # url = "https://git.uninsane.org/colin/nixpkgs/commit/0b81457690fce39b14c5d3463af0d6331b73b850.diff";
+    url = "https://github.com/NixOS/nixpkgs/pull/193700.diff";
     sha256 = "sha256-GtpYSii1c/Kw1NEQ4sVR1nO/kvSa/CSIxuXxL00oBGw=";
   })
 
