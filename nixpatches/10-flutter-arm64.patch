@@ -10,7 +10,7 @@ index 565c44f72e9..f20a3d4e9be 100644
  }:
  
 +let vendorHashes = {
-+  x86_64-linux = "sha256-d2HJTm6fcmScX/nkXeg70vnYh1XuzwQ6hVr0H8hII8k=";
++  x86_64-linux = "sha256-p5EJP2zSvWyRV1uyTHw0EpFsEwAGtX5B9WVjpLmnVew=";
 +  aarch64-linux = "sha256-DVMVPCab+7tSNRKwioQXi0WZnlpvm5tIhO/l1vFX3J8=";
 +};
 +in
