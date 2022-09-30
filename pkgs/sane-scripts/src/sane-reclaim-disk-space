@@ -1,17 +1,41 @@
 #!/usr/bin/env bash
-set -ex
 # script to reclaim some hard drive space
+set -e
+
+options=$(getopt -l "fast" -o "f" -- "$@")
+do_rmlint=true
+for arg in $options; do
+  case $arg in
+    -f|--fast)
+      do_rmlint=false
+      ;;
+    --)
+      ;;
+  esac
+done
+
+set -x
+
+# always claim nix garbage
 sudo nix-collect-garbage
-# identify duplicate files in the nix store
-rmlint --types="duplicates" --config=sh:handler=clone --output=sh:/tmp/rmlint.sh --output=json:/dev/null --progress /nix/store
-# link the dupes together (uses ioctl_fideduperange)
-#   see: https://btrfs.wiki.kernel.org/index.php/Deduplication
-#   see: https://rmlint.readthedocs.io/en/latest/tutorial.html
-sudo mount -o remount,rw /nix/store
-# XXX: does rmlint really need to be invoked as root?
-sudo /tmp/rmlint.sh -d || true  # on failure, we still want to remount ro
-# XXX this doesn't work: 'mount point is busy.'
-sudo mount -o remount,ro /nix/store
+
+if [ $do_rmlint = true ]
+then
+  # identify duplicate files in the nix store
+  rmlint --types="duplicates" --config=sh:handler=clone --output=sh:/tmp/rmlint.sh --output=json:/dev/null --progress /nix/store
+  # link the dupes together (uses ioctl_fideduperange)
+  #   see: https://btrfs.wiki.kernel.org/index.php/Deduplication
+  #   see: https://rmlint.readthedocs.io/en/latest/tutorial.html
+fi
+
+if [ $do_rmlint = true ]
+then
+  sudo mount -o remount,rw /nix/store
+  # XXX: does rmlint really need to be invoked as root?
+  sudo /tmp/rmlint.sh -d || true  # on failure, we still want to remount ro
+  # XXX this doesn't work: 'mount point is busy.'
+  sudo mount -o remount,ro /nix/store
+fi
 
 # TODO: instead of using rmlint, could use dduper: https://github.com/Lakshmipathi/dduper
 #   better perf for btrfs (checksum tests)

@@ -33,6 +33,7 @@ resholve.mkDerivation {
         ssh-to-age
         sops
         sudo
+        util-linux
         which
       ];
       keep = {
