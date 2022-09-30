@@ -8,6 +8,14 @@
     ./fs.nix
     ./kernel.nix
   ];
+
+  # cross-compiled documentation is *slow*.
+  # no obvious way to natively compile docs (2022/09/29).
+  # entrypoint is nixos/modules/misc/documentation.nix
+  # doc building happens in nixos/doc/manual/default.nix
+  # TODO: we could *maybe* inject pkgs.buildPackages.xyz = cross.buildPackages.xyz?
+  documentation.nixos.enable = false;
+
   # XXX colin: phosh doesn't work well with passwordless login
   users.users.colin.initialPassword = "147147";
   services.getty.autologinUser = "root";  # allows for emergency maintenance?
