@@ -62,4 +62,9 @@ fetchpatch: [
     sha256 = "sha256-GtpYSii1c/Kw1NEQ4sVR1nO/kvSa/CSIxuXxL00oBGw=";
   })
 
+  # element-desktop: upgrade electron 19 -> 20
+  (fetchpatch {
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/7e6a47b3904f5d8f2a37c35ff2d12772524727a9.diff";
+    sha256 = "sha256-OcqDIoBcphGZfeeOzaS7Ip1khocpkYrpG6tMGExa3S4=";
+  })
 ]
