@@ -64,7 +64,8 @@ fetchpatch: [
 
   # element-desktop: upgrade electron 19 -> 20
   (fetchpatch {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/7e6a47b3904f5d8f2a37c35ff2d12772524727a9.diff";
+    # url = "https://git.uninsane.org/colin/nixpkgs/commit/7e6a47b3904f5d8f2a37c35ff2d12772524727a9.diff";
+    url = "https://github.com/NixOS/nixpkgs/pull/193799.diff";
     sha256 = "sha256-OcqDIoBcphGZfeeOzaS7Ip1khocpkYrpG6tMGExa3S4=";
   })
 
