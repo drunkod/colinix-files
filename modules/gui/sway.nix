@@ -33,6 +33,9 @@ in
       };
     };
 
+    # some programs (e.g. fractal) **require** a "Secret Service Provider"
+    services.gnome.gnome-keyring.enable = true;
+
     # unlike other DEs, sway configures no audio stack
     # administer with pw-cli, pw-mon, pw-top commands
     services.pipewire = {

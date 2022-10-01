@@ -58,6 +58,7 @@ let
 
     foliate
     font-manager
+    fractal-next
     gimp  # broken on phosh
     gnome.cheese
     gnome.dconf-editor
