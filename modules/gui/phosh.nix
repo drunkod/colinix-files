@@ -60,6 +60,8 @@ in
     };
 
     sane.home-manager.extraPackages = with pkgs; [
+      phosh-mobile-settings
+
       # TODO: see about removing this if the in-built gnome-settings bluetooth manager can work
       gnome.gnome-bluetooth
     ];
