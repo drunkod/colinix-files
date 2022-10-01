@@ -30,31 +30,6 @@ fetchpatch: [
     sha256 = "sha256-1O9vC/r3jpvGhHGp7d2r3oL7C8kFX2Ph214JV0vWZA0=";
   })
 
-  # zecwallet: 1.7.13 -> 1.8.8
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/193276.diff";
-    sha256 = "sha256-rSWllDAxL8E42vYPR3vgGZklU5cKp9dqYowMJkPoYlY=";
-  })
-
-  # whalebird: 4.6.0 -> 4.6.5
-  (fetchpatch {
-    # url = "https://git.uninsane.org/colin/nixpkgs/commit/5f410db5e0bc24521ad413c33285a3175517941c.diff";
-    url = "https://github.com/NixOS/nixpkgs/pull/193281.diff";
-    sha256 = "sha256-SY+pJPNEB6gJDkEbFgWVjMf7Grrt05INoBtQVp2af1w=";
-  })
-
-  # (merged into master 2022/09/28): element-{web,desktop}: 1.11.5 -> 1.11.7
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/193342.diff";
-    sha256 = "sha256-A9TUmabRl4BC6dGmo0e1c4YdAyUG4o097GYdMChepfw=";
-  })
-
-  # (merged into master 2022/09/28): element-{desktop,web}: 1.11.7 -> 1.11.8
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/193362.diff";
-    sha256 = "sha256-ZkkbNdCKh905fDe9QHrP/alRkDfenoPc6XrLg3Hf2dI=";
-  })
-
   # phosh: 0.21.0 -> 0.21.1
   (fetchpatch {
     # url = "https://git.uninsane.org/colin/nixpkgs/commit/0b81457690fce39b14c5d3463af0d6331b73b850.diff";
@@ -63,6 +38,7 @@ fetchpatch: [
   })
 
   # element-desktop: upgrade electron 19 -> 20
+  # merged 2022/10/01
   (fetchpatch {
     # url = "https://git.uninsane.org/colin/nixpkgs/commit/7e6a47b3904f5d8f2a37c35ff2d12772524727a9.diff";
     url = "https://github.com/NixOS/nixpkgs/pull/193799.diff";
@@ -75,4 +51,7 @@ fetchpatch: [
     url = "https://github.com/NixOS/nixpkgs/pull/193845.diff";
     sha256 = "sha256-o3UkY9YoCE9hm1ZQ9a4ItZOksbx57V0iF+qC0077pmo=";
   })
+
+  # fix electrum build: https://github.com/NixOS/nixpkgs/issues/193997
+  ./11-electrum-protobuf-fix.patch
 ]
