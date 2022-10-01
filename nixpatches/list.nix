@@ -68,4 +68,10 @@ fetchpatch: [
     url = "https://github.com/NixOS/nixpkgs/pull/193799.diff";
     sha256 = "sha256-OcqDIoBcphGZfeeOzaS7Ip1khocpkYrpG6tMGExa3S4=";
   })
+
+  # phosh-mobile-settings: init at 0.21.1
+  (fetchpatch {
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/002e6527a404600f81951547566b4c8fc769f1da.diff";
+    sha256 = "sha256-omIDd+ZpMtmcdbyXYAMWYk4JuLpVSUwHOGQ1v8kWmz4=";
+  })
 ]
