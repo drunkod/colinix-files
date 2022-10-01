@@ -70,7 +70,7 @@ fetchpatch: [
 
   # phosh-mobile-settings: init at 0.21.1
   (fetchpatch {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/002e6527a404600f81951547566b4c8fc769f1da.diff";
-    sha256 = "sha256-omIDd+ZpMtmcdbyXYAMWYk4JuLpVSUwHOGQ1v8kWmz4=";
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/8222214abb1992bac5bb37d1285abcfafb8992be.diff";
+    sha256 = "sha256-bgbmrT4e7n/lqrGpw58PRylHFHP9lzbiv93Dg30e2SY=";
   })
 ]
