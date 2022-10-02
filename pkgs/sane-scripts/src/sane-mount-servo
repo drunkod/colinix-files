@@ -15,4 +15,5 @@ then
 fi
 
 # symlink the fastest mount point into place
+# uncomment if i see the bug again: sudo unlink /mnt/servo-media  # XXX ln gets confused if the destination is a symlink to a stale mount
 sudo ln -sf $mnt /mnt/servo-media
