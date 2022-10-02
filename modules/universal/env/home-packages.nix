@@ -24,6 +24,7 @@ let
     # ponymix
     pulsemixer
     python3
+    # python3Packages.eyeD3  # music tagging
     rmlint
     sane-scripts
     sequoia
@@ -32,6 +33,7 @@ let
     speedtest-cli
     ssh-to-age
     sudo
+    # tageditor  # music tagging
     unar
     visidata
     w3m
@@ -76,6 +78,7 @@ let
 
     gthumb
     inkscape
+    kid3  # audio tagging
     krita
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     lollypop
@@ -86,6 +89,7 @@ let
     { pkg = obsidian; dir = ".config/obsidian"; }
 
     pavucontrol
+    picard  # music tagging
     playerctl
     soundconverter
     # sublime music persists any downloaded albums here.
