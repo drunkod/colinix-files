@@ -52,9 +52,6 @@ fetchpatch: [
     sha256 = "sha256-OczjlQcG7sTM/V9Y9VL/qdwaWPKfjAJsh3czqqhRQig=";
   })
 
-  # electrum: make compatible with protobuf 4+  (fixes electrum build)
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/194112.diff";
-    sha256 = "sha256-Nmvu1U5HBT0YQ5aTE2gf0aaglq/1WpgacCbpqP7F+Qc=";
-  })
+  # fix electrum build: https://github.com/NixOS/nixpkgs/issues/193997
+  ./11-electrum-protobuf-fix.patch
 ]
