@@ -37,14 +37,6 @@ fetchpatch: [
     sha256 = "sha256-GtpYSii1c/Kw1NEQ4sVR1nO/kvSa/CSIxuXxL00oBGw=";
   })
 
-  # element-desktop: upgrade electron 19 -> 20
-  # merged 2022/10/01
-  (fetchpatch {
-    # url = "https://git.uninsane.org/colin/nixpkgs/commit/7e6a47b3904f5d8f2a37c35ff2d12772524727a9.diff";
-    url = "https://github.com/NixOS/nixpkgs/pull/193799.diff";
-    sha256 = "sha256-OcqDIoBcphGZfeeOzaS7Ip1khocpkYrpG6tMGExa3S4=";
-  })
-
   # phosh-mobile-settings: init at 0.21.1
   (fetchpatch {
     url = "http://git.uninsane.org/colin/nixpkgs/commit/0c1a7e8504291eb0076bbee3f8ebf693f4641112.diff";
@@ -53,5 +45,12 @@ fetchpatch: [
   })
 
   # fix electrum build: https://github.com/NixOS/nixpkgs/issues/193997
-  ./11-electrum-protobuf-fix.patch
+  # ./11-electrum-protobuf-fix.patch
+  # alternative fix
+  # electrum: make compatible with protobuf 4+  (fixes electrum build)
+  # both of these fail on aarch64, unclear exactly why.
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/194112.diff";
+    sha256 = "sha256-Nmvu1U5HBT0YQ5aTE2gf0aaglq/1WpgacCbpqP7F+Qc=";
+  })
 ]

@@ -4,7 +4,7 @@
 
 {
   inputs = {
-    # nixpkgs.url = "nixpkgs/nixos-22.05";
+    nixpkgs-stable.url = "nixpkgs/nixos-22.05";
     nixpkgs.url = "nixpkgs/nixos-unstable";
     mobile-nixos = {
       url = "github:nixos/mobile-nixos";
@@ -14,11 +14,12 @@
       url = "github:nix-community/home-manager/release-22.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # TODO: set these up to follow our nixpkgs?
     sops-nix.url = "github:Mic92/sops-nix";
     impermanence.url = "github:nix-community/impermanence";
   };
 
-  outputs = { self, nixpkgs, mobile-nixos, home-manager, sops-nix, impermanence }:
+  outputs = { self, nixpkgs, nixpkgs-stable, mobile-nixos, home-manager, sops-nix, impermanence }:
   let
     patchedPkgs = system: nixpkgs.legacyPackages.${system}.applyPatches {
       name = "nixpkgs-patched-uninsane";
@@ -49,11 +50,14 @@
           nixpkgs.overlays = [
             (import "${mobile-nixos}/overlay/overlay.nix")
             (import ./pkgs/overlay.nix)
-            (next: prev: {
+            (next: prev: rec {
               # non-emulated packages build *from* local *for* target.
               # for large packages like the linux kernel which are expensive to build under emulation,
               # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
               cross = (nixpkgsFor local target) // (customPackagesFor local target);
+              stable = import nixpkgs-stable { system = target; };
+              # pinned packages:
+              electrum = stable.electrum;
             })
           ];
         }

@@ -114,7 +114,7 @@ in
   # - phone rotation sensor is off by 90 degrees
   # - ambient light sensor causes screen brightness to be shakey
   # - phosh greeter may not appear after wake from sleep
-  boot.kernelPackages = pkgs.linuxPackagesFor pkgs.cross.linux-megous;
+  boot.kernelPackages = pkgs.cross.linuxPackagesFor pkgs.cross.linux-megous;
 
   boot.kernelPatches = [
     (patchDefconfig (kernelConfig //
