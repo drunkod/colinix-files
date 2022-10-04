@@ -42,6 +42,12 @@
   # the filtering/calibration is bad that it causes the screen to go fully dark at times.
   boot.blacklistedKernelModules = [ "stk3310" ];
 
+  # without this some GUI apps fail: `DRM_IOCTL_MODE_CREATE_DUMB failed: Cannot allocate memory`
+  # this is because they can't allocate enough video ram.
+  # the default CMA seems to be 32M. we could probably get by with as little as 64M, and safely with 128M.
+  # `cat /proc/meminfo` to see CmaTotal/CmaFree if interested in tuning this.
+  boot.kernelParams = [ "cma=256M" ];
+
   # mobile-nixos' /lib/firmware includes:
   #   rtl_bt          (bluetooth)
   #   anx7688-fw.bin  (USB-C -> HDMI bridge)
