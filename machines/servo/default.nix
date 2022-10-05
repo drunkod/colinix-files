@@ -6,18 +6,7 @@
     ./hardware.nix
     ./net.nix
     ./users.nix
-    ./services/ddns-he.nix
-    ./services/gitea.nix
-    ./services/ipfs.nix
-    ./services/jackett.nix
-    ./services/jellyfin.nix
-    ./services/matrix
-    ./services/navidrome.nix
-    ./services/nginx.nix
-    ./services/pleroma.nix
-    ./services/postfix.nix
-    ./services/postgres.nix
-    ./services/transmission.nix
+    ./services
   ];
 
   sane.home-manager.enable = true;
