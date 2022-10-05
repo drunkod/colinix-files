@@ -31,6 +31,7 @@ let
     snapper
     sops
     speedtest-cli
+    sqlite  # to debug sqlite3 databases
     ssh-to-age
     sudo
     # tageditor  # music tagging
