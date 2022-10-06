@@ -19,7 +19,7 @@ creation_rules:
       - *host_lappy
       - *host_servo
       - *host_moby
-  - path_regex: secrets/servo.yaml$
+  - path_regex: secrets/servo*
     key_groups:
     - age:
       - *user_desko_colin
