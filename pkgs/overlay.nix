@@ -27,6 +27,7 @@
   pleroma = prev.callPackage ./pleroma { };
   # jackett doesn't allow customization of the bind address: this will probably always be here.
   jackett = prev.callPackage ./jackett { pkgs = prev; };
+  matrix-appservice-discord = prev.callPackage ./matrix-appservice-discord { pkgs = prev; };
   # mozilla keeps nerfing itself and removing configuration options
   firefox-unwrapped = prev.callPackage ./firefox-unwrapped { pkgs = prev; };
   # fix abrupt HDD poweroffs as during reboot. patching systemd requires rebuilding nearly every package.

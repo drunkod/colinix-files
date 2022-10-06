@@ -12,7 +12,7 @@
     # TODO: mode? could be more granular
     { user = "261"; group = "261"; directory = "/var/lib/ipfs"; }
   ];
-  services.ipfs.enable = true;
+  # services.ipfs.enable = true;
   services.ipfs.localDiscovery = true;
   services.ipfs.swarmAddress = [
     # "/dns4/ipfs.uninsane.org/tcp/4001"
