@@ -8,6 +8,12 @@
     ./01-puppet.patch
     # don't ask Discord admin for approval before bridging
     ./02-auto-approve.patch
+    # disable Matrix -> Discord edits because they do not fit Discord semantics
+    ./03-no-edits.patch
+    # we don't want to notify Discord users that a Matrix user was kicked/banned
+    ./04-no-kickbans.patch
+    # don't notify Discord users when the Matrix room changes (name, topic, membership)
+    ./05-no-meta.patch
   ];
 }))
 

@@ -1,0 +1,88 @@
+diff --git a/src/bot.ts b/src/bot.ts
+index 8bc73d4..1e6ea67 100644
+--- a/src/bot.ts
++++ b/src/bot.ts
+@@ -795,82 +796,7 @@ export class DiscordBot {
+         roomId: string, kickeeUserId: string, kicker: string, kickban: "leave"|"ban",
+         previousState: string, reason?: string,
+     ) {
+-        const restore = kickban === "leave" && previousState === "ban";
+-        const client = await this.clientFactory.getClient(kicker);
+-        let channel: Discord.Channel;
+-        try {
+-            channel = await this.GetChannelFromRoomId(roomId, client);
+-        } catch (ex) {
+-            log.error("Failed to get channel for ", roomId, ex);
+-            return;
+-        }
+-        if (channel.type !== "text") {
+-            log.warn("Channel was not a text channel");
+-            return;
+-        }
+-        const tchan = (channel as Discord.TextChannel);
+-        const kickeeUser = await this.GetDiscordUserOrMember(
+-            kickeeUserId.substring("@_discord_".length, kickeeUserId.indexOf(":") - 1),
+-            tchan.guild.id,
+-        );
+-        if (!kickeeUser) {
+-            log.error("Could not find discord user for", kickeeUserId);
+-            return;
+-        }
+-        const kickee = kickeeUser as Discord.GuildMember;
+-        let res: Discord.Message;
+-        const botChannel = await this.GetChannelFromRoomId(roomId) as Discord.TextChannel;
+-        if (restore) {
+-            await tchan.overwritePermissions([
+-                {
+-                    allow: ["SEND_MESSAGES", "VIEW_CHANNEL"],
+-                    id: kickee.id,
+-                }],
+-                `Unbanned.`,
+-            );
+-            this.channelLock.set(botChannel.id);
+-            res = await botChannel.send(
+-                `${kickee} was unbanned from this channel by ${kicker}.`,
+-            ) as Discord.Message;
+-            this.sentMessages.push(res.id);
+-            this.channelLock.release(botChannel.id);
+-            return;
+-        }
+-        const existingPerms = tchan.permissionsFor(kickee);
+-        if (existingPerms && existingPerms.has(Discord.Permissions.FLAGS.VIEW_CHANNEL as number) === false ) {
+-            log.warn("User isn't allowed to read anyway.");
+-            return;
+-        }
+-        const word = `${kickban === "ban" ? "banned" : "kicked"}`;
+-        this.channelLock.set(botChannel.id);
+-        res = await botChannel.send(
+-            `${kickee} was ${word} from this channel by ${kicker}.`
+-            + (reason ? ` Reason: ${reason}` : ""),
+-        ) as Discord.Message;
+-        this.sentMessages.push(res.id);
+-        this.channelLock.release(botChannel.id);
+-        log.info(`${word} ${kickee}`);
+-
+-        await tchan.overwritePermissions([
+-            {
+-                deny: ["SEND_MESSAGES", "VIEW_CHANNEL"],
+-                id: kickee.id,
+-            }],
+-            `Matrix user was ${word} by ${kicker}.`,
+-        );
+-        if (kickban === "leave") {
+-            // Kicks will let the user back in after ~30 seconds.
+-            setTimeout(async () => {
+-                log.info(`Kick was lifted for ${kickee.displayName}`);
+-                await tchan.overwritePermissions([
+-                    {
+-                        allow: ["SEND_MESSAGES", "VIEW_CHANNEL"],
+-                        id: kickee.id,
+-                    }],
+-                    `Lifting kick since duration expired.`,
+-                );
+-            }, this.config.room.kickFor);
+-        }
++        return; // this is about letting Discord users know when Matrix users are kicked/banned
+     }
+ 
+     public async GetEmojiByMxc(mxc: string): Promise<DbEmoji> {

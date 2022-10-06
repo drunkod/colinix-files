@@ -88,9 +88,17 @@
       homeserverUrl = "http://127.0.0.1:8008";
       domain = "uninsane.org";
       adminMxid = "admin.matrix@uninsane.org";
+      # self-service bridging is when a Matrix user bridges by DMing @_discord_bot:<HS>
+      # i don't know what the alternative is :?
       enableSelfServiceBridging = true;
+      presenceInterval = 30000; # milliseconds
+      # allows matrix users to search for Discord channels (somehow?)
       disablePortalBridging = false;
-      disableInviteNotifications = false;
+      # disableReadReceipts = true;
+      # these are Matrix -> Discord
+      disableJoinLeaveNotifications = true;
+      disableInviteNotifications = true;
+      disableRoomTopicNotifications = true;
     };
     # these are marked as required in the yaml schema
     auth = {

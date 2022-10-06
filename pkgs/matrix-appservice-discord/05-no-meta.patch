@@ -1,0 +1,13 @@
+diff --git a/src/matrixeventprocessor.ts b/src/matrixeventprocessor.ts
+index f1f4611..7b57ff3 100644
+--- a/src/matrixeventprocessor.ts
++++ b/src/matrixeventprocessor.ts
+@@ -278,6 +278,8 @@ export class MatrixEventProcessor {
+             return;
+         }
+ 
++        return; // disable all meta notifications
++
+         msg += " on Matrix.";
+         const channel = await this.discord.GetChannelFromRoomId(event.room_id) as Discord.TextChannel;
+         await this.discord.sendAsBot(msg, channel, event);
