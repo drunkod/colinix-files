@@ -1,12 +1,13 @@
 # docs: https://nixos.wiki/wiki/Matrix
 # docs: https://nixos.org/manual/nixos/stable/index.html#module-services-matrix-synapse
-{ config, ... }:
+{ config, lib, ... }:
 
 {
   sane.impermanence.service-dirs = [
     # TODO: mode?
     # user and group are both "matrix-appservice-irc"
     { user = "993"; group = "992"; directory = "/var/lib/matrix-appservice-irc"; }
+    { user = "matrix-appservice-discord"; group = "matrix-appservice-discord"; directory = "/var/lib/matrix-appservice-discord"; }
     { user = "224"; group = "224"; directory = "/var/lib/matrix-synapse"; }
   ];
   services.matrix-synapse.enable = true;
@@ -64,6 +65,7 @@
   # ''];
   services.matrix-synapse.settings.app_service_config_files = [
     "/var/lib/matrix-appservice-irc/registration.yml"  # auto-created by irc appservice
+    "/var/lib/matrix-appservice-discord/discord-registration.yaml"  # auto-created by discord appservice
   ];
 
   # new users may be registered on the CLI:
@@ -77,6 +79,45 @@
   #   curl -d '{}' --header "Authorization: Bearer <my_token>" localhost:8008/_synapse/admin/v1/registration_tokens/new
   # create a token with limited uses:
   #   curl -d '{ "uses_allowed": 1 }' --header "Authorization: Bearer <my_token>" localhost:8008/_synapse/admin/v1/registration_tokens/new
+
+  # Discord bridging
+  # docs: https://github.com/matrix-org/matrix-appservice-discord
+  services.matrix-appservice-discord.enable = false;
+  services.matrix-appservice-discord.settings = {
+    bridge = {
+      homeserverUrl = "http://127.0.0.1:8008";
+      domain = "uninsane.org";
+      adminMxid = "admin.matrix@uninsane.org";
+      enableSelfServiceBridging = true;
+      disablePortalBridging = false;
+      disableInviteNotifications = false;
+    };
+    # these are marked as required in the yaml schema
+    auth = {
+      clientId = "FILLME";
+      botToken = "FILLME";
+      usePrivilegedIntents = false;
+    };
+    logging = {
+      # silly, verbose, info, http, warn, error, silent
+      console = "verbose";
+    };
+  };
+  # fix up to not use /var/lib/private, but just /var/lib
+  systemd.services.matrix-appservice-discord.serviceConfig = {
+    DynamicUser = lib.mkForce false;
+    User = "matrix-appservice-discord";
+    Group = "matrix-appservice-discord";
+  };
+  users.groups.matrix-appservice-discord = {};
+  users.users.matrix-appservice-discord = {
+    description = "User for the Matrix-Discord bridge";
+    group = "matrix-appservice-discord";
+    isSystemUser = true;
+  };
+  users.users.matrix-appservice-discord.uid = 2134;  # TODO: move to allocations
+  users.groups.matrix-appservice-discord.gid = 2134;  # TODO
+
 
   # IRC bridging
   # note: Rizon allows only FOUR simultaneous IRC connections per IP: https://wiki.rizon.net/index.php?title=Connection/Session_Limit_Exemptions
