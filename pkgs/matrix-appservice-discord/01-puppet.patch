@@ -1,0 +1,13 @@
+diff --git a/src/clientfactory.ts b/src/clientfactory.ts
+index b7fea47..587acfd 100644
+--- a/src/clientfactory.ts
++++ b/src/clientfactory.ts
+@@ -53,7 +53,7 @@ export class DiscordClientFactory {
+         });
+ 
+         try {
+-            await this.botClient.login(this.config.botToken, true);
++            await this.botClient.login(this.config.botToken, false);
+             log.info("Waiting for shardReady signal");
+             await waitPromise;
+             log.info("Got shardReady signal");
