@@ -30,13 +30,6 @@ fetchpatch: [
     sha256 = "sha256-1O9vC/r3jpvGhHGp7d2r3oL7C8kFX2Ph214JV0vWZA0=";
   })
 
-  # phosh: 0.21.0 -> 0.21.1
-  (fetchpatch {
-    # url = "https://git.uninsane.org/colin/nixpkgs/commit/0b81457690fce39b14c5d3463af0d6331b73b850.diff";
-    url = "https://github.com/NixOS/nixpkgs/pull/193700.diff";
-    sha256 = "sha256-GtpYSii1c/Kw1NEQ4sVR1nO/kvSa/CSIxuXxL00oBGw=";
-  })
-
   # phosh-mobile-settings: init at 0.21.1
   (fetchpatch {
     url = "http://git.uninsane.org/colin/nixpkgs/commit/0c1a7e8504291eb0076bbee3f8ebf693f4641112.diff";
@@ -44,13 +37,10 @@ fetchpatch: [
     sha256 = "sha256-OczjlQcG7sTM/V9Y9VL/qdwaWPKfjAJsh3czqqhRQig=";
   })
 
-  # fix electrum build: https://github.com/NixOS/nixpkgs/issues/193997
-  # ./11-electrum-protobuf-fix.patch
-  # alternative fix
-  # electrum: make compatible with protobuf 4+  (fixes electrum build)
-  # both of these fail on aarch64, unclear exactly why.
+  # home-assistant: 2022.9.7 -> 2022.10.0
+  # fixes sublime-music build by fixing its dataclasses-json dep
   (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/194112.diff";
-    sha256 = "sha256-Nmvu1U5HBT0YQ5aTE2gf0aaglq/1WpgacCbpqP7F+Qc=";
+    url = "https://github.com/NixOS/nixpkgs/pull/194640.diff";
+    sha256 = "sha256-ptfo/XoS6bqiQsAXQ7KEif5rQwY43MXVViwiIuzD35I=";
   })
 ]
