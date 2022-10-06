@@ -13,6 +13,7 @@
     EDITOR = "vim";
     # git claims it should use EDITOR, but it doesn't!
     GIT_EDITOR = "vim";
+    # TODO: these should be moved to `home.sessionVariables` (home-manager)
     # Electron apps should use native wayland backend:
     #   https://nixos.wiki/wiki/Slack#Wayland
     # Discord under sway crashes with this.

@@ -79,6 +79,10 @@ in
     # see: https://github.com/nix-community/home-manager/issues/589#issuecomment-950474105
     home-manager.users.colin = let sysconfig = config; in { config, ... }: {
 
+      # run `home-manager-help` to access manpages
+      # or `man home-configuration.nix`
+      manual.html.enable = true;
+
       home.packages = pkglist cfg.extraPackages;
       wayland.windowManager = cfg.windowManager;
 

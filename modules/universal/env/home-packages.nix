@@ -11,6 +11,7 @@ let
     ifuse
     ipfs
     libimobiledevice
+    libsecret  # for managing user keyrings
     lm_sensors  # for sensors-detect
     lshw
     ffmpeg
