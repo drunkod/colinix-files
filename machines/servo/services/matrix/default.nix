@@ -4,7 +4,8 @@
 
 {
   imports = [
-    ./discord-appservice.nix
+    # ./discord-appservice.nix
+    ./discord-puppet.nix
     # ./irc.nix
   ];
 
