@@ -58,6 +58,7 @@ in
         ".cargo"
         ".rustup"
         ".ssh"
+        ".local/share/keyrings"
         # intentionally omitted:
         # ".config"  # managed by home-manager
         # ".local"   # nothing useful in here
