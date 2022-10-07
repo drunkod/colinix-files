@@ -1,0 +1,18 @@
+#!/bin/sh
+# initializes the default libsecret keyring (used by gnome-keyring) if not already initialized.
+# this initializes it to be plaintext/unencrypted.
+
+if [ -f ~/.local/share/keyrings/default ]
+then
+        echo 'keyring already initialized: not doing anything'
+        exit 0
+fi
+
+keyring=~/.local/share/keyrings/Default_keyring.keyring
+
+echo 'initializing default user keyring:' "$keyring"
+echo '[keyring]' > "$keyring"
+echo 'display-name=Default keyring' >> "$keyring"
+echo 'lock-on-idle=false' >> "$keyring"
+echo 'lock-after=false' >> "$keyring"
+echo -n "Default_keyring" > ~/.local/share/keyrings/default
