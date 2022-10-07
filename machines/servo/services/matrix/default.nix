@@ -5,7 +5,7 @@
 {
   imports = [
     ./discord.nix
-    ./irc.nix
+    # ./irc.nix
   ];
 
   sane.impermanence.service-dirs = [

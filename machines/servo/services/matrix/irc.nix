@@ -13,7 +13,7 @@
 
   # note: Rizon allows only FOUR simultaneous IRC connections per IP: https://wiki.rizon.net/index.php?title=Connection/Session_Limit_Exemptions
   # Rizon supports CertFP for auth: https://wiki.rizon.net/index.php?title=CertFP
-  # services.matrix-appservice-irc.enable = true;
+  services.matrix-appservice-irc.enable = true;
   services.matrix-appservice-irc.registrationUrl = "http://127.0.0.1:8009";
   # settings documented here: https://github.com/matrix-org/matrix-appservice-irc/blob/develop/config.sample.yaml
   services.matrix-appservice-irc.settings = {
