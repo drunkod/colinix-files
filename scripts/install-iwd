@@ -15,4 +15,6 @@ do
         # not sure that iwd can deal with un-writeable symlinks
         # ln -sf "$src_dir/$f" "$dest_dir/$ssid.psk"
         cp "$src_dir/$f" "$dest_dir/$ssid.psk"
+        # not strictly necessary, but iwd does default to rw
+        chmod 600 "$dest_dir/$ssid.psk"
 done
