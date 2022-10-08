@@ -256,6 +256,7 @@ in
           "https://www.lynalden.com/feed" = { tags = [ "infrequent" "pol" ]; };
           "https://austinvernon.site/rss.xml" = { tags = [ "infrequent" "tech" ]; };
           "https://oversharing.substack.com/feed" = { tags = [ "daily" "pol" ]; };
+          "https://doomberg.substack.com/feed" = { tags = [ "weekly" "tech" ]; };
           ## David Rosenthal
           "https://blog.dshr.org/rss.xml" = { tags = [ "weekly" "pol" ]; };
           ## Matt Levine
