@@ -86,6 +86,9 @@ let
     gthumb
     inkscape
 
+    kaiteki  # Pleroma client
+    gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
+
     kid3  # audio tagging
     krita
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
@@ -124,9 +127,6 @@ let
       #   https://github.com/NixOS/nixpkgs/issues/78961
       nss = pkgs.nss_latest;
     }); in { pkg = discord; dir = ".config/discord"; })
-
-    kaiteki  # Pleroma client
-    gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
 
     logseq
     losslesscut-bin

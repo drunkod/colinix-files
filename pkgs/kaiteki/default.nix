@@ -10,7 +10,7 @@ flutter.mkFlutterApp rec {
   pname = "kaiteki";
   version = "unstable-2022-09-03";
 
-  vendorHash = "sha256-IlsMoJjgB/fWI5QxSnnFSChVWFMnMGUD4QJdDUuTE+Q=";
+  vendorHash = "sha256-Y0BXQ7xt9w+J896ar6o+FiVGcDJw7dPHo7tgij+p6R0=";
 
   src = fetchFromGitHub {
     owner = "Kaiteki-Fedi";

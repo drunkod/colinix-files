@@ -43,4 +43,5 @@ fetchpatch: [
 
   # enable aarch64 support for flutter's dart package
   # ./10-flutter-arm64.patch
+  ./12-flutter-arm64-2.patch
 ]
