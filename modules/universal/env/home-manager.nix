@@ -173,6 +173,12 @@ in
          }
         }
       '';
+      home.file.".librewolf/librewolf.overrides.cfg".text = ''
+        // if we can't query the revocation status of a SSL cert because the issuer is offline,
+        // treat it as unrevoked.
+        // see: <https://librewolf.net/docs/faq/#im-getting-sec_error_ocsp_server_error-what-can-i-do>
+        defaultPref("security.OCSP.require", false);
+      '';
 
       # aerc TUI mail client
       xdg.configFile."aerc/accounts.conf".source =
