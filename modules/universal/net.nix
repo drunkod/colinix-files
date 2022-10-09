@@ -37,6 +37,7 @@
     ''
   );
 
+  # TODO: use a glob, or a list, or something?
   sops.secrets."iwd/community-university.psk" = {
     sopsFile = ../../secrets/universal/net/community-university.psk.bin;
     format = "binary";
@@ -59,6 +60,10 @@
   };
   sops.secrets."iwd/home-shared.psk" = {
     sopsFile = ../../secrets/universal/net/home-shared.psk.bin;
+    format = "binary";
+  };
+  sops.secrets."iwd/iphone" = {
+    sopsFile = ../../secrets/universal/net/iphone.psk.bin;
     format = "binary";
   };
 }
