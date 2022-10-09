@@ -341,6 +341,11 @@ in
             # run p10k configure to configure, but it can't write out its file :-(
             POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
           '';
+          initExtra = ''
+            # zmv is a way to do rich moves/renames, with pattern matching/substitution.
+            # see for an example: <https://filipe.kiss.ink/zmv-zsh-rename/>
+            autoload -Uz zmv
+          '';
 
           # prezto = oh-my-zsh fork; controls prompt, auto-completion, etc.
           # see: https://github.com/sorin-ionescu/prezto

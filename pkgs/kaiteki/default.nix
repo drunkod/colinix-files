@@ -10,15 +10,11 @@ flutter.mkFlutterApp rec {
   pname = "kaiteki";
   version = "unstable-2022-09-03";
 
-  # this hash seems unstable -- depends on other nixpkgs, perhaps?
-  vendorHash = "sha256-+kVwa5FObRYOdkPrF7jd0qOB+wwBm+OvdJP8NdSXTJ8=";
+  vendorHash = "sha256-IlsMoJjgB/fWI5QxSnnFSChVWFMnMGUD4QJdDUuTE+Q=";
 
   src = fetchFromGitHub {
     owner = "Kaiteki-Fedi";
     repo = "Kaiteki";
-    # rev = "cf94ec55063cd7af20a37103fc40c588a634962f";
-    # hash = "sha256-jtRT0Q4/i3dxRYcC6HPClL9Iw1PizkIUgswU1eusKig=";
-    # this is the last hash before the code uses features not apparently supported by our version of dart.
     rev = "fd1e26c98f37ad6a98ed549da879c91721f997d0";
     hash = "sha256-N7n6o/B9s0DCYf9HFMZSCPShpE65wKl9FaQ5dbFnr1E=";
     fetchSubmodules = true;

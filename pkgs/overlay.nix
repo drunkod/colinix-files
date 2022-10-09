@@ -27,6 +27,7 @@
   pleroma = prev.callPackage ./pleroma { };
   # jackett doesn't allow customization of the bind address: this will probably always be here.
   jackett = prev.callPackage ./jackett { pkgs = prev; };
+  # TODO: delete matrix-appservice-discord
   matrix-appservice-discord = prev.callPackage ./matrix-appservice-discord { pkgs = prev; };
   # mozilla keeps nerfing itself and removing configuration options
   firefox-unwrapped = prev.callPackage ./firefox-unwrapped { pkgs = prev; };
@@ -39,6 +40,7 @@
   #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
   # kaiteki = prev.callPackage ./kaiteki { };
   kaiteki = prev.kaiteki;
+  # TODO: upstream, or delete nabla
   nabla = prev.callPackage ./nabla { };
 })
 
