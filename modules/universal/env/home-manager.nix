@@ -523,6 +523,10 @@ in
             })
           ];
           extraConfig = ''
+            " let the terminal handle mouse events, that way i get OS-level ctrl+shift+c/etc
+            " this used to be default, until <https://github.com/neovim/neovim/pull/19290>
+            set mouse=
+
             " copy/paste to system clipboard
             set clipboard=unnamedplus
 
