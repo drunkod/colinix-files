@@ -374,6 +374,7 @@ in
             };
           };
         };
+
         kitty = {
           enable = true;
           # docs: https://sw.kovidgoyal.net/kitty/conf/
@@ -440,10 +441,14 @@ in
           # theme = "zenwritten_dark";  # mediocre: looks same as zenbones_dark
           # extraConfig = "";
         };
+
         git = {
           enable = true;
           userName = "colin";
           userEmail = "colin@uninsane.org";
+
+          aliases = { co = "checkout"; };
+          difftastic.enable = true;  # better diff rendering
         };
 
         neovim = {
