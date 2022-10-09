@@ -58,7 +58,7 @@ let
     emote  # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
     evince  # works on phosh
 
-    { pkg = fluffychat-moby; dir = ".local/share/chat.fluffy.fluffychat"; }  # TODO: ship normal fluffychat on non-moby?
+    # { pkg = fluffychat-moby; dir = ".local/share/chat.fluffy.fluffychat"; }  # TODO: ship normal fluffychat on non-moby?
 
     foliate
     font-manager
@@ -80,6 +80,7 @@ let
 
     gthumb
     inkscape
+
     kid3  # audio tagging
     krita
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
@@ -119,8 +120,8 @@ let
       nss = pkgs.nss_latest;
     }); in { pkg = discord; dir = ".config/discord"; })
 
-    # kaiteki  # Pleroma client
-    # gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
+    kaiteki  # Pleroma client
+    gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
 
     logseq
     losslesscut-bin
