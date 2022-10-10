@@ -122,8 +122,8 @@ in
         md = "obsidian.desktop";
         thumb = "org.gnome.gThumb.desktop";
         video = "vlc.desktop";
-        audio = "mpv.desktop";
-        # audio = "vlc.desktop";
+        # audio = "mpv.desktop";
+        audio = "vlc.desktop";
       in {
         # HTML
         "text/html" = [ www ];
