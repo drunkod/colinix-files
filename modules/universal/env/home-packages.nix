@@ -90,6 +90,7 @@ let
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     lollypop
     mesa-demos
+    { pkg = mpv; dir = ".config/mpv/watch_later"; }
     networkmanagerapplet
 
     # settings (electron app). TODO: can i manage these settings with home-manager?

@@ -122,7 +122,8 @@ in
         md = "obsidian.desktop";
         thumb = "org.gnome.gThumb.desktop";
         video = "vlc.desktop";
-        audio = "vlc.desktop";
+        audio = "mpv.desktop";
+        # audio = "vlc.desktop";
       in {
         # HTML
         "text/html" = [ www ];
@@ -226,6 +227,7 @@ in
           </body>
         </opml>
       '';
+
 
       # gnome feeds RSS viewer
       xdg.configFile."org.gabmus.gfeeds.json".text = builtins.toJSON {
@@ -496,6 +498,14 @@ in
         firefox = lib.mkIf (sysconfig.sane.gui.enable) {
           enable = true;
           package = import ./web-browser.nix pkgs;
+        };
+
+        mpv = {
+          enable = true;
+          config = {
+            save-position-on-quit = true;
+            keep-open = "yes";
+          };
         };
 
         # "command not found" will cause the command to be searched in nixpkgs
