@@ -26,7 +26,6 @@ let
     pulsemixer
     python3
     # python3Packages.eyeD3  # music tagging
-    rmlint
     sane-scripts
     sequoia
     snapper
@@ -76,7 +75,7 @@ let
     gnome.gnome-disk-utility
     gnome.gnome-maps  # works on phosh
     gnome.nautilus
-    gnome-podcasts
+    # gnome-podcasts
     gnome.gnome-system-monitor
     gnome.gnome-terminal  # works on phosh
     gnome.gnome-weather
