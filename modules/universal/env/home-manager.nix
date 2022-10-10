@@ -116,28 +116,35 @@ in
       # the xdg mime type for a file can be found with:
       # - `xdg-mime query filetype path/to/thing.ext`
       xdg.mimeApps.enable = true;
-      xdg.mimeApps.defaultApplications = {
+      xdg.mimeApps.defaultApplications = let
+        www = "librewolf.desktop";
+        pdf = "org.gnome.Evince.desktop";
+        md = "obsidian.desktop";
+        thumb = "org.gnome.gThumb.desktop";
+        video = "vlc.desktop";
+        audio = "vlc.desktop";
+      in {
         # HTML
-        "text/html" = [ "librewolf.desktop" ];
-        "x-scheme-handler/http" = [ "librewolf.desktop" ];
-        "x-scheme-handler/https" = [ "librewolf.desktop" ];
-        "x-scheme-handler/about" = [ "librewolf.desktop" ];
-        "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
+        "text/html" = [ www ];
+        "x-scheme-handler/http" = [ www ];
+        "x-scheme-handler/https" = [ www ];
+        "x-scheme-handler/about" = [ www ];
+        "x-scheme-handler/unknown" = [ www ];
         # RICH-TEXT DOCUMENTS
-        "application/pdf" = [ "org.gnome.Evince.desktop" ];
-        "text/markdown" = [ "obsidian.desktop" ];
+        "application/pdf" = [ pdf ];
+        "text/markdown" = [ md ];
         # IMAGES
-        "image/heif" = [ "org.gnome.gThumb.desktop" ];  # apple codec
-        "image/png" = [ "org.gnome.gThumb.desktop" ];
-        "image/jpeg" = [ "org.gnome.gThumb.desktop" ];
+        "image/heif" = [ thumb ];  # apple codec
+        "image/png" = [ thumb ];
+        "image/jpeg" = [ thumb ];
         # VIDEO
-        "video/mp4" = [ "vlc.desktop" ];
-        "video/quicktime" = [ "vlc.desktop" ];
-        "video/x-matroska" = [ "vlc.desktop" ];
+        "video/mp4" = [ video ];
+        "video/quicktime" = [ video ];
+        "video/x-matroska" = [ video ];
         # AUDIO
-        "audio/flag" = [ "vlc.desktop" ];
-        "audio/mpeg" = [ "vlc.desktop" ];
-        "audio/x-vorbis+ogg" = [ "vlc.desktop" ];
+        "audio/flac" = [ audio ];
+        "audio/mpeg" = [ audio ];
+        "audio/x-vorbis+ogg" = [ audio ];
       };
 
       # convenience
