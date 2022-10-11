@@ -217,7 +217,7 @@ in
       xdg.configFile."gpodderFeeds.opml".text =
       let
         entries = builtins.toString (builtins.map
-          (url: ''\n    <outline xmlUrl="${url}" type="rss"/>'')
+          (url: "\n    " + ''<outline xmlUrl="${url}" type="rss"/>'')
           sysconfig.sane.feeds.podcastUrls
         );
       in ''
