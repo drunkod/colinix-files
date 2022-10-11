@@ -214,6 +214,7 @@ in
       [qt]
       qt-privacy-ask=0
       '';
+
       xdg.configFile."gpodderFeeds.opml".text =
       let
         entries = builtins.toString (builtins.map
@@ -224,6 +225,40 @@ in
         <?xml version="1.0" encoding="utf-8"?>
         <opml version="2.0">
           <body>${entries}
+          </body>
+        </opml>
+      '';
+
+      # news-flash RSS viewer
+      xdg.configFile."newsflashFeeds.opml".text =
+      let
+        entries = sysconfig.sane.feeds.rss;
+        urlsForCat = cat: builtins.filter (rss: builtins.elem cat entries."${rss}".tags) (builtins.attrNames entries);
+        outlineEntriesFor = cat: builtins.map (rss: ''
+          <outline type="rss" xmlUrl="${rss}" />
+        '') (urlsForCat cat);
+        outlineFor = cat: let
+          outlines = outlineEntriesFor cat;
+        in ''
+          <outline text="${cat}" title="${cat}">
+            ${builtins.toString outlines}
+          </outline>
+        '';
+        outlines = [
+          (outlineFor "uncat")
+          (outlineFor "rat")
+          (outlineFor "tech")
+          (outlineFor "pol")
+          (outlineFor "visual")
+        ];
+      in ''
+        <?xml version="1.0" encoding="UTF-8"?>
+        <opml version="2.0">
+          <head>
+            <title>NewsFlash OPML export</title>
+          </head>
+          <body>
+            ${builtins.toString outlines}
           </body>
         </opml>
       '';

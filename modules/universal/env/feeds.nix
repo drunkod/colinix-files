@@ -3,6 +3,7 @@
 with lib;
 {
   options = {
+    # TODO: fold this into RSS, with an `audio` category
     sane.feeds.podcastUrls = mkOption {
       type = types.listOf types.str;
       default = [
