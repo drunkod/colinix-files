@@ -233,7 +233,7 @@ in
       xdg.configFile."newsflashFeeds.opml".text =
       let
         entries = sysconfig.sane.feeds.rss;
-        urlsForCat = cat: builtins.filter (rss: builtins.elem cat entries."${rss}".tags) (builtins.attrNames entries);
+        urlsForCat = cat: builtins.filter (rss: entries."${rss}".cat == cat) (builtins.attrNames entries);
         outlineEntriesFor = cat: builtins.map (rss: ''
           <outline type="rss" xmlUrl="${rss}" />
         '') (urlsForCat cat);
@@ -266,7 +266,7 @@ in
 
       # gnome feeds RSS viewer
       xdg.configFile."org.gabmus.gfeeds.json".text = builtins.toJSON {
-        feeds = sysconfig.sane.feeds.rss;
+        feeds = builtins.mapAttrs (r: p: { tags = [ p.cat p.freq ]; }) sysconfig.sane.feeds.rss;
         dark_reader = false;
         new_first = true;
         # windowsize = {

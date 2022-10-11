@@ -40,85 +40,215 @@ with lib;
     };
 
     sane.feeds.rss = mkOption {
-      # the format here is just what's native to gfeeds
       type = types.attrs;
       default = {
         # AGGREGATORS (> 1 post/day)
-        "https://www.lesswrong.com/feed.xml" = { tags = [ "hourly" "rat" ]; };
-        "http://www.econlib.org/index.xml" = { tags = [ "hourly" "pol" ]; };
+        "https://www.lesswrong.com/feed.xml" = {
+          cat = "rat";
+          freq = "hourly";
+        };
+        "http://www.econlib.org/index.xml" = {
+          cat = "pol";
+          freq = "hourly";
+        };
         # AGGREGATORS (< 1 post/day)
-        "https://palladiummag.com/feed" = { tags = [ "weekly" "uncat" ]; };
-        "https://profectusmag.com/feed" = { tags = [ "weekly" "uncat" ]; };
+        "https://palladiummag.com/feed" = {
+          cat = "uncat";
+          freq = "weekly";
+        };
+        "https://profectusmag.com/feed" = {
+          cat = "uncat";
+          freq = "weekly";
+        };
 
-        "https://semiaccurate.com/feed" = { tags = [ "weekly" "tech" ]; };
-        "https://linuxphoneapps.org/blog/atom.xml" = { tags = [ "infrequent" "tech" ]; };
-        "https://spectrum.ieee.org/rss" = { tags = [ "weekly" "tech" ]; };
+        "https://semiaccurate.com/feed" = {
+          cat = "tech";
+          freq = "weekly";
+        };
+        "https://linuxphoneapps.org/blog/atom.xml" = {
+          cat = "tech";
+          freq = "infrequently";
+        };
+        "https://spectrum.ieee.org/rss" = {
+          cat = "tech";
+          freq = "weekly";
+        };
 
         ## No Moods, Ads or Cutesy Fucking Icons
-        "https://www.rifters.com/crawl/?feed=rss2" = { tags = [ "weekly" "uncat" ]; };
+        "https://www.rifters.com/crawl/?feed=rss2" = {
+          cat = "uncat";
+          freq = "weekly";
+        };
 
         # DEVELOPERS
-        "https://mg.lol/blog/rss/" = { tags = [ "infrequent" "tech" ]; };
+        "https://mg.lol/blog/rss/" = {
+          cat = "infrequent";
+          freq = "tech";
+        };
         ## Ken Shirriff
-        "https://www.righto.com/feeds/posts/default" = { tags = [ "infrequent" "tech" ]; };
+        "https://www.righto.com/feeds/posts/default" = {
+          cat = "tech";
+          freq = "infrequent";
+        };
+
         ## Vitalik Buterin
-        "https://vitalik.ca/feed.xml" = { tags = [ "infrequent" "tech" ]; };
+        "https://vitalik.ca/feed.xml" = {
+          cat = "tech";
+          freq = "infrequent";
+        };
         ## ian (Sanctuary)
-        "https://sagacioussuricata.com/feed.xml" = { tags = [ "infrequent" "tech" ]; };
+        "https://sagacioussuricata.com/feed.xml" = {
+          cat = "tech";
+          freq = "infrequent";
+        };
         ## Bunnie Juang
-        "https://www.bunniestudios.com/blog/?feed=rss2" = { tags = [ "infrequent" "tech" ]; };
-        "https://blog.danieljanus.pl/atom.xml" = { tags = [ "infrequent" "tech" ]; };
-        "https://ianthehenry.com/feed.xml" = { tags = [ "infrequent" "tech" ]; };
-        "https://bitbashing.io/feed.xml" = { tags = [ "infrequent" "tech" ]; };
-        "https://idiomdrottning.org/feed.xml" = { tags = [ "daily" "uncat" ]; };
+        "https://www.bunniestudios.com/blog/?feed=rss2" = {
+          cat = "tech";
+          freq = "infrequent";
+        };
+        "https://blog.danieljanus.pl/atom.xml" = {
+          cat = "tech";
+          freq = "infrequent";
+        };
+        "https://ianthehenry.com/feed.xml" = {
+          cat = "tech";
+          freq = "infrequent";
+        };
+        "https://bitbashing.io/feed.xml" = {
+          cat = "tech";
+          freq = "infrequent";
+        };
+        "https://idiomdrottning.org/feed.xml" = {
+          cat = "uncat";
+          freq = "daily";
+        };
 
         # (TECH; POL) COMMENTATORS
-        "http://benjaminrosshoffman.com/feed" = { tags = [ "weekly" "pol" ]; };
+        "http://benjaminrosshoffman.com/feed" = {
+          cat = "pol";
+          freq = "weekly";
+        };
         ## Ben Thompson
-        "https://www.stratechery.com/rss" = { tags = [ "weekly" "pol" ]; };
+        "https://www.stratechery.com/rss" = {
+          cat = "pol";
+          freq = "weekly";
+        };
         ## Balaji
-        "https://balajis.com/rss" = { tags = [ "weekly" "pol" ]; };
-        "https://www.ben-evans.com/benedictevans/rss.xml" = { tags = [ "weekly" "pol" ]; };
-        "https://www.lynalden.com/feed" = { tags = [ "infrequent" "pol" ]; };
-        "https://austinvernon.site/rss.xml" = { tags = [ "infrequent" "tech" ]; };
-        "https://oversharing.substack.com/feed" = { tags = [ "daily" "pol" ]; };
-        "https://doomberg.substack.com/feed" = { tags = [ "weekly" "tech" ]; };
+        "https://balajis.com/rss" = {
+          cat = "pol";
+          freq = "weekly";
+        };
+        "https://www.ben-evans.com/benedictevans/rss.xml" = {
+          cat = "pol";
+          freq = "weekly";
+        };
+        "https://www.lynalden.com/feed" = {
+          cat = "pol";
+          freq = "infrequent";
+        };
+        "https://austinvernon.site/rss.xml" = {
+          cat = "tech";
+          freq = "infrequent";
+        };
+        "https://oversharing.substack.com/feed" = {
+          cat = "pol";
+          freq = "daily";
+        };
+        "https://doomberg.substack.com/feed" = {
+          cat = "tech";
+          freq = "weekly";
+        };
         ## David Rosenthal
-        "https://blog.dshr.org/rss.xml" = { tags = [ "weekly" "pol" ]; };
+        "https://blog.dshr.org/rss.xml" = {
+          cat = "pol";
+          freq = "weekly";
+        };
         ## Matt Levine
-        "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" = { tags = [ "weekly" "pol" ]; };
+        "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" = {
+          cat = "pol";
+          freq = "weekly";
+        };
 
         # RATIONALITY/PHILOSOPHY/ETC
-        "https://samkriss.substack.com/feed" = { tags = [ "infrequent" "uncat" ]; };  # ... satire? phil?
-        "https://unintendedconsequenc.es/feed" = { tags = [ "infrequent" "rat" ]; };
+        "https://samkriss.substack.com/feed" = {
+          cat = "uncat";
+          freq = "infrequent";
+        };
+           # ... satire? phil?
+        "https://unintendedconsequenc.es/feed" = {
+          cat = "rat";
+          freq = "infrequent";
+        };
 
-        "https://applieddivinitystudies.com/atom.xml" = { tags = [ "weekly" "rat" ]; };
-        "https://slimemoldtimemold.com/feed.xml" = { tags = [ "weekly" "rat" ]; };
+        "https://applieddivinitystudies.com/atom.xml" = {
+          cat = "rat";
+          freq = "weekly";
+        };
+        "https://slimemoldtimemold.com/feed.xml" = {
+          cat = "rat";
+          freq = "weekly";
+        };
 
-        "https://www.richardcarrier.info/feed" = { tags = [ "weekly" "rat" ]; };
-        "https://www.gwern.net/feed.xml" = { tags = [ "infrequent" "uncat" ]; };
+        "https://www.richardcarrier.info/feed" = {
+          cat = "rat";
+          freq = "weekly";
+        };
+        "https://www.gwern.net/feed.xml" = {
+          cat = "uncat";
+          freq = "infrequent";
+        };
 
         ## Jason Crawford
-        "https://rootsofprogress.org/feed.xml" = { tags = [ "weekly" "rat" ]; };
+        "https://rootsofprogress.org/feed.xml" = {
+          cat = "rat";
+          freq = "weekly";
+        };
         ## Robin Hanson
-        "https://www.overcomingbias.com/feed" = { tags = [ "daily" "rat" ]; };
+        "https://www.overcomingbias.com/feed" = {
+          cat = "rat";
+          freq = "daily";
+        };
         ## Scott Alexander
-        "https://astralcodexten.substack.com/feed.xml" = { tags = [ "daily" "rat" ]; };
+        "https://astralcodexten.substack.com/feed.xml" = {
+          cat = "rat";
+          freq = "daily";
+        };
         ## Paul Christiano
-        "https://sideways-view.com/feed" = { tags = [ "infrequent" "rat" ]; };
+        "https://sideways-view.com/feed" = {
+          cat = "rat";
+          freq = "infrequent";
+        };
         ## Sean Carroll
-        "https://www.preposterousuniverse.com/rss" = { tags = [ "infrequent" "rat" ]; };
+        "https://www.preposterousuniverse.com/rss" = {
+          cat = "rat";
+          freq = "infrequent";
+        };
 
         # COMICS
-        "https://www.smbc-comics.com/comic/rss" = { tags = [ "daily" "visual" ]; };
-        "https://xkcd.com/atom.xml" = { tags = [ "daily" "visual" ]; };
-        "http://dilbert.com/feed" = { tags = ["daily" "visual" ]; };
+        "https://www.smbc-comics.com/comic/rss" = {
+          cat = "visual";
+          freq = "daily";
+        };
+        "https://xkcd.com/atom.xml" = {
+          cat = "visual";
+          freq = "daily";
+        };
+        "http://dilbert.com/feed" = {
+          freq = "daily";
+          cat = "visual";
+        };
 
         # ART
-        "https://miniature-calendar.com/feed" = { tags = [ "daily" "visual" ]; };
+        "https://miniature-calendar.com/feed" = {
+          cat = "visual";
+          freq = "daily";
+        };
 
         # CODE
-        "https://github.com/Kaiteki-Fedi/Kaiteki/commits/master.atom" = { tags = [ "infrequent" "tech" ]; };
+        "https://github.com/Kaiteki-Fedi/Kaiteki/commits/master.atom" = {
+          cat = "tech";
+          freq = "infrequent";
+        };
       };
     };
   };
