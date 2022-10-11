@@ -14,9 +14,14 @@
       url = "github:nix-community/home-manager/release-22.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # TODO: set these up to follow our nixpkgs?
-    sops-nix.url = "github:Mic92/sops-nix";
-    impermanence.url = "github:nix-community/impermanence";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, nixpkgs-stable, mobile-nixos, home-manager, sops-nix, impermanence }:
