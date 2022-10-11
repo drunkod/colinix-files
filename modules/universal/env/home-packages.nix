@@ -92,6 +92,7 @@ let
     mesa-demos
     { pkg = mpv; dir = ".config/mpv/watch_later"; }
     networkmanagerapplet
+    newsflash
 
     # settings (electron app). TODO: can i manage these settings with home-manager?
     { pkg = obsidian; dir = ".config/obsidian"; }
