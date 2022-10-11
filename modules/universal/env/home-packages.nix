@@ -90,9 +90,13 @@ let
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     lollypop
     mesa-demos
+
     { pkg = mpv; dir = ".config/mpv/watch_later"; }
+
     networkmanagerapplet
-    newsflash
+
+    # not strictly necessary, but allows caching articles; offline use, etc.
+    { pkg = newsflash; dir = ".local/share/news-flash"; }
 
     # settings (electron app). TODO: can i manage these settings with home-manager?
     { pkg = obsidian; dir = ".config/obsidian"; }
