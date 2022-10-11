@@ -19,9 +19,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     impermanence.url = "github:nix-community/impermanence";
+    uninsane = {
+      url = "git+https://git.uninsane.org/colin/uninsane";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-stable, mobile-nixos, home-manager, sops-nix, impermanence }:
+  outputs = { self, nixpkgs, nixpkgs-stable, mobile-nixos, home-manager, sops-nix, impermanence, uninsane }:
   let
     patchedPkgs = system: nixpkgs.legacyPackages.${system}.applyPatches {
       name = "nixpkgs-patched-uninsane";
@@ -51,6 +55,7 @@
           nixpkgs.config.allowUnfree = true;
           nixpkgs.overlays = [
             (import "${mobile-nixos}/overlay/overlay.nix")
+            uninsane.overlay
             (import ./pkgs/overlay.nix)
             (next: prev: rec {
               # non-emulated packages build *from* local *for* target.
@@ -96,8 +101,21 @@
   in {
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) machines;
     imgs = builtins.mapAttrs (name: value: value.img) machines;
-    packages.x86_64-linux = customPackagesFor "x86_64-linux" "x86_64-linux";
-    packages.aarch64-linux = customPackagesFor "aarch64-linux" "aarch64-linux";
+    packages = let
+      custom-x86_64 = customPackagesFor "x86_64-linux" "x86_64-linux";
+      custom-aarch64 = customPackagesFor "aarch64-linux" "aarch64-linux";
+      nixpkgs-x86_64 = nixpkgsFor "x86_64-linux" "x86_64-linux";
+      nixpkgs-aarch64 = nixpkgsFor "aarch64-linux" "aarch64-linux";
+    in {
+      x86_64-linux = custom-x86_64 // {
+        nixpkgs = nixpkgs-x86_64;
+        uninsane = uninsane.packages.x86_64-linux;
+      };
+      aarch64-linux = custom-aarch64 // {
+        nixpkgs = nixpkgs-aarch64;
+        uninsane = uninsane.packages.aarch64-linux;
+      };
+    };
   };
 }
 
