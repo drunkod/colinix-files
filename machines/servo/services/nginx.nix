@@ -6,12 +6,16 @@
 
   # web blog/personal site
   services.nginx.virtualHosts."uninsane.org" = {
-    root = "/var/lib/uninsane/root";
+    root = "${pkgs.uninsane-dot-org}/share/uninsane-dot-org";
     # a lot of places hardcode https://uninsane.org,
     # and then when we mix http + non-https, we get CORS violations
     # and things don't look right. so force SSL.
     forceSSL = true;
     enableACME = true;
+
+    # uninsane.org/share/foo => /var/lib/uninsane/root/share/foo.
+    # yes, nginx does not strip the prefix when evaluating against the root.
+    locations."/share".root = "/var/lib/uninsane/root";
 
     # allow matrix users to discover that @user:uninsane.org is reachable via matrix.uninsane.org
     locations."= /.well-known/matrix/server".extraConfig =
