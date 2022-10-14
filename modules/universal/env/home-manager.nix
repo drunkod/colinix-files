@@ -17,6 +17,7 @@ let
   # extract `persist-files` from `extraPackages`
   persistfileslist = pkgspec: builtins.concatLists (builtins.map (e: if e ? "persist-files" then e.persist-files else []) pkgspec);
   # TODO: dirlist and persistfileslist should be folded
+  feeds = import ./feeds.nix;
 in
 {
   options = {
@@ -205,7 +206,7 @@ in
 
       xdg.configFile."vlc/vlcrc".text =
       let
-        podcastUrls = lib.strings.concatStringsSep "|" sysconfig.sane.feeds.podcastUrls;
+        podcastUrls = lib.strings.concatStringsSep "|" feeds.podcastUrls;
       in ''
       [podcast]
       podcast-urls=${podcastUrls}
@@ -219,7 +220,7 @@ in
       let
         entries = builtins.toString (builtins.map
           (url: "\n    " + ''<outline xmlUrl="${url}" type="rss"/>'')
-          sysconfig.sane.feeds.podcastUrls
+          feeds.podcastUrls
         );
       in ''
         <?xml version="1.0" encoding="utf-8"?>
@@ -232,7 +233,7 @@ in
       # news-flash RSS viewer
       xdg.configFile."newsflashFeeds.opml".text =
       let
-        entries = sysconfig.sane.feeds.rss;
+        entries = feeds.rss;
         urlsForCat = cat: builtins.filter (rss: entries."${rss}".cat == cat) (builtins.attrNames entries);
         outlineEntriesFor = cat: builtins.map (rss: ''
           <outline type="rss" xmlUrl="${rss}" />
@@ -266,7 +267,7 @@ in
 
       # gnome feeds RSS viewer
       xdg.configFile."org.gabmus.gfeeds.json".text = builtins.toJSON {
-        feeds = builtins.mapAttrs (r: p: { tags = [ p.cat p.freq ]; }) sysconfig.sane.feeds.rss;
+        feeds = builtins.mapAttrs (r: p: { tags = [ p.cat p.freq ]; }) feeds.rss;
         dark_reader = false;
         new_first = true;
         # windowsize = {
