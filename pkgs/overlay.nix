@@ -38,8 +38,8 @@
   ubootRaspberryPi4_64bit = prev.callPackage ./ubootRaspberryPi4_64bit { pkgs = prev; };
 
   #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
-  # kaiteki = prev.callPackage ./kaiteki { };
-  kaiteki = prev.kaiteki;
+  kaiteki = prev.callPackage ./kaiteki { };
+  # kaiteki = prev.kaiteki;
   # TODO: upstream, or delete nabla
   nabla = prev.callPackage ./nabla { };
 })
