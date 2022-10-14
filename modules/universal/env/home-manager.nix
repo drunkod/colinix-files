@@ -415,7 +415,8 @@ in
           userEmail = "colin@uninsane.org";
 
           aliases = { co = "checkout"; };
-          difftastic.enable = true;  # better diff rendering
+          # TODO: figure out how to get the old `diff` for generating patches
+          # difftastic.enable = true;  # better diff rendering
         };
 
         neovim = {
