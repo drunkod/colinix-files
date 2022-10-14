@@ -6,12 +6,14 @@ fetchpatch: [
     sha256 = "sha256-OczjlQcG7sTM/V9Y9VL/qdwaWPKfjAJsh3czqqhRQig=";
   })
 
-  # kaiteki: init at 2022-09-03
-  (fetchpatch {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/e2c7f5f4870fcb0e5405e9001b39a64c516852d4.diff";
-    # url = "https://github.com/NixOS/nixpkgs/pull/193169.diff";
-    sha256 = "sha256-UWnfS+stVpUZ3Sfaym9XtVBlwvHWJVMaW7cYIcf3M5Q=";
-  })
+  # # kaiteki: init at 2022-09-03
+  # vendorHash changes too frequently (might not be reproducible).
+  # using local package defn until stabilized
+  # (fetchpatch {
+  #   url = "https://git.uninsane.org/colin/nixpkgs/commit/e2c7f5f4870fcb0e5405e9001b39a64c516852d4.diff";
+  #   # url = "https://github.com/NixOS/nixpkgs/pull/193169.diff";
+  #   sha256 = "sha256-UWnfS+stVpUZ3Sfaym9XtVBlwvHWJVMaW7cYIcf3M5Q=";
+  # })
 
   # freshrss: patchShebangs instead of specifying interpreter in the service
   (fetchpatch {

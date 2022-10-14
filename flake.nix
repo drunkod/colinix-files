@@ -64,7 +64,8 @@
               cross = (nixpkgsFor local target) // (customPackagesFor local target);
               stable = import nixpkgs-stable { system = target; };
               # pinned packages:
-              electrum = stable.electrum;
+              electrum = stable.electrum;  # 2022-10-10: build break
+              sequoia = stable.sequoia;    # 2022-10-13: build break
             })
           ];
         }
