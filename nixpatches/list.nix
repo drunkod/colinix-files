@@ -23,8 +23,14 @@ fetchpatch: [
 
   # nautilus: look for the gtk4 FileChooser settings instead of the gtk4 one
   (fetchpatch {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/4636a04c1c4982a0e71ae77d3aa6f52d1a3170f1.diff";
-    sha256 = "sha256-XKfXStdcveYuk58rlORVJOv0a9Q5aRj1bYT5k79rL0g=";
+    # original version (include the patch in nixpkgs)
+    # url = "https://git.uninsane.org/colin/nixpkgs/commit/4636a04c1c4982a0e71ae77d3aa6f52d1a3170f1.diff";
+    # sha256 = "sha256-XKfXStdcveYuk58rlORVJOv0a9Q5aRj1bYT5k79rL0g=";
+
+    # v2 (fetchpatch from upstream PR)
+    # url = "https://git.uninsane.org/colin/nixpkgs/commit/730a802808c549220144e4e62aa419bb07c5ae29.diff";
+    url = "https://github.com/NixOS/nixpkgs/pull/195985.diff";
+    sha256 = "sha256-zd7WGOTm3ygh0Wk3uiA+1S+RqD9yWDSXvo7veHs0K00=";
   })
 
   # Fix mk flutter app
