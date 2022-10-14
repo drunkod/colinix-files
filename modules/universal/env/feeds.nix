@@ -1,4 +1,6 @@
-{
+{ lib }:
+
+rec {
   # TODO: fold this into RSS, with an `audio` category
   podcastUrls = [
     "https://lexfridman.com/feed/podcast/"
@@ -118,4 +120,29 @@
     # CODE
     "https://github.com/Kaiteki-Fedi/Kaiteki/commits/master.atom" = tech // infrequent;
   };
+
+  # return only the URLs which match this category
+  filterCat = cat: builtins.filter (url: rss."${url}".cat == cat) (builtins.attrNames rss);
+
+  # represents a single RSS feed.
+  opmlTerminal = url: ''<outline xmlUrl="${url}" type="rss"/>'';
+  # a list of RSS feeds.
+  opmlTerminals = urls: lib.strings.concatStringsSep "\n" (builtins.map opmlTerminal urls);
+  # one node which packages some flat grouping of terminals.
+  opmlGroup = title: urls: ''
+    <outline text="${title}" title="${title}">
+      ${opmlTerminals urls}
+    </outline>
+  '';
+  # top-level OPML file which could be consumed by something else.
+  opmlToplevel = bodies:
+  let
+    body = lib.strings.concatStringsSep "\n" bodies;
+  in ''
+    <?xml version="1.0" encoding="utf-8"?>
+    <opml version="2.0">
+      <body>${body}
+      </body>
+    </opml>
+  '';
 }

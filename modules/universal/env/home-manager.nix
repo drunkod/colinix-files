@@ -17,7 +17,7 @@ let
   # extract `persist-files` from `extraPackages`
   persistfileslist = pkgspec: builtins.concatLists (builtins.map (e: if e ? "persist-files" then e.persist-files else []) pkgspec);
   # TODO: dirlist and persistfileslist should be folded
-  feeds = import ./feeds.nix;
+  feeds = import ./feeds.nix { inherit lib; };
 in
 {
   options = {
@@ -216,54 +216,21 @@ in
       qt-privacy-ask=0
       '';
 
-      xdg.configFile."gpodderFeeds.opml".text =
-      let
-        entries = builtins.toString (builtins.map
-          (url: "\n    " + ''<outline xmlUrl="${url}" type="rss"/>'')
-          feeds.podcastUrls
-        );
-      in ''
-        <?xml version="1.0" encoding="utf-8"?>
-        <opml version="2.0">
-          <body>${entries}
-          </body>
-        </opml>
-      '';
+      xdg.configFile."gpodderFeeds.opml".text = with feeds;
+        opmlToplevel [(opmlTerminals podcastUrls)];
 
       # news-flash RSS viewer
-      xdg.configFile."newsflashFeeds.opml".text =
+      xdg.configFile."newsflashFeeds.opml".text = with feeds;
       let
-        entries = feeds.rss;
-        urlsForCat = cat: builtins.filter (rss: entries."${rss}".cat == cat) (builtins.attrNames entries);
-        outlineEntriesFor = cat: builtins.map (rss: ''
-          <outline type="rss" xmlUrl="${rss}" />
-        '') (urlsForCat cat);
-        outlineFor = cat: let
-          outlines = outlineEntriesFor cat;
-        in ''
-          <outline text="${cat}" title="${cat}">
-            ${builtins.toString outlines}
-          </outline>
-        '';
+        opmlForCat = cat: opmlGroup cat (filterCat cat);
         outlines = [
-          (outlineFor "uncat")
-          (outlineFor "rat")
-          (outlineFor "tech")
-          (outlineFor "pol")
-          (outlineFor "visual")
+          (opmlForCat "uncat")
+          (opmlForCat "rat")
+          (opmlForCat "tech")
+          (opmlForCat "pol")
+          (opmlForCat "visual")
         ];
-      in ''
-        <?xml version="1.0" encoding="UTF-8"?>
-        <opml version="2.0">
-          <head>
-            <title>NewsFlash OPML export</title>
-          </head>
-          <body>
-            ${builtins.toString outlines}
-          </body>
-        </opml>
-      '';
-
+      in opmlToplevel outlines;
 
       # gnome feeds RSS viewer
       xdg.configFile."org.gabmus.gfeeds.json".text = builtins.toJSON {
