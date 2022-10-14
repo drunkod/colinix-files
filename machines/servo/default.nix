@@ -11,8 +11,9 @@
 
   sane.home-manager.enable = true;
   sane.home-manager.extraPackages = [
-    # for administering matrix
+    # for administering services
     pkgs.matrix-synapse
+    pkgs.freshrss
   ];
   sane.impermanence.enable = true;
   sane.services.duplicity.enable = true;
