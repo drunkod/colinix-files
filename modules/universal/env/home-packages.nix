@@ -6,6 +6,7 @@ let
   cfg = config.sane.home-packages;
   universalPkgs = [
     backblaze-b2
+    cdrtools
     duplicity
     gnupg
     ifuse
