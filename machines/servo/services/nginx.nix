@@ -223,6 +223,12 @@
     locations."/".proxyPass = "http://127.0.0.1:4533";
   };
 
+  services.nginx.virtualHosts."rss.uninsane.org" = {
+    addSSL = true;
+    enableACME = true;
+    # the routing is handled by freshrss.nix
+  };
+
   services.nginx.virtualHosts."ipfs.uninsane.org" = {
     # don't default to ssl upgrades, since this may be dnslink'd from a different domain.
     # ideally we'd disable ssl entirely, but some places assume it?
