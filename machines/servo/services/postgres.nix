@@ -3,7 +3,7 @@
 {
   sane.impermanence.service-dirs = [
     # TODO: mode?
-    { user = "71"; group = "71"; directory = "/var/lib/postgresql"; }
+    { user = "postgres"; group = "postgres"; directory = "/var/lib/postgresql"; }
   ];
   services.postgresql.enable = true;
   # services.postgresql.dataDir = "/opt/postgresql/13";

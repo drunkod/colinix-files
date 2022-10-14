@@ -3,7 +3,7 @@
 {
   sane.impermanence.service-dirs = [
     # TODO: mode? we need this specifically for the stats tracking in .config/
-    { user = "70"; group = "70"; directory = "/var/lib/transmission"; }
+    { user = "transmission"; group = "transmission"; directory = "/var/lib/transmission"; }
   ];
   services.transmission.enable = true;
   services.transmission.settings = {

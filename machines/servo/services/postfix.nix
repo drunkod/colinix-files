@@ -18,7 +18,7 @@ in
 {
   sane.impermanence.service-dirs = [
     # TODO: mode? could be more granular
-    { user = "221"; group = "221"; directory = "/var/lib/opendkim"; }
+    { user = "opendkim"; group = "opendkim"; directory = "/var/lib/opendkim"; }
     { user = "root"; group = "root"; directory = "/var/lib/postfix"; }
   ];
   services.postfix.enable = true;
