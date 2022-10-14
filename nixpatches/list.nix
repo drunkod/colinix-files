@@ -21,6 +21,12 @@ fetchpatch: [
     sha256 = "sha256-Lngle5YTE7ymQyUarKbebMjiaTlY5cJBoaeZk7AgbXE=";
   })
 
+  # nautilus: look for the gtk4 FileChooser settings instead of the gtk4 one
+  (fetchpatch {
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/4636a04c1c4982a0e71ae77d3aa6f52d1a3170f1.diff";
+    sha256 = "sha256-XKfXStdcveYuk58rlORVJOv0a9Q5aRj1bYT5k79rL0g=";
+  })
+
   # Fix mk flutter app
   # closed (not merged). updates fluffychat 1.2.0 -> 1.6.1, but unstable hashing
   # (fetchpatch {
