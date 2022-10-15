@@ -1,9 +1,11 @@
 to deploy:
+
 ```sh
 nixos-rebuild --flake "./#servo" {build,switch}
 ```
 
 more options (like building packages defined in this repo):
+
 ```sh
 nix flake show
 ```
@@ -28,6 +30,18 @@ refer to flake.nix for more details.
 
 to build one of the custom sane packages, just name it:
 
-```
+```sh
 nix build ./#fluffychat-moby
+```
+
+to build a nixpkg:
+
+```sh
+nix build ./#nixpkgs.curl
+```
+
+to build a package for another platform:
+
+```sh
+nix build ./#packages.aarch64-linux.nixpkgs.ubootRaspberryPi4_64bit
 ```
