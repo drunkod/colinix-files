@@ -206,35 +206,35 @@ in
 
       xdg.configFile."vlc/vlcrc".text =
       let
-        podcastUrls = lib.strings.concatStringsSep "|" feeds.podcastUrls;
+        podcastUrls = lib.strings.concatStringsSep "|" (
+          builtins.map (feed: feed.url) feeds.podcasts
+        );
       in ''
-      [podcast]
-      podcast-urls=${podcastUrls}
-      [core]
-      metadata-network-access=0
-      [qt]
-      qt-privacy-ask=0
+        [podcast]
+        podcast-urls=${podcastUrls}
+        [core]
+        metadata-network-access=0
+        [qt]
+        qt-privacy-ask=0
       '';
 
       xdg.configFile."gpodderFeeds.opml".text = with feeds;
-        opmlToplevel [(opmlTerminals podcastUrls)];
+        feedsToOpml feeds.podcasts;
 
       # news-flash RSS viewer
       xdg.configFile."newsflashFeeds.opml".text = with feeds;
-      let
-        opmlForCat = cat: opmlGroup cat (filterCat cat);
-        outlines = [
-          (opmlForCat "uncat")
-          (opmlForCat "rat")
-          (opmlForCat "tech")
-          (opmlForCat "pol")
-          (opmlForCat "visual")
-        ];
-      in opmlToplevel outlines;
+        feedsToOpml (feeds.texts ++ feeds.images);
 
       # gnome feeds RSS viewer
-      xdg.configFile."org.gabmus.gfeeds.json".text = builtins.toJSON {
-        feeds = builtins.mapAttrs (r: p: { tags = [ p.cat p.freq ]; }) feeds.rss;
+      xdg.configFile."org.gabmus.gfeeds.json".text =
+      let
+        myFeeds = feeds.texts ++ feeds.images;
+      in builtins.toJSON {
+        # feed format is a map from URL to a dict,
+        #   with dict["tags"] a list of string tags.
+        feeds = builtins.foldl' (acc: feed: acc // {
+          "${feed.url}".tags = [ feed.cat feed.freq ];
+        }) {} myFeeds;
         dark_reader = false;
         new_first = true;
         # windowsize = {
@@ -253,17 +253,9 @@ in
         open_links_externally = true;
         full_feed_name = false;
         refresh_on_startup = true;
-        tags = [
-          # hourly => aggregator
-          # daily => prolifiq writer
-          # weekly => i can keep up with most -- but maybe not all -- of their content
-          # infrequent => i can read everything in this category
-          "hourly" "daily" "weekly" "infrequent"
-          # rat[ionality] gets used interchangably with philosophy, here.
-          # pol[itical] gets used for social commentary and economics as well.
-          # visual gets used for comics/art
-          "uncat" "rat" "tech" "pol" "visual"
-        ];
+        tags = lib.lists.unique (
+          (builtins.catAttrs "cat" myFeeds) ++ (builtins.catAttrs "freq" myFeeds)
+        );
         open_youtube_externally = false;
         media_player = "vlc";  # default: mpv
       };
