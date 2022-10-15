@@ -17,7 +17,8 @@ fetchpatch: [
 
   # freshrss: patchShebangs instead of specifying interpreter in the service
   (fetchpatch {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/9443d83e6fee728c1926a783647b45011bd3b514.diff";
+    # url = "https://git.uninsane.org/colin/nixpkgs/commit/9443d83e6fee728c1926a783647b45011bd3b514.diff";
+    url = "https://github.com/NixOS/nixpkgs/pull/196140.diff";
     sha256 = "sha256-Lngle5YTE7ymQyUarKbebMjiaTlY5cJBoaeZk7AgbXE=";
   })
 
