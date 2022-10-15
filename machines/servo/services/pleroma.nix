@@ -92,8 +92,8 @@
       backends: [{ExSyslogger, :ex_syslogger}]
 
     config :logger, :ex_syslogger,
-      level: :debug
-    #  level: :warn
+      level: :warn
+    #  level: :debug
 
     # XXX colin: not sure if this actually _does_ anything
     config :pleroma, :emoji,
