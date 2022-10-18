@@ -35,6 +35,8 @@
   # patch rpi uboot with something that fixes USB HDD boot
   ubootRaspberryPi4_64bit = prev.callPackage ./ubootRaspberryPi4_64bit { pkgs = prev; };
 
+  gocryptfs = prev.callPackage ./gocryptfs { pkgs = prev; };
+
   #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
   kaiteki = prev.callPackage ./kaiteki { };
   # kaiteki = prev.kaiteki;

@@ -23,6 +23,7 @@ resholve.mkDerivation {
         file
         findutils
         gnugrep
+        gocryptfs
         ifuse
         inotify-tools
         ncurses
@@ -54,14 +55,15 @@ resholve.mkDerivation {
       };
 
       # list of programs which *can* or *cannot* exec their arguments
-      execer = [
-        "cannot:${pkgs.ifuse}/bin/ifuse"
-        "cannot:${pkgs.oath-toolkit}/bin/oathtool"
-        "cannot:${pkgs.openssh}/bin/ssh-keygen"
-        "cannot:${pkgs.rmlint}/bin/rmlint"
-        "cannot:${pkgs.rsync}/bin/rsync"
-        "cannot:${pkgs.ssh-to-age}/bin/ssh-to-age"
-        "cannot:${pkgs.sops}/bin/sops"
+      execer = with pkgs; [
+        "cannot:${gocryptfs}/bin/gocryptfs"
+        "cannot:${ifuse}/bin/ifuse"
+        "cannot:${oath-toolkit}/bin/oathtool"
+        "cannot:${openssh}/bin/ssh-keygen"
+        "cannot:${rmlint}/bin/rmlint"
+        "cannot:${rsync}/bin/rsync"
+        "cannot:${sops}/bin/sops"
+        "cannot:${ssh-to-age}/bin/ssh-to-age"
       ];
     };
   };

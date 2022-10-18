@@ -54,6 +54,17 @@ in
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPS1qFzKurAdB9blkWomq8gI1g0T3sTs9LsmFOj5VtqX colin@servo"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICrR+gePnl0nV/vy7I5BzrGeyVL+9eOuXHU1yNE3uCwU colin@moby"
       ];
+
+      pamMount = {
+        # mount encrypted stuff at login
+        # requires that login password == fs encryption password
+        # fstype = "fuse";
+        # path = "${pkgs.gocryptfs}/bin/gocryptfs#/nix/persist/home/colin/private";
+        fstype = "fuse.gocryptfs";
+        path = "/nix/persist/home/colin/private";
+        mountpoint = "/home/colin/private";
+        options="nodev,nosuid,quiet,allow_other";
+      };
     };
 
     sane.impermanence.service-dirs = mkIf cfg.guest.enable [

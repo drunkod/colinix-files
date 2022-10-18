@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -21,5 +21,16 @@
   };
   # enable zsh completions
   environment.pathsToLink = [ "/share/zsh" ];
+  environment.systemPackages = with pkgs; [
+    # required for pam_mount
+    gocryptfs
+  ];
+
+  security.pam.mount.enable = true;
+  # security.pam.mount.debugLevel = 1;
+  # security.pam.enableSSHAgentAuth = true; # ??
+  # needed for `allow_other` in e.g. gocryptfs mounts
+  # or i guess going through mount.fuse sets suid so that's not necessary?
+  # programs.fuse.userAllowOther = true;
 }
 

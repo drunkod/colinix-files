@@ -9,6 +9,7 @@ let
     cdrtools
     duplicity
     gnupg
+    gocryptfs
     ifuse
     ipfs
     libimobiledevice

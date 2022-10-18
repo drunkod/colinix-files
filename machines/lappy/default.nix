@@ -11,6 +11,8 @@
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
+  users.users.colin.initialPassword = "147147";
+
   # default config: https://man.archlinux.org/man/snapper-configs.5
   # defaults to something like:
   #   - hourly snapshots
