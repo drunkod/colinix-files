@@ -267,6 +267,8 @@ in
           enable = true;
           enableSyntaxHighlighting = true;
           enableVteIntegration = true;
+          history.ignorePatterns = [ "rm *" ];
+          # history.path = TODO
           dotDir = ".config/zsh";
 
           initExtraBeforeCompInit = ''
