@@ -377,8 +377,14 @@ in
           userEmail = "colin@uninsane.org";
 
           aliases = { co = "checkout"; };
-          # TODO: figure out how to get the old `diff` for generating patches
-          # difftastic.enable = true;  # better diff rendering
+          extraConfig = {
+            # difftastic docs:
+            # - <https://difftastic.wilfred.me.uk/git.html>
+            diff.tool = "difftastic";
+            difftool.prompt = false;
+            "difftool \"difftastic\"".cmd = ''${pkgs.difftastic}/bin/difft "$LOCAL" "$REMOTE"'';
+            # now run `git difftool` to use difftastic git
+          };
         };
 
         neovim = {
