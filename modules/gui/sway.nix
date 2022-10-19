@@ -97,21 +97,22 @@ in
           "${modifier}+Return" = "exec ${terminal}";
           "${modifier}+Shift+q" = "kill";
           "${modifier}+d" = "exec ${menu}";
+          "${modifier}+l" = "exec ${pkgs.swaylock}/bin/swaylock --indicator-idle-visible --indicator-radius 100 --indicator-thickness 30";
 
-          "${modifier}+${left}" = "focus left";
-          "${modifier}+${down}" = "focus down";
-          "${modifier}+${up}" = "focus up";
-          "${modifier}+${right}" = "focus right";
+          # "${modifier}+${left}" = "focus left";
+          # "${modifier}+${down}" = "focus down";
+          # "${modifier}+${up}" = "focus up";
+          # "${modifier}+${right}" = "focus right";
 
           "${modifier}+Left" = "focus left";
           "${modifier}+Down" = "focus down";
           "${modifier}+Up" = "focus up";
           "${modifier}+Right" = "focus right";
 
-          "${modifier}+Shift+${left}" = "move left";
-          "${modifier}+Shift+${down}" = "move down";
-          "${modifier}+Shift+${up}" = "move up";
-          "${modifier}+Shift+${right}" = "move right";
+          # "${modifier}+Shift+${left}" = "move left";
+          # "${modifier}+Shift+${down}" = "move down";
+          # "${modifier}+Shift+${up}" = "move up";
+          # "${modifier}+Shift+${right}" = "move right";
 
           "${modifier}+Shift+Left" = "move left";
           "${modifier}+Shift+Down" = "move down";
@@ -581,7 +582,7 @@ in
     };
     sane.home-manager.extraPackages = with pkgs; [
       swaylock
-      swayidle
+      swayidle  # (unused)
       wl-clipboard
       mako # notification daemon
       xdg-utils  # for xdg-open
