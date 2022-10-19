@@ -15,7 +15,7 @@ in
         launch phosh via a greeter (like lightdm-mobile-greeter).
         phosh is usable without a greeter, but skipping the greeter means no PAM session.
       '';
-      default = true;
+      default = false;
       type = types.bool;
     };
   };
@@ -76,8 +76,16 @@ in
       ];
     }
     (mkIf cfg.useGreeter {
-        services.xserver.enable = true;
-        services.xserver.displayManager.lightdm.enable = true;
+      services.xserver.enable = true;
+      services.xserver.displayManager.lightdm.enable = true;
+      # services.xserver.displayManager.lightdm.greeters.enso.enable = true;  # tried (with reboot); got a mouse then died. next time was black
+      # services.xserver.displayManager.lightdm.greeters.gtk.enable = true;  # tried (with reboot); unusable without OSK
+      # services.xserver.displayManager.lightdm.greeters.mini.enable = true;  # tried (with reboot); unusable without OSK
+      # services.xserver.displayManager.lightdm.greeters.pantheon.enable = true; # tried (no reboot); unusable without OSK
+      services.xserver.displayManager.lightdm.greeters.slick.enable = true;  # tried; unusable without OSK (a11y -> OSK doesn't work)
+      # services.xserver.displayManager.lightdm.greeters.tiny.enable = true;  # tried; block screen
+
+      systemd.services.phosh.wantedBy = lib.mkForce [];  # disable auto-start
     })
   ]);
 }
