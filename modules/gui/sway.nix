@@ -21,15 +21,24 @@ in
       enable = true;
     };
 
-    # TODO: should be able to use SDDM to get interactive login
-    services.greetd = {
+    # alternatively, could use SDDM
+    services.greetd = let
+      swayConfig = pkgs.writeText "greetd-sway-config" ''
+        # `-l` activates layer-shell mode.
+        exec "${pkgs.greetd.gtkgreet}/bin/gtkgreet -l -c sway"
+      '';
+    in {
+      # greetd source/docs:
+      # - <https://git.sr.ht/~kennylevinsen/greetd>
       enable = true;
-      settings = rec {
-        initial_session = {
-          command = "${pkgs.sway}/bin/sway";
-          user = "colin";
+      settings = {
+        default_session = {
+          command = "${pkgs.sway}/bin/sway --config ${swayConfig}";
+          # alternatives:
+          # - TTY: `command = "${pkgs.greetd.greetd}/bin/agreety --cmd ${pkgs.sway}/bin/sway";`
+          # - autologin: `command = "${pkgs.sway}/bin/sway"; user = "colin";`
+          # - Dumb Login (doesn't work)": `command = "${pkgs.greetd.dlm}/bin/dlm";`
         };
-        default_session = initial_session;
       };
     };
 
