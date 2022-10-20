@@ -39,6 +39,7 @@
 
   #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
   kaiteki = prev.callPackage ./kaiteki { };
+  lightdm-mobile-greeter = prev.callPackage ./lightdm-mobile-greeter { };
   # kaiteki = prev.kaiteki;
   # TODO: upstream, or delete nabla
   nabla = prev.callPackage ./nabla { };
