@@ -29,6 +29,13 @@ rustPlatform.buildRustPackage rec {
     pkg-config
   ];
 
+  postInstall = ''
+    mkdir -p $out/share/applications
+    substitute lightdm-mobile-greeter.desktop \
+      $out/share/applications/lightdm-mobile-greeter.desktop \
+      --replace lightdm-mobile-greeter $out/bin/lightdm-mobile-greeter
+  '';
+
   meta = with lib; {
     description = "A simple log in screen for use on touch screens.";
     homepage = "https://git.uninsane.org/colin/lightdm-mobile-greeter";
