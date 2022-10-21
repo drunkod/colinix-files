@@ -20,6 +20,7 @@ let
 in
 {
   imports = [
+    ./git.nix
     ./kitty.nix
     ./neovim.nix
     ./librewolf.nix
@@ -239,22 +240,6 @@ in
 
       programs = {
         home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
-
-        git = {
-          enable = true;
-          userName = "colin";
-          userEmail = "colin@uninsane.org";
-
-          aliases = { co = "checkout"; };
-          extraConfig = {
-            # difftastic docs:
-            # - <https://difftastic.wilfred.me.uk/git.html>
-            diff.tool = "difftastic";
-            difftool.prompt = false;
-            "difftool \"difftastic\"".cmd = ''${pkgs.difftastic}/bin/difft "$LOCAL" "$REMOTE"'';
-            # now run `git difftool` to use difftastic git
-          };
-        };
 
         mpv = {
           enable = true;
