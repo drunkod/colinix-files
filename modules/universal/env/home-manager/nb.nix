@@ -8,7 +8,7 @@
 # it offers a primitive web-server
 # and it offers some CLI query tools
 
-{ lib, pkgs, ... }:
+{ lib, pkgs, ... }: lib.mkIf false  # XXX disabled!
 {
   sane.home-manager.extraPackages = [ pkgs.nb ];
 
