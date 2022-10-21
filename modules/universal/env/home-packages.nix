@@ -161,6 +161,7 @@ let
     dtc
     flex
     gcc
+    gdb
     # gcc-arm-embedded
     # gcc_multi
     gnumake
