@@ -22,9 +22,10 @@ in
   imports = [
     ./git.nix
     ./kitty.nix
+    ./librewolf.nix
     ./mpv.nix
     ./neovim.nix
-    ./librewolf.nix
+    ./vlc.nix
     ./zsh.nix
   ];
 
@@ -182,20 +183,6 @@ in
       # sublime music player
       xdg.configFile."sublime-music/config.json".source =
         config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.sublime_music_config.path;
-
-      xdg.configFile."vlc/vlcrc".text =
-      let
-        podcastUrls = lib.strings.concatStringsSep "|" (
-          builtins.map (feed: feed.url) feeds.podcasts
-        );
-      in ''
-        [podcast]
-        podcast-urls=${podcastUrls}
-        [core]
-        metadata-network-access=0
-        [qt]
-        qt-privacy-ask=0
-      '';
 
       xdg.configFile."gpodderFeeds.opml".text = with feeds;
         feedsToOpml feeds.podcasts;
