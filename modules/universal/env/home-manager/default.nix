@@ -24,6 +24,7 @@ in
     ./kitty.nix
     ./librewolf.nix
     ./mpv.nix
+    ./nb.nix
     ./neovim.nix
     ./vlc.nix
     ./zsh.nix
@@ -159,15 +160,6 @@ in
       home.file."Videos/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Videos";
       home.file."Videos/servo-incomplete".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/incomplete";
       home.file."Music/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Music";
-
-      # nb markdown/personal knowledge manager
-      home.file.".nb/knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/knowledge";
-      home.file.".nb/.current".text = "knowledge";
-      home.file.".nbrc".text = ''
-        # manage with `nb settings`
-        export NB_AUTO_SYNC=0
-      '';
-
 
       # aerc TUI mail client
       xdg.configFile."aerc/accounts.conf".source =
