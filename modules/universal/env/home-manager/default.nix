@@ -26,6 +26,7 @@ in
     ./mpv.nix
     ./nb.nix
     ./neovim.nix
+    ./sublime-music.nix
     ./vlc.nix
     ./zsh.nix
   ];
@@ -56,11 +57,6 @@ in
     sops.secrets."aerc_accounts" = {
       owner = config.users.users.colin.name;
       sopsFile = ../../../../secrets/universal/aerc_accounts.conf;
-      format = "binary";
-    };
-    sops.secrets."sublime_music_config" = {
-      owner = config.users.users.colin.name;
-      sopsFile = ../../../../secrets/universal/sublime_music_config.json.bin;
       format = "binary";
     };
 
@@ -171,10 +167,6 @@ in
         "SKIP_HOST_UPDATE": true
       }
       '';
-
-      # sublime music player
-      xdg.configFile."sublime-music/config.json".source =
-        config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.sublime_music_config.path;
 
       xdg.configFile."gpodderFeeds.opml".text = with feeds;
         feedsToOpml feeds.podcasts;
