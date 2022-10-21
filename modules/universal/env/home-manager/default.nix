@@ -22,6 +22,7 @@ in
   imports = [
     ./kitty.nix
     ./neovim.nix
+    ./librewolf.nix
     ./zsh.nix
   ];
 
@@ -164,30 +165,6 @@ in
         export NB_AUTO_SYNC=0
       '';
 
-      # uBlock filter list configuration.
-      # specifically, enable the GDPR cookie prompt blocker.
-      # data.toOverwrite.filterLists is additive (i.e. it supplements the default filters)
-      # this configuration method is documented here:
-      # - <https://github.com/gorhill/uBlock/issues/2986#issuecomment-364035002>
-      # the specific attribute path is found via scraping ublock code here:
-      # - <https://github.com/gorhill/uBlock/blob/master/src/js/storage.js>
-      # - <https://github.com/gorhill/uBlock/blob/master/assets/assets.json>
-      home.file.".librewolf/managed-storage/uBlock0@raymondhill.net.json".text = ''
-        {
-         "name": "uBlock0@raymondhill.net",
-         "description": "ignored",
-         "type": "storage",
-         "data": {
-            "toOverwrite": "{\"filterLists\": [\"fanboy-cookiemonster\"]}"
-         }
-        }
-      '';
-      home.file.".librewolf/librewolf.overrides.cfg".text = ''
-        // if we can't query the revocation status of a SSL cert because the issuer is offline,
-        // treat it as unrevoked.
-        // see: <https://librewolf.net/docs/faq/#im-getting-sec_error_ocsp_server_error-what-can-i-do>
-        defaultPref("security.OCSP.require", false);
-      '';
 
       # aerc TUI mail client
       xdg.configFile."aerc/accounts.conf".source =
@@ -277,12 +254,6 @@ in
             "difftool \"difftastic\"".cmd = ''${pkgs.difftastic}/bin/difft "$LOCAL" "$REMOTE"'';
             # now run `git difftool` to use difftastic git
           };
-        };
-
-        # XXX: although home-manager calls this option `firefox`, we can use other browsers and it still mostly works.
-        firefox = lib.mkIf (sysconfig.sane.gui.enable) {
-          enable = true;
-          package = import ./web-browser.nix pkgs;
         };
 
         mpv = {
