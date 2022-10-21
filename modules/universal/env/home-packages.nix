@@ -156,16 +156,18 @@ let
   ] else []);
 
   # useful devtools:
-  # bison
-  # dtc
-  # flex
-  # gcc
-  # gcc-arm-embedded
-  # gcc_multi
-  # gnumake
-  # mix2nix
-  # rustup
-  # swig
+  devPkgs = [
+    bison
+    dtc
+    flex
+    gcc
+    # gcc-arm-embedded
+    # gcc_multi
+    gnumake
+    mix2nix
+    rustup
+    swig
+  ];
 in
 {
   options = {
@@ -173,9 +175,18 @@ in
       default = false;
       type = types.bool;
     };
+    sane.home-packages.enableDevPkgs = mkOption {
+      description = ''
+        enable packages that are useful for building other software by hand.
+        you should prefer to keep this disabled except when prototyping, e.g. packaging new software.
+      '';
+      default = false;
+      type = types.bool;
+    };
   };
   config = {
     sane.home-manager.extraPackages = universalPkgs
-      ++ (if cfg.enableGuiPkgs then guiPkgs else []);
+      ++ (if cfg.enableGuiPkgs then guiPkgs else [])
+      ++ (if cfg.enableDevPkgs then devPkgs else []);
   };
 }
