@@ -281,6 +281,11 @@ in
             # zmv is a way to do rich moves/renames, with pattern matching/substitution.
             # see for an example: <https://filipe.kiss.ink/zmv-zsh-rename/>
             autoload -Uz zmv
+
+            function nd() {
+              mkdir -p "$1";
+              pushd "$1";
+            }
           '';
 
           # prezto = oh-my-zsh fork; controls prompt, auto-completion, etc.
