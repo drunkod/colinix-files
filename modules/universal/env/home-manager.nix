@@ -82,7 +82,8 @@ in
 
       # run `home-manager-help` to access manpages
       # or `man home-configuration.nix`
-      manual.html.enable = true;
+      manual.html.enable = false;  # TODO: set to true later (build failure)
+      manual.manpages.enable = false;  # TODO: enable after https://github.com/nix-community/home-manager/issues/3344
 
       home.packages = pkglist cfg.extraPackages;
       wayland.windowManager = cfg.windowManager;
