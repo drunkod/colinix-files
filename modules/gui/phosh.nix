@@ -77,9 +77,10 @@ in
     }
     (mkIf cfg.useGreeter {
       services.xserver.enable = true;
+      services.xserver.displayManager.lightdm.greeters.gtk.enable = false;  # gtk greeter overrides our own?
       services.xserver.displayManager.lightdm.greeter = {
         enable = true;
-        package = pkgs.lightdm-mobile-greeter;
+        package = pkgs.lightdm-mobile-greeter.xgreeters;
         name = "lightdm-mobile-greeter";
       };
       # services.xserver.displayManager.lightdm.enable = true;
