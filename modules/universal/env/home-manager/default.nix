@@ -22,6 +22,7 @@ in
   imports = [
     ./git.nix
     ./kitty.nix
+    ./mpv.nix
     ./neovim.nix
     ./librewolf.nix
     ./zsh.nix
@@ -240,15 +241,6 @@ in
 
       programs = {
         home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
-
-        mpv = {
-          enable = true;
-          config = {
-            save-position-on-quit = true;
-            keep-open = "yes";
-          };
-        };
-
         # "command not found" will cause the command to be searched in nixpkgs
         nix-index.enable = true;
       } // cfg.programs;
