@@ -21,6 +21,7 @@ in
 {
   imports = [
     ./aerc.nix
+    ./discord.nix
     ./git.nix
     ./kitty.nix
     ./librewolf.nix
@@ -151,13 +152,6 @@ in
       home.file."Videos/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Videos";
       home.file."Videos/servo-incomplete".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/incomplete";
       home.file."Music/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Music";
-
-      # make Discord usable even when client is "outdated"
-      xdg.configFile."discord/settings.json".text = ''
-      {
-        "SKIP_HOST_UPDATE": true
-      }
-      '';
 
       xdg.configFile."gpodderFeeds.opml".text = with feeds;
         feedsToOpml feeds.podcasts;
