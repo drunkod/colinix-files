@@ -81,6 +81,9 @@ in
       # NB: setting defaultSession has the critical side-effect that it lets org.freedesktop.AccountsService
       # know that our user exists. this ensures lightdm succeeds when calling /org/freedesktop/AccountsServices ListCachedUsers
       services.xserver.displayManager.defaultSession = "sm.puri.Phosh";
+      services.xserver.displayManager.lightdm.extraSeatDefaults = ''
+        user-session = phosh
+      '';
       services.xserver.displayManager.lightdm.greeters.gtk.enable = false;  # gtk greeter overrides our own?
       services.xserver.displayManager.lightdm.greeter = {
         enable = true;
