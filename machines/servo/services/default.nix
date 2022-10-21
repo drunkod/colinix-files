@@ -8,6 +8,7 @@
     ./jackett.nix
     ./jellyfin.nix
     ./matrix
+    ./munin.nix
     ./navidrome.nix
     ./nginx.nix
     ./pleroma.nix

@@ -57,6 +57,13 @@
     # };
   };
 
+  # server statistics
+  services.nginx.virtualHosts."sink.uninsane.org" = {
+    addSSL = true;
+    enableACME = true;
+    root = "/var/www/munin";
+  };
+
   # Pleroma server and web interface
   services.nginx.virtualHosts."fed.uninsane.org" = {
     addSSL = true;
