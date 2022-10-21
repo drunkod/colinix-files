@@ -88,6 +88,7 @@ in rec {
     (mkText "https://ianthehenry.com/feed.xml" // tech // infrequent)
     (mkText "https://bitbashing.io/feed.xml" // tech // infrequent)
     (mkText "https://idiomdrottning.org/feed.xml" // uncat // daily)
+    (mkText "https://anish.lakhwara.com/home.html" // tech // weekly)
 
     # (TECH; POL) COMMENTATORS
     (mkText "http://benjaminrosshoffman.com/feed" // pol // weekly)
