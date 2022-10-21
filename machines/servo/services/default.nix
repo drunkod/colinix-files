@@ -4,6 +4,7 @@
     ./ddns-he.nix
     ./freshrss.nix
     ./gitea.nix
+    ./goaccess.nix
     ./ipfs.nix
     ./jackett.nix
     ./jellyfin.nix

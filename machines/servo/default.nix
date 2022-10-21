@@ -13,6 +13,7 @@
     # for administering services
     pkgs.matrix-synapse
     pkgs.freshrss
+    pkgs.goaccess
   ];
   sane.impermanence.enable = true;
   sane.services.duplicity.enable = true;
