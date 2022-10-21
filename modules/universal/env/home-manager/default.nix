@@ -20,6 +20,10 @@ let
   feeds = import ./feeds.nix { inherit lib; };
 in
 {
+  imports = [
+    ./zsh.nix
+  ];
+
   options = {
     # packages to deploy to the user's home
     sane.home-manager.extraPackages = mkOption {
@@ -45,12 +49,12 @@ in
   config = {
     sops.secrets."aerc_accounts" = {
       owner = config.users.users.colin.name;
-      sopsFile = ../../../secrets/universal/aerc_accounts.conf;
+      sopsFile = ../../../../secrets/universal/aerc_accounts.conf;
       format = "binary";
     };
     sops.secrets."sublime_music_config" = {
       owner = config.users.users.colin.name;
-      sopsFile = ../../../secrets/universal/sublime_music_config.json.bin;
+      sopsFile = ../../../../secrets/universal/sublime_music_config.json.bin;
       format = "binary";
     };
 
@@ -91,7 +95,7 @@ in
         initKeyring = {
           after = ["writeBoundary"];
           before = [];
-          data = "${../../../scripts/init-keyring}";
+          data = "${../../../../scripts/init-keyring}";
         };
       };
 
@@ -259,51 +263,6 @@ in
       programs = {
         home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
 
-        zsh = {
-          enable = true;
-          enableSyntaxHighlighting = true;
-          enableVteIntegration = true;
-          history.ignorePatterns = [ "rm *" ];
-          # history.path = TODO
-          dotDir = ".config/zsh";
-
-          initExtraBeforeCompInit = ''
-            # p10k instant prompt
-            # run p10k configure to configure, but it can't write out its file :-(
-            POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
-          '';
-          initExtra = ''
-            # zmv is a way to do rich moves/renames, with pattern matching/substitution.
-            # see for an example: <https://filipe.kiss.ink/zmv-zsh-rename/>
-            autoload -Uz zmv
-
-            function nd() {
-              mkdir -p "$1";
-              pushd "$1";
-            }
-          '';
-
-          # prezto = oh-my-zsh fork; controls prompt, auto-completion, etc.
-          # see: https://github.com/sorin-ionescu/prezto
-          prezto = {
-            enable = true;
-            pmodules = [
-              "environment"
-              "terminal"
-              "editor"
-              "history"
-              "directory"
-              "spectrum"
-              "utility"
-              "completion"
-              "prompt"
-              "git"
-            ];
-            prompt = {
-              theme = "powerlevel10k";
-            };
-          };
-        };
 
         kitty = {
           enable = true;
@@ -516,13 +475,6 @@ in
         # "command not found" will cause the command to be searched in nixpkgs
         nix-index.enable = true;
       } // cfg.programs;
-
-      home.shellAliases = {
-        ":q" = "exit";
-        # common typos
-        "cd.." = "cd ..";
-        "cd../" = "cd ../";
-      };
     };
   };
 }
