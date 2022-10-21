@@ -30,6 +30,7 @@ in
       users.users.rtkit.uid = config.sane.allocations.rtkit-uid;
       users.groups.avahi.gid = config.sane.allocations.avahi-gid;
       users.groups.colord.gid = config.sane.allocations.colord-gid;
+      users.groups.feedbackd.gid = config.sane.allocations.feedbackd-gid;
       users.groups.geoclue.gid = config.sane.allocations.geoclue-gid;
       users.groups.rtkit.gid = config.sane.allocations.rtkit-gid;
 
