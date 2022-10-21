@@ -3,7 +3,7 @@
 with lib;
 
 buildLinux (args // rec {
-  version = "6.0.0";
+  version = "6.0.2";
 
   # modDirVersion needs to be x.y.z, will automatically add .0 if needed
   modDirVersion = if (modDirVersionArg == null) then concatStringsSep "." (take 3 (splitVersion "${version}.0")) else modDirVersionArg;
@@ -15,7 +15,7 @@ buildLinux (args // rec {
     owner = "megous";
     repo = "linux";
     # branch: orange-pi-6.0
-    rev = "b16232c6156de17e1dfdb63fdaea8e317baa07a7";
-    sha256 = "sha256-Tb05IQKFdX/T7elGNnXTLVmgGLvXoeBFBq/8Q7jQhX0=";
+    rev = "2683672a2052ffda995bb987fa62a1abe8424ef4";
+    hash = "sha256-hL/SbLgaTk/CqFLFrAK/OV9/OS20O42zJvSScsvWBQk=";
   };
 } // (args.argsOverride or { }))
