@@ -17,7 +17,6 @@ let
     lm_sensors  # for sensors-detect
     lshw
     ffmpeg
-    nb
     networkmanager
     nixpkgs-review
     # nixos-generators

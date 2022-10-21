@@ -8,8 +8,10 @@
 # it offers a primitive web-server
 # and it offers some CLI query tools
 
-{ lib, ... }:
+{ lib, pkgs, ... }:
 {
+  sane.home-manager.extraPackages = [ pkgs.nb ];
+
   home-manager.users.colin = { config, ... }: {
     # nb markdown/personal knowledge manager
     home.file.".nb/knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/knowledge";
