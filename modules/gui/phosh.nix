@@ -80,7 +80,12 @@ in
       services.xserver.enable = true;
       # NB: setting defaultSession has the critical side-effect that it lets org.freedesktop.AccountsService
       # know that our user exists. this ensures lightdm succeeds when calling /org/freedesktop/AccountsServices ListCachedUsers
-      services.xserver.displayManager.defaultSession = "sm.puri.Phosh";
+      # lightdm greeters get the login users from lightdm which gets it from org.freedesktop.Accounts.ListCachedUsers.
+      # this requires the user we want to login as to be cached.
+      services.xserver.displayManager.job.preStart = ''
+        ${pkgs.systemd}/bin/busctl call org.freedesktop.Accounts /org/freedesktop/Accounts org.freedesktop.Accounts CacheUser s colin
+      '';
+      # services.xserver.displayManager.defaultSession = "sm.puri.Phosh";  # XXX: not sure why this doesn't propagate correctly.
       services.xserver.displayManager.lightdm.extraSeatDefaults = ''
         user-session = phosh
       '';
