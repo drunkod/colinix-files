@@ -9,7 +9,6 @@
     ./services
   ];
 
-  sane.home-manager.enable = true;
   sane.home-manager.extraPackages = [
     # for administering services
     pkgs.matrix-synapse

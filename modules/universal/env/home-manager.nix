@@ -21,11 +21,6 @@ let
 in
 {
   options = {
-    sane.home-manager.enable = mkOption {
-      default = false;
-      type = types.bool;
-    };
-
     # packages to deploy to the user's home
     sane.home-manager.extraPackages = mkOption {
       default = [ ];
@@ -47,7 +42,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = {
     sops.secrets."aerc_accounts" = {
       owner = config.users.users.colin.name;
       sopsFile = ../../../secrets/universal/aerc_accounts.conf;
