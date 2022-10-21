@@ -1,5 +1,6 @@
 { config, ... }:
 {
+  # TODO: this should only be shipped on gui platforms
   sops.secrets."sublime_music_config" = {
     owner = config.users.users.colin.name;
     sopsFile = ../../../../secrets/universal/sublime_music_config.json.bin;

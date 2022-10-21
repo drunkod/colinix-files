@@ -20,6 +20,7 @@ let
 in
 {
   imports = [
+    ./aerc.nix
     ./git.nix
     ./kitty.nix
     ./librewolf.nix
@@ -54,12 +55,6 @@ in
   };
 
   config = {
-    sops.secrets."aerc_accounts" = {
-      owner = config.users.users.colin.name;
-      sopsFile = ../../../../secrets/universal/aerc_accounts.conf;
-      format = "binary";
-    };
-
     sane.impermanence.home-dirs = [
       "archive"
       "dev"
@@ -156,10 +151,6 @@ in
       home.file."Videos/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Videos";
       home.file."Videos/servo-incomplete".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/incomplete";
       home.file."Music/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Music";
-
-      # aerc TUI mail client
-      xdg.configFile."aerc/accounts.conf".source =
-        config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.aerc_accounts.path;
 
       # make Discord usable even when client is "outdated"
       xdg.configFile."discord/settings.json".text = ''
