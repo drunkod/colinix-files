@@ -3,7 +3,7 @@
   # TODO: this should only be shipped on gui platforms
   sops.secrets."sublime_music_config" = {
     owner = config.users.users.colin.name;
-    sopsFile = ../../../../secrets/universal/sublime_music_config.json.bin;
+    sopsFile = ../../../secrets/universal/sublime_music_config.json.bin;
     format = "binary";
   };
   home-manager.users.colin = let sysconfig = config; in { config, ... }: {
