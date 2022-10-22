@@ -1,13 +1,16 @@
 { pkgs, ... }:
 {
   # based on <https://bytes.fyi/real-time-goaccess-reports-with-nginx/>
+  # log-format setting can be derived with this tool if custom:
+  # - <https://github.com/stockrt/nginx2goaccess>
+
   systemd.services.goaccess = {
     description = "GoAccess server monitoring";
     serviceConfig = {
       ExecStart = ''
         ${pkgs.goaccess}/bin/goaccess \
           -f /var/log/nginx/access.log \
-          --log-format=COMBINED \
+          --log-format=VCOMBINED \
           --real-time-html \
           --ws-url=wss://sink.uninsane.org:443/ws \
           --port=7890 \

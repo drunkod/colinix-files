@@ -4,6 +4,16 @@
 {
   services.nginx.enable = true;
 
+  # this is the standard `combined` log format, with the addition of $host
+  # so that we have the virtualHost in the log.
+  # KEEP IN SYNC WITH GOACCESS
+  # goaccess calls this VCOMBINED:
+  # - <https://gist.github.com/jyap808/10570005>
+  services.nginx.commonHttpConfig = ''
+    log_format vcombined '$host:$server_port $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referrer" "$http_user_agent"';
+    access_log /var/log/nginx/access.log vcombined;
+  '';
+
   # web blog/personal site
   services.nginx.virtualHosts."uninsane.org" = {
     root = "${pkgs.uninsane-dot-org}/share/uninsane-dot-org";
