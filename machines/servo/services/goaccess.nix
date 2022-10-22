@@ -9,7 +9,7 @@
     serviceConfig = {
       ExecStart = ''
         ${pkgs.goaccess}/bin/goaccess \
-          -f /var/log/nginx/access.log \
+          -f /var/log/nginx/public.log \
           --log-format=VCOMBINED \
           --real-time-html \
           --ws-url=wss://sink.uninsane.org:443/ws \

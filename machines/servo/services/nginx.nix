@@ -1,6 +1,14 @@
 # docs: https://nixos.wiki/wiki/Nginx
 { config, pkgs, ... }:
 
+let
+  # make the logs for this host "public" so that they show up in e.g. metrics
+  publog = vhost: vhost // {
+    extraConfig = (vhost.extraConfig or "") + ''
+      access_log /var/log/nginx/public.log vcombined;
+    '';
+  };
+in
 {
   services.nginx.enable = true;
 
@@ -11,11 +19,11 @@
   # - <https://gist.github.com/jyap808/10570005>
   services.nginx.commonHttpConfig = ''
     log_format vcombined '$host:$server_port $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referrer" "$http_user_agent"';
-    access_log /var/log/nginx/access.log vcombined;
+    access_log /var/log/nginx/private.log vcombined;
   '';
 
   # web blog/personal site
-  services.nginx.virtualHosts."uninsane.org" = {
+  services.nginx.virtualHosts."uninsane.org" = publog {
     root = "${pkgs.uninsane-dot-org}/share/uninsane-dot-org";
     # a lot of places hardcode https://uninsane.org,
     # and then when we mix http + non-https, we get CORS violations
@@ -73,12 +81,6 @@
     enableACME = true;
     root = "/var/lib/uninsane/sink";
 
-    # we don't want goaccess to swallow its own metrics
-    extraConfig = ''
-      access_log /var/log/nginx/goaccess-access.log;
-      error_log /var/log/nginx/goaccess-error.log warn;
-    '';
-
     locations."/ws" = {
       proxyPass = "http://127.0.0.1:7890";
       # XXX not sure how much of this is necessary
@@ -94,7 +96,7 @@
   };
 
   # Pleroma server and web interface
-  services.nginx.virtualHosts."fed.uninsane.org" = {
+  services.nginx.virtualHosts."fed.uninsane.org" = publog {
     addSSL = true;
     enableACME = true;
     locations."/" = {
@@ -155,7 +157,7 @@
   };
 
   # matrix chat server
-  services.nginx.virtualHosts."matrix.uninsane.org" = {
+  services.nginx.virtualHosts."matrix.uninsane.org" = publog {
     addSSL = true;
     enableACME = true;
 
@@ -196,7 +198,7 @@
   };
 
   # hosted git (web view and for `git <cmd>` use
-  services.nginx.virtualHosts."git.uninsane.org" = {
+  services.nginx.virtualHosts."git.uninsane.org" = publog {
     addSSL = true;
     enableACME = true;
 
@@ -312,6 +314,7 @@
   sane.impermanence.service-dirs = [
     # TODO: mode?
     { user = "acme"; group = "acme"; directory = "/var/lib/acme"; }
+    # TODO: this is overly broad; only need media and share directories to be persisted
     { user = "colin"; group = "users"; directory = "/var/lib/uninsane"; }
   ];
 }
