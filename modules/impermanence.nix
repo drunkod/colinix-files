@@ -38,18 +38,7 @@ in
   in mkIf cfg.enable {
     sane.image.extraDirectories = [ "/nix/persist/var/log" ];
     environment.persistence."/nix/persist" = {
-      directories = (map-home-dirs ([
-        # cache is probably too big to fit on the tmpfs
-        # TODO: we could bind-mount it to something which gets cleared per boot, though.
-        ".cache"
-        ".cargo"
-        ".rustup"
-        ".ssh"
-        ".local/share/keyrings"
-        # intentionally omitted:
-        # ".config"  # managed by home-manager
-        # ".local"   # nothing useful in here
-      ] ++ cfg.home-dirs)) ++ (map-sys-dirs [
+      directories = (map-home-dirs cfg.home-dirs) ++ (map-sys-dirs [
         # TODO: this `0700` here clobbers the perms for /persist/etc, breaking boot on freshly-deployed devices
         # { mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
         # "/etc/nixos"

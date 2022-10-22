@@ -67,6 +67,16 @@ in
       };
     };
 
+    sane.impermanence.home-dirs = [
+      # cache is probably too big to fit on the tmpfs
+      # TODO: we could bind-mount it to something which gets cleared per boot, though.
+      ".cache"
+      ".cargo"
+      ".rustup"
+      ".ssh"
+      ".local/share/keyrings"
+    ];
+
     sane.impermanence.service-dirs = mkIf cfg.guest.enable [
       { user = "guest"; group = "users"; directory = "/home/guest"; }
     ];
