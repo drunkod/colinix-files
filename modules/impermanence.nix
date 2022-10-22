@@ -34,7 +34,6 @@ in
 
     map-home-dirs = map-dirs { user = "colin"; group = "users"; mode = "0755"; directory = "/home/colin/"; };
     map-sys-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
-    map-service-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
 
   in mkIf cfg.enable {
     sane.image.extraDirectories = [ "/nix/persist/var/log" ];
@@ -57,7 +56,6 @@ in
         # "/etc/ssh"  # persist only the specific files we want, instead
         "/var/log"
         "/var/backup"  # for e.g. postgres dumps
-      ]) ++ (map-service-dirs ([
         # "/var/lib/AccountsService"   # not sure what this is, but it's empty
         "/var/lib/alsa"                # preserve output levels, default devices
         # "/var/lib/blueman"           # files aren't human readable
@@ -83,8 +81,7 @@ in
         # servo additions:
         # "/var/lib/dhparams"          # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/security/dhparams.nix
         # "/var/lib/dovecot"
-        # "/var/lib/duplicity"
-      ] ++ cfg.service-dirs));
+      ] ++ cfg.service-dirs);
       files = [
         "/etc/machine-id"
         "/etc/ssh/ssh_host_ed25519_key"
