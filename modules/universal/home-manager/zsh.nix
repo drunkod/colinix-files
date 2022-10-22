@@ -1,13 +1,16 @@
 { ... }:
 {
-  sane.impermanence.home-files = [ ".zsh_history" ];
+  # we don't need to full zsh dir -- just the history file --
+  # but zsh will sometimes backup the history file and we get fewer errors if we do proper mounts instead of symlinks.
+  sane.impermanence.home-dirs = [ ".local/share/zsh" ];
+
   home-manager.users.colin.programs.zsh = {
     enable = true;
     enableSyntaxHighlighting = true;
     enableVteIntegration = true;
     history.ignorePatterns = [ "rm *" ];
-    # history.path = TODO
     dotDir = ".config/zsh";
+    history.path = ".local/share/zsh/history";
 
     initExtraBeforeCompInit = ''
       # p10k instant prompt
