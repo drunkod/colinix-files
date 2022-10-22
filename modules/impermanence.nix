@@ -103,7 +103,6 @@ in
         "/etc/ssh/ssh_host_ed25519_key.pub"
         "/etc/ssh/ssh_host_rsa_key"
         "/etc/ssh/ssh_host_rsa_key.pub"
-        "/home/colin/.zsh_history"
         # # XXX these only need persistence because i have mutableUsers = true, i think
         # "/etc/group"
         # "/etc/passwd"

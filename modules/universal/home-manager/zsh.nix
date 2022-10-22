@@ -1,5 +1,6 @@
 { ... }:
 {
+  sane.impermanence.home-files = [ ".zsh_history" ];
   home-manager.users.colin.programs.zsh = {
     enable = true;
     enableSyntaxHighlighting = true;
