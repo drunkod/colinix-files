@@ -68,8 +68,6 @@ in
         # "/var/lib/upower"            # historic charge data. unnecessary, but maybe used somewhere?
         #
         # servo additions:
-        # "/var/lib/dhparams"          # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/security/dhparams.nix
-        # "/var/lib/dovecot"
       ] ++ cfg.service-dirs);
       files = [
         "/etc/machine-id"
