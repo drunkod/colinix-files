@@ -10,7 +10,7 @@
     enableVteIntegration = true;
     history.ignorePatterns = [ "rm *" ];
     dotDir = ".config/zsh";
-    history.path = ".local/share/zsh/history";
+    history.path = "/home/colin/.local/share/zsh/history";
 
     initExtraBeforeCompInit = ''
       # p10k instant prompt
