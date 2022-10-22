@@ -11,6 +11,14 @@ in
       default = false;
       type = types.bool;
     };
+    sane.gui.sway.useGreeter = mkOption {
+      description = ''
+        launch sway via a greeter (like greetd's gtkgreet).
+        sway is usable without a greeter, but skipping the greeter means no PAM session.
+      '';
+      default = true;
+      type = types.bool;
+    };
   };
   config = mkIf cfg.enable {
     sane.gui.enable = true;
@@ -23,22 +31,31 @@ in
 
     # alternatively, could use SDDM
     services.greetd = let
-      swayConfig = pkgs.writeText "greetd-sway-config" ''
+      swayConfig-greeter = pkgs.writeText "greetd-sway-config" ''
         # `-l` activates layer-shell mode.
         exec "${pkgs.greetd.gtkgreet}/bin/gtkgreet -l -c sway"
       '';
-    in {
-      # greetd source/docs:
-      # - <https://git.sr.ht/~kennylevinsen/greetd>
-      enable = true;
-      settings = {
-        default_session = {
-          command = "${pkgs.sway}/bin/sway --config ${swayConfig}";
+      default_session = {
+        "01" = {
+          # greeter session config
+          command = "${pkgs.sway}/bin/sway --config ${swayConfig-greeter}";
           # alternatives:
           # - TTY: `command = "${pkgs.greetd.greetd}/bin/agreety --cmd ${pkgs.sway}/bin/sway";`
           # - autologin: `command = "${pkgs.sway}/bin/sway"; user = "colin";`
           # - Dumb Login (doesn't work)": `command = "${pkgs.greetd.dlm}/bin/dlm";`
         };
+        "0" = {
+          # no greeter
+          command = "${pkgs.sway}/bin/sway";
+          user = "colin";
+        };
+      };
+    in {
+      # greetd source/docs:
+      # - <https://git.sr.ht/~kennylevinsen/greetd>
+      enable = true;
+      settings = {
+        default_session = default_session."0${builtins.toString cfg.useGreeter}";
       };
     };
 
