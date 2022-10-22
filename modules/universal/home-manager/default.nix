@@ -13,8 +13,6 @@ let
   pkglist = pkgspec: builtins.map (e: e.pkg or e) pkgspec;
   # extract `dir` from `extraPackages`
   dirlist = pkgspec: builtins.concatLists (builtins.map (e: if e ? "dir" then [ e.dir ] else []) pkgspec);
-  # extract `persist-files` from `extraPackages`
-  persistfileslist = pkgspec: builtins.concatLists (builtins.map (e: if e ? "persist-files" then e.persist-files else []) pkgspec);
   # TODO: dirlist and persistfileslist should be folded
   feeds = import ./feeds.nix { inherit lib; };
 in
@@ -67,7 +65,6 @@ in
       "Pictures"
       "Videos"
     ] ++ (dirlist cfg.extraPackages);
-    sane.impermanence.home-files = persistfileslist cfg.extraPackages;
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;

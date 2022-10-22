@@ -14,10 +14,6 @@ in
       default = false;
       type = types.bool;
     };
-    sane.impermanence.home-files = mkOption {
-      default = [];
-      type = types.listOf types.str;
-    };
     sane.impermanence.home-dirs = mkOption {
       default = [];
       type = types.listOf (types.either types.str (types.attrsOf types.str));
@@ -40,14 +36,6 @@ in
     map-sys-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
     map-service-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
 
-    map-home-files = files: builtins.map (f: {
-      parentDirectory = {
-        user = "colin";
-        group = "users";
-        mode = "0755";
-      };
-      file = "/home/colin/${f}";
-    }) files;
   in mkIf cfg.enable {
     sane.image.extraDirectories = [ "/nix/persist/var/log" ];
     environment.persistence."/nix/persist" = {
@@ -107,7 +95,7 @@ in
         # "/etc/group"
         # "/etc/passwd"
         # "/etc/shadow"
-      ] ++ map-home-files cfg.home-files;
+      ];
     };
 
     systemd.services.sane-sops = {

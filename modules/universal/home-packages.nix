@@ -114,7 +114,7 @@ let
     tdesktop  # broken on phosh
 
     # vlc remembers play position in ~/.config/vlc/vlc-qt-interface.conf
-    { pkg = vlc; persist-files = [ ".config/vlc/vlc-qt-interface.conf" ]; }
+    { pkg = vlc; dir = ".config/vlc"; }
 
     whalebird # pleroma client. input is broken on phosh
     xdg-utils  # for xdg-open
