@@ -36,8 +36,8 @@
   # This will automatically import SSH keys as age keys
   sops.age.sshKeyPaths = [
     "/etc/ssh/ssh_host_ed25519_key"
-    # "/home/colin/.ssh/id_ed25519_dec"
   ];
+  sops.gnupg.sshKeyPaths = [];  # disable RSA key import
   # This is using an age key that is expected to already be in the filesystem
   # sops.age.keyFile = "/home/colin/.ssh/age.pub";
   # sops.age.keyFile = "/var/lib/sops-nix/key.txt";

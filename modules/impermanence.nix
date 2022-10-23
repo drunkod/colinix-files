@@ -7,6 +7,8 @@
 with lib;
 let
   cfg = config.sane.impermanence;
+  # taken from sops-nix code: checks if any secrets are needed to create /etc/shadow
+  secretsForUsers = (lib.filterAttrs (_: v: v.neededForUsers) config.sops.secrets) != {};
 in
 {
   options = {
@@ -84,6 +86,24 @@ in
 
     # secret decoding depends on /etc/ssh keys, which are persisted
     system.activationScripts.setupSecrets.deps = [ "persist-files" ];
+    # `setupSecretsForUsers` should depend on `persist-files`,
+    # but `persist-files` itself depends on `users`, to this would be circular.
+    # we work around that by manually mounting the ssh host key.
+    # strictly speaking, this makes the `setupSecrets -> persist-files` dep extraneous,
+    # but it's a decent safety net in case something goes wrong.
+    # system.activationScripts.setupSecretsForUsers.deps = [ "persist-files" ];
+    system.activationScripts.setupSecretsForUsers= lib.mkIf secretsForUsers {
+      deps = [ "persist-ssh-host-key" ];
+    };
+    system.activationScripts.persist-ssh-host-key = lib.mkIf secretsForUsers (
+      let
+        key = "/etc/ssh/ssh_host_ed25519_key";
+      in ''
+        mkdir -p /etc/ssh
+        touch ${key}
+        mount -o bind /nix/persist${key} ${key}
+      ''
+    );
   };
 }
 

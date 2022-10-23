@@ -31,3 +31,9 @@ creation_rules:
       - *user_desko_colin
       - *user_lappy_colin
       - *host_desko
+  - path_regex: secrets/lappy.yaml$
+    key_groups:
+    - age:
+      - *user_lappy_colin
+      - *user_desko_colin
+      - *host_lappy

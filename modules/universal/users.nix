@@ -43,7 +43,12 @@ in
         "feedbackd"
         "dialout" # required for modem access
       ];
+
+      # initial password is empty, in case anything goes wrong.
+      # if `colin-passwd` (a password hash) is successfully found/decrypted, that becomes the password at boot.
       initialPassword = lib.mkDefault "";
+      passwordFile = lib.mkIf (config.sops.secrets ? "colin-passwd") config.sops.secrets.colin-passwd.path;
+
       shell = pkgs.zsh;
       # shell = pkgs.bashInteractive;
       # XXX colin: create ssh key for THIS user by logging in and running:
