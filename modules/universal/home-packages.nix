@@ -84,6 +84,7 @@ let
     { pkg = gpodder-configured; dir = "gPodder/Downloads"; }
 
     gthumb
+    handbrake
     inkscape
 
     kid3  # audio tagging
