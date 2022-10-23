@@ -5,8 +5,13 @@ set -ex
 # make sure the mountpoint exists
 if ! (test -e /mnt/iphone)
 then
-  sudo mkdir /mnt/iphone
-  sudo chown colin:users /mnt/iphone
+  sudo umount /mnt/iphone || true  # maybe the mount hung
+
+  if ! (test -e /mnt/iphone)
+  then
+    sudo mkdir /mnt/iphone
+    sudo chown colin:users /mnt/iphone
+  fi
 fi
 
 # make sure the device is mounted
