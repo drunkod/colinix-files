@@ -82,19 +82,8 @@ in
       ];
     };
 
-    systemd.services.sane-sops = {
-      # TODO: it would be better if we could inject the right dependency into setupSecrets instead of patching like this.
-      # /run/current-system/activate contains the precise ordering logic.
-      # it's largely unaware of systemd.
-      # maybe we could insert some activation script which simply waits for /etc/ssh to appear?
-      description = "sops relies on /etc/ssh being available, so re-run its activation AFTER fs-local";
-      script = ''
-      ${config.system.activationScripts.setupSecrets.text}
-      ${config.system.activationScripts.linkIwdKeys.text}
-      '';
-      after = [ "fs-local.target" ];
-      wantedBy = [ "multi-user.target" ];
-    };
+    # secret decoding depends on /etc/ssh keys, which are persisted
+    system.activationScripts.setupSecrets.deps = [ "persist-files" ];
   };
 }
 

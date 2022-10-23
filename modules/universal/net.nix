@@ -22,6 +22,7 @@
   networking.wireless.iwd.enable = true;
   networking.networkmanager.wifi.backend = "iwd";
 
+  # TODO: don't need to depend on binsh if we were to use a nix-style shebang
   system.activationScripts.linkIwdKeys = let
     unwrapped = ../../scripts/install-iwd;
     install-iwd = pkgs.writeShellApplication {
@@ -30,7 +31,7 @@
       text = ''${unwrapped} "$@"'';
     };
   in (lib.stringAfter
-    [ "setupSecrets" ]
+    [ "setupSecrets" "binsh" ]
     ''
     mkdir -p /var/lib/iwd
     ${install-iwd}/bin/install-iwd /run/secrets/iwd /var/lib/iwd
