@@ -13,9 +13,15 @@
   # TODO: we could *maybe* inject pkgs.buildPackages.xyz = cross.buildPackages.xyz?
   documentation.nixos.enable = false;
 
-  # XXX colin: phosh doesn't work well with passwordless login
+  # XXX colin: phosh doesn't work well with passwordless login,
+  # so set this more reliable default password should anything go wrong
   users.users.colin.initialPassword = "147147";
   services.getty.autologinUser = "root";  # allows for emergency maintenance?
+
+  sops.secrets.colin-passwd = {
+    sopsFile = ../../secrets/moby.yaml;
+    neededForUsers = true;
+  };
 
   # usability compromises
   sane.impermanence.home-dirs = [
