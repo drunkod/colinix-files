@@ -18,9 +18,18 @@
   # docs:
   # - <https://nixos.wiki/wiki/Iwd>
   # - <https://iwd.wiki.kernel.org/networkmanager>
+  # - `man iwd.config`  for global config
+  # - `man iwd.network` for per-SSID config
   # use `iwctl` to control
-  networking.wireless.iwd.enable = true;
   networking.networkmanager.wifi.backend = "iwd";
+  networking.wireless.iwd.enable = true;
+  networking.wireless.iwd.settings = {
+    # auto-connect to a stronger network if signal drops below this value
+    # bedroom -> bedroom connection is -35 to -40 dBm
+    # bedroom -> living room connection is -60 dBm
+    General.RoamThreshold = "-52";  # default -70
+    General.RoamThreshold5G = "-52";  # default -76
+  };
 
   # TODO: don't need to depend on binsh if we were to use a nix-style shebang
   system.activationScripts.linkIwdKeys = let
