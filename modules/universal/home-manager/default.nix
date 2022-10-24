@@ -10,10 +10,10 @@ with lib;
 let
   cfg = config.sane.home-manager;
   # extract package from `extraPackages`
-  pkglist = pkgspec: builtins.map (e: e.pkg or e) pkgspec;
+  pkg-list = pkgspec: builtins.map (e: e.pkg or e) pkgspec;
   # extract `dir` from `extraPackages`
-  dirlist = pkgspec: builtins.concatLists (builtins.map (e: if e ? "dir" then [ e.dir ] else []) pkgspec);
-  # TODO: dirlist and persistfileslist should be folded
+  dir-list = pkgspec: builtins.concatLists (builtins.map (e: if e ? "dir" then [ e.dir ] else []) pkgspec);
+  private-list = pkgspec: builtins.concatLists (builtins.map (e: if e ? "private" then [ e.private ] else []) pkgspec);
   feeds = import ./feeds.nix { inherit lib; };
 in
 {
@@ -64,7 +64,7 @@ in
       "Music"
       "Pictures"
       "Videos"
-    ] ++ (dirlist cfg.extraPackages);
+    ] ++ (dir-list cfg.extraPackages);
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
@@ -78,7 +78,7 @@ in
       manual.html.enable = false;  # TODO: set to true later (build failure)
       manual.manpages.enable = false;  # TODO: enable after https://github.com/nix-community/home-manager/issues/3344
 
-      home.packages = pkglist cfg.extraPackages;
+      home.packages = pkg-list cfg.extraPackages;
       wayland.windowManager = cfg.windowManager;
 
       home.stateVersion = "21.11";
@@ -93,9 +93,27 @@ in
         };
       };
 
-      # ssh key is stored in private storage
-      home.file.".ssh/id_ed25519".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/private/.ssh/id_ed25519";
-      home.file.".ssh/id_ed25519.pub".text = (import ../pubkeys.nix)."${sysconfig.networking.hostName}";
+
+      home.file = let
+        privates = builtins.listToAttrs (
+          builtins.map (path: {
+            name = path;
+            value = { source = config.lib.file.mkOutOfStoreSymlink "/home/colin/private/${path}"; };
+          })
+          (private-list cfg.extraPackages)
+        );
+      in {
+        # ssh key is stored in private storage
+        ".ssh/id_ed25519".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/private/.ssh/id_ed25519";
+        ".ssh/id_ed25519.pub".text = (import ../pubkeys.nix)."${sysconfig.networking.hostName}";
+
+        # convenience
+        "knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/knowledge";
+        "nixos".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/nixos";
+        "Videos/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Videos";
+        "Videos/servo-incomplete".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/incomplete";
+        "Music/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Music";
+      } // privates;
 
       # XDG defines things like ~/Desktop, ~/Downloads, etc.
       # these clutter the home, so i mostly don't use them.
@@ -147,12 +165,6 @@ in
         "audio/x-vorbis+ogg" = [ audio ];
       };
 
-      # convenience
-      home.file."knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/knowledge";
-      home.file."nixos".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/nixos";
-      home.file."Videos/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Videos";
-      home.file."Videos/servo-incomplete".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/incomplete";
-      home.file."Music/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Music";
 
       xdg.configFile."gpodderFeeds.opml".text = with feeds;
         feedsToOpml feeds.podcasts;

@@ -53,7 +53,7 @@ let
     electrum
 
     # creds/session keys, etc
-    { pkg = element-desktop; dir = ".config/Element"; }
+    { pkg = element-desktop; private = ".config/Element"; }
 
     emote  # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
     evince  # works on phosh
