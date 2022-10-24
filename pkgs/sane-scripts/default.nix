@@ -49,8 +49,9 @@ resholve.mkDerivation {
           "umount"
           "sudo"
 
-          # this is actually internal; probably a better fix
+          # these are used internally; probably a better fix
           "sane-mount-servo"
+          "sane-private-unlock"
         ];
       };
 
