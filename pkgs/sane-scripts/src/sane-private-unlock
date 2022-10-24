@@ -7,4 +7,5 @@ set -ex
 
 mount=/home/colin/private
 cipher="/nix/persist$mount"
+mkdir -p "$mount"
 gocryptfs "$cipher" "$mount"
