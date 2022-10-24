@@ -18,6 +18,11 @@
   users.users.usbmux.uid = config.sane.allocations.usbmux-uid;
   users.groups.usbmux.gid = config.sane.allocations.usbmux-gid;
 
+  sops.secrets.colin-passwd = {
+    sopsFile = ../../secrets/desko.yaml;
+    neededForUsers = true;
+  };
+
   # default config: https://man.archlinux.org/man/snapper-configs.5
   # defaults to something like:
   #   - hourly snapshots
