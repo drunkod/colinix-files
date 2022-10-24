@@ -1,3 +1,13 @@
+# speed up builds from e.g. moby or lappy by having them query desko and servo first.
+# if one of these hosts is offline, instead manually specify just cachix:
+# - `nixos-rebuild --option substituters https://cache.nixos.org/`
+#
+# future improvements:
+# - apply for community arm build box:
+#   - <https://github.com/nix-community/aarch64-build-box>
+# - don't require all substituters to be online:
+#   - <https://github.com/NixOS/nix/pull/7188>
+
 { lib, config, ... }:
 
 with lib;
