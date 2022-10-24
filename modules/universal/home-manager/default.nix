@@ -93,6 +93,10 @@ in
         };
       };
 
+      # ssh key is stored in private storage
+      home.file.".ssh/id_ed25519".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/private/.ssh/id_ed25519";
+      home.file.".ssh/id_ed25519.pub".text = (import ../pubkeys.nix)."${sysconfig.networking.hostName}";
+
       # XDG defines things like ~/Desktop, ~/Downloads, etc.
       # these clutter the home, so i mostly don't use them.
       xdg.userDirs = {

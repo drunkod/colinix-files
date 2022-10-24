@@ -70,7 +70,6 @@ in
       ".cache"
       ".cargo"
       ".rustup"
-      ".ssh"
       ".local/share/keyrings"
     ];
 
