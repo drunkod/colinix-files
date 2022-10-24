@@ -46,13 +46,11 @@
       specialArgs = { inherit mobile-nixos home-manager impermanence; };
       modules = [
         ./modules
-        ./machines/${name}
-        (import ./helpers/set-hostname.nix name)
+        (import ./machines/instantiate.nix name)
         home-manager.nixosModule
         impermanence.nixosModule
         sops-nix.nixosModules.sops
         {
-          nixpkgs.config.allowUnfree = true;
           nixpkgs.overlays = [
             (import "${mobile-nixos}/overlay/overlay.nix")
             uninsane.overlay
