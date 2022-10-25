@@ -96,6 +96,7 @@ in rec {
     (mkText "https://anish.lakhwara.com/home.html" // tech // weekly)
 
     # (TECH; POL) COMMENTATORS
+    (mkSubstack "edwardsnowden" // pol // infrequent)
     (mkText "http://benjaminrosshoffman.com/feed" // pol // weekly)
     ## Ben Thompson
     (mkText "https://www.stratechery.com/rss" // pol // weekly)
