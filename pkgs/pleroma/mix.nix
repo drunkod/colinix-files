@@ -34,7 +34,6 @@ let
       beamDeps = [ custom_base ];
     };
 
-    # base64url = buildMix rec {
     base64url = buildRebar3 rec {
       name = "base64url";
       version = "0.0.1";
@@ -362,12 +361,12 @@ let
 
     eblurhash = buildRebar3 rec {
       name = "eblurhash";
-      version = "1.1.0";
+      version = "1.2.2";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "07dmkbyafpxffh8ar6af4riqfxiqc547rias7i73gpgx16fqhsrf";
+        sha256 = "0k040pj8hlm8mwy0ra459hk35v9gfsvvgp596nl27q2dj00cl84c";
       };
 
       beamDeps = [];
@@ -1646,5 +1645,19 @@ let
 
       beamDeps = [ httpoison jose ];
     };
+
+    websockex = buildMix rec {
+      name = "websockex";
+      version = "0.4.3";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "1r2kmi2pcmdzvgbd08ci9avy0g5p2lhx80jn736a98w55c3ygwlm";
+      };
+
+      beamDeps = [];
+    };
   };
 in self
+

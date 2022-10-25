@@ -74,9 +74,10 @@
     config :pleroma, configurable_from_database: false
 
     # strip metadata from uploaded images
-    config :pleroma, Pleroma.Upload, filters: [Pleroma.Upload.Filter.Exiftool]
+    config :pleroma, Pleroma.Upload, filters: [Pleroma.Upload.Filter.Exiftool.StripLocation]
 
     # TODO: GET /api/pleroma/captcha is broken
+    # there was a nixpkgs PR to fix this around 2022/10 though.
     config :pleroma, Pleroma.Captcha,
       enabled: false,
       method: Pleroma.Captcha.Native
