@@ -1,6 +1,7 @@
 { lib, beamPackages
 , fetchFromGitHub, fetchFromGitLab
 , file, cmake, bash
+, libxcrypt
 , nixosTests, writeText
 , cookieFile ? "/var/lib/pleroma/.cookie"
 , ...
@@ -14,11 +15,10 @@ beamPackages.mixRelease rec {
     domain = "git.pleroma.social";
     owner = "pleroma";
     repo = "pleroma";
-    rev = "4605efe272016a5ba8ba6e96a9bec9a6e40c1591";
+    rev = "7a519b6a6607bc1dd22e6a3450aebf0f1ff11fb8";
     # to update: uncomment the null hash, run nixos-rebuild and
     # compute the new hash with `nix to-sri sha256:<output from failed nix build>`
-    # sha256 = "sha256-0000000000000000000000000000000000000000000=";
-    sha256 = "sha256-Dp1kTUDfNC7EDoK9WToXkUvsj7v66eKuD15le5IZgiY=";
+    sha256 = "sha256-6NglBcEGEvRlYMnVNB8kr4i/fccrzO6mnyp3X+O0m74=";
   };
 
   preFixup = if (cookieFile != null) then ''
@@ -72,29 +72,49 @@ beamPackages.mixRelease rec {
         name = "crypt";
         version = "0.4.3";
 
-        src = fetchFromGitHub {
-          owner = "msantos";
+        # src = fetchFromGitHub {
+        #   owner = "msantos";
+        #   repo = "crypt";
+        #   rev = "f75cd55325e33cbea198fb41fe41871392f8fb76";
+        #   sha256 = "sha256-ZYhZTe7cTITkl8DZ4z2IOlxTX5gnbJImu/lVJ2ZjR1o=";
+        # };
+
+        # this is the old crypt, from before 2021/09/21.
+        # nixpkgs still uses this as of 2022-10-24 and it works.
+        src = fetchFromGitLab {
+          domain = "git.pleroma.social";
+          group = "pleroma";
+          owner = "elixir-libraries";
           repo = "crypt";
-          rev = "f75cd55325e33cbea198fb41fe41871392f8fb76";
-          sha256 = "sha256-ZYhZTe7cTITkl8DZ4z2IOlxTX5gnbJImu/lVJ2ZjR1o=";
+          rev = "cf2aa3f11632e8b0634810a15b3e612c7526f6a3";
+          sha256 = "sha256-48QIsgyEaDzvnihdsFy7pYURLFcb9G8DXIrf5Luk3zo=";
         };
 
         postInstall = "mv $out/lib/erlang/lib/crypt-${version}/priv/{source,crypt}.so";
 
         beamDeps = with final; [ elixir_make ];
+        buildInputs = [ libxcrypt ];
       };
       prometheus_ex = beamPackages.buildMix rec {
         name = "prometheus_ex";
         version = "3.0.5";
 
-        src = fetchFromGitLab {
-          domain = "git.pleroma.social";
-          group = "pleroma";
-          owner = "elixir-libraries";
+        src = fetchFromGitHub {
+          owner = "lanodan";
           repo = "prometheus.ex";
-          rev = "a4e9beb3c1c479d14b352fd9d6dd7b1f6d7deee5";
-          sha256 = "1v0q4bi7sb253i8q016l7gwlv5562wk5zy3l2sa446csvsacnpjk";
+          # branch = "fix/elixir-1.14";
+          rev = "31f7fbe4b71b79ba27efc2a5085746c4011ceb8f";
+          sha256 = "sha256-2PZP+YnwnHt69HtIAQvjMBqBbfdbkRSoMzb1AL2Zsyc=";
         };
+
+        # src = fetchFromGitLab {
+        #   domain = "git.pleroma.social";
+        #   group = "pleroma";
+        #   owner = "elixir-libraries";
+        #   repo = "prometheus.ex";
+        #   rev = "a4e9beb3c1c479d14b352fd9d6dd7b1f6d7deee5";
+        #   sha256 = "1v0q4bi7sb253i8q016l7gwlv5562wk5zy3l2sa446csvsacnpjk";
+        # };
         beamDeps = with final; [ prometheus ];
       };
       prometheus_phx = beamPackages.buildMix rec {
@@ -109,8 +129,8 @@ beamPackages.mixRelease rec {
           group = "pleroma";
           owner = "elixir-libraries";
           repo = "prometheus-phx";
-          rev = "9cd8f248c9381ffedc799905050abce194a97514";
-          sha256 = "0211z4bxb0bc0zcrhnph9kbbvvi1f2v95madpr96pqzr60y21cam";
+          rev = "0c950ac2d145b1ee3fc8ee5c3290ccb9ef2331e9";
+          sha256 = "sha256-HjN0ku1q5aNtrhHopch0wpp4Z+dMCGj5GxHroiz5u/w=";
         };
         beamDeps = with final; [ prometheus_ex ];
       };

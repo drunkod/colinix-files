@@ -1,10 +1,16 @@
+in pleroma checkout:
+- grab version: `rg 'version: ' mix.exs`
+
 in default.nix:
-  update `rev` and recompute sha256.
-    use nix to-sri sha256:<expected>
+- update `rev` and recompute sha256.
 
-run mix2nix inside the pleroma git root and pipe the output into mix.nix
-  inside default.nix, update all git mix deps
-  inside mix.nix, change base64url to use buildRebar3 instead of buildMix
+in pleroma checkout:
+- `mix2nix > mix.nix`
 
-move majic from mix.nix -> default.nix and add:
-  buildInputs = [ file ];
+in nix repo:
+- cp the new mix.nix here.
+- move majic from mix.nix -> default.nix and add:
+        - buildInputs = [ file ];
+- update `mixNixDeps` in default.nix:
+        - grab the version from pleroma/mix.exs or mix.lock
+- redundant?: inside mix.nix, change base64url to use buildRebar3 instead of buildMix
