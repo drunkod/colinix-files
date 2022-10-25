@@ -75,6 +75,7 @@ in rec {
     (mkText "https://www.rifters.com/crawl/?feed=rss2" // uncat // weekly)
 
     # DEVELOPERS
+    (mkText "https://uninsane.org/atom.xml" // infrequent // tech)
     (mkText "https://mg.lol/blog/rss/" // infrequent // tech)
     ## Ken Shirriff
     (mkText "https://www.righto.com/feeds/posts/default" // tech // infrequent)
