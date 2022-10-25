@@ -71,17 +71,7 @@ in
         #
         # servo additions:
       ] ++ cfg.service-dirs);
-      files = [
-        "/etc/machine-id"
-        "/etc/ssh/ssh_host_ed25519_key"
-        "/etc/ssh/ssh_host_ed25519_key.pub"
-        "/etc/ssh/ssh_host_rsa_key"
-        "/etc/ssh/ssh_host_rsa_key.pub"
-        # # XXX these only need persistence because i have mutableUsers = true, i think
-        # "/etc/group"
-        # "/etc/passwd"
-        # "/etc/shadow"
-      ];
+      files = [ "/etc/machine-id" ];
     };
 
     # secret decoding depends on /etc/ssh keys, which are persisted
@@ -93,15 +83,14 @@ in
     # but it's a decent safety net in case something goes wrong.
     # system.activationScripts.setupSecretsForUsers.deps = [ "persist-files" ];
     system.activationScripts.setupSecretsForUsers= lib.mkIf secretsForUsers {
-      deps = [ "persist-ssh-host-key" ];
+      deps = [ "persist-ssh-host-keys" ];
     };
-    system.activationScripts.persist-ssh-host-key = lib.mkIf secretsForUsers (
+    system.activationScripts.persist-ssh-host-keys = lib.mkIf secretsForUsers (
       let
-        key = "/etc/ssh/ssh_host_ed25519_key";
+        key_dir = "/etc/ssh/host_keys";
       in ''
-        mkdir -p /etc/ssh
-        touch ${key}
-        mount -o bind /nix/persist${key} ${key}
+        mkdir -p ${key_dir}
+        mount -o bind /nix/persist${key_dir} ${key_dir}
       ''
     );
   };

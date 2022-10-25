@@ -35,7 +35,7 @@
   sops.defaultSopsFile = ./../../secrets/universal.yaml;
   # This will automatically import SSH keys as age keys
   sops.age.sshKeyPaths = [
-    "/etc/ssh/ssh_host_ed25519_key"
+    "/etc/ssh/host_keys/ssh_host_ed25519_key"
   ];
   sops.gnupg.sshKeyPaths = [];  # disable RSA key import
   # This is using an age key that is expected to already be in the filesystem
