@@ -18,9 +18,13 @@ let
   podcast = { format = "podcast"; };
 
   mkRss = format: url: { inherit url format; } // uncat // infrequent;
+  # format-specific helpers
   mkText = mkRss text;
   mkImg = mkRss image;
   mkPod = mkRss podcast;
+
+  # host-specific helpers
+  mkSubstack = subdomain: mkText "https://${subdomain}.substack.com/feed";
 
   # merge the attrs `new` into each value of the attrs `addTo`
   addAttrs = new: addTo: builtins.mapAttrs (k: v: v // new) addTo;
@@ -100,15 +104,15 @@ in rec {
     (mkText "https://www.ben-evans.com/benedictevans/rss.xml" // pol // weekly)
     (mkText "https://www.lynalden.com/feed" // pol // infrequent)
     (mkText "https://austinvernon.site/rss.xml" // tech // infrequent)
-    (mkText "https://oversharing.substack.com/feed" // pol // daily)
-    (mkText "https://doomberg.substack.com/feed" // tech // weekly)
+    (mkSubstack "oversharing" // pol // daily)
+    (mkSubstack "doomberg" // tech // weekly)
     ## David Rosenthal
     (mkText "https://blog.dshr.org/rss.xml" // pol // weekly)
     ## Matt Levine
     (mkText "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" // pol // weekly)
 
     # RATIONALITY/PHILOSOPHY/ETC
-    (mkText "https://samkriss.substack.com/feed" // humor // infrequent)
+    (mkSubstack "samkriss" // humor // infrequent)
     (mkText "https://unintendedconsequenc.es/feed" // rat // infrequent)
     (mkText "https://applieddivinitystudies.com/atom.xml" // rat // weekly)
     (mkText "https://slimemoldtimemold.com/feed.xml" // rat // weekly)
@@ -119,7 +123,7 @@ in rec {
     ## Robin Hanson
     (mkText "https://www.overcomingbias.com/feed" // rat // daily)
     ## Scott Alexander
-    (mkText "https://astralcodexten.substack.com/feed.xml" // rat // daily)
+    (mkSubstack "astralcodexten" // rat // daily)
     ## Paul Christiano
     (mkText "https://sideways-view.com/feed" // rat // infrequent)
     ## Sean Carroll
