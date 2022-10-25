@@ -105,7 +105,11 @@ in
       in {
         # ssh key is stored in private storage
         ".ssh/id_ed25519".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/private/.ssh/id_ed25519";
-        ".ssh/id_ed25519.pub".text = (import ../pubkeys.nix)."${sysconfig.networking.hostName}";
+        ".ssh/id_ed25519.pub".text = (import ../pubkeys.nix).users."${sysconfig.networking.hostName}";
+        # alternatively: use `programs.ssh.userKnownHostsFile`
+        ".ssh/known_hosts".text = builtins.concatStringsSep
+          "\n"
+          (builtins.attrValues (import ../pubkeys.nix).hosts);
 
         # convenience
         "knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/knowledge";
