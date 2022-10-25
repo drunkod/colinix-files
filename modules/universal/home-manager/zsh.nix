@@ -22,6 +22,9 @@
       # see for an example: <https://filipe.kiss.ink/zmv-zsh-rename/>
       autoload -Uz zmv
 
+      # disable `rm *` confirmations
+      setopt rmstarsilent
+
       function nd() {
         mkdir -p "$1";
         pushd "$1";
@@ -44,9 +47,8 @@
         "prompt"
         "git"
       ];
-      prompt = {
-        theme = "powerlevel10k";
-      };
+      prompt.theme = "powerlevel10k";
+      utility.safeOps = false;  # disable `mv` confirmation (and supposedly `rm`, too)
     };
   };
 
