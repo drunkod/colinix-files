@@ -48,6 +48,7 @@ let
     # GUI only
     aerc  # email client
     audacity
+    celluloid  # mpv frontend
     chromium
     clinfo
     electrum
