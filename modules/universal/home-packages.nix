@@ -10,6 +10,8 @@ let
     duplicity
     gnupg
     gocryptfs
+    gopass
+    gopass-jsonapi
     ifuse
     ipfs
     libimobiledevice
