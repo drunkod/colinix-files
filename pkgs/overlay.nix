@@ -37,6 +37,8 @@
 
   gocryptfs = prev.callPackage ./gocryptfs { pkgs = prev; };
 
+  browserpass = prev.callPackage ./browserpass { pkgs = prev; };
+
   #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
   kaiteki = prev.callPackage ./kaiteki { };
   lightdm-mobile-greeter = prev.callPackage ./lightdm-mobile-greeter { pkgs = next; };

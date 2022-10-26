@@ -13,10 +13,10 @@ let
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
     inherit (pkgs.librewolf-unwrapped) extraPrefsFiles;
     libName = "librewolf";
-    # cfg = {
-    #   enableBrowserpass = true;
-    # };
-    extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
+
+    extraNativeMessagingHosts = [ pkgs.browserpass ];
+    # extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
+
     extraPolicies = {
       NoDefaultBookmarks = true;
       SearchEngines = {
@@ -38,8 +38,8 @@ let
           "https://addons.mozilla.org/firefox/downloads/latest/sponsorblock/latest.xpi"
           "https://addons.mozilla.org/firefox/downloads/latest/bypass-paywalls-clean/latest.xpi"
           "https://addons.mozilla.org/firefox/downloads/latest/sidebery/latest.xpi"
-          # "https://addons.mozilla.org/firefox/downloads/latest/browserpass-ce/latest.xpi"
-          "https://addons.mozilla.org/firefox/downloads/latest/gopass-bridge/latest.xpi"
+          "https://addons.mozilla.org/firefox/downloads/latest/browserpass-ce/latest.xpi"
+          # "https://addons.mozilla.org/firefox/downloads/latest/gopass-bridge/latest.xpi"
           "https://addons.mozilla.org/firefox/downloads/latest/ether-metamask/latest.xpi"
         ];
         # remove many default search providers
