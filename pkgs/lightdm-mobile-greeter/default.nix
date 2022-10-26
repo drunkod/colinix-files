@@ -11,16 +11,20 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "lightdm-mobile-greeter";
-  version = "0.1.2";
+  version = "6";
 
   src = fetchFromGitea {
-    domain = "git.uninsane.org";
-    owner = "colin";
+    domain = "git.raatty.club";
+    owner = "raatty";
     repo = "lightdm-mobile-greeter";
-    rev = "v${version}";
-    hash = "sha256-x7tpaHYDg6BPIc3k3zzPvZma0RYuGAMQ/z6vAP0wbWs=";
+    rev = "${version}";
+    hash = "sha256-uqsYOHRCOmd3tpJdndZFQ/tznZ660NhB+gE2154kJuM=";
   };
-  cargoHash = "sha256-5WJGnLdZd4acKPEkkTS71n4gfxhlujHWnwiMsomTYck=";
+  cargoHash = "sha256-JV8NQdZAG4EetRHwbi0dD0uIOUkn5hvzry+5WB7TCO4=";
+
+  cargoPatches = [
+    ./cargo_lock-fix_lightdm_rs_url.patch
+  ];
 
   buildInputs = [
     gtk3

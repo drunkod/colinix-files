@@ -1,0 +1,28 @@
+commit c2a3a5eff2edc95108a21fc02c420a8aaa19accd
+Author: colin <colin@uninsane.org>
+Date:   Tue Oct 25 20:59:20 2022 -0700
+
+    Cargo.lock: update lightdm-rs URLs
+
+diff --git a/Cargo.lock b/Cargo.lock
+index 1051644..72d09e6 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -362,7 +362,7 @@ dependencies = [
+ [[package]]
+ name = "light-dm-sys"
+ version = "0.0.1"
+-source = "git+https://raatty.club:3000/raatty/lightdm-rs.git#a3c669583bb932e2b25372048b1e9dbda1f10e11"
++source = "git+https://git.raatty.club/raatty/lightdm-rs.git#a3c669583bb932e2b25372048b1e9dbda1f10e11"
+ dependencies = [
+  "gio-sys",
+  "glib-sys",
+@@ -374,7 +374,7 @@ dependencies = [
+ [[package]]
+ name = "lightdm"
+ version = "0.1.0"
+-source = "git+https://raatty.club:3000/raatty/lightdm-rs.git#a3c669583bb932e2b25372048b1e9dbda1f10e11"
++source = "git+https://git.raatty.club/raatty/lightdm-rs.git#a3c669583bb932e2b25372048b1e9dbda1f10e11"
+ dependencies = [
+  "gio",
+  "gio-sys",
