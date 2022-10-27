@@ -33,14 +33,19 @@ let
       DisablePocket = true;
       DisableSetDesktopBackground = false;
       Extensions = {
-        Install = [
-          "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
-          "https://addons.mozilla.org/firefox/downloads/latest/sponsorblock/latest.xpi"
-          "https://addons.mozilla.org/firefox/downloads/latest/bypass-paywalls-clean/latest.xpi"
-          "https://addons.mozilla.org/firefox/downloads/latest/sidebery/latest.xpi"
-          "https://addons.mozilla.org/firefox/downloads/latest/browserpass-ce/latest.xpi"
+        Install = let
+          addon = pkg: addonId: "${pkg}/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/${addonId}.xpi";
+        in with pkgs.firefox-addons; [
+          # the extension key is found by building and checking the output: `nix build '.#rycee.firefox-addons.<foo>'`
+          # or by taking the `addonId` input to `buildFirefoxXpiAddon` in rycee's firefox-addons repo
+          (addon ublock-origin "uBlock0@raymondhill.net")
+          (addon sponsorblock "sponsorBlocker@ajay.app")
+          (addon bypass-paywalls-clean "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}")
+          (addon sidebery "{3c078156-979c-498b-8990-85f7987dd929}")
+          (addon browserpass "browserpass@maximbaz.com")
+          (addon metamask "webextension@metamask.io")
+          # extensions can alternatively be installed by URL, in which case they are fetched (and cached) on first run.
           # "https://addons.mozilla.org/firefox/downloads/latest/gopass-bridge/latest.xpi"
-          "https://addons.mozilla.org/firefox/downloads/latest/ether-metamask/latest.xpi"
         ];
         # remove many default search providers
         Uninstall = [

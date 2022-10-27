@@ -14,6 +14,10 @@
       url = "github:nix-community/home-manager/release-22.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    rycee = {
+      url = "gitlab:rycee/nur-expressions";
+      flake = false;
+    };
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,8 +29,17 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-stable, mobile-nixos, home-manager, sops-nix, impermanence, uninsane }:
-  let
+  outputs = {
+    self,
+    nixpkgs,
+    nixpkgs-stable,
+    mobile-nixos,
+    home-manager,
+    rycee,
+    sops-nix,
+    impermanence,
+    uninsane
+  }: let
     patchedPkgs = system: nixpkgs.legacyPackages.${system}.applyPatches {
       name = "nixpkgs-patched-uninsane";
       src = nixpkgs;
@@ -53,6 +66,7 @@
         {
           nixpkgs.overlays = [
             (import "${mobile-nixos}/overlay/overlay.nix")
+            (import "${rycee}/overlay.nix")
             uninsane.overlay
             (import ./pkgs/overlay.nix)
             (next: prev: rec {
@@ -101,19 +115,14 @@
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) machines;
     imgs = builtins.mapAttrs (name: value: value.img) machines;
     packages = let
-      custom-x86_64 = customPackagesFor "x86_64-linux" "x86_64-linux";
-      custom-aarch64 = customPackagesFor "aarch64-linux" "aarch64-linux";
-      nixpkgs-x86_64 = nixpkgsFor "x86_64-linux" "x86_64-linux";
-      nixpkgs-aarch64 = nixpkgsFor "aarch64-linux" "aarch64-linux";
+      allPkgsFor = sys: (customPackagesFor sys sys) // {
+        nixpkgs = nixpkgsFor sys sys;
+        uninsane = uninsane.packages."${sys}";
+        rycee = (import "${rycee}/default.nix" { pkgs = nixpkgsFor sys sys; });
+      };
     in {
-      x86_64-linux = custom-x86_64 // {
-        nixpkgs = nixpkgs-x86_64;
-        uninsane = uninsane.packages.x86_64-linux;
-      };
-      aarch64-linux = custom-aarch64 // {
-        nixpkgs = nixpkgs-aarch64;
-        uninsane = uninsane.packages.aarch64-linux;
-      };
+      x86_64-linux = allPkgsFor "x86_64-linux";
+      aarch64-linux = allPkgsFor "aarch64-linux";
     };
   };
 }

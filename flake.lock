@@ -120,8 +120,25 @@
         "mobile-nixos": "mobile-nixos",
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
+        "rycee": "rycee",
         "sops-nix": "sops-nix",
         "uninsane": "uninsane"
+      }
+    },
+    "rycee": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1666843362,
+        "narHash": "sha256-xn2bW9/MT0u8Ptlk+f323p46Q/ktZkzMp7oj5SlYDxU=",
+        "owner": "rycee",
+        "repo": "nur-expressions",
+        "rev": "43d3a363c126968db46585b88b8eb97dd32634ad",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "rycee",
+        "repo": "nur-expressions",
+        "type": "gitlab"
       }
     },
     "sops-nix": {
