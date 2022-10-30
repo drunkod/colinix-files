@@ -75,24 +75,14 @@ in
     };
 
     # secret decoding depends on /etc/ssh keys, which are persisted
-    system.activationScripts.setupSecrets.deps = [ "persist-files" ];
-    # `setupSecretsForUsers` should depend on `persist-files`,
-    # but `persist-files` itself depends on `users`, to this would be circular.
-    # we work around that by manually mounting the ssh host key.
-    # strictly speaking, this makes the `setupSecrets -> persist-files` dep extraneous,
-    # but it's a decent safety net in case something goes wrong.
-    # system.activationScripts.setupSecretsForUsers.deps = [ "persist-files" ];
-    system.activationScripts.setupSecretsForUsers= lib.mkIf secretsForUsers {
+    system.activationScripts.setupSecrets.deps = [ "persist-ssh-host-keys" ];
+    system.activationScripts.setupSecretsForUsers = lib.mkIf secretsForUsers {
       deps = [ "persist-ssh-host-keys" ];
     };
-    system.activationScripts.persist-ssh-host-keys = lib.mkIf secretsForUsers (
-      let
-        key_dir = "/etc/ssh/host_keys";
-      in ''
-        mkdir -p ${key_dir}
-        mount -o bind /nix/persist${key_dir} ${key_dir}
-      ''
-    );
+    system.activationScripts.persist-ssh-host-keys = {
+      text = "mount /etc/ssh/host_keys";
+      deps = [ "createPersistentStorageDirs" ];  # provided by impermanence; ensures both mount endpoints exist
+    };
   };
 }
 
