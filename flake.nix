@@ -78,6 +78,8 @@
               # pinned packages:
               electrum = stable.electrum;  # 2022-10-10: build break
               sequoia = stable.sequoia;    # 2022-10-13: build break
+              # cross-compatible packages
+              gocryptfs = cross.gocryptfs;
             })
           ];
         }
