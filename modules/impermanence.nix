@@ -41,7 +41,7 @@ in
     sane.image.extraDirectories = [ "/nix/persist/var/log" ];
     environment.persistence."/nix/persist" = {
       directories = (map-home-dirs cfg.home-dirs) ++ (map-sys-dirs [
-        # TODO: this `0700` here clobbers the perms for /persist/etc, breaking boot on freshly-deployed devices
+        # NB: this `0700` here clobbers the perms for /persist/etc, breaking boot on freshly-deployed devices
         # { mode = "0700"; directory = "/etc/NetworkManager/system-connections"; }
         # "/etc/nixos"
         # "/etc/ssh"  # persist only the specific files we want, instead
@@ -71,7 +71,15 @@ in
         #
         # servo additions:
       ] ++ cfg.service-dirs);
-      files = [ "/etc/machine-id" ];
+      # /etc/machine-id is a globally unique identifier used for:
+      # - systemd-networkd: DHCP lease renewal (instead of keying by the MAC address)
+      # - systemd-journald: to filter logs by host
+      # - chromium (potentially to track re-installations)
+      # - gdbus; system services that might upgrade to AF_LOCAL if both services can confirm they're on the same machine
+      # of these, systemd-networkd is the only legitimate case to persist the machine-id.
+      # depersisting it should be "safe"; edge-cases like systemd-networkd can be directed to use some other ID if necessary.
+      # nixos-impermanence shows binding the host ssh priv key to this; i could probably hash the host key into /etc/machine-id if necessary.
+      # files = [ "/etc/machine-id" ];
     };
 
     # secret decoding depends on /etc/ssh keys, which may be persisted

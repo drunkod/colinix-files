@@ -7,6 +7,7 @@
     ./home-manager
     ./home-packages.nix
     ./net.nix
+    ./machine-id.nix
     ./secrets.nix
     ./ssh.nix
     ./system-packages.nix
