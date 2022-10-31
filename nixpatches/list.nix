@@ -32,7 +32,7 @@ fetchpatch: [
     # v2 (fetchpatch from upstream PR)
     # url = "https://git.uninsane.org/colin/nixpkgs/commit/730a802808c549220144e4e62aa419bb07c5ae29.diff";
     url = "https://github.com/NixOS/nixpkgs/pull/195985.diff";
-    sha256 = "sha256-zd7WGOTm3ygh0Wk3uiA+1S+RqD9yWDSXvo7veHs0K00=";
+    sha256 = "sha256-PJsjFEqqtNZ5QqXx6pVFAactEIJ7r658KL7g7cDR148=";
   })
 
   # Fix mk flutter app
