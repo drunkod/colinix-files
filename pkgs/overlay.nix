@@ -43,6 +43,7 @@
   kaiteki = prev.callPackage ./kaiteki { };
   lightdm-mobile-greeter = prev.callPackage ./lightdm-mobile-greeter { pkgs = next; };
   gopass-native-messaging-host = prev.callPackage ./gopass-native-messaging-host { };
+  tokodon = prev.libsForQt5.callPackage ./tokodon { };
   # kaiteki = prev.kaiteki;
   # TODO: upstream, or delete nabla
   nabla = prev.callPackage ./nabla { };
