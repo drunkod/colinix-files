@@ -74,15 +74,13 @@ in
       files = [ "/etc/machine-id" ];
     };
 
-    # secret decoding depends on /etc/ssh keys, which are persisted
+    # secret decoding depends on /etc/ssh keys, which may be persisted
     system.activationScripts.setupSecrets.deps = [ "persist-ssh-host-keys" ];
     system.activationScripts.setupSecretsForUsers = lib.mkIf secretsForUsers {
       deps = [ "persist-ssh-host-keys" ];
     };
-    system.activationScripts.persist-ssh-host-keys = {
-      text = "mount /etc/ssh/host_keys";
-      deps = [ "createPersistentStorageDirs" ];  # provided by impermanence; ensures both mount endpoints exist
-    };
+    # populated by ssh.nix, which persists /etc/ssh/host_keys
+    system.activationScripts.persist-ssh-host-keys.text = lib.mkDefault "";
   };
 }
 
