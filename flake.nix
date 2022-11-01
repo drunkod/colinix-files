@@ -14,10 +14,6 @@
       url = "github:nix-community/home-manager/release-22.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    rycee = {
-      url = "gitlab:rycee/nur-expressions";
-      flake = false;
-    };
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -35,7 +31,6 @@
     nixpkgs-stable,
     mobile-nixos,
     home-manager,
-    rycee,
     sops-nix,
     impermanence,
     uninsane
@@ -66,7 +61,6 @@
         {
           nixpkgs.overlays = [
             (import "${mobile-nixos}/overlay/overlay.nix")
-            (import "${rycee}/overlay.nix")
             uninsane.overlay
             (import ./pkgs/overlay.nix)
             (next: prev: rec {
@@ -120,7 +114,6 @@
       allPkgsFor = sys: (customPackagesFor sys sys) // {
         nixpkgs = nixpkgsFor sys sys;
         uninsane = uninsane.packages."${sys}";
-        rycee = (import "${rycee}/default.nix" { pkgs = nixpkgsFor sys sys; });
       };
     in {
       x86_64-linux = allPkgsFor "x86_64-linux";
