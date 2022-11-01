@@ -8,14 +8,50 @@
 
 { config, lib, pkgs, ...}:
 let
-  package = pkgs.wrapFirefox pkgs.librewolf-unwrapped {
+  # allow easy switching between firefox and librewolf with `active`, below
+  librewolfSettings = {
+    browser = pkgs.librewolf-unwrapped;
+    libName = "librewolf";
+    dotDir = ".librewolf";
+  };
+  firefoxSettings = {
+    browser = pkgs.firefox-esr-unwrapped;
+    libName = "firefox";
+    dotDir = ".mozilla/firefox";
+  };
+
+  # active = librewolfSettings;
+  active = firefoxSettings;
+
+  package = pkgs.wrapFirefox active.browser {
     # inherit the default librewolf.cfg
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
     inherit (pkgs.librewolf-unwrapped) extraPrefsFiles;
-    libName = "librewolf";
+    inherit (active) libName;
 
     extraNativeMessagingHosts = [ pkgs.browserpass ];
     # extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
+
+    nixExtensions = let
+      addon = name: extid: hash: pkgs.fetchFirefoxAddon {
+        inherit name hash;
+        url = "https://addons.mozilla.org/firefox/downloads/latest/${name}/latest.xpi";
+        fixedExtid = extid;
+      };
+      localAddon = pkg: pkgs.fetchFirefoxAddon {
+        inherit (pkg) name;
+        src = "${pkg}/share/mozilla/extensions/\\{ec8030f7-c20a-464f-9b0e-13a3a9e97384\\}/${pkg.extid}.xpi";
+        fixedExtid = pkg.extid;
+      };
+    in [
+      (addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-C+VQyaJ8BA0ErXGVTdnppJZ6J9SP+izf6RFxdS4VJoU=")
+      (addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-au5GGn22n4i6VrdOKqNMOrWdMoVCcpLdjO2wwRvyx7E=")
+      (addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-m14onUlnpLDPHezA/soKygcc76tF1fLG52tM/LkbAXQ=")
+      (addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=")
+      (addon "ether-metamask" "webextension@metamask.io" "sha256-dnpwKpNF0KgHMAlz5btkkZySjMsnrXECS35ClkD2XHc=")
+      # (addon "browserpass-ce" "browserpass@maximbaz.com" "sha256-sXgUBbRvMnRpeIW1MTkmTcoqtW/8RDXAkxAq1evFkpc=")
+      (localAddon pkgs.browserpass-extension)
+    ];
 
     extraPolicies = {
       NoDefaultBookmarks = true;
@@ -32,21 +68,8 @@ let
       DisableFeedbackCommands = true;
       DisablePocket = true;
       DisableSetDesktopBackground = false;
+
       Extensions = {
-        Install = let
-          addon = pkg: addonId: "${pkg}/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/${addonId}.xpi";
-        in with pkgs.firefox-addons; [
-          # the extension key is found by building and checking the output: `nix build '.#rycee.firefox-addons.<foo>'`
-          # or by taking the `addonId` input to `buildFirefoxXpiAddon` in rycee's firefox-addons repo
-          (addon ublock-origin "uBlock0@raymondhill.net")
-          (addon sponsorblock "sponsorBlocker@ajay.app")
-          (addon bypass-paywalls-clean "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}")
-          (addon sidebery "{3c078156-979c-498b-8990-85f7987dd929}")
-          (addon browserpass "browserpass@maximbaz.com")
-          (addon metamask "webextension@metamask.io")
-          # extensions can alternatively be installed by URL, in which case they are fetched (and cached) on first run.
-          # "https://addons.mozilla.org/firefox/downloads/latest/gopass-bridge/latest.xpi"
-        ];
         # remove many default search providers
         Uninstall = [
           "google@search.mozilla.org"
@@ -82,7 +105,7 @@ in
     # the specific attribute path is found via scraping ublock code here:
     # - <https://github.com/gorhill/uBlock/blob/master/src/js/storage.js>
     # - <https://github.com/gorhill/uBlock/blob/master/assets/assets.json>
-    home.file.".librewolf/managed-storage/uBlock0@raymondhill.net.json".text = ''
+    home.file."${active.dotDir}/managed-storage/uBlock0@raymondhill.net.json".text = ''
       {
        "name": "uBlock0@raymondhill.net",
        "description": "ignored",
@@ -92,7 +115,7 @@ in
        }
       }
     '';
-    home.file.".librewolf/librewolf.overrides.cfg".text = ''
+    home.file."${active.dotDir}/${active.libName}.overrides.cfg".text = ''
       // if we can't query the revocation status of a SSL cert because the issuer is offline,
       // treat it as unrevoked.
       // see: <https://librewolf.net/docs/faq/#im-getting-sec_error_ocsp_server_error-what-can-i-do>
