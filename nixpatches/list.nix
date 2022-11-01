@@ -6,6 +6,12 @@ fetchpatch: [
     sha256 = "sha256-OczjlQcG7sTM/V9Y9VL/qdwaWPKfjAJsh3czqqhRQig=";
   })
 
+  # vimPlugins.nvim-treesitter: add tree sitter grammars
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/198606.diff";
+    sha256 = "sha256-y+R7He5Op30TCojTHmkdmD0pBvR+ErlmUm8bNGHHJUg=";
+  })
+
 
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).

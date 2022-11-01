@@ -45,7 +45,7 @@
       # config taken from: https://github.com/i077/system/blob/master/modules/home/neovim/default.nix
       # this is required for tree-sitter to even highlight
       ({
-        plugin = (nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars));
+        plugin = nvim-treesitter.withAllGrammars;
         type = "lua";
         config = ''
           require'nvim-treesitter.configs'.setup {
