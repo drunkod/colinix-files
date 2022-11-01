@@ -37,7 +37,7 @@
 
   gocryptfs = prev.callPackage ./gocryptfs { pkgs = prev; };
 
-  browserpass = prev.callPackage ./browserpass { pkgs = prev; };
+  browserpass = prev.callPackage ./browserpass { pkgs = prev; inherit sane-scripts; };
 
   #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
   kaiteki = prev.callPackage ./kaiteki { };

@@ -1,7 +1,9 @@
 { pkgs
 , bash
 , fetchFromGitea
+, gnused
 , lib
+, sane-scripts
 , sops
 , stdenv
 , substituteAll
@@ -13,7 +15,8 @@ let
     version = "0.1.0";
     src = ./.;
 
-    inherit bash sops;
+    inherit bash gnused sops;
+    sane_scripts = sane-scripts;
     installPhase = ''
       mkdir -p $out/bin
       substituteAll ${./sops-gpg-adapter} $out/bin/gpg
