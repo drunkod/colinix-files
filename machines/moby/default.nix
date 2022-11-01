@@ -25,7 +25,7 @@
 
   # usability compromises
   sane.impermanence.home-dirs = [
-    ".librewolf"
+    config.sane.web-browser.dotDir
   ];
 
   # sane.home-packages.enableGuiPkgs = false;  # XXX faster builds/imaging for debugging

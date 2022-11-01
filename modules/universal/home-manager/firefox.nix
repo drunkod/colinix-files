@@ -7,27 +7,29 @@
 # see: https://gitlab.com/librewolf-community/settings/-/blob/master/distribution/policies.json
 
 { config, lib, pkgs, ...}:
+with lib;
 let
-  # allow easy switching between firefox and librewolf with `active`, below
+  cfg = config.sane.web-browser;
+  # allow easy switching between firefox and librewolf with `defaultSettings`, below
   librewolfSettings = {
     browser = pkgs.librewolf-unwrapped;
     libName = "librewolf";
     dotDir = ".librewolf";
+    desktop = "librewolf.desktop";
   };
   firefoxSettings = {
     browser = pkgs.firefox-esr-unwrapped;
     libName = "firefox";
     dotDir = ".mozilla/firefox";
+    desktop = "firefox.desktop";
   };
+  defaultSettings = firefoxSettings;
 
-  # active = librewolfSettings;
-  active = firefoxSettings;
-
-  package = pkgs.wrapFirefox active.browser {
+  package = pkgs.wrapFirefox cfg.browser {
     # inherit the default librewolf.cfg
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
     inherit (pkgs.librewolf-unwrapped) extraPrefsFiles;
-    inherit (active) libName;
+    inherit (cfg) libName;
 
     extraNativeMessagingHosts = [ pkgs.browserpass ];
     # extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
@@ -90,36 +92,44 @@ let
   };
 in
 {
-  # XXX: although home-manager calls this option `firefox`, we can use other browsers and it still mostly works.
-  home-manager.users.colin = lib.mkIf (config.sane.gui.enable) {
-    programs.firefox = {
-      enable = true;
-      inherit package;
+  options = {
+    sane.web-browser = mkOption {
+      default = defaultSettings;
+      type = types.attrs;
     };
+  };
+  config = {
+    # XXX: although home-manager calls this option `firefox`, we can use other browsers and it still mostly works.
+    home-manager.users.colin = lib.mkIf (config.sane.gui.enable) {
+      programs.firefox = {
+        enable = true;
+        inherit package;
+      };
 
-    # uBlock filter list configuration.
-    # specifically, enable the GDPR cookie prompt blocker.
-    # data.toOverwrite.filterLists is additive (i.e. it supplements the default filters)
-    # this configuration method is documented here:
-    # - <https://github.com/gorhill/uBlock/issues/2986#issuecomment-364035002>
-    # the specific attribute path is found via scraping ublock code here:
-    # - <https://github.com/gorhill/uBlock/blob/master/src/js/storage.js>
-    # - <https://github.com/gorhill/uBlock/blob/master/assets/assets.json>
-    home.file."${active.dotDir}/managed-storage/uBlock0@raymondhill.net.json".text = ''
-      {
-       "name": "uBlock0@raymondhill.net",
-       "description": "ignored",
-       "type": "storage",
-       "data": {
-          "toOverwrite": "{\"filterLists\": [\"fanboy-cookiemonster\"]}"
-       }
-      }
-    '';
-    home.file."${active.dotDir}/${active.libName}.overrides.cfg".text = ''
-      // if we can't query the revocation status of a SSL cert because the issuer is offline,
-      // treat it as unrevoked.
-      // see: <https://librewolf.net/docs/faq/#im-getting-sec_error_ocsp_server_error-what-can-i-do>
-      defaultPref("security.OCSP.require", false);
-    '';
+      # uBlock filter list configuration.
+      # specifically, enable the GDPR cookie prompt blocker.
+      # data.toOverwrite.filterLists is additive (i.e. it supplements the default filters)
+      # this configuration method is documented here:
+      # - <https://github.com/gorhill/uBlock/issues/2986#issuecomment-364035002>
+      # the specific attribute path is found via scraping ublock code here:
+      # - <https://github.com/gorhill/uBlock/blob/master/src/js/storage.js>
+      # - <https://github.com/gorhill/uBlock/blob/master/assets/assets.json>
+      home.file."${cfg.dotDir}/managed-storage/uBlock0@raymondhill.net.json".text = ''
+        {
+         "name": "uBlock0@raymondhill.net",
+         "description": "ignored",
+         "type": "storage",
+         "data": {
+            "toOverwrite": "{\"filterLists\": [\"fanboy-cookiemonster\"]}"
+         }
+        }
+      '';
+      home.file."${cfg.dotDir}/${cfg.libName}.overrides.cfg".text = ''
+        // if we can't query the revocation status of a SSL cert because the issuer is offline,
+        // treat it as unrevoked.
+        // see: <https://librewolf.net/docs/faq/#im-getting-sec_error_ocsp_server_error-what-can-i-do>
+        defaultPref("security.OCSP.require", false);
+      '';
+    };
   };
 }

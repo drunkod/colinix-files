@@ -20,9 +20,9 @@ in
   imports = [
     ./aerc.nix
     ./discord.nix
+    ./firefox.nix
     ./git.nix
     ./kitty.nix
-    ./librewolf.nix
     ./mpv.nix
     ./nb.nix
     ./neovim.nix
@@ -134,7 +134,7 @@ in
       # - `xdg-mime query filetype path/to/thing.ext`
       xdg.mimeApps.enable = true;
       xdg.mimeApps.defaultApplications = let
-        www = "librewolf.desktop";
+        www = sysconfig.sane.web-browser.desktop;
         pdf = "org.gnome.Evince.desktop";
         md = "obsidian.desktop";
         thumb = "org.gnome.gThumb.desktop";
