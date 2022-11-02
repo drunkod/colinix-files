@@ -12,7 +12,11 @@ let
   cfg = config.sane.web-browser;
   # allow easy switching between firefox and librewolf with `defaultSettings`, below
   librewolfSettings = {
-    browser = pkgs.librewolf-unwrapped;
+    browser = pkgs.librewolf-unwrapped.overrideAttrs (drv: {
+      # this allows side-loading unsigned addons
+      # TODO: might be allowed to set this to `false`.
+      MOZ_REQUIRE_SIGNING = "";
+    });
     libName = "librewolf";
     dotDir = ".librewolf";
     desktop = "librewolf.desktop";
