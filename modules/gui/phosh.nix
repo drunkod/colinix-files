@@ -85,10 +85,10 @@ in
       services.xserver.displayManager.job.preStart = ''
         ${pkgs.systemd}/bin/busctl call org.freedesktop.Accounts /org/freedesktop/Accounts org.freedesktop.Accounts CacheUser s colin
       '';
-      # # services.xserver.displayManager.defaultSession = "sm.puri.Phosh";  # XXX: not sure why this doesn't propagate correctly.
-      # services.xserver.displayManager.lightdm.extraSeatDefaults = ''
-      #   user-session = phosh
-      # '';
+      # services.xserver.displayManager.defaultSession = "sm.puri.Phosh";  # XXX: not sure why this doesn't propagate correctly.
+      services.xserver.displayManager.lightdm.extraSeatDefaults = ''
+        user-session = phosh
+      '';
       # services.xserver.displayManager.lightdm.greeters.gtk.enable = false;  # gtk greeter overrides our own?
       # services.xserver.displayManager.lightdm.greeter = {
       #   enable = true;
