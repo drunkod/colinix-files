@@ -85,23 +85,20 @@ in
       services.xserver.displayManager.job.preStart = ''
         ${pkgs.systemd}/bin/busctl call org.freedesktop.Accounts /org/freedesktop/Accounts org.freedesktop.Accounts CacheUser s colin
       '';
-      # services.xserver.displayManager.defaultSession = "sm.puri.Phosh";  # XXX: not sure why this doesn't propagate correctly.
-      services.xserver.displayManager.lightdm.extraSeatDefaults = ''
-        user-session = phosh
-      '';
-      services.xserver.displayManager.lightdm.greeters.gtk.enable = false;  # gtk greeter overrides our own?
-      services.xserver.displayManager.lightdm.greeter = {
-        enable = true;
-        package = pkgs.lightdm-mobile-greeter.xgreeters;
-        name = "lightdm-mobile-greeter";
-      };
-      # services.xserver.displayManager.lightdm.enable = true;
-      # # services.xserver.displayManager.lightdm.greeters.enso.enable = true;  # tried (with reboot); got a mouse then died. next time was black
-      # # services.xserver.displayManager.lightdm.greeters.gtk.enable = true;  # tried (with reboot); unusable without OSK
-      # # services.xserver.displayManager.lightdm.greeters.mini.enable = true;  # tried (with reboot); unusable without OSK
-      # # services.xserver.displayManager.lightdm.greeters.pantheon.enable = true; # tried (no reboot); unusable without OSK
-      # services.xserver.displayManager.lightdm.greeters.slick.enable = true;  # tried; unusable without OSK (a11y -> OSK doesn't work)
-      # # services.xserver.displayManager.lightdm.greeters.tiny.enable = true;  # tried; block screen
+      # # services.xserver.displayManager.defaultSession = "sm.puri.Phosh";  # XXX: not sure why this doesn't propagate correctly.
+      # services.xserver.displayManager.lightdm.extraSeatDefaults = ''
+      #   user-session = phosh
+      # '';
+      # services.xserver.displayManager.lightdm.greeters.gtk.enable = false;  # gtk greeter overrides our own?
+      # services.xserver.displayManager.lightdm.greeter = {
+      #   enable = true;
+      #   package = pkgs.lightdm-mobile-greeter.xgreeters;
+      #   name = "lightdm-mobile-greeter";
+      # };
+      # # services.xserver.displayManager.lightdm.enable = true;
+
+      services.xserver.displayManager.lightdm.enable = true;
+      services.xserver.displayManager.lightdm.greeters.mobile.enable = true;
 
       systemd.services.phosh.wantedBy = lib.mkForce [];  # disable auto-start
     })
