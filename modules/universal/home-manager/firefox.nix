@@ -14,8 +14,7 @@ let
   librewolfSettings = {
     browser = pkgs.librewolf-unwrapped.overrideAttrs (drv: {
       # this allows side-loading unsigned addons
-      # TODO: might be allowed to set this to `false`.
-      MOZ_REQUIRE_SIGNING = "";
+      MOZ_REQUIRE_SIGNING = false;
     });
     libName = "librewolf";
     dotDir = ".librewolf";
@@ -75,16 +74,15 @@ let
       DisablePocket = true;
       DisableSetDesktopBackground = false;
 
-      Extensions = {
-        # remove many default search providers
-        Uninstall = [
-          "google@search.mozilla.org"
-          "bing@search.mozilla.org"
-          "amazondotcom@search.mozilla.org"
-          "ebay@search.mozilla.org"
-          "twitter@search.mozilla.org"
-        ];
-      };
+      # remove many default search providers
+      # XXX this seems to prevent the `nixExtensions` from taking effect
+      # Extensions.Uninstall = [
+      #   "google@search.mozilla.org"
+      #   "bing@search.mozilla.org"
+      #   "amazondotcom@search.mozilla.org"
+      #   "ebay@search.mozilla.org"
+      #   "twitter@search.mozilla.org"
+      # ];
       # XXX doesn't seem to have any effect...
       # docs: https://github.com/mozilla/policy-templates#homepage
       # Homepage = {
