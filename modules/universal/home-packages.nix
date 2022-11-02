@@ -168,6 +168,7 @@ let
     # gcc-arm-embedded
     # gcc_multi
     gnumake
+    mercurial
     mix2nix
     rustup
     swig

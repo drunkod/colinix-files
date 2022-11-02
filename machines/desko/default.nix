@@ -4,6 +4,8 @@
     ./fs.nix
   ];
 
+  # sane.home-packages.enableDevPkgs = true;
+
   sane.gui.sway.enable = true;
   sane.services.duplicity.enable = true;
   sane.services.nixserve.enable = true;
