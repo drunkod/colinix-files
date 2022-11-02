@@ -27,8 +27,8 @@ let
     dotDir = ".mozilla/firefox";
     desktop = "firefox.desktop";
   };
-  # defaultSettings = firefoxSettings;
-  defaultSettings = librewolfSettings;
+  defaultSettings = firefoxSettings;
+  # defaultSettings = librewolfSettings;
 
   package = pkgs.wrapFirefox cfg.browser {
     # inherit the default librewolf.cfg
