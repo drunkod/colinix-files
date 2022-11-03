@@ -25,6 +25,7 @@ resholve.mkDerivation {
         gnugrep
         gocryptfs
         ifuse
+        inetutils
         inotify-tools
         ncurses
         oath-toolkit
