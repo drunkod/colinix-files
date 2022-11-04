@@ -117,7 +117,7 @@ let
     { pkg = sublime-music; dir = ".local/share/sublime-music"; }
     tdesktop  # broken on phosh
 
-    tokodon
+    { pkg = tokodon; dir = ".cache/KDE/tokodon"; }
 
     # vlc remembers play position in ~/.config/vlc/vlc-qt-interface.conf
     { pkg = vlc; dir = ".config/vlc"; }
