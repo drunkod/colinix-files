@@ -61,6 +61,8 @@ in rec {
     (mkPod "https://feeds.feedburner.com/dancarlin/history?format=xml" // rat // infrequent)
     ## 60 minutes (NB: this features more than *just* audio?)
     (mkPod "https://www.cbsnews.com/latest/rss/60-minutes" // pol // infrequent)
+    ## The Verge - Decoder
+    (mkPod "https://feeds.megaphone.fm/recodedecode" // tech // weekly)
   ];
 
   texts = [
