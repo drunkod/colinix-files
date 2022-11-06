@@ -7,7 +7,7 @@
   # nixos-22.05 linux 5.15 DOES have these now.
   # it should be possible to remove this if desired, but i'm not sure how the rpi-specific kernel differs.
   # see: https://github.com/raspberrypi/linux
-  boot.kernelPackages = pkgs.linuxPackages_rpi4;
+  boot.kernelPackages = pkgs.cross.linuxPackages_rpi4;
 
   # raspberryPi boot loader creates extlinux.conf.
   #   otherwise, enable the generic-extlinux-compatible loader below.

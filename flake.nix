@@ -104,7 +104,8 @@
     # special cross-compiled variant, to speed up deploys from an x86 box to the arm target
     # note that these *do* produce different store paths, because the closure for the tools used to cross compile
     # v.s. emulate differ.
-    # so deploying moby-cross and then moby incurs some rebuilding.
+    # so deploying foo-cross and then foo incurs some rebuilding.
+    machines.servo-cross = decl-bootable-machine { name = "servo"; local = "x86_64-linux"; target = "aarch64-linux"; };
     machines.moby-cross = decl-bootable-machine { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
     machines.rescue = decl-bootable-machine { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
   in {
