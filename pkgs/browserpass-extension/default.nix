@@ -1,5 +1,6 @@
 { stdenv
 , fetchFromGitHub
+, fetchFromGitea
 , gnused
 , jq
 , mkYarnModules
@@ -8,12 +9,21 @@
 
 let
   pname = "browserpass-extension";
-  version = "3.7.2";
-  src = fetchFromGitHub {
-    owner = "browserpass";
+  version = "3.7.2-20221105";
+  # src = fetchFromGitHub {
+  #   owner = "browserpass";
+  #   repo = "browserpass-extension";
+  #   rev = version;
+  #   sha256 = "sha256-uDJ0ID8mD+5WLQK40+OfzRNIOOhZWsLYIi6QgcdIDvc=";
+  # };
+  src = fetchFromGitea {
+    domain = "git.uninsane.org";
+    owner = "colin";
     repo = "browserpass-extension";
-    rev = version;
-    sha256 = "sha256-uDJ0ID8mD+5WLQK40+OfzRNIOOhZWsLYIi6QgcdIDvc=";
+    # fix `enableOTP` handling to match docs: prioritize store, then extension config
+    # upstream PR: <https://github.com/browserpass/browserpass-extension/pull/308/>
+    rev = "e97748db10c564b3c1b8feaf02e60ea8fc910904";
+    sha256 = "sha256-lQsIFfOn9gWuYiJ6J/SKObiVl+I4TMN28x68R+vCJK8=";
   };
   browserpass-extension-yarn-modules = mkYarnModules {
     inherit pname version;
