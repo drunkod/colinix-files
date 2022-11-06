@@ -14,17 +14,17 @@
   ];
   # services.ipfs.enable = true;
   services.kubo.localDiscovery = true;
-  services.kubo.swarmAddress = [
-    # "/dns4/ipfs.uninsane.org/tcp/4001"
-    # "/ip4/0.0.0.0/tcp/4001"
-    "/dns4/ipfs.uninsane.org/udp/4001/quic"
-    "/ip4/0.0.0.0/udp/4001/quic"
-  ];
-  services.kubo.extraConfig = {
+  services.kubo.settings = {
     Addresses = {
       Announce = [
         # "/dns4/ipfs.uninsane.org/tcp/4001"
         "/dns4/ipfs.uninsane.org/udp/4001/quic"
+      ];
+      Swarm = [
+        # "/dns4/ipfs.uninsane.org/tcp/4001"
+        # "/ip4/0.0.0.0/tcp/4001"
+        "/dns4/ipfs.uninsane.org/udp/4001/quic"
+        "/ip4/0.0.0.0/udp/4001/quic"
       ];
     };
     Gateway = {
