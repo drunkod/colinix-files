@@ -109,7 +109,7 @@ let
     { pkg = obsidian; dir = ".config/obsidian"; }
 
     pavucontrol
-    picard  # music tagging
+    # picard  # music tagging
     playerctl
     soundconverter
     # sublime music persists any downloaded albums here.
