@@ -35,6 +35,9 @@
     };
   };
 
+  # disable non-required packages like nano, perl, rsync, strace
+  environment.defaultPackages = [];
+
   # programs.vim.defaultEditor = true;
   environment.variables = {
     EDITOR = "vim";
