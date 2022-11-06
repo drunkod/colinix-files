@@ -60,7 +60,7 @@ let
     # `emote` will show a first-run dialog based on what's in this directory.
     # mostly, it just keeps a LRU of previously-used emotes to optimize display order.
     # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
-    { pkg = emote; dir = "~/.local/share/Emote"; }
+    { pkg = emote; dir = ".local/share/Emote"; }
     evince  # works on phosh
 
     # { pkg = fluffychat-moby; dir = ".local/share/chat.fluffy.fluffychat"; }  # TODO: ship normal fluffychat on non-moby?
