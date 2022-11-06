@@ -1,4 +1,9 @@
 fetchpatch: [
+  # element-web: add wrapper  (faster rebuilds)
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/196885.diff";
+    sha256 = "sha256-uLnRYtm2Hhyaky84hrH+7233xV3+JM5jKBbPKF4QtoQ=";
+  })
   # phosh-mobile-settings: init at 0.21.1
   (fetchpatch {
     url = "https://git.uninsane.org/colin/nixpkgs/commit/0c1a7e8504291eb0076bbee3f8ebf693f4641112.diff";
