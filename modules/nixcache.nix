@@ -24,6 +24,9 @@ in
 
   config = {
     # use our own binary cache
+    # to explicitly build from a specific cache (in case others are down):
+    # - `nixos-rebuild ... --option substituters https://cache.nixos.org`
+    # - `nix build ... --substituters http://desko:5000`
     nix.settings.substituters = mkIf cfg.enable [
       "https://nixcache.uninsane.org"
       "http://desko:5000"
