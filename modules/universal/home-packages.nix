@@ -28,6 +28,7 @@ let
     # ponymix
     pulsemixer
     python3
+    rsync
     # python3Packages.eyeD3  # music tagging
     sane-scripts
     sequoia
