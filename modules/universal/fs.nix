@@ -19,11 +19,17 @@ let sshOpts = rec {
 
   optionsRoot = optionsBase ++ [
     # we don't transform_symlinks because that breaks the validity of remote /nix stores
-    "sftp_server=/run/wrappers/bin/sudo\\040${pkgs.openssh}/libexec/sftp-server"
+    "sftp_server=/run/wrappers/bin/sudo\\040/run/current-system/sw/libexec/sftp-server"
   ];
 };
 in
 {
+  environment.pathsToLink = [
+    # needed to achieve superuser access for user-mounted filesystems (see optionsRoot above)
+    # we can only link whole directories here, even though we're only interested in pkgs.openssh
+    "/libexec"
+  ];
+
   fileSystems."/mnt/servo-media-wan" = {
     device = "colin@uninsane.org:/var/lib/uninsane/media";
     inherit (sshOpts) fsType;
