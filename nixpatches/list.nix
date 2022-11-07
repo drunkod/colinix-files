@@ -25,14 +25,24 @@ fetchpatch: [
 
   # lightdm-mobile-greeter: init at 2022-10-30
   (fetchpatch {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/0a9018c8879d8fe871ee03bc386f8d148e4f88b8.diff";
-    sha256 = "sha256-h1+K8UO4+G6yvl6JFd8xBGitPgOCIY7BunW49eGkXQQ=";
+    # url = "https://git.uninsane.org/colin/nixpkgs/commit/0a9018c8879d8fe871ee03bc386f8d148e4f88b8.diff";
+    url = "https://github.com/NixOS/nixpkgs/pull/199154.diff";
+    sha256 = "sha256-zvWwQ+JUt0k4HickBSULIP0n4BG0NuYuD7gHSn859/U=";
   })
-  # lightdm: add `greeters.mobile` config option
-  (fetchpatch {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/1144d6cfe976e7bcfb9611b1d0a66071e17cd569.diff";
-    sha256 = "sha256-ZEvLPqrkpr79yXrsBxgxELR2Awtqk3675jkYZqx2AfY=";
-  })
+
+  # # lightdm-mobile-greeter: init at 2022-10-30
+  # (fetchpatch {
+  #   url = "https://git.uninsane.org/colin/nixpkgs/commit/0a9018c8879d8fe871ee>
+  #   sha256 = "sha256-h1+K8UO4+G6yvl6JFd8xBGitPgOCIY7BunW49eGkXQQ=";
+  # })
+  # # lightdm: add `greeters.mobile` config option
+  # (fetchpatch {
+  #   url = "https://git.uninsane.org/colin/nixpkgs/commit/1144d6cfe976e7bcfb96>
+  #   sha256 = "sha256-ZEvLPqrkpr79yXrsBxgxELR2Awtqk3675jkYZqx2AfY=";
+  #   # url = "https://git.uninsane.org/colin/nixpkgs/commit/0a9018c8879d8fe871>
+  #   url = "https://github.com/NixOS/nixpkgs/pull/199154.diff";
+  #   sha256 = "sha256-zvWwQ+JUt0k4HickBSULIP0n4BG0NuYuD7gHSn859/U=";
+  # })
 
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
