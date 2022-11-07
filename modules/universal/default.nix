@@ -57,6 +57,10 @@
     gocryptfs
   ];
 
+  # link debug symbols into /run/current-system/sw/lib/debug
+  # hopefully picked up by gdb automatically?
+  environment.enableDebugInfo = true;
+
   security.pam.mount.enable = true;
   # security.pam.mount.debugLevel = 1;
   # security.pam.enableSSHAgentAuth = true; # ??
