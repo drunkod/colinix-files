@@ -27,7 +27,7 @@ fetchpatch: [
   (fetchpatch {
     # url = "https://git.uninsane.org/colin/nixpkgs/commit/0a9018c8879d8fe871ee03bc386f8d148e4f88b8.diff";
     url = "https://github.com/NixOS/nixpkgs/pull/199154.diff";
-    sha256 = "sha256-zvWwQ+JUt0k4HickBSULIP0n4BG0NuYuD7gHSn859/U=";
+    sha256 = "sha256-+U0AlipPzKx0NcxWu0smLsoPCRqp8KVCsSdUD4R+O64=";
   })
 
   # # lightdm-mobile-greeter: init at 2022-10-30
