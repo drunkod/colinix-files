@@ -1,4 +1,9 @@
 fetchpatch: [
+  # linuxKernel.kernels.linux_rpi4: 5.15.32 -> 5.15.74
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/199908.diff";
+    sha256 = "sha256-XlyRTYwrxYa0S0qQ4R816wjPbNII2CmFQtrd3yzep9Y=";
+  })
   # element-web: add wrapper  (faster rebuilds)
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/196885.diff";
