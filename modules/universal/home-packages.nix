@@ -112,6 +112,9 @@ let
     pavucontrol
     # picard  # music tagging
     playerctl
+
+    libsForQt5.plasmatube  # Youtube player
+
     soundconverter
     # sublime music persists any downloaded albums here.
     # it doesn't obey a conventional ~/Music/{Artist}/{Album}/{Track} notation, so no symlinking
