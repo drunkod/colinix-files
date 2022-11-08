@@ -97,7 +97,7 @@ in
 
   # Pleroma server and web interface
   services.nginx.virtualHosts."fed.uninsane.org" = publog {
-    addSSL = true;
+    forceSSL = true;  # pleroma redirects to https anyway
     enableACME = true;
     locations."/" = {
       proxyPass = "http://127.0.0.1:4000";
@@ -199,7 +199,7 @@ in
 
   # hosted git (web view and for `git <cmd>` use
   services.nginx.virtualHosts."git.uninsane.org" = publog {
-    addSSL = true;
+    forceSSL = true;  # gitea complains if served over a different protocol than its config file says
     enableACME = true;
 
     locations."/" = {
