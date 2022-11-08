@@ -15,7 +15,8 @@
     ./vpn.nix
   ];
 
-  time.timeZone = "America/Los_Angeles";
+  # time.timeZone = "America/Los_Angeles";
+  time.timeZone = "Etc/UTC";  # DST is too confusing for me => use a stable timezone
 
   # allow `nix flake ...` command
   nix.extraOptions = ''
