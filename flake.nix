@@ -69,9 +69,6 @@
               # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
               cross = (nixpkgsFor local target) // (customPackagesFor local target);
               stable = import nixpkgs-stable { system = target; };
-              # pinned packages:
-              electrum = stable.electrum;  # 2022-10-10: build break
-              sequoia = stable.sequoia;    # 2022-10-13: build break
               # cross-compatible packages
               gocryptfs = cross.gocryptfs;
             })
