@@ -28,8 +28,10 @@ rustPlatform.buildRustPackage rec {
     domain = "git.uninsane.org";
     owner = "colin";
     repo = "lightdm-mobile-greeter";
-    rev = "bd2138f630db0dfb901bc28a9b70d6be8b9879dd";
-    hash = "sha256-B3dNvnduR1pz5DedmAR8Fc/CXowR3jsyrjMUFOMizxI=";
+    # rev = "bd2138f630db0dfb901bc28a9b70d6be8b9879dd";
+    # hash = "sha256-B3dNvnduR1pz5DedmAR8Fc/CXowR3jsyrjMUFOMizxI=";
+    rev = "2de60286b5d364b18fff3e466515a762c8201260";
+    hash = "sha256-yKI4Xco451X/0MuLdIw1o26VKpGuAwXE+k8HKlWMu14=";
   };
   cargoHash = "sha256-2NMXR+D/CnDhUToQmMwK2Cb2l+4/N9BrCz/lt1NZ6Wk=";
 
