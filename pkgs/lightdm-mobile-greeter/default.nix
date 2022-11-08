@@ -30,8 +30,8 @@ rustPlatform.buildRustPackage rec {
     repo = "lightdm-mobile-greeter";
     # rev = "bd2138f630db0dfb901bc28a9b70d6be8b9879dd";
     # hash = "sha256-B3dNvnduR1pz5DedmAR8Fc/CXowR3jsyrjMUFOMizxI=";
-    rev = "2de60286b5d364b18fff3e466515a762c8201260";
-    hash = "sha256-yKI4Xco451X/0MuLdIw1o26VKpGuAwXE+k8HKlWMu14=";
+    rev = "f3511ec71a4a1f491d759711e0bcf031e335ea70";
+    hash = "sha256-U5chzm3q3vycgX1HSLf6sk6M3YoJ4CHGLKRg4ViIhu8=";
   };
   cargoHash = "sha256-2NMXR+D/CnDhUToQmMwK2Cb2l+4/N9BrCz/lt1NZ6Wk=";
 
