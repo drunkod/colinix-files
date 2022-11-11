@@ -14,6 +14,7 @@
           -f /var/log/nginx/public.log \
           --log-format=VCOMBINED \
           --real-time-html \
+          --html-refresh=30 \
           --no-query-string \
           --anonymize-ip \
           --ignore-panel=HOSTS \
