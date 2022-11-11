@@ -45,4 +45,8 @@
       ${pkgs.freshrss}/cli/import-for-user.php --user admin --filename ${opml}
     '';
   };
+
+  # the default ("*:0/5") is to run every 5 minutes.
+  # `systemctl list-timers` to show
+  systemd.services.freshrss-updater.startAt = lib.mkForce "*:3/30";
 }
