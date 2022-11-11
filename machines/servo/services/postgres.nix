@@ -17,6 +17,11 @@
   #     LC_CTYPE = "C";
   # '';
 
+  # TODO: perf tuning
+  # - for recommended values see: <https://pgtune.leopard.in.ua/>
+  # - for official docs (sparse), see: <https://www.postgresql.org/docs/11/config-setting.html#CONFIG-SETTING-CONFIGURATION-FILE>
+  # services.postgresql.settings = { ... }
+
   # daily backups to /var/backup
   services.postgresqlBackup.enable = true;
 
