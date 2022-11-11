@@ -8,9 +8,16 @@ let
       access_log /var/log/nginx/public.log vcombined;
     '';
   };
+
+  kTLS = true;  # in-kernel TLS for better perf
 in
 {
   services.nginx.enable = true;
+  services.nginx.appendConfig = ''
+    # use 1 process per core.
+    # may want to increase worker_connections too, but `ulimit -n` must be increased first.
+    worker_processes auto;
+  '';
 
   # this is the standard `combined` log format, with the addition of $host
   # so that we have the virtualHost in the log.
@@ -21,6 +28,13 @@ in
     log_format vcombined '$host:$server_port $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referrer" "$http_user_agent"';
     access_log /var/log/nginx/private.log vcombined;
   '';
+  # sets gzip_comp_level = 5
+  services.nginx.recommendedGzipSettings = true;
+  # enables OCSP stapling (so clients don't need contact the OCSP server -- i do instead)
+  # caches TLS sessions for 10m
+  services.nginx.recommendedTlsSettings = true;
+  # enables sendfile, tcp_nopush, tcp_nodelay, keepalive_timeout 65
+  services.nginx.recommendedOptimisation = true;
 
   # web blog/personal site
   services.nginx.virtualHosts."uninsane.org" = publog {
@@ -30,6 +44,7 @@ in
     # and things don't look right. so force SSL.
     forceSSL = true;
     enableACME = true;
+    inherit kTLS;
 
     # uninsane.org/share/foo => /var/lib/uninsane/root/share/foo.
     # yes, nginx does not strip the prefix when evaluating against the root.
@@ -79,6 +94,7 @@ in
   services.nginx.virtualHosts."sink.uninsane.org" = {
     addSSL = true;
     enableACME = true;
+    inherit kTLS;
     root = "/var/lib/uninsane/sink";
 
     locations."/ws" = {
@@ -99,6 +115,7 @@ in
   services.nginx.virtualHosts."fed.uninsane.org" = publog {
     forceSSL = true;  # pleroma redirects to https anyway
     enableACME = true;
+    inherit kTLS;
     locations."/" = {
       proxyPass = "http://127.0.0.1:4000";
       # documented: https://git.pleroma.social/pleroma/pleroma/-/blob/develop/installation/pleroma.nginx
@@ -140,6 +157,7 @@ in
     # basicAuth is literally cleartext user/pw, so FORCE this to happen over SSL
     forceSSL = true;
     enableACME = true;
+    inherit kTLS;
     locations."/" = {
       # proxyPass = "http://ovpns.uninsane.org:9091";
       proxyPass = "http://10.0.1.6:9091";
@@ -150,6 +168,7 @@ in
   services.nginx.virtualHosts."jackett.uninsane.org" = {
     forceSSL = true;
     enableACME = true;
+    inherit kTLS;
     locations."/" = {
       # proxyPass = "http://ovpns.uninsane.org:9117";
       proxyPass = "http://10.0.1.6:9117";
@@ -160,6 +179,7 @@ in
   services.nginx.virtualHosts."matrix.uninsane.org" = publog {
     addSSL = true;
     enableACME = true;
+    inherit kTLS;
 
     # TODO colin: replace this with something helpful to the viewer
     # locations."/".extraConfig = ''
@@ -186,6 +206,7 @@ in
   services.nginx.virtualHosts."web.matrix.uninsane.org" = {
     forceSSL = true;
     enableACME = true;
+    inherit kTLS;
 
     root = pkgs.element-web.override {
       conf = {
@@ -201,6 +222,7 @@ in
   services.nginx.virtualHosts."git.uninsane.org" = publog {
     forceSSL = true;  # gitea complains if served over a different protocol than its config file says
     enableACME = true;
+    inherit kTLS;
 
     locations."/" = {
       proxyPass = "http://127.0.0.1:3000";
@@ -212,6 +234,7 @@ in
   services.nginx.virtualHosts."jelly.uninsane.org" = {
     addSSL = true;
     enableACME = true;
+    inherit kTLS;
 
     locations."/" = {
       proxyPass = "http://127.0.0.1:8096";
@@ -258,12 +281,14 @@ in
   services.nginx.virtualHosts."music.uninsane.org" = {
     forceSSL = true;
     enableACME = true;
+    inherit kTLS;
     locations."/".proxyPass = "http://127.0.0.1:4533";
   };
 
   services.nginx.virtualHosts."rss.uninsane.org" = {
     addSSL = true;
     enableACME = true;
+    inherit kTLS;
     # the routing is handled by freshrss.nix
   };
 
@@ -272,6 +297,7 @@ in
     # ideally we'd disable ssl entirely, but some places assume it?
     addSSL = true;
     enableACME = true;
+    inherit kTLS;
 
     default = true;
 
@@ -297,6 +323,7 @@ in
   services.nginx.virtualHosts."nixcache.uninsane.org" = {
     addSSL = true;
     enableACME = true;
+    inherit kTLS;
     # serverAliases = [ "nixcache" ];
     locations."/".extraConfig = ''
       proxy_pass http://localhost:${toString config.services.nix-serve.port};
