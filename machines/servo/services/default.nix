@@ -2,6 +2,7 @@
 {
   imports = [
     ./ddns-he.nix
+    ./ejabberd.nix
     ./freshrss.nix
     ./gitea.nix
     ./goaccess.nix
