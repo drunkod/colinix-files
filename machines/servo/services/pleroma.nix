@@ -1,4 +1,6 @@
-# docs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/networking/pleroma.nix
+# docs:
+# - https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/networking/pleroma.nix
+# - https://docs.pleroma.social/backend/configuration/cheatsheet/
 #
 # to run it in a oci-container: https://github.com/barrucadu/nixfiles/blob/master/services/pleroma.nix
 { config, pkgs, ... }:
@@ -48,16 +50,19 @@
       redirect_on_failure: true
       #base_url: "https://cache.pleroma.social"
 
+    # see for reference:
+    # - `force_custom_plan`: <https://docs.pleroma.social/backend/configuration/postgresql/#disable-generic-query-plans>
     config :pleroma, Pleroma.Repo,
       adapter: Ecto.Adapters.Postgres,
       username: "pleroma",
       database: "pleroma",
       hostname: "localhost",
       pool_size: 10,
-      prepare: :named,
       parameters: [
           plan_cache_mode: "force_custom_plan"
       ]
+    # XXX: prepare: :named is needed only for PG <= 12
+    #   prepare: :named,
     #   password: "{secrets.pleroma.db_password}",
 
     # Configure web push notifications
@@ -110,9 +115,9 @@
 
   systemd.services.pleroma.path = [ 
     # something inside pleroma invokes `sh` w/o specifying it by path, so this is needed to allow pleroma to start
-    pkgs.bash 
+    pkgs.bash
     # used by Pleroma to strip geo tags from uploads
-    pkgs.exiftool 
+    pkgs.exiftool
     # i saw some errors when pleroma was shutting down about it not being able to find `awk`. probably not critical
     pkgs.gawk
     # needed for email operations like password reset
