@@ -54,6 +54,7 @@ let
     celluloid  # mpv frontend
     chromium
     clinfo
+    { pkg = dino; private = ".local/share/dino"; }
     electrum
 
     # creds/session keys, etc
