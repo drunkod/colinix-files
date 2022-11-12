@@ -13,6 +13,7 @@
 
   # networking.firewall.enable = false;
   networking.firewall.enable = true;
+  # TODO: split these into the submodules
   networking.firewall.allowedTCPPorts = [
     25   # SMTP
     80   # HTTP
