@@ -32,7 +32,7 @@
   # both transmission and ipfs try to set different net defaults.
   # we just use the most aggressive of the two here:
   boot.kernel.sysctl = {
-    "net.core.rmem_max" = "4194304";  # 4MB
+    "net.core.rmem_max" = 4194304;  # 4MB
   };
 
   # This value determines the NixOS release from which the default
