@@ -15,6 +15,7 @@
     ./pleroma.nix
     ./postfix.nix
     ./postgres.nix
+    ./prosody.nix
     ./transmission.nix
   ];
 }
