@@ -1,7 +1,11 @@
 # create users with:
 # - `sudo -u prosody prosodyctl adduser colin@uninsane.org`
 
-{ ... }:
+{ lib, ... }:
+
+# XXX disabled: doesn't send messages to nixnet.social (only receives them).
+# nixnet runs ejabberd, so revisiting that.
+lib.mkIf false
 {
   sane.impermanence.service-dirs = [
     { user = "prosody"; group = "prosody"; directory = "/var/lib/prosody"; }
