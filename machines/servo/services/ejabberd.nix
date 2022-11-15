@@ -3,7 +3,7 @@
 { lib, ... }:
 
 # XXX disabled: fails to start because of `mnesia_tm` dependency
-lib.mkIf false
+# lib.mkIf false
 {
   sane.impermanence.service-dirs = [
     { user = "ejabberd"; group = "ejabberd"; directory = "/var/lib/ejabberd"; }
