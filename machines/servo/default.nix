@@ -13,7 +13,7 @@
     # for administering services
     pkgs.matrix-synapse
     pkgs.freshrss
-    pkgs.goaccess
+    pkgs.libraspberrypi
   ];
   sane.impermanence.enable = true;
   sane.services.duplicity.enable = true;
