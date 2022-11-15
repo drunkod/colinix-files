@@ -12,6 +12,10 @@ lib.mkIf false
     5222  # XMPP client -> server
     5269  # XMPP server -> server
   ];
+
+  # provide access to certs
+  users.users.ejabberd.extraGroups = [ "nginx" ];
+
   # TODO: allocate UIDs/GIDs ?
   services.ejabberd.enable = true;
   services.ejabberd.configFile = builtins.toFile "ejabberd.yaml" ''
