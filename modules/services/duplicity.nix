@@ -1,5 +1,5 @@
 # docs: https://search.nixos.org/options?channel=21.11&query=duplicity
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 let
@@ -18,8 +18,7 @@ in
     sane.impermanence.service-dirs = [ "/var/lib/duplicity" ];
 
     services.duplicity.enable = true;
-    services.duplicity.targetUrl = ''"$DUPLICITY_URL"'';
-    services.duplicity.escapeUrl = false;
+    services.duplicity.targetUrl = "$DUPLICITY_URL";
     # format: PASSPHRASE=<cleartext> \n DUPLICITY_URL=b2://...
     # two sisters
     # PASSPHRASE: remote backups will be encrypted using this passphrase (using gpg)
@@ -32,29 +31,28 @@ in
     services.duplicity.secretFile = config.sops.secrets.duplicity_passphrase.path;
     # NB: manually trigger with `systemctl start duplicity`
     services.duplicity.frequency = "daily";
-    # TODO: this needs updating to handle impermanence changes
-    services.duplicity.exclude = [
-      # impermanent/inconsequential data:
-      "/dev"
-      "/proc"
-      "/run"
-      "/sys"
-      "/tmp"
-      # bind mounted (dupes):
-      "/var/lib"
-      # other mounts
-      "/mnt"
-      # data that's not worth the cost to backup:
-      "/nix/persist/var/lib/uninsane/media"
-      "/nix/persist/home/colin/tmp"
-      "/nix/persist/home/colin/Videos"
-      "/home/colin/tmp"
-      "/home/colin/Videos"
-    ];
 
     services.duplicity.extraFlags = [
       # without --allow-source-mismatch, duplicity will abort if you change the hostname between backups
       "--allow-source-mismatch"
+
+      # includes/exclude ordering matters, so we explicitly control it here.
+      # the first match decides a file's treatment. so here:
+      # - /nix/persist/home/colin/tmp is excluded
+      # - *other* /nix/persist/ files are included by default
+      # - anything else under `/` are excluded by default
+      "--exclude" "/nix/persist/home/colin/dev/home-logic/coremem/out"  # this can reach > 1 TB
+      "--exclude" "/nix/persist/home/colin/use/iso"  # might want to re-enable... but not critical
+      "--exclude" "/nix/persist/home/colin/.local/share/sublime-music"  # music cache. better to just keep the HQ sources
+      "--exclude" "/nix/persist/home/colin/.local/share/Steam"  # can just re-download games
+      "--exclude" "/nix/persist/home/colin/.bitmonero/lmdb"  # monero blockchain
+      "--exclude" "/nix/persist/home/colin/.rustup"
+      "--exclude" "/nix/persist/home/colin/ref"  # publicly available data: no point in duplicating it
+      "--exclude" "/nix/persist/home/colin/tmp"
+      "--exclude" "/nix/persist/home/colin/Videos"
+      "--exclude" "/nix/persist/var/lib/duplicity"  # don't back up our own backup state!
+      "--include" "/nix/persist"
+      "--exclude" "/"
     ];
 
     # set this for the FIRST backup, then remove it to enable incremental backups
@@ -70,5 +68,26 @@ in
         "/dev/mmc0 5M"
       ];
     };
+
+    # based on <nixpkgs:nixos/modules/services/backup/duplicity.nix>  with changes:
+    # - remove the cleanup step: API key doesn't have delete perms
+    # - don't escape the targetUrl: it comes from an env var set in the secret file
+    systemd.services.duplicity.script = let
+      cfg = config.services.duplicity;
+      target = cfg.targetUrl;
+      extra = escapeShellArgs ([ "--archive-dir" "/var/lib/duplicity" ] ++ cfg.extraFlags);
+      dup = "${pkgs.duplicity}/bin/duplicity";
+    in lib.mkForce ''
+      set -x
+      # ${dup} cleanup ${target} --force ${extra}
+      # ${lib.optionalString (cfg.cleanup.maxAge != null) "${dup} remove-older-than ${lib.escapeShellArg cfg.cleanup.maxAge} ${target} --force ${extra}"}
+      # ${lib.optionalString (cfg.cleanup.maxFull != null) "${dup} remove-all-but-n-full ${builtins.toString cfg.cleanup.maxFull} ${target} --force ${extra}"}
+      # ${lib.optionalString (cfg.cleanup.maxIncr != null) "${dup} remove-all-inc-of-but-n-full ${toString cfg.cleanup.maxIncr} ${target} --force ${extra}"}
+      exec ${dup} ${if cfg.fullIfOlderThan == "always" then "full" else "incr"} ${lib.escapeShellArg cfg.root} ${target} ${lib.escapeShellArgs ([]
+        ++ concatMap (p: [ "--include" p ]) cfg.include
+        ++ concatMap (p: [ "--exclude" p ]) cfg.exclude
+        ++ (lib.optionals (cfg.fullIfOlderThan != "never" && cfg.fullIfOlderThan != "always") [ "--full-if-older-than" cfg.fullIfOlderThan ])
+        )} ${extra}
+    '';
   };
 }

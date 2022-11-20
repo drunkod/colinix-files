@@ -35,9 +35,7 @@ fetchpatch: [
   #   (it's a dupe of https://github.com/NixOS/nixpkgs/pull/112677 )
   ./02-rpi4-uboot.patch
 
-  # TODO: upstream
-  # maybe convert this patch to add a `targetUrlExpr` instead of doing the `escapeShellArgs` hack
-  ./07-duplicity-rich-url.patch
+  # ./07-duplicity-rich-url.patch
 
   # enable aarch64 support for flutter's dart package
   # ./10-flutter-arm64.patch
