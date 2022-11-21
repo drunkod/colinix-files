@@ -20,6 +20,7 @@ resholve.mkDerivation {
       inputs = with pkgs; [
         coreutils
         curl
+        duplicity
         file
         findutils
         gnugrep
@@ -39,6 +40,7 @@ resholve.mkDerivation {
         which
       ];
       keep = {
+        "/run/secrets/duplicity_passphrase" = true;
         # we write here: keep it
         "/tmp/rmlint.sh" = true;
         # intentionally escapes (into user code)
@@ -58,6 +60,7 @@ resholve.mkDerivation {
 
       # list of programs which *can* or *cannot* exec their arguments
       execer = with pkgs; [
+        "cannot:${duplicity}/bin/duplicity"
         "cannot:${gocryptfs}/bin/gocryptfs"
         "cannot:${ifuse}/bin/ifuse"
         "cannot:${oath-toolkit}/bin/oathtool"
