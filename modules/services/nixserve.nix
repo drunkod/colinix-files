@@ -14,8 +14,8 @@ in
       type = types.bool;
     };
     sane.services.nixserve.sopsFile = mkOption {
-      default = ../../secrets/servo.yaml;
       type = types.path;
+      description = "path to file that contains the nix_serv_privkey secret (can be in VCS)";
     };
   };
 
