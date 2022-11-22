@@ -6,6 +6,11 @@ let
 in
 {
   options = {
+    sane.image.enable = mkOption {
+      default = true;
+      type = types.bool;
+      description = "whether to enable image targets. this doesn't mean they'll be built unless you specifically reference the target.";
+    };
     # packages whose contents should be copied directly into the /boot partition.
     # e.g. EFI loaders, u-boot bootloader, etc.
     sane.image.extraBootFiles = mkOption {
