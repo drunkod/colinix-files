@@ -4,7 +4,7 @@
     ./fs.nix
   ];
 
-  # sane.home-packages.enableDevPkgs = true;
+  # sane.packages.enableDevPkgs = true;
 
   sane.gui.sway.enable = true;
   sane.services.duplicity.enable = true;

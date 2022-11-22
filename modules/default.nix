@@ -5,7 +5,7 @@
     ./allocations.nix
     ./gui
     ./home-manager
-    ./home-packages.nix
+    ./packages.nix
     ./image.nix
     ./impermanence.nix
     ./nixcache.nix

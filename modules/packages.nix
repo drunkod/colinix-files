@@ -3,7 +3,7 @@
 with lib;
 with pkgs;
 let
-  cfg = config.sane.home-packages;
+  cfg = config.sane.packages;
   universalPkgs = [
     backblaze-b2
     cdrtools
@@ -186,11 +186,11 @@ let
 in
 {
   options = {
-    sane.home-packages.enableGuiPkgs = mkOption {
+    sane.packages.enableGuiPkgs = mkOption {
       default = false;
       type = types.bool;
     };
-    sane.home-packages.enableDevPkgs = mkOption {
+    sane.packages.enableDevPkgs = mkOption {
       description = ''
         enable packages that are useful for building other software by hand.
         you should prefer to keep this disabled except when prototyping, e.g. packaging new software.

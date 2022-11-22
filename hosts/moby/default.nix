@@ -28,7 +28,7 @@
     config.sane.web-browser.dotDir
   ];
 
-  # sane.home-packages.enableGuiPkgs = false;  # XXX faster builds/imaging for debugging
+  # sane.packages.enableGuiPkgs = false;  # XXX faster builds/imaging for debugging
   sane.home-manager.extraPackages = [
     pkgs.plasma5Packages.konsole  # terminal
   ];

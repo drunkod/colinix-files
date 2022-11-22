@@ -4,7 +4,7 @@
     ./fs.nix
   ];
 
-  # sane.home-packages.enableDevPkgs = true;
+  # sane.packages.enableDevPkgs = true;
 
   # sane.users.guest.enable = true;
   sane.gui.sway.enable = true;
