@@ -90,7 +90,7 @@ in
         initKeyring = {
           after = ["writeBoundary"];
           before = [];
-          data = "${../../../scripts/init-keyring}";
+          data = "${../../scripts/init-keyring}";
         };
       };
 

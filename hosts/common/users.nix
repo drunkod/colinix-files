@@ -50,7 +50,7 @@ in
       passwordFile = lib.mkIf (config.sops.secrets ? "colin-passwd") config.sops.secrets.colin-passwd.path;
 
       shell = pkgs.zsh;
-      openssh.authorizedKeys.keys = builtins.attrValues (import ./pubkeys.nix).users;
+      openssh.authorizedKeys.keys = builtins.attrValues (import ../../modules/pubkeys.nix).users;
 
       pamMount = {
         # mount encrypted stuff at login

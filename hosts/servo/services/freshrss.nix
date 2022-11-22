@@ -30,7 +30,7 @@
   systemd.services.freshrss-import-feeds =
   let
     fresh = config.systemd.services.freshrss-config;
-    feeds = import ../../../modules/universal/home-manager/feeds.nix { inherit lib; };
+    feeds = import ../../../modules/home-manager/feeds.nix { inherit lib; };
     opml = pkgs.writeText "sane-freshrss.opml" (feeds.feedsToOpml feeds.all);
   in {
     inherit (fresh) wantedBy environment;
