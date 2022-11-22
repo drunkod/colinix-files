@@ -45,7 +45,7 @@
     nixpkgsFor = local: target: import (patchedPkgs target) { crossSystem = target; localSystem = local; };
     # evaluate ONLY our overlay, for the provided system
     customPackagesFor = local: target: import ./pkgs/overlay.nix (nixpkgsFor local target) (nixpkgsFor local target);
-    decl-machine = { name, local, target }:
+    decl-host = { name, local, target }:
     let
       nixosSystem = import ((patchedPkgs target) + "/nixos/lib/eval-config.nix");
     in (nixosSystem {
@@ -54,7 +54,7 @@
       specialArgs = { inherit mobile-nixos home-manager impermanence; };
       modules = [
         ./modules
-        (import ./machines/instantiate.nix name)
+        (import ./hosts/instantiate.nix name)
         home-manager.nixosModule
         impermanence.nixosModule
         sops-nix.nixosModules.sops
@@ -77,8 +77,8 @@
       ];
     });
 
-    decl-bootable-machine = { name, local, target }: rec {
-      nixosConfiguration = decl-machine { inherit name local target; };
+    decl-bootable-host = { name, local, target }: rec {
+      nixosConfiguration = decl-host { inherit name local target; };
       # this produces a EFI-bootable .img file (GPT with a /boot partition and a system (/ or /nix) partition).
       # after building this:
       #   - flash it to a bootable medium (SD card, flash drive, HDD)
@@ -91,23 +91,23 @@
       #   - boot
       #   - if fs wasn't resized automatically, then `sudo btrfs filesystem resize max /`
       #   - checkout this flake into /etc/nixos AND UPDATE THE FS UUIDS.
-      #   - `nixos-rebuild --flake './#<machine>' switch`
+      #   - `nixos-rebuild --flake './#<host>' switch`
       img = nixosConfiguration.config.system.build.img;
     };
-    machines.servo = decl-bootable-machine { name = "servo"; local = "aarch64-linux"; target = "aarch64-linux"; };
-    machines.desko = decl-bootable-machine { name = "desko"; local = "x86_64-linux"; target = "x86_64-linux"; };
-    machines.lappy = decl-bootable-machine { name = "lappy"; local = "x86_64-linux"; target = "x86_64-linux"; };
-    machines.moby = decl-bootable-machine { name = "moby"; local = "aarch64-linux"; target = "aarch64-linux"; };
+    hosts.servo = decl-bootable-host { name = "servo"; local = "aarch64-linux"; target = "aarch64-linux"; };
+    hosts.desko = decl-bootable-host { name = "desko"; local = "x86_64-linux"; target = "x86_64-linux"; };
+    hosts.lappy = decl-bootable-host { name = "lappy"; local = "x86_64-linux"; target = "x86_64-linux"; };
+    hosts.moby = decl-bootable-host { name = "moby"; local = "aarch64-linux"; target = "aarch64-linux"; };
     # special cross-compiled variant, to speed up deploys from an x86 box to the arm target
     # note that these *do* produce different store paths, because the closure for the tools used to cross compile
     # v.s. emulate differ.
     # so deploying foo-cross and then foo incurs some rebuilding.
-    machines.servo-cross = decl-bootable-machine { name = "servo"; local = "x86_64-linux"; target = "aarch64-linux"; };
-    machines.moby-cross = decl-bootable-machine { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
-    machines.rescue = decl-bootable-machine { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
+    hosts.servo-cross = decl-bootable-host { name = "servo"; local = "x86_64-linux"; target = "aarch64-linux"; };
+    hosts.moby-cross = decl-bootable-host { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
+    hosts.rescue = decl-bootable-host { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
   in {
-    nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) machines;
-    imgs = builtins.mapAttrs (name: value: value.img) machines;
+    nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) hosts;
+    imgs = builtins.mapAttrs (name: value: value.img) hosts;
     packages = let
       allPkgsFor = sys: (customPackagesFor sys sys) // {
         nixpkgs = nixpkgsFor sys sys;

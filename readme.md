@@ -4,6 +4,12 @@ to deploy:
 nixos-rebuild --flake "./#servo" {build,switch}
 ```
 
+if the target is the same as the host, nix will grab the hostname automatically:
+
+```sh
+nixos-rebuild --flake . {build,switch}
+```
+
 more options (like building packages defined in this repo):
 
 ```sh

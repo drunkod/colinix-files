@@ -29,7 +29,7 @@ in
     sane.allocations.colin-uid = mkId 1000;
     sane.allocations.guest-uid = mkId 1100;
 
-    # found on all machines
+    # found on all hosts
     sane.allocations.sshd-uid = mkId 2001;  # 997
     sane.allocations.sshd-gid = mkId 2001;  # 997
     sane.allocations.polkituser-gid = mkId 2002;  # 998
@@ -39,15 +39,15 @@ in
     sane.allocations.systemd-oom-uid = mkId 2005;
     sane.allocations.systemd-oom-gid = mkId 2005;
 
-    # found on graphical machines
+    # found on graphical hosts
     sane.allocations.nm-iodine-uid = mkId 2101;  # desko/moby/lappy
 
-    # found on desko machine
+    # found on desko host
     sane.allocations.usbmux-uid = mkId 2204;
     sane.allocations.usbmux-gid = mkId 2204;
 
 
-    # originally found on moby machine
+    # originally found on moby host
     sane.allocations.avahi-uid = mkId 2304;
     sane.allocations.avahi-gid = mkId 2304;
     sane.allocations.colord-uid = mkId 2305;

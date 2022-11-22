@@ -27,8 +27,8 @@ let
   };
 in {
   # map hostname -> something suitable for known_keys
-  hosts = builtins.mapAttrs (machine: keys: withHost machine keys.host) keys;
+  hosts = builtins.mapAttrs (host: keys: withHost host keys.host) keys;
   # map hostname -> something suitable for authorized_keys to allow access to colin@<hostname>
-  users = builtins.mapAttrs (machine: keys: withUser "colin@${machine}" keys.users.colin) keys;
+  users = builtins.mapAttrs (host: keys: withUser "colin@${host}" keys.users.colin) keys;
 }
 
