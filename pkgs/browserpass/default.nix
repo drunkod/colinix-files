@@ -31,8 +31,9 @@ in
     domain = "git.uninsane.org";
     owner = "colin";
     repo = "browserpass-native";
-    rev = "8de7959fa5772aca406bf29bb17707119c64b81e";
-    hash = "sha256-ewB1YdWqfZpt8d4p9LGisiGUsHzRW8RiSO/+NZRiQpk=";
+    # don't forcibly append '.gpg'
+    rev = "85bdb08379c03297c1236f66e8764160c922d397";
+    hash = "sha256-SEfihU+GreWhYfLVr7tTnMCo6Iq20a78F8iVbycOQUQ=";
   };
   installPhase = ''
     make install
