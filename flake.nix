@@ -70,7 +70,7 @@
               cross = (nixpkgsFor local target) // (customPackagesFor local target);
               stable = import nixpkgs-stable { system = target; };
               # cross-compatible packages
-              gocryptfs = cross.gocryptfs;
+              # gocryptfs = cross.gocryptfs;
             })
           ];
         }
