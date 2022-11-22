@@ -16,7 +16,7 @@
     pkgs.libraspberrypi
   ];
   sane.impermanence.enable = true;
-  sane.services.duplicity.enable = true;
+  # sane.services.duplicity.enable = true;  # TODO: re-enable after HW upgrade
   sane.services.nixserve.enable = true;
   sane.services.nixserv.sopsFile = ../../secrets/servo.yaml;
 
@@ -42,6 +42,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "21.11"; # Did you read the comment?
+  system.stateVersion = "21.11";
 }
 
