@@ -9,22 +9,23 @@
 
 let
   pname = "browserpass-extension";
-  version = "3.7.2-20221105";
-  # src = fetchFromGitHub {
-  #   owner = "browserpass";
-  #   repo = "browserpass-extension";
-  #   rev = version;
-  #   sha256 = "sha256-uDJ0ID8mD+5WLQK40+OfzRNIOOhZWsLYIi6QgcdIDvc=";
-  # };
-  src = fetchFromGitea {
-    domain = "git.uninsane.org";
-    owner = "colin";
+  version = "3.7.2-20221121";
+  src = fetchFromGitHub {
+    owner = "browserpass";
     repo = "browserpass-extension";
-    # fix `enableOTP` handling to match docs: prioritize store, then extension config
-    # upstream PR: <https://github.com/browserpass/browserpass-extension/pull/308/>
-    rev = "a5f5e27b5f3abe2252f68c59959c3c30ac1a603b";
+    # rev = version;
+    rev = "21f3431d09e1d7ffd33e0b9fc5d2965b7bd93a1a";
     sha256 = "sha256-XIgbaQSAXx7L1e/9rzN7oBQy9U3HWJHOX2auuvgdvbc=";
   };
+  # src = fetchFromGitea {
+  #   domain = "git.uninsane.org";
+  #   owner = "colin";
+  #   repo = "browserpass-extension";
+  #   # fix `enableOTP` handling to match docs: prioritize store, then extension config
+  #   # upstream PR: <https://github.com/browserpass/browserpass-extension/pull/308/>
+  #   rev = "a5f5e27b5f3abe2252f68c59959c3c30ac1a603b";
+  #   sha256 = "sha256-XIgbaQSAXx7L1e/9rzN7oBQy9U3HWJHOX2auuvgdvbc=";
+  # };
   browserpass-extension-yarn-modules = mkYarnModules {
     inherit pname version;
     packageJSON = "${src}/src/package.json";
