@@ -3,6 +3,7 @@
 hostName: { ... }: {
   imports = [
     ./${hostName}
+    ./common
   ];
 
   networking.hostName = hostName;

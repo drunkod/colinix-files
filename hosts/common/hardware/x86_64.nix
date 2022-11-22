@@ -2,7 +2,7 @@
 
 with lib;
 {
-  config = mkIf (pkgs.system == "x86_64-linux") { 
+  config = mkIf (pkgs.system == "x86_64-linux") {
     boot.initrd.availableKernelModules = [
       "xhci_pci" "ahci" "sd_mod" "sdhci_pci"  # nixos-generate-config defaults
       "usb_storage"   # rpi needed this to boot from usb storage, i think.
