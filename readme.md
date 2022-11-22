@@ -51,3 +51,16 @@ to build a package for another platform:
 ```sh
 nix build ./#packages.aarch64-linux.nixpkgs.ubootRaspberryPi4_64bit
 ```
+
+## using this repo in your own config
+
+i try to ensure everything in the `modules/` directory is hidden behind some enable flag or other.
+it should be possible to copy that whole directory into your own config, and then selectively
+populate what you want (like the impermenance paths, etc).
+more practically, a lot of things in there still assume a user named `colin`, so you'll probably
+want to patch it for your name -- or just use it as a reference.
+
+## contact
+
+if you want to contact me for questions, or collaborate to split something useful into a shared repo, etc,
+you can reach me via any method listed [here](https://uninsane.org/about).
