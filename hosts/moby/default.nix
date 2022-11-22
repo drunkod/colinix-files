@@ -29,7 +29,7 @@
   ];
 
   # sane.packages.enableGuiPkgs = false;  # XXX faster builds/imaging for debugging
-  sane.home-manager.extraPackages = [
+  sane.packages.extraUserPkgs = [
     pkgs.plasma5Packages.konsole  # terminal
   ];
 

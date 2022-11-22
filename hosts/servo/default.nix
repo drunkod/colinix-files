@@ -9,7 +9,7 @@
     ./services
   ];
 
-  sane.home-manager.extraPackages = [
+  sane.packages.extraUserPkgs = [
     # for administering services
     pkgs.matrix-synapse
     pkgs.freshrss

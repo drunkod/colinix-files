@@ -9,9 +9,9 @@
 with lib;
 let
   cfg = config.sane.home-manager;
-  # extract package from `extraPackages`
+  # extract package from `sane.packages.enabledUserPkgs`
   pkg-list = pkgspec: builtins.map (e: e.pkg or e) pkgspec;
-  # extract `dir` from `extraPackages`
+  # extract `dir` from `sane.packages.enabledUserPkgs`
   dir-list = pkgspec: builtins.concatLists (builtins.map (e: if e ? "dir" then [ e.dir ] else []) pkgspec);
   private-list = pkgspec: builtins.concatLists (builtins.map (e: if e ? "private" then [ e.private ] else []) pkgspec);
   feeds = import ./feeds.nix { inherit lib; };
@@ -33,14 +33,6 @@ in
   ];
 
   options = {
-    # packages to deploy to the user's home
-    sane.home-manager.extraPackages = mkOption {
-      default = [ ];
-      # each entry can be either a package, or attrs:
-      #   { pkg = package; dir = optional string;
-      type = types.listOf (types.either types.package types.attrs);
-    };
-
     # attributes to copy directly to home-manager's `wayland.windowManager` option
     sane.home-manager.windowManager = mkOption {
       default = {};
@@ -65,7 +57,7 @@ in
       "Music"
       "Pictures"
       "Videos"
-    ] ++ (dir-list cfg.extraPackages);
+    ] ++ (dir-list config.sane.packages.enabledUserPkgs);
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
@@ -79,7 +71,7 @@ in
       manual.html.enable = false;  # TODO: set to true later (build failure)
       manual.manpages.enable = false;  # TODO: enable after https://github.com/nix-community/home-manager/issues/3344
 
-      home.packages = pkg-list cfg.extraPackages;
+      home.packages = pkg-list sysconfig.sane.packages.enabledUserPkgs;
       wayland.windowManager = cfg.windowManager;
 
       home.stateVersion = "21.11";
@@ -101,7 +93,7 @@ in
             name = path;
             value = { source = config.lib.file.mkOutOfStoreSymlink "/home/colin/private/${path}"; };
           })
-          (private-list cfg.extraPackages)
+          (private-list sysconfig.sane.packages.enabledUserPkgs)
         );
       in {
         # convenience

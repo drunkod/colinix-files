@@ -597,7 +597,7 @@ in
       #   }
       # '';
     };
-    sane.home-manager.extraPackages = with pkgs; [
+    sane.packages.extraUserPkgs = with pkgs; [
       swaylock
       swayidle  # (unused)
       wl-clipboard

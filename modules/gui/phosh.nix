@@ -69,7 +69,7 @@ in
         NIXOS_OZONE_WL = "1";
       };
 
-      sane.home-manager.extraPackages = with pkgs; [
+      sane.packages.extraUserPkgs = with pkgs; [
         phosh-mobile-settings
 
         # TODO: see about removing this if the in-built gnome-settings bluetooth manager can work

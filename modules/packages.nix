@@ -221,6 +221,13 @@ let
 in
 {
   options = {
+    # packages to deploy to the user's home
+    sane.packages.extraUserPkgs = mkOption {
+      default = [ ];
+      # each entry can be either a package, or attrs:
+      #   { pkg = package; dir = optional string; private = optional string };
+      type = types.listOf (types.either types.package types.attrs);
+    };
     sane.packages.enableConsolePkgs = mkOption {
       default = false;
       type = types.bool;
@@ -242,15 +249,19 @@ in
       type = types.bool;
       description = "enable system-wide packages";
     };
+
+    sane.packages.enabledUserPkgs = mkOption {
+      default = cfg.extraUserPkgs
+        ++ (if cfg.enableConsolePkgs then consolePkgs else [])
+        ++ (if cfg.enableGuiPkgs then guiPkgs else [])
+        ++ (if cfg.enableDevPkgs then devPkgs else [])
+      ;
+      type = types.listOf (types.either types.package types.attrs);
+      description = "generated from other config options";
+    };
   };
 
   config = {
-    sane.home-manager.extraPackages = []
-      ++ (if cfg.enableConsolePkgs then consolePkgs else [])
-      ++ (if cfg.enableGuiPkgs then guiPkgs else [])
-      ++ (if cfg.enableDevPkgs then devPkgs else [])
-    ;
-
     environment.systemPackages = mkIf cfg.enableSystemPkgs systemPkgs;
   };
 }

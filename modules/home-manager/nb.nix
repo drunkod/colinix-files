@@ -10,7 +10,7 @@
 
 { lib, pkgs, ... }: lib.mkIf false  # XXX disabled!
 {
-  sane.home-manager.extraPackages = [ pkgs.nb ];
+  sane.packages.extraUserPkgs = [ pkgs.nb ];
 
   home-manager.users.colin = { config, ... }: {
     # nb markdown/personal knowledge manager
