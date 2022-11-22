@@ -10,7 +10,6 @@
     ./ssh.nix
     ./system-packages.nix
     ./users.nix
-    ./vpn.nix
   ];
 
   # time.timeZone = "America/Los_Angeles";
