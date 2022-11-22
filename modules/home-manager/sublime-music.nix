@@ -1,4 +1,6 @@
-{ config, ... }:
+{ config, lib, ... }:
+
+lib.mkIf config.sane.home-manager.enable
 {
   # TODO: this should only be shipped on gui platforms
   sops.secrets."sublime_music_config" = {

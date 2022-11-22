@@ -1,4 +1,6 @@
-{ lib, ... }:
+{ config, lib, ... }:
+
+lib.mkIf config.sane.home-manager.enable
 {
   home-manager.users.colin.xdg.configFile."vlc/vlcrc".text =
   let

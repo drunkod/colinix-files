@@ -1,4 +1,6 @@
-{ ... }:
+{ config, lib, ... }:
+
+lib.mkIf config.sane.home-manager.enable
 {
   # we don't need to full zsh dir -- just the history file --
   # but zsh will sometimes backup the history file and we get fewer errors if we do proper mounts instead of symlinks.

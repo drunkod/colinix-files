@@ -102,7 +102,7 @@ in
       type = types.attrs;
     };
   };
-  config = {
+  config = lib.mkIf config.sane.home-manager.enable {
     # XXX: although home-manager calls this option `firefox`, we can use other browsers and it still mostly works.
     home-manager.users.colin = lib.mkIf (config.sane.gui.enable) {
       programs.firefox = {

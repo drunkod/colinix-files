@@ -1,4 +1,6 @@
-{ ... }:
+{ config, lib, ... }:
+
+lib.mkIf config.sane.home-manager.enable
 {
   home-manager.users.colin.programs.kitty = {
     enable = true;

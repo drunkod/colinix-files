@@ -11,6 +11,7 @@
     ./vpn.nix
   ];
 
+  sane.home-manager.enable = true;
   sane.nixcache.enable-trusted-keys = true;
   sane.packages.enableConsolePkgs = true;
   sane.packages.enableSystemPkgs = true;

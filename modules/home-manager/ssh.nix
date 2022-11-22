@@ -1,4 +1,6 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
+
+lib.mkIf config.sane.home-manager.enable
 {
   home-manager.users.colin = let
     host = config.networking.hostName;

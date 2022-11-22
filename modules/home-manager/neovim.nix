@@ -1,4 +1,6 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
+
+lib.mkIf config.sane.home-manager.enable
 {
   sane.impermanence.home-dirs = [ ".cache/vim-swap" ];
 

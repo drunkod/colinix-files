@@ -33,6 +33,10 @@ in
   ];
 
   options = {
+    sane.home-manager.enable = mkOption {
+      default = false;
+      type = types.bool;
+    };
     # attributes to copy directly to home-manager's `wayland.windowManager` option
     sane.home-manager.windowManager = mkOption {
       default = {};
@@ -46,7 +50,7 @@ in
     };
   };
 
-  config = {
+  config = lib.mkIf cfg.enable {
     sane.impermanence.home-dirs = [
       "archive"
       "dev"
