@@ -7,12 +7,13 @@
     ./net.nix
     ./secrets.nix
     ./ssh.nix
-    ./system-packages.nix
     ./users.nix
     ./vpn.nix
   ];
 
   sane.nixcache.enable-trusted-keys = true;
+  sane.packages.enableConsolePkgs = true;
+  sane.packages.enableSystemPkgs = true;
 
   nixpkgs.config.allowUnfree = true;
 }

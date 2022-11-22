@@ -4,7 +4,7 @@ with lib;
 with pkgs;
 let
   cfg = config.sane.packages;
-  universalPkgs = [
+  consolePkgs = [
     backblaze-b2
     cdrtools
     duplicity
@@ -168,6 +168,41 @@ let
     { pkg = zecwallet-lite; dir = ".zcash"; }
   ] else []);
 
+  # general-purpose utilities that we want any user to be able to access
+  #   (specifically: root, in case of rescue)
+  systemPkgs = [
+    btrfs-progs
+    cryptsetup
+    dig
+    efibootmgr
+    fatresize
+    fd
+    file
+    gptfdisk
+    hdparm
+    htop
+    iftop
+    inetutils  # for telnet
+    iotop
+    iptables
+    jq
+    killall
+    lsof
+    netcat
+    nethogs
+    nmap
+    openssl
+    parted
+    pciutils
+    powertop
+    ripgrep
+    screen
+    smartmontools
+    socat
+    usbutils
+    wget
+  ];
+
   # useful devtools:
   devPkgs = [
     bison
@@ -186,6 +221,10 @@ let
 in
 {
   options = {
+    sane.packages.enableConsolePkgs = mkOption {
+      default = false;
+      type = types.bool;
+    };
     sane.packages.enableGuiPkgs = mkOption {
       default = false;
       type = types.bool;
@@ -198,10 +237,20 @@ in
       default = false;
       type = types.bool;
     };
+    sane.packages.enableSystemPkgs = mkOption {
+      default = false;
+      type = types.bool;
+      description = "enable system-wide packages";
+    };
   };
+
   config = {
-    sane.home-manager.extraPackages = universalPkgs
+    sane.home-manager.extraPackages = []
+      ++ (if cfg.enableConsolePkgs then consolePkgs else [])
       ++ (if cfg.enableGuiPkgs then guiPkgs else [])
-      ++ (if cfg.enableDevPkgs then devPkgs else []);
+      ++ (if cfg.enableDevPkgs then devPkgs else [])
+    ;
+
+    environment.systemPackages = mkIf cfg.enableSystemPkgs systemPkgs;
   };
 }
