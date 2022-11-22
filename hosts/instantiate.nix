@@ -7,6 +7,4 @@ hostName: { ... }: {
   ];
 
   networking.hostName = hostName;
-
-  nixpkgs.config.allowUnfree = true;
 }
