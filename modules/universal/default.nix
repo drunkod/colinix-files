@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ./allocations.nix
     ./fs.nix
     ./home-manager
     ./home-packages.nix
