@@ -18,7 +18,7 @@
   sane.impermanence.enable = true;
   # sane.services.duplicity.enable = true;  # TODO: re-enable after HW upgrade
   sane.services.nixserve.enable = true;
-  sane.services.nixserv.sopsFile = ../../secrets/servo.yaml;
+  sane.services.nixserve.sopsFile = ../../secrets/servo.yaml;
 
   # TODO: look into the EFI stuff
   boot.loader.grub.enable = false;
