@@ -22,8 +22,8 @@ let
     owner = "colin";
     repo = "browserpass-extension";
     # hack in sops support
-    rev = "f7cb5af1e6246fac26ee2d0c40eb926599f1e15a";
-    sha256 = "sha256-vdGoptqAVm6NWn22aFfvIHWNXtlAj0yc7OZN+8hGAI4=";
+    rev = "e3bf558ff63d002d3c15f2ce966071f04fada306";
+    sha256 = "sha256-dSRZ2ToEOPhzHNvlG8qdewa7689gT8cNB7nXkN3/Avo=";
   };
   browserpass-extension-yarn-modules = mkYarnModules {
     inherit pname version;
