@@ -29,8 +29,6 @@
   jackett = prev.callPackage ./jackett { pkgs = prev; };
   # mozilla keeps nerfing itself and removing configuration options
   firefox-unwrapped = prev.callPackage ./firefox-unwrapped { pkgs = prev; };
-  # fix abrupt HDD poweroffs as during reboot. patching systemd requires rebuilding nearly every package.
-  # systemd = import ./pkgs/systemd { pkgs = prev; };
 
   # patch rpi uboot with something that fixes USB HDD boot
   ubootRaspberryPi4_64bit = prev.callPackage ./ubootRaspberryPi4_64bit { pkgs = prev; };
