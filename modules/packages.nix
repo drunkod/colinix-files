@@ -165,7 +165,7 @@ let
     (tor-browser-bundle-bin.override { useHardenedMalloc = false; })
 
     # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
-    { pkg = zecwallet-lite; dir = ".zcash"; }
+    { pkg = zecwallet-lite; private = ".zcash"; }
   ] else []);
 
   # general-purpose utilities that we want any user to be able to access
