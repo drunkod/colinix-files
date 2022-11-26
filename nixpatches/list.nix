@@ -1,4 +1,9 @@
 fetchpatch: [
+  # phosh: 0.21.1 -> 0.22.0
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/201881.diff";
+    sha256 = "sha256-7tV7F1gKTfMwNJ0evweD7p6RXOvOHQXXtuuBqnRGyCc=";
+  })
   # phosh-mobile-settings: init at 0.21.1
   (fetchpatch {
     url = "https://git.uninsane.org/colin/nixpkgs/commit/0c1a7e8504291eb0076bbee3f8ebf693f4641112.diff";
