@@ -7,7 +7,11 @@ let
   consolePkgs = [
     backblaze-b2
     cdrtools
+    dmidecode
     duplicity
+    efivar
+    flashrom
+    fwupd
     gnupg
     gocryptfs
     gopass
@@ -19,6 +23,7 @@ let
     lm_sensors  # for sensors-detect
     lshw
     ffmpeg
+    memtester
     networkmanager
     nixpkgs-review
     # nixos-generators
