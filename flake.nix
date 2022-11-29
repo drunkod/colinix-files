@@ -94,7 +94,7 @@
       #   - `nixos-rebuild --flake './#<host>' switch`
       img = nixosConfiguration.config.system.build.img;
     };
-    hosts.servo = decl-bootable-host { name = "servo"; local = "aarch64-linux"; target = "aarch64-linux"; };
+    hosts.servo = decl-bootable-host { name = "servo"; local = "x86_64-linux"; target = "x86_64-linux"; };
     hosts.desko = decl-bootable-host { name = "desko"; local = "x86_64-linux"; target = "x86_64-linux"; };
     hosts.lappy = decl-bootable-host { name = "lappy"; local = "x86_64-linux"; target = "x86_64-linux"; };
     hosts.moby = decl-bootable-host { name = "moby"; local = "aarch64-linux"; target = "aarch64-linux"; };
@@ -102,7 +102,6 @@
     # note that these *do* produce different store paths, because the closure for the tools used to cross compile
     # v.s. emulate differ.
     # so deploying foo-cross and then foo incurs some rebuilding.
-    hosts.servo-cross = decl-bootable-host { name = "servo"; local = "x86_64-linux"; target = "aarch64-linux"; };
     hosts.moby-cross = decl-bootable-host { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
     hosts.rescue = decl-bootable-host { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
   in {

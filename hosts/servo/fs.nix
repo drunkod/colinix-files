@@ -16,32 +16,29 @@
     device = "none";
     fsType = "tmpfs";
     options = [
-      "size=40G"
       "mode=777"
       "defaults"
     ];
   };
 
   fileSystems."/nix" = {
-    device = "/dev/disk/by-uuid/aa272cff-0fcc-498e-a4cb-0d95fb60631b";
+    device = "/dev/disk/by-uuid/cc81cca0-3cc7-4d82-a00c-6243af3e7776";
     fsType = "btrfs";
+    options = [
+      "compress=zstd"
+      "defaults"
+    ];
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/31D3-40CB";
+    device = "/dev/disk/by-uuid/6EE3-4171";
     fsType = "vfat";
   };
 
-
-  # fileSystems."/var/lib/pleroma" = {
-  #   device = "/opt/pleroma";
-  #   options = [ "bind" ];
-  # };
-
   # in-memory compressed RAM (seems to be dynamically sized)
-  zramSwap = {
-    enable = true;
-  };
+  # zramSwap = {
+  #   enable = true;
+  # };
 
   # btrfs doesn't easily support swapfiles
   # swapDevices = [
@@ -59,11 +56,11 @@
   #     19  # set part type to Linux swap
   #     w   # write changes
   #   mkswap -L swap <part>
-  swapDevices = [
-    {
-      label = "swap";
-      # TODO: randomEncryption.enable = true;
-    }
-  ];
+  # swapDevices = [
+  #   {
+  #     label = "swap";
+  #     # TODO: randomEncryption.enable = true;
+  #   }
+  # ];
 }
 

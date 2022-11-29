@@ -3,7 +3,6 @@
 {
   imports = [
     ./fs.nix
-    ./hardware.nix
     ./net.nix
     ./users.nix
     ./services
@@ -13,18 +12,14 @@
     # for administering services
     pkgs.matrix-synapse
     pkgs.freshrss
-    pkgs.libraspberrypi
   ];
   sane.impermanence.enable = true;
   # sane.services.duplicity.enable = true;  # TODO: re-enable after HW upgrade
   sane.services.nixserve.enable = true;
   sane.services.nixserve.sopsFile = ../../secrets/servo.yaml;
 
-  # TODO: look into the EFI stuff
-  boot.loader.grub.enable = false;
-  boot.loader.generic-extlinux-compatible.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
-  sane.image.extraBootFiles = [ pkgs.bootpart-u-boot-rpi-aarch64 ];
+  sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
   sops.secrets.duplicity_passphrase = {
     sopsFile = ../../secrets/servo.yaml;
