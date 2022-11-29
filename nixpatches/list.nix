@@ -6,16 +6,17 @@ fetchpatch: [
   })
   # phosh-mobile-settings: init at 0.21.1
   (fetchpatch {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/0c1a7e8504291eb0076bbee3f8ebf693f4641112.diff";
-    # url = "https://github.com/NixOS/nixpkgs/pull/193845.diff";
-    sha256 = "sha256-OczjlQcG7sTM/V9Y9VL/qdwaWPKfjAJsh3czqqhRQig=";
+    # url = "https://git.uninsane.org/colin/nixpkgs/commit/0c1a7e8504291eb0076bbee3f8ebf693f4641112.diff";
+    # sha256 = "sha256-OczjlQcG7sTM/V9Y9VL/qdwaWPKfjAJsh3czqqhRQig=";
+    url = "https://github.com/NixOS/nixpkgs/pull/193845.diff";
+    sha256 = "sha256-/9c8hUF7DO54f8/6oSRzxLOwMdts5UPa4pfXsdBa2pM=";
   })
 
   # librewolf: build with `MOZ_REQUIRE_SIGNING=false`
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/199134.diff";
     # url = "https://git.uninsane.org/colin/nixpkgs/commit/99b82e07fee4d194520d6e8d51bc45c80a4d3c7e.diff";
-    sha256 = "sha256-FOAZYaMpSPMYwU26xYD+V/f+df0JjlbuVtqjlcBFW5Q=";
+    sha256 = "sha256-Ne4hyHQDwBHUlWo8Z3QyRdmEv1rYGOjFGxSfOAcLUvQ=";
   })
 
   # # kaiteki: init at 2022-09-03
