@@ -35,6 +35,38 @@
     fsType = "vfat";
   };
 
+  # slow, external storage (for archiving, etc)
+  fileSystems."/nix/persist/ext" = {
+    device = "/dev/disk/by-uuid/aa272cff-0fcc-498e-a4cb-0d95fb60631b";
+    fsType = "btrfs";
+    options = [
+      "compress=zstd"
+      "defaults"
+    ];
+  };
+
+  sane.impermanence.service-dirs = [
+    # TODO: this is overly broad; only need media and share directories to be persisted
+    { user = "colin"; group = "users"; directory = "/var/lib/uninsane"; }
+  ];
+  # direct these media directories to external storage
+  environment.persistence."/nix/persist/ext/persist" = {
+    directories = [
+      ({
+        user = "colin";
+        group = "users";
+        mode = "0777";
+        directory = "/var/lib/uninsane/media/Videos";
+      })
+      ({
+        user = "colin";
+        group = "users";
+        mode = "0777";
+        directory = "/var/lib/uninsane/media/freeleech";
+      })
+    ];
+  };
+
   # in-memory compressed RAM (seems to be dynamically sized)
   # zramSwap = {
   #   enable = true;

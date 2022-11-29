@@ -341,7 +341,5 @@ in
   sane.impermanence.service-dirs = [
     # TODO: mode?
     { user = "acme"; group = "acme"; directory = "/var/lib/acme"; }
-    # TODO: this is overly broad; only need media and share directories to be persisted
-    { user = "colin"; group = "users"; directory = "/var/lib/uninsane"; }
   ];
 }
