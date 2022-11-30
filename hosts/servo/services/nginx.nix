@@ -300,8 +300,6 @@ in
     enableACME = true;
     inherit kTLS;
 
-    default = true;
-
     locations."/" = {
       proxyPass = "http://127.0.0.1:8080";
       extraConfig = ''
@@ -334,6 +332,22 @@ in
     '';
   };
 
+  # serve any site not listed above, if it's static.
+  # because we define it dynamically, SSL isn't trivial. support only http
+  # documented <https://nginx.org/en/docs/http/ngx_http_core_module.html#server_name>
+  services.nginx.virtualHosts."~^(?<domain>.+)$" = {
+    addSSL = false;
+    enableACME = false;
+    default = true;
+    # serverName = null;
+    locations."/" = {
+      # somehow this doesn't escape -- i get error 400 if i:
+      # curl 'http://..' --resolve '..:80:127.0.0.1'
+      root = "/var/www/$domain";
+      # tryFiles = "$domain/$uri $domain/$uri/ =404";
+    };
+  };
+
   security.acme.acceptTerms = true;
   security.acme.defaults.email = "admin.acme@uninsane.org";
 
@@ -342,5 +356,6 @@ in
   sane.impermanence.service-dirs = [
     # TODO: mode?
     { user = "acme"; group = "acme"; directory = "/var/lib/acme"; }
+    { user = "colin"; group = "users"; directory = "/var/www"; }
   ];
 }
