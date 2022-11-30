@@ -116,6 +116,16 @@
       x86_64-linux = allPkgsFor "x86_64-linux";
       aarch64-linux = allPkgsFor "aarch64-linux";
     };
+    templates = {
+      python-data = {
+        # initialize with:
+        # - `nix flake init -t '/home/colin/dev/nixos/#python-data'`
+        # then enter with:
+        # - `nix develop`
+        path = ./templates/python-data;
+        description = "python environment for data processing";
+      };
+    };
   };
 }
 
