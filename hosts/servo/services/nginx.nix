@@ -46,6 +46,8 @@ in
     forceSSL = true;
     enableACME = true;
     inherit kTLS;
+    # for OCSP stapling
+    sslTrustedCertificate = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
 
     # uninsane.org/share/foo => /var/lib/uninsane/root/share/foo.
     # yes, nginx does not strip the prefix when evaluating against the root.
@@ -336,14 +338,18 @@ in
   # because we define it dynamically, SSL isn't trivial. support only http
   # documented <https://nginx.org/en/docs/http/ngx_http_core_module.html#server_name>
   services.nginx.virtualHosts."~^(?<domain>.+)$" = {
-    addSSL = false;
-    enableACME = false;
     default = true;
+    addSSL = true;
+    enableACME = false;
+    sslCertificate = "/var/www/certs/wildcard/cert.pem";
+    sslCertificateKey = "/var/www/certs/wildcard/key.pem";
+    # sslCertificate = "/var/lib/acme/.minica/cert.pem";
+    # sslCertificateKey = "/var/lib/acme/.minica/key.pem";
     # serverName = null;
     locations."/" = {
       # somehow this doesn't escape -- i get error 400 if i:
       # curl 'http://..' --resolve '..:80:127.0.0.1'
-      root = "/var/www/$domain";
+      root = "/var/www/sites/$domain";
       # tryFiles = "$domain/$uri $domain/$uri/ =404";
     };
   };
@@ -356,6 +362,22 @@ in
   sane.impermanence.service-dirs = [
     # TODO: mode?
     { user = "acme"; group = "acme"; directory = "/var/lib/acme"; }
-    { user = "colin"; group = "users"; directory = "/var/www"; }
+    { user = "colin"; group = "users"; directory = "/var/www/sites"; }
   ];
+
+  # create a self-signed SSL certificate for use with literally any domain.
+  # browsers will reject this, but proxies and local testing tools can be configured
+  # to accept it.
+  system.activationScripts.generate-x509-self-signed.text = ''
+    mkdir -p /var/www/certs/wildcard
+    test -f /var/www/certs/wildcard/key.pem || ${pkgs.openssl}/bin/openssl \
+      req -x509 -newkey rsa:4096 \
+      -keyout /var/www/certs/wildcard/key.pem \
+      -out /var/www/certs/wildcard/cert.pem \
+      -sha256 -nodes -days 3650 \
+      -addext 'subjectAltName=DNS:*' \
+      -subj '/CN=self-signed'
+    chmod 640 /var/www/certs/wildcard/{key,cert}.pem
+    chown root:nginx /var/www/certs/wildcard /var/www/certs/wildcard/{key,cert}.pem
+  '';
 }
