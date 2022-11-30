@@ -31,6 +31,7 @@ in
   # sets gzip_comp_level = 5
   services.nginx.recommendedGzipSettings = true;
   # enables OCSP stapling (so clients don't need contact the OCSP server -- i do instead)
+  # - doesn't seem to, actually: <https://www.ssllabs.com/ssltest/analyze.html?d=uninsane.org>
   # caches TLS sessions for 10m
   services.nginx.recommendedTlsSettings = true;
   # enables sendfile, tcp_nopush, tcp_nodelay, keepalive_timeout 65
