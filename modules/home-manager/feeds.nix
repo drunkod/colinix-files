@@ -97,6 +97,7 @@ in rec {
     (mkText "https://idiomdrottning.org/feed.xml" // uncat // daily)
     (mkText "https://anish.lakhwara.com/home.html" // tech // weekly)
     (mkText "https://www.jefftk.com/news.rss" // tech // daily)
+    (mkText "https://pomeroyb.com/feed.xml" // tech // infrequent)
 
     # (TECH; POL) COMMENTATORS
     (mkSubstack "edwardsnowden" // pol // infrequent)
