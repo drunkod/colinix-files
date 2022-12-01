@@ -20,6 +20,8 @@
     ];
   };
 
+  sublime-music-mobile = prev.callPackage ./sublime-music-mobile { };
+
   #### customized packages
   fluffychat-moby = prev.callPackage ./fluffychat-moby { pkgs = prev; };
   gpodder-configured = prev.callPackage ./gpodder-configured { pkgs = prev; };
