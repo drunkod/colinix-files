@@ -33,15 +33,6 @@ lib.mkIf config.sane.home-manager.enable
           " autocmd Syntax tex set conceallevel=2
         '';
       })
-      # nabla renders inline math in any document, but it's buggy.
-      #   https://github.com/jbyuki/nabla.nvim
-      # ({
-      #   plugin = pkgs.nabla;
-      #   type = "lua";
-      #   config = ''
-      #     require'nabla'.enable_virt()
-      #   '';
-      # })
       # treesitter syntax highlighting: https://nixos.wiki/wiki/Tree_sitters
       # docs: https://github.com/nvim-treesitter/nvim-treesitter
       # config taken from: https://github.com/i077/system/blob/master/modules/home/neovim/default.nix
