@@ -205,6 +205,7 @@ let
     screen
     smartmontools
     socat
+    strace
     usbutils
     wget
   ];
