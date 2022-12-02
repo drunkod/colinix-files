@@ -6,7 +6,9 @@
 # - number of open peer connections:
 #   - sudo -u ipfs -g ipfs ipfs -c /var/lib/ipfs/ swarm peers | wc -l
 
-{ ... }:
+{ lib, ... }:
+
+lib.mkIf false # i don't actively use ipfs anymore
 {
   sane.impermanence.service-dirs = [
     # TODO: mode? could be more granular
