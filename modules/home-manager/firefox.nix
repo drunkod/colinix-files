@@ -51,11 +51,11 @@ let
         fixedExtid = pkg.extid;
       };
     in [
-      (addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-C+VQyaJ8BA0ErXGVTdnppJZ6J9SP+izf6RFxdS4VJoU=")
-      (addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-au5GGn22n4i6VrdOKqNMOrWdMoVCcpLdjO2wwRvyx7E=")
-      (addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-m14onUlnpLDPHezA/soKygcc76tF1fLG52tM/LkbAXQ=")
+      (addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-+xc4lcdsOwXxMsr4enFsdePbIb6GHq0bFLpqvH5xXos=")
+      (addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-30F8oDIgshXVY7YKgnfoc1tUTHfgeFbzXISJuVJs0AM=")
+      (addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-aDBRpcOeMyROnXjmveHKm9zsPC+LzXCG0uhAqI1EWf0=")
       (addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=")
-      (addon "ether-metamask" "webextension@metamask.io" "sha256-dnpwKpNF0KgHMAlz5btkkZySjMsnrXECS35ClkD2XHc=")
+      (addon "ether-metamask" "webextension@metamask.io" "sha256-G+MwJDOcsaxYSUXjahHJmkWnjLeQ0Wven8DU/lGeMzA=")
       # (addon "browserpass-ce" "browserpass@maximbaz.com" "sha256-sXgUBbRvMnRpeIW1MTkmTcoqtW/8RDXAkxAq1evFkpc=")
       (localAddon pkgs.browserpass-extension)
     ];
