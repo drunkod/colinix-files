@@ -115,6 +115,7 @@ in rec {
     (mkText "https://blog.dshr.org/rss.xml" // pol // weekly)
     ## Matt Levine
     (mkText "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" // pol // weekly)
+    (mkText "https://stpeter.im/atom.xml" // pol // weekly)
 
     # RATIONALITY/PHILOSOPHY/ETC
     (mkSubstack "samkriss" // humor // infrequent)
