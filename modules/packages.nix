@@ -16,6 +16,7 @@ let
     gocryptfs
     gopass
     gopass-jsonapi
+    gpt2tc
     ifuse
     ipfs
     libimobiledevice
