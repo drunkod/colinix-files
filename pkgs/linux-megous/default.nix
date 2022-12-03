@@ -2,11 +2,15 @@
 
 with lib;
 
-buildLinux (args // rec {
-  version = "6.0.2";
+let
+  base = "6.1.0";
+  # set to empty if not a release candidate
+  rc = "-rc7";
+in buildLinux (args // rec {
+  version = base + rc;
 
   # modDirVersion needs to be x.y.z, will automatically add .0 if needed
-  modDirVersion = if (modDirVersionArg == null) then concatStringsSep "." (take 3 (splitVersion "${version}.0")) else modDirVersionArg;
+  modDirVersion = if (modDirVersionArg == null) then concatStringsSep "." (take 3 (splitVersion "${version}.0")) + rc else modDirVersionArg;
 
   # branchVersion needs to be x.y
   extraMeta.branch = versions.majorMinor version;
@@ -14,8 +18,7 @@ buildLinux (args // rec {
   src = fetchFromGitHub {
     owner = "megous";
     repo = "linux";
-    # branch: orange-pi-6.0
-    rev = "2683672a2052ffda995bb987fa62a1abe8424ef4";
-    hash = "sha256-hL/SbLgaTk/CqFLFrAK/OV9/OS20O42zJvSScsvWBQk=";
+    rev = "orange-pi-6.1-20221128-1027";
+    hash = "sha256-kEujs4v5rPHPYy4YLyEWHa1Bu0sxoXLgSvmOH9QPWos=";
   };
 } // (args.argsOverride or { }))
