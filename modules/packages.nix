@@ -208,6 +208,7 @@ let
     smartmontools
     socat
     strace
+    tree
     usbutils
     wget
   ];
