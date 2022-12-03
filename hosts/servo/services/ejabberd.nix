@@ -13,10 +13,15 @@
   networking.firewall.allowedTCPPorts = [
     5222  # XMPP client -> server
     5269  # XMPP server -> server
+    5443  # web services (file uploads, websockets, admin)
   ];
 
   # provide access to certs
   users.users.ejabberd.extraGroups = [ "nginx" ];
+
+  security.acme.certs."uninsane.org".extraDomainNames = [
+    "upload.xmpp.uninsane.org"
+  ];
 
   # TODO: allocate UIDs/GIDs ?
   services.ejabberd.enable = true;
@@ -34,6 +39,14 @@
       - /var/lib/acme/uninsane.org/key.pem
 
     pam_userinfotype: jid
+
+    acl:
+      local:
+        user_regexp: ""
+
+    access_rules:
+      local:
+        - allow: local
 
     # docs: <https://docs.ejabberd.im/admin/configuration/basic/#shaper-rules>
     shaper_rules:
@@ -72,13 +85,47 @@
         module: ejabberd_s2s_in
         shaper: s2s_shaper
       -
-        port: 5280
+        port: 5443
         module: ejabberd_http
+        tls: true
         request_handlers:
           /admin: ejabberd_web_admin
           /api: mod_http_api
           /bosh: mod_bosh
           /upload: mod_http_upload
           /ws: ejabberd_http_ws
+
+    # TODO: enable mod_client_state for net optimization
+    # TODO: enable mod_conversejs for web-hosted XMPP client
+    # TODO: enable mod_fail2ban
+    # TODO: enable mod_host_meta
+    # TODO(low): look into mod_http_fileserver for serving macros?
+    # TODO: enable mod_muc ?
+    # TODO: enable mod_offline for buffering messages to offline users/servers?
+    modules:
+      mod_disco:
+        server_info:
+          -
+            modules: all
+            name: abuse-addresses
+            urls:
+              - "mailto:admin.xmpp@uninsane.org"
+              - "xmpp:colin@uninsane.org"
+          -
+            modules: all
+            name: admin-addresses
+            urls:
+              - "mailto:admin.xmpp@uninsane.org"
+              - "xmpp:colin@uninsane.org"
+      mod_http_upload:
+        host: upload.xmpp.uninsane.org
+        hosts:
+          - upload.xmpp.uninsane.org
+        put_url: "https://@HOST@:5443/upload"
+        dir_mode: "0750"
+        file_mode: "0750"
+        rm_on_unregister: false
+      mod_ping: {}
+      mod_version: {}
   '';
 }
