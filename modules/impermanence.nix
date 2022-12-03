@@ -50,6 +50,7 @@ in
         # "/var/lib/AccountsService"   # not sure what this is, but it's empty
         "/var/lib/alsa"                # preserve output levels, default devices
         # "/var/lib/blueman"           # files aren't human readable
+        # TODO: if we changed the bluetooth installer to auto-discover the host MAC address, we could de-persist this
         "/var/lib/bluetooth"           # preserve bluetooth handshakes
         "/var/lib/colord"              # preserve color calibrations (?)
         # "/var/lib/dhclient"          # empty on lappy; dunno about desko
