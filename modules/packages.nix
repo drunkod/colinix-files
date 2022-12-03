@@ -184,6 +184,7 @@ let
     fatresize
     fd
     file
+    gawk
     gptfdisk
     hdparm
     htop
