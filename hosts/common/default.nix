@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   imports = [
+    ./bluetooth.nix
     ./fs.nix
     ./hardware
     ./machine-id.nix

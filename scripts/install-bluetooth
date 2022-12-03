@@ -1,0 +1,25 @@
+#!/bin/sh
+# usage: install-bluetooth <source_dir> <dest_dir>
+# source_dir contains plain-text files of any filename.
+# for each file, this extracts the MAC and creates a symlink in dest_dir which
+# points to the original file, using the MAC name as file path
+#
+# bluetooth connection structure is /var/lib/bluetooth/<HOST_MAC>/<DEVICE_MAX>/{attributes,info}
+#
+set -ex
+
+src_dir="$1"
+dest_dir="$2"
+
+if [ "x$dest_dir" = "x" ]
+then
+  # default to the first MAC address on the host
+  dest_dir="/var/lib/bluetooth/$(ls /var/lib/bluetooth)"
+fi
+
+for f in $(ls "$src_dir")
+do
+  mac=$(sed -rn 's/# MAC=(.*)/\1/p' "$src_dir/$f")
+  mkdir -p "$dest_dir/$mac"
+  ln -sf "$src_dir/$f" "$dest_dir/$mac/info"
+done
