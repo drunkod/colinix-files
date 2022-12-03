@@ -16,7 +16,6 @@ let
     gocryptfs
     gopass
     gopass-jsonapi
-    gpt2tc
     ifuse
     ipfs
     libimobiledevice
@@ -154,6 +153,7 @@ let
 
     # kaiteki  # Pleroma client
     # gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
+    gpt2tc
 
     logseq
     losslesscut-bin
