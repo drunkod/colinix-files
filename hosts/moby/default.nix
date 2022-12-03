@@ -26,6 +26,7 @@
   # usability compromises
   sane.impermanence.home-dirs = [
     config.sane.web-browser.dotDir
+    ".config/pulse"  # persist pulseaudio volume
   ];
 
   # sane.packages.enableGuiPkgs = false;  # XXX faster builds/imaging for debugging
