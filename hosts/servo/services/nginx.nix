@@ -313,14 +313,24 @@ in
 
   # exists only to manage certs for dovecot
   services.nginx.virtualHosts."imap.uninsane.org" = {
-    forceSSL = true;
     enableACME = true;
   };
   # exists only to manage certs for Postfix
   services.nginx.virtualHosts."mx.uninsane.org" = {
-    forceSSL = true;
     enableACME = true;
   };
+
+  # exists so the XMPP server's cert can obtain altNames for all its resources
+  services.nginx.virtualHosts."pubsub.xmpp.uninsane.org" = {
+    useACMEHost = "uninsane.org";
+  };
+  services.nginx.virtualHosts."upload.xmpp.uninsane.org" = {
+    useACMEHost = "uninsane.org";
+  };
+  services.nginx.virtualHosts."vjid.xmpp.uninsane.org" = {
+    useACMEHost = "uninsane.org";
+  };
+
   services.nginx.virtualHosts."nixcache.uninsane.org" = {
     addSSL = true;
     enableACME = true;

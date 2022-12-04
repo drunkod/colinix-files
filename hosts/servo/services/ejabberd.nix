@@ -20,7 +20,9 @@
   users.users.ejabberd.extraGroups = [ "nginx" ];
 
   security.acme.certs."uninsane.org".extraDomainNames = [
+    "pubsub.xmpp.uninsane.org"
     "upload.xmpp.uninsane.org"
+    "vjid.xmpp.uninsane.org"
   ];
 
   # TODO: allocate UIDs/GIDs ?
@@ -103,6 +105,11 @@
     # TODO: enable mod_muc ?
     # TODO: enable mod_offline for buffering messages to offline users/servers?
     modules:
+      # allows users to set avatars in vCard
+      # - <https://docs.ejabberd.im/admin/configuration/modules/#mod-avatar>
+      mod_avatar: {}
+      mod_caps: {}  # for mod_pubsub
+      # allows clients like Dino to discover where to upload files
       mod_disco:
         server_info:
           -
@@ -126,6 +133,22 @@
         file_mode: "0750"
         rm_on_unregister: false
       mod_ping: {}
+      # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-vcard>
+      mod_vcard:
+        allow_return_all: true  # all users are discoverable (?)
+        host: vjid.xmpp.uninsane.org
+        hosts:
+          - vjid.xmpp.uninsane.org
+        search: true
+      mod_vcard_xupdate: {}  # needed for avatars
+      # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-pubsub>
+      mod_pubsub:  # needed for avatars
+        host: pubsub.xmpp.uninsane.org
+        hosts:
+          - pubsub.xmpp.uninsane.org
+        plugins:
+          - flat
+          - pep
       mod_version: {}
   '';
 }
