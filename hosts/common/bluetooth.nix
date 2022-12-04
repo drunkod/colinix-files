@@ -21,6 +21,10 @@
     sopsFile = ../../secrets/universal/bt/car.bin;
     format = "binary";
   };
+  sops.secrets."bt/earbuds" = {
+    sopsFile = ../../secrets/universal/bt/earbuds.bin;
+    format = "binary";
+  };
   sops.secrets."bt/portable-speaker" = {
     sopsFile = ../../secrets/universal/bt/portable-speaker.bin;
     format = "binary";
