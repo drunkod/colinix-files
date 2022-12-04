@@ -17,6 +17,10 @@
   );
 
   # TODO: use a glob, or a list, or something?
+  sops.secrets."bt/car" = {
+    sopsFile = ../../secrets/universal/bt/car.bin;
+    format = "binary";
+  };
   sops.secrets."bt/portable-speaker" = {
     sopsFile = ../../secrets/universal/bt/portable-speaker.bin;
     format = "binary";
