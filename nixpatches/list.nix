@@ -6,6 +6,12 @@ fetchpatch: [
     sha256 = "sha256-Ne4hyHQDwBHUlWo8Z3QyRdmEv1rYGOjFGxSfOAcLUvQ=";
   })
 
+  # aerc: substitute awk in filters
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/204322.diff";
+    sha256 = "sha256-zzK8kcW34hcn331CtTqggUwH8YmrOu5+N8lfXSDfRls=";
+  })
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
