@@ -203,6 +203,7 @@ let
     parted
     pciutils
     powertop
+    pstree
     ripgrep
     screen
     smartmontools
