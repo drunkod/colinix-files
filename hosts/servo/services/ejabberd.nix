@@ -74,8 +74,12 @@
     #     - burst_size:  5000000
 
     # see: <https://docs.ejabberd.im/admin/configuration/listen/>
-    # TODO: host web admin panel
-    s2s_use_starttls: true
+    # s2s_use_starttls: true
+    s2s_use_starttls: optional
+    # lessens 504: remote-server-timeout errors
+    # see: <https://github.com/processone/ejabberd/issues/3105#issuecomment-562182967>
+    negotiation_timeout: 60
+
     listen:
       -
         port: 5222
@@ -91,11 +95,13 @@
         module: ejabberd_http
         tls: true
         request_handlers:
-          /admin: ejabberd_web_admin
-          /api: mod_http_api
+          /admin: ejabberd_web_admin  # TODO: ensure this actually works
+          /api: mod_http_api  # ejabberd API endpoint (to control server)
           /bosh: mod_bosh
           /upload: mod_http_upload
           /ws: ejabberd_http_ws
+          # /.well-known/host-meta: mod_host_meta
+          # /.well-known/host-meta.json: mod_host_meta
 
     # TODO: enable mod_client_state for net optimization
     # TODO: enable mod_conversejs for web-hosted XMPP client
@@ -103,12 +109,12 @@
     # TODO: enable mod_host_meta
     # TODO(low): look into mod_http_fileserver for serving macros?
     # TODO: enable mod_muc ?
-    # TODO: enable mod_offline for buffering messages to offline users/servers?
     modules:
       # allows users to set avatars in vCard
       # - <https://docs.ejabberd.im/admin/configuration/modules/#mod-avatar>
       # mod_avatar: {}
       mod_caps: {}  # for mod_pubsub
+      mod_carboncopy: {}  # allows multiple clients to receive a user's message
       # allows clients like Dino to discover where to upload files
       mod_disco:
         server_info:
@@ -132,7 +138,17 @@
         dir_mode: "0750"
         file_mode: "0750"
         rm_on_unregister: false
+      # allow discoverability of BOSH and websocket endpoints
+      # TODO: enable once on ejabberd 22.05  (presently 21.04)
+      # mod_host_meta: {}
+      mod_last: {}  # allow other users to know when i was last online
+      mod_offline:  # store messages for a user when they're offline (TODO: understand multi-client workflow?)
+        access_max_user_messages: max_user_offline_messages
+        store_groupchat: true
       mod_ping: {}
+      mod_private: {}  # allow local clients to persist arbitrary data on my server
+      mod_stream_mgmt:
+        resend_on_timeout: if_offline  # resend undelivered messages if the origin client is offline
       # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-vcard>
       mod_vcard:
         allow_return_all: true  # all users are discoverable (?)
