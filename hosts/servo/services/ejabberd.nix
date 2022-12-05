@@ -107,7 +107,7 @@
     modules:
       # allows users to set avatars in vCard
       # - <https://docs.ejabberd.im/admin/configuration/modules/#mod-avatar>
-      mod_avatar: {}
+      # mod_avatar: {}
       mod_caps: {}  # for mod_pubsub
       # allows clients like Dino to discover where to upload files
       mod_disco:
@@ -141,14 +141,14 @@
           - vjid.xmpp.uninsane.org
         search: true
       mod_vcard_xupdate: {}  # needed for avatars
-      # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-pubsub>
-      mod_pubsub:  # needed for avatars
-        host: pubsub.xmpp.uninsane.org
-        hosts:
-          - pubsub.xmpp.uninsane.org
-        plugins:
-          - flat
-          - pep
+      # # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-pubsub>
+      # mod_pubsub:  # needed for avatars
+      #   host: pubsub.xmpp.uninsane.org
+      #   hosts:
+      #     - pubsub.xmpp.uninsane.org
+      #   plugins:
+      #     - flat
+      #     - pep
       mod_version: {}
   '';
 }
