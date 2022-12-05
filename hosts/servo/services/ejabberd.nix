@@ -52,7 +52,9 @@
 
     # docs: <https://docs.ejabberd.im/admin/configuration/basic/#shaper-rules>
     shaper_rules:
-      max_s2s_connections: 3
+      # setting this to above 1 may break outgoing messages
+      # - maybe some servers rate limit? or just don't understand simultaneous connections?
+      max_s2s_connections: 1
       max_user_offline_messages: 5000
       c2s_shaper:
         fast: all
@@ -112,7 +114,7 @@
     modules:
       # allows users to set avatars in vCard
       # - <https://docs.ejabberd.im/admin/configuration/modules/#mod-avatar>
-      # mod_avatar: {}
+      mod_avatar: {}
       mod_caps: {}  # for mod_pubsub
       mod_carboncopy: {}  # allows multiple clients to receive a user's message
       # allows clients like Dino to discover where to upload files
@@ -157,14 +159,14 @@
           - vjid.xmpp.uninsane.org
         search: true
       mod_vcard_xupdate: {}  # needed for avatars
-      # # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-pubsub>
-      # mod_pubsub:  # needed for avatars
-      #   host: pubsub.xmpp.uninsane.org
-      #   hosts:
-      #     - pubsub.xmpp.uninsane.org
-      #   plugins:
-      #     - flat
-      #     - pep
+      # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-pubsub>
+      mod_pubsub:  # needed for avatars
+        host: pubsub.xmpp.uninsane.org
+        hosts:
+          - pubsub.xmpp.uninsane.org
+        plugins:
+          - flat
+          - pep
       mod_version: {}
   '';
 }
