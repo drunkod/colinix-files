@@ -1,0 +1,4 @@
+https://github.com/nixos/nixpkgs/pulls?q=
+https://fed.uninsane.org
+https://jackett.uninsane.org
+https://bt.uninsane.org

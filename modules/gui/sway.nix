@@ -81,8 +81,23 @@ in
     sane.home-manager.windowManager.sway = {
       enable = true;
       wrapperFeatures.gtk = true;
-      config = rec {
-        terminal = "${pkgs.kitty}/bin/kitty";
+      config = let
+        fuzzel = "${pkgs.fuzzel}/bin/fuzzel";
+        wtype = "${pkgs.wtype}/bin/wtype";
+        kitty = "${pkgs.kitty}/bin/kitty";
+        lock-cmd = "${pkgs.swaylock}/bin/swaylock --indicator-idle-visible --indicator-radius 100 --indicator-thickness 30";
+        vol-up-cmd = "${pkgs.pulsemixer}/bin/pulsemixer --change-volume +5";
+        vol-down-cmd = "${pkgs.pulsemixer}/bin/pulsemixer --change-volume -5";
+        mute-cmd = "${pkgs.pulsemixer}/bin/pulsemixer --toggle-mute";
+        brightness-up-cmd = "${pkgs.brightnessctl}/bin/brightnessctl set +2%";
+        brightness-down-cmd = "${pkgs.brightnessctl}/bin/brightnessctl set 2%-";
+        screenshot-cmd = "${pkgs.sway-contrib.grimshot}/bin/grimshot copy area";
+        # "bookmarking"/snippets inspired by Luke Smith:
+        # - <https://www.youtube.com/watch?v=d_11QaTlf1I>
+        snip-file = ./snippets.txt;
+        snip-cmd = "${wtype} $(cat ${snip-file} | ${fuzzel} -d -i)";
+      in rec {
+        terminal = kitty;
         window = {
           border = 3; # pixel boundary between windows
           hideEdgeBorders = "smart"; # don't show border if only window on workspace
@@ -103,7 +118,7 @@ in
         modifier = "Mod1";
         # list of launchers: https://www.reddit.com/r/swaywm/comments/v39hxa/your_favorite_launcher/
         # menu = "${pkgs.dmenu}/bin/dmenu_path";
-        menu = "${pkgs.fuzzel}/bin/fuzzel";
+        menu = fuzzel;
         # menu = "${pkgs.albert}/bin/albert";
         left = "h";
         down = "j";
@@ -114,7 +129,8 @@ in
           "${modifier}+Return" = "exec ${terminal}";
           "${modifier}+Shift+q" = "kill";
           "${modifier}+d" = "exec ${menu}";
-          "${modifier}+l" = "exec ${pkgs.swaylock}/bin/swaylock --indicator-idle-visible --indicator-radius 100 --indicator-thickness 30";
+          "${modifier}+s" = "exec ${snip-cmd}";
+          "${modifier}+l" = "exec ${lock-cmd}";
 
           # "${modifier}+${left}" = "focus left";
           # "${modifier}+${down}" = "focus down";
@@ -141,7 +157,7 @@ in
           "${modifier}+f" = "fullscreen toggle";
           "${modifier}+a" = "focus parent";
 
-          "${modifier}+s" = "layout stacking";
+          # "${modifier}+s" = "layout stacking";
           "${modifier}+w" = "layout tabbed";
           "${modifier}+e" = "layout toggle split";
 
@@ -185,19 +201,20 @@ in
             "exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'";
 
           "${modifier}+r" = "mode resize";
-        } // {
+
           # media keys
-          XF86MonBrightnessDown = ''exec "${pkgs.brightnessctl}/bin/brightnessctl set 2%-"'';
-          XF86MonBrightnessUp = ''exec "${pkgs.brightnessctl}/bin/brightnessctl set +2%"'';
+          XF86MonBrightnessDown = "exec ${brightness-down-cmd}";
+          XF86MonBrightnessUp = "exec ${brightness-up-cmd}";
 
-          XF86AudioRaiseVolume = "exec '${pkgs.pulsemixer}/bin/pulsemixer --change-volume +5'";
-          XF86AudioLowerVolume = "exec '${pkgs.pulsemixer}/bin/pulsemixer --change-volume -5'";
-          XF86AudioMute = "exec '${pkgs.pulsemixer}/bin/pulsemixer --toggle-mute'";
+          # TODO: hook into a visual prompt to display volume?
+          XF86AudioRaiseVolume = "exec ${vol-up-cmd}";
+          XF86AudioLowerVolume = "exec ${vol-down-cmd}";
+          XF86AudioMute = "exec ${mute-cmd}";
 
-          "${modifier}+Page_Up" = "exec '${pkgs.pulsemixer}/bin/pulsemixer --change-volume +5'";
-          "${modifier}+Page_Down" = "exec '${pkgs.pulsemixer}/bin/pulsemixer --change-volume -5'";
+          "${modifier}+Page_Up" = "exec ${vol-up-cmd}";
+          "${modifier}+Page_Down" = "exec ${vol-down-cmd}";
 
-          "${modifier}+Print" = "exec '${pkgs.sway-contrib.grimshot}/bin/grimshot copy area'";
+          "${modifier}+Print" = "exec ${screenshot-cmd}";
         };
 
         # mostly defaults:
