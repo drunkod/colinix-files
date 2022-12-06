@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   sane.impermanence.service-dirs = [
@@ -45,6 +45,21 @@
     # run this behind the OVPN static VPN
     NetworkNamespacePath = "/run/netns/ovpns";
     LogLevelMax = "warning";
+  };
+
+  # service to automatically backup torrents i add to transmission
+  systemd.services.backup-torrents = {
+    description = "archive torrents to storage not owned by transmission";
+    script = ''
+      ${pkgs.rsync}/bin/rsync -arv /var/lib/transmission/.config/transmission-daemon/torrents/ /var/backup/torrents/
+    '';
+  };
+  systemd.timers.backup-torrents = {
+    wantedBy = [ "multi-user.target" ];
+    timerConfig = {
+      OnStartupSec = "11min";
+      OnUnitActiveSec = "240min";
+    };
   };
 }
 
