@@ -63,6 +63,8 @@ in rec {
     (mkPod "https://www.cbsnews.com/latest/rss/60-minutes" // pol // infrequent)
     ## The Verge - Decoder
     (mkPod "https://feeds.megaphone.fm/recodedecode" // tech // weekly)
+    ## Matrix (chat) Live
+    (mkPod "https://feed.podbean.com/matrixlive/feed.xml" // tech // weekly)
   ];
 
   texts = [
