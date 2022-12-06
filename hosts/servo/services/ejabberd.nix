@@ -106,17 +106,16 @@
           # /.well-known/host-meta.json: mod_host_meta
 
     # TODO: enable mod_client_state for net optimization
-    # TODO: enable mod_conversejs for web-hosted XMPP client
     # TODO: enable mod_fail2ban
-    # TODO: enable mod_host_meta
     # TODO(low): look into mod_http_fileserver for serving macros?
-    # TODO: enable mod_muc ?
+    # TODO: enable mod_muc
     modules:
       # allows users to set avatars in vCard
       # - <https://docs.ejabberd.im/admin/configuration/modules/#mod-avatar>
       mod_avatar: {}
       mod_caps: {}  # for mod_pubsub
       mod_carboncopy: {}  # allows multiple clients to receive a user's message
+      # mod_conversejs: TODO: enable once on 21.12
       # allows clients like Dino to discover where to upload files
       mod_disco:
         server_info:
@@ -143,12 +142,19 @@
       # allow discoverability of BOSH and websocket endpoints
       # TODO: enable once on ejabberd 22.05  (presently 21.04)
       # mod_host_meta: {}
+      mod_jidprep: {}  # probably not needed: lets clients normalize jids
       mod_last: {}  # allow other users to know when i was last online
       mod_offline:  # store messages for a user when they're offline (TODO: understand multi-client workflow?)
         access_max_user_messages: max_user_offline_messages
         store_groupchat: true
       mod_ping: {}
+      mod_privacy: {}  # deprecated, but required for `ejabberctl export_piefxis`
       mod_private: {}  # allow local clients to persist arbitrary data on my server
+      mod_roster:
+        versioning: true
+      # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-s2s-dialback>
+      # mod_s2s_dialback: {}  # XXX: MIGHT need to enable this to federate with some servers
+      mod_shared_roster: {}  # creates groups for @all, @online, and anything manually administered?
       mod_stream_mgmt:
         resend_on_timeout: if_offline  # resend undelivered messages if the origin client is offline
       # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-vcard>
