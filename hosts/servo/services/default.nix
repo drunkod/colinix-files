@@ -17,5 +17,6 @@
     ./postgres.nix
     ./prosody.nix
     ./transmission.nix
+    ./trust-dns
   ];
 }

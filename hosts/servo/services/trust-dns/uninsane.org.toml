@@ -1,0 +1,10 @@
+[[zones]]
+## zone: this is the ORIGIN of the zone, aka the base name, '.' is implied on the end
+zone = "uninsane.org"
+
+## zone_type: Primary, Secondary, Hint, Forward
+zone_type = "Primary"
+
+## file: this is relative to the directory above
+file = "uninsane.org.zone"
+
