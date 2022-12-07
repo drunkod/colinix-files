@@ -9,7 +9,7 @@ fetchpatch: [
   # aerc: substitute awk in filters
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/204322.diff";
-    sha256 = "sha256-zzK8kcW34hcn331CtTqggUwH8YmrOu5+N8lfXSDfRls=";
+    sha256 = "sha256-ngetBsBMiIaz43T7a2taULp1pNK2YkVGGW48ViDjS6A=";
   })
 
   # # kaiteki: init at 2022-09-03
