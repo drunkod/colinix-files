@@ -87,6 +87,7 @@ let
     # then reboot (so that libsecret daemon re-loads the keyring...?)
     { pkg = fractal-next; private = ".local/share/fractal"; }
 
+    gajim  # XMPP client
     gimp  # broken on phosh
     gnome.cheese
     gnome.dconf-editor
