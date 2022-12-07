@@ -4,7 +4,6 @@
 # - 2013: <https://github.com/processone/ejabberd/blob/master/ejabberd.yml.example>
 { lib, ... }:
 
-# XXX disabled: fails to start because of `mnesia_tm` dependency
 # lib.mkIf false
 {
   sane.impermanence.service-dirs = [
@@ -20,6 +19,7 @@
   users.users.ejabberd.extraGroups = [ "nginx" ];
 
   security.acme.certs."uninsane.org".extraDomainNames = [
+    "conference.xmpp.uninsane.org"
     "pubsub.xmpp.uninsane.org"
     "upload.xmpp.uninsane.org"
     "vjid.xmpp.uninsane.org"
@@ -48,13 +48,20 @@
 
     access_rules:
       local:
-        - allow: local
+        allow: local
+      pubsub_createnode_access:
+        allow: local
+      c2s_access:
+        allow: all
+      muc_create:
+        allow: local
 
     # docs: <https://docs.ejabberd.im/admin/configuration/basic/#shaper-rules>
     shaper_rules:
       # setting this to above 1 may break outgoing messages
       # - maybe some servers rate limit? or just don't understand simultaneous connections?
       max_s2s_connections: 1
+      max_user_sessions: 10
       max_user_offline_messages: 5000
       c2s_shaper:
         fast: all
@@ -88,6 +95,7 @@
         module: ejabberd_c2s
         shaper: c2s_shaper
         starttls: true
+        access: c2s_access
       -
         port: 5269
         module: ejabberd_s2s_in
@@ -144,6 +152,21 @@
       # mod_host_meta: {}
       mod_jidprep: {}  # probably not needed: lets clients normalize jids
       mod_last: {}  # allow other users to know when i was last online
+      mod_muc:
+        access:
+          - allow
+        access_admin:
+          - allow: admin
+        access_create: muc_create
+        access_persistent: muc_create
+        history_size: 100  # messages to show new participants
+        host: conference.xmpp.uninsane.org
+        hosts:
+          - conference.xmpp.uninsane.org
+        default_room_options:
+          anonymous: false
+          lang: en
+          persistent: true
       mod_offline:  # store messages for a user when they're offline (TODO: understand multi-client workflow?)
         access_max_user_messages: max_user_offline_messages
         store_groupchat: true
@@ -167,12 +190,18 @@
       mod_vcard_xupdate: {}  # needed for avatars
       # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-pubsub>
       mod_pubsub:  # needed for avatars
+        access_createnode: pubsub_createnode_access
         host: pubsub.xmpp.uninsane.org
         hosts:
           - pubsub.xmpp.uninsane.org
         plugins:
           - flat
           - pep
+        force_node_config:
+          # avoid buggy clients to make their bookmarks public
+          # XXX: not sure if this is necessary: copying config from examples
+          storage:bookmarks:
+            access_model: whitelist
       mod_version: {}
   '';
 }
