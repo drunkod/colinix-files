@@ -59,5 +59,9 @@ lib.mkIf config.sane.home-manager.enable
     # common typos
     "cd.." = "cd ..";
     "cd../" = "cd ../";
+    # convenient `cd`-isms
+    "nixpkgs" = "cd ~/dev/3rd/nixpkgs";
+    "nixos" = "cd ~/nixos";
+    "uninsane" = "cd ~/dev/uninsane";
   };
 }
