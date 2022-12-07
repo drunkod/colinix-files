@@ -1,9 +1,16 @@
 # docs:
 # - <https://docs.ejabberd.im/admin/configuration/basic>
 # example configs:
+# - <https://github.com/vkleen/machines/blob/138a2586ce185d7cf201d4e1fe898c83c4af52eb/hosts/europium/ejabberd.nix>
+# - <https://github.com/Mic92/stockholm/blob/675ef0088624c9de1cb531f318446316884a9d3d/tv/3modules/ejabberd/default.nix>
+# - <https://github.com/buffet/tararice/blob/bc5b65509f4e622313af3f1f4be690628123f1f3/programs/ejabberd.nix>
+# - <https://github.com/leo60228/dotfiles/blob/39b3abba3009bdc31413d4757ca2f882a33eec8b/files/ejabberd.yml>
+# - <https://github.com/Mic92/dotfiles/blob/ddf0f4821f554f7667fc803344657367c55fb9e6/nixos/eve/modules/ejabberd.nix>
+# - <nixpkgs:nixos/tests/xmpp/ejabberd.nix>
 # - 2013: <https://github.com/processone/ejabberd/blob/master/ejabberd.yml.example>
 { lib, ... }:
 
+# XXX: avatar support works in MUCs but not DMs
 # lib.mkIf false
 {
   sane.impermanence.service-dirs = [
@@ -12,6 +19,8 @@
   networking.firewall.allowedTCPPorts = [
     5222  # XMPP client -> server
     5269  # XMPP server -> server
+    5280  # bosh
+    5281  # bosh (https) ??
     5443  # web services (file uploads, websockets, admin)
   ];
 
@@ -43,18 +52,31 @@
     pam_userinfotype: jid
 
     acl:
+      admin:
+        user:
+          - "colin@uninsane.org"
       local:
         user_regexp: ""
+      loopback:
+        ip:
+          - 127.0.0.0/8
+          - ::1/128
 
     access_rules:
       local:
         allow: local
-      pubsub_createnode_access:
-        allow: local
       c2s_access:
         allow: all
+      announce:
+        allow: admin
+      configure:
+        allow: admin
       muc_create:
         allow: local
+      pubsub_createnode_access:
+        allow: local
+      trusted_network:
+        allow: loopback
 
     # docs: <https://docs.ejabberd.im/admin/configuration/basic/#shaper-rules>
     shaper_rules:
@@ -116,8 +138,10 @@
     # TODO: enable mod_client_state for net optimization
     # TODO: enable mod_fail2ban
     # TODO(low): look into mod_http_fileserver for serving macros?
-    # TODO: enable mod_muc
     modules:
+      # mod_adhoc: {}
+      # mod_announce:
+      #   access: admin
       # allows users to set avatars in vCard
       # - <https://docs.ejabberd.im/admin/configuration/modules/#mod-avatar>
       mod_avatar: {}
@@ -152,6 +176,13 @@
       # mod_host_meta: {}
       mod_jidprep: {}  # probably not needed: lets clients normalize jids
       mod_last: {}  # allow other users to know when i was last online
+      mod_mam:
+        # Mnesia is limited to 2GB, better to use an SQL backend
+        # For small servers SQLite is a good fit and is very easy
+        # to configure. Uncomment this when you have SQL configured:
+        # db_type: sql
+        assume_mam_usage: true
+        default: always
       mod_muc:
         access:
           - allow
@@ -159,6 +190,8 @@
           - allow: admin
         access_create: muc_create
         access_persistent: muc_create
+        access_mam:
+          - allow
         history_size: 100  # messages to show new participants
         host: conference.xmpp.uninsane.org
         hosts:
@@ -167,6 +200,8 @@
           anonymous: false
           lang: en
           persistent: true
+          mam: true
+      mod_muc_admin: {}
       mod_offline:  # store messages for a user when they're offline (TODO: understand multi-client workflow?)
         access_max_user_messages: max_user_offline_messages
         store_groupchat: true
@@ -195,8 +230,8 @@
         hosts:
           - pubsub.xmpp.uninsane.org
         plugins:
-          - flat
           - pep
+        #   - flat
         force_node_config:
           # avoid buggy clients to make their bookmarks public
           # XXX: not sure if this is necessary: copying config from examples

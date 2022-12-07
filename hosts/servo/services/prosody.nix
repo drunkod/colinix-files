@@ -1,3 +1,5 @@
+# example configs:
+# - <https://github.com/kittywitch/nixfiles/blob/main/services/prosody.nix>
 # create users with:
 # - `sudo -u prosody prosodyctl adduser colin@uninsane.org`
 
@@ -13,7 +15,7 @@ lib.mkIf false
   networking.firewall.allowedTCPPorts = [
     5222  # XMPP client -> server
     5269  # XMPP server -> server
-    5280  # Prosody HTTP port  (necessary?)
+    5280  # bosh
     5281  # Prosody HTTPS port  (necessary?)
   ];
 
@@ -34,7 +36,7 @@ lib.mkIf false
     #   c2s_require_encryption = true
     # '';
 
-    # extraModules = [ "private" "vcard" "privacy" "compression" "component" "muc" "pep" "adhoc" "lastactivity" "admin_adhoc" "blocklist"];
+    extraModules = [ "private" "vcard" "privacy" "compression" "component" "muc" "pep" "adhoc" "lastactivity" "admin_adhoc" "blocklist"];
 
     ssl.cert = "/var/lib/acme/uninsane.org/fullchain.pem";
     ssl.key = "/var/lib/acme/uninsane.org/key.pem";
@@ -51,7 +53,7 @@ lib.mkIf false
         domain = "localhost";
         enabled = true;
       };
-      "uninsane.org" = {
+      "xmpp.uninsane.org" = {
         domain = "uninsane.org";
         enabled = true;
         ssl.cert = "/var/lib/acme/uninsane.org/fullchain.pem";
