@@ -10,7 +10,7 @@
           --zonedir ${./.}
       '';
       Type = "simple";
-      Restart = "on-failure";
+      # Restart = "on-failure";
       # TODO: hardening
     };
     after = [ "network.target" ];
