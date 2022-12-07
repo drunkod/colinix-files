@@ -45,6 +45,7 @@
   browserpass-extension = prev.callPackage ./browserpass-extension { };
   gopass-native-messaging-host = prev.callPackage ./gopass-native-messaging-host { };
   tokodon = prev.libsForQt5.callPackage ./tokodon { };
+  trust-dns = prev.callPackage ./trust-dns { };
   # kaiteki = prev.kaiteki;
 })
 
