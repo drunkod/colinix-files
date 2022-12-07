@@ -4,6 +4,11 @@ with lib;
 with pkgs;
 let
   cfg = config.sane.packages;
+
+  imagemagick = pkgs.imagemagick.override {
+    ghostscriptSupport = true;
+  };
+
   consolePkgs = [
     backblaze-b2
     cdrtools
@@ -12,11 +17,13 @@ let
     efivar
     flashrom
     fwupd
+    ghostscript  # TODO: imagemagick wrapper should add gs to PATH
     gnupg
     gocryptfs
     gopass
     gopass-jsonapi
     ifuse
+    imagemagick
     ipfs
     libimobiledevice
     libsecret  # for managing user keyrings
