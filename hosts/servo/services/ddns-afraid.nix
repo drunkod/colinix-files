@@ -10,7 +10,7 @@
       # TODO: PrivateTmp = true;
     };
     script = let
-      crl = "${pkgs.curl}/bin/curl -4";
+      curl = "${pkgs.curl}/bin/curl -4";
     in ''
       ${curl} "https://freedns.afraid.org/dynamic/update.php?$AFRAID_KEY"
     '';

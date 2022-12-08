@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
+    ./ddns-afraid.nix
     ./ddns-he.nix
     ./ejabberd.nix
     ./freshrss.nix
