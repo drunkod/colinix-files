@@ -14,6 +14,9 @@ $TTL 900
 @               A       97.126.41.123
 ; XXX: RFC's specify that the MX record CANNOT BE A CNAME
 mx              A       185.157.162.178
+; TODO: can we use CNAME for NS records?
+ns1             A       97.126.41.123
+ns2             A       97.126.41.123
 ; TODO: we could make native a CNAME of @?
 ; or just make all the `CNAME native`s `CNAME @`s?
 native          A       97.126.41.123
@@ -21,7 +24,8 @@ ovpns           A       185.157.162.178
 
 
 ; the nameserver for anything *under* or at uninsane.org is this server.
-@               NS      uninsane.org.
+@               NS      ns1.uninsane.org.
+@               NS      ns2.uninsane.org.
 @               MX      10 mx.uninsane.org.
 
 bt              CNAME   native
