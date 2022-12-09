@@ -28,6 +28,8 @@
     1900 7359 # DLNA: https://jellyfin.org/docs/general/networking/index.html
     4001      # IPFS
   ];
+  # this is needed to forward packets from the VPN to the host
+  boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 
   # we need to use externally-visible nameservers in order for VPNs to be able to resolve hosts.
   networking.nameservers = [
@@ -69,18 +71,38 @@
       Type = "oneshot";
       RemainAfterExit = true;
 
-      ExecStart = with pkgs; writeScript "wg0veth-start" ''
-        #!${bash}/bin/bash
+      ExecStart = let
+        ip = "${pkgs.iproute2}/bin/ip";
+        in-ns = "${ip} netns exec ovpns";
+        iptables = "${pkgs.iptables}/bin/iptables";
+      in pkgs.writeScript "wg0veth-start" ''
+        #!${pkgs.bash}/bin/bash
+        # DOCS:
+        # - some of this approach is described here: <https://josephmuia.ca/2018-05-16-net-namespaces-veth-nat/>
+        # - iptables primer: <https://danielmiessler.com/study/iptables/>
         # create veth pair
-        ${iproute2}/bin/ip link add ovpns-veth-a type veth peer name ovpns-veth-b
-        ${iproute2}/bin/ip addr add 10.0.1.5/24 dev ovpns-veth-a
-        ${iproute2}/bin/ip link set ovpns-veth-a up
+        ${ip} link add ovpns-veth-a type veth peer name ovpns-veth-b
+        ${ip} addr add 10.0.1.5/24 dev ovpns-veth-a
+        ${ip} link set ovpns-veth-a up
+
         # mv veth-b into the ovpns namespace
-        ${iproute2}/bin/ip link set ovpns-veth-b netns ovpns
-        ${iproute2}/bin/ip -n ovpns addr add 10.0.1.6/24 dev ovpns-veth-b
-        ${iproute2}/bin/ip -n ovpns link set ovpns-veth-b up
-        # forward HTTP traffic, which we need for letsencrypt to work
-        ${iproute2}/bin/ip netns exec ovpns ${socat}/bin/socat TCP4-LISTEN:80,reuseaddr,fork,su=nobody TCP4:10.0.1.5:80 &
+        ${ip} link set ovpns-veth-b netns ovpns
+        ${ip} -n ovpns addr add 10.0.1.6/24 dev ovpns-veth-b
+        ${ip} -n ovpns link set ovpns-veth-b up
+
+        # bridge HTTP traffic:
+        # any external port-80 request sent to the VPN addr will be forwarded to the rootns.
+        # this exists so LetsEncrypt can procure a cert for the MX over http.
+        # old socat impl:
+        #   ${in-ns} ${pkgs.socat}/bin/socat TCP4-LISTEN:80,reuseaddr,fork,su=nobody TCP4:10.0.1.5:80 &
+        ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 80 -j DNAT --to-destination 10.0.1.5:80
+        ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 80 -j SNAT --to-source 10.0.1.6
+
+        # we also bridge DNS traffic (TODO: test TCP)
+        ${in-ns} ${iptables} -A PREROUTING -t nat -p udp --dport 53 -j DNAT --to-destination 10.0.1.5:53
+        ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 53 -j DNAT --to-destination 10.0.1.5:53
+        ${in-ns} ${iptables} -A POSTROUTING -t nat -p udp --dport 53 -j SNAT --to-source 10.0.1.6
+        ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 53 -j SNAT --to-source 10.0.1.6
       '';
 
       ExecStop = with pkgs; writeScript "wg0veth-stop" ''
