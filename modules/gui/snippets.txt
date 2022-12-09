@@ -1,3 +1,4 @@
+https://search.nixos.org/packages?channel=unstable&query=
 https://github.com/nixos/nixpkgs/pulls?q=
 https://fed.uninsane.org
 https://jackett.uninsane.org
