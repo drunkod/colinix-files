@@ -29,8 +29,14 @@ ovpns           A       185.157.162.178
 
 
 ; the nameserver for anything *under* or at uninsane.org is this server.
+; XXX: this differs from the parent zone, which lists the NS as an afraid.org-operated domain.
+; that's not *great*, but it should resolve to the same IP, and my own NS should be considered
+; more "authoritative" than afraid (they're just there to bootstrap), so i guess this is OK enough.
 @               NS      ns1.uninsane.org.
 @               NS      ns2.uninsane.org.
+;@               NS      uninsane.port0.org.
+;@               NS      uninsane.psybnc.org.
+
 @               MX      10 mx.uninsane.org.
 
 bt              CNAME   native
@@ -38,7 +44,7 @@ fed             CNAME   native
 git             CNAME   native
 imap            CNAME   native
 ipfs            CNAME   native
-jacket          CNAME   native
+jackett         CNAME   native
 jelly           CNAME   native
 matrix          CNAME   native
 web.matrix      CNAME   native
