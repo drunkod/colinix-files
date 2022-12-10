@@ -63,6 +63,13 @@
     ];
   };
 
+  # create a new routing table that we can use to proxy traffic out of the root namespace
+  # through the ovpns namespace, and to the WAN via VPN.
+  networking.iproute2.rttablesExtraConfig = ''
+  5 ovpns
+  '';
+  networking.iproute2.enable = true;
+
   systemd.services.wg0veth = {
     description = "veth pair to allow communication between host and wg0 netns";
     after = [ "wireguard-wg0.service" ];
@@ -90,19 +97,26 @@
         ${ip} -n ovpns addr add 10.0.1.6/24 dev ovpns-veth-b
         ${ip} -n ovpns link set ovpns-veth-b up
 
+        # make it so traffic originating from 10.0.1.5 (the root side of the veth)
+        # is sent over the veth no matter its destination.
+        ${ip} rule add from all lookup local pref 100
+        ${ip} rule del from all lookup local pref 0
+        ${ip} rule add from 10.0.1.5 lookup ovpns pref 50
+        # for traffic originating at 10.0.1.5 to the WAN, use the veth as our gateway
+        ${ip} route add default via 10.0.1.6 dev ovpns-veth-a proto kernel src 10.0.1.5 metric 1002 table ovpns
+
         # bridge HTTP traffic:
         # any external port-80 request sent to the VPN addr will be forwarded to the rootns.
         # this exists so LetsEncrypt can procure a cert for the MX over http.
-        # old socat impl:
-        #   ${in-ns} ${pkgs.socat}/bin/socat TCP4-LISTEN:80,reuseaddr,fork,su=nobody TCP4:10.0.1.5:80 &
+        # TODO: we could use _acme_challence.mx.uninsane.org CNAME to avoid this forwarding
+        # - <https://community.letsencrypt.org/t/where-does-letsencrypt-resolve-dns-from/37607/8>
         ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 80 -j DNAT --to-destination 10.0.1.5:80
         ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 80 -j SNAT --to-source 10.0.1.6
 
-        # we also bridge DNS traffic (TODO: test TCP)
+        # we also bridge DNS traffic (TODO: figure out why TCP doesn't work. do we need to rewrite the source addr?)
         ${in-ns} ${iptables} -A PREROUTING -t nat -p udp --dport 53 -j DNAT --to-destination 10.0.1.5:53
         ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 53 -j DNAT --to-destination 10.0.1.5:53
-        ${in-ns} ${iptables} -A POSTROUTING -t nat -p udp --dport 53 -j SNAT --to-source 10.0.1.6
-        ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 53 -j SNAT --to-source 10.0.1.6
+        # ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 53 -j SNAT --to-source 10.0.1.6
       '';
 
       ExecStop = with pkgs; writeScript "wg0veth-stop" ''
