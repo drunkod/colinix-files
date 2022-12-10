@@ -25,6 +25,9 @@
     neededForUsers = true;
   };
 
+  # don't enable wifi by default: it messes with connectivity.
+  systemd.services.iwd.enable = false;
+
   # default config: https://man.archlinux.org/man/snapper-configs.5
   # defaults to something like:
   #   - hourly snapshots
