@@ -217,6 +217,7 @@ let
     smartmontools
     socat
     strace
+    tcpdump
     tree
     usbutils
     wget
