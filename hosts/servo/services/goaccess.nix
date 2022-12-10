@@ -25,6 +25,7 @@
       ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
       Type = "simple";
       Restart = "on-failure";
+      RestartSec = "10s";
 
       # hardening
       WorkingDirectory = "/tmp";

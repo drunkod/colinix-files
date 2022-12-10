@@ -127,6 +127,7 @@
   systemd.services.pleroma.serviceConfig = {
     # postgres can be slow to service early requests, preventing pleroma from starting on the first try
     Restart = "on-failure";
+    RestartSec = "10s";
   };
 
   # systemd.services.pleroma.serviceConfig = {

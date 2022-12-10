@@ -13,6 +13,7 @@
       '';
       Type = "simple";
       Restart = "on-failure";
+      RestartSec = "10s";
       # TODO: hardening
     };
     after = [ "network.target" ];
