@@ -60,8 +60,10 @@ lib.mkIf config.sane.home-manager.enable
     "cd.." = "cd ..";
     "cd../" = "cd ../";
     # convenient `cd`-isms
+    "knowledge" = "cd ~/knowledge";
     "nixpkgs" = "cd ~/dev/3rd/nixpkgs";
     "nixos" = "cd ~/nixos";
+    "secrets" = "cd ~/knowledge/secrets";
     "uninsane" = "cd ~/dev/uninsane";
   };
 }
