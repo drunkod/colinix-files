@@ -14,6 +14,10 @@ lib.mkIf false # i don't actively use ipfs anymore
     # TODO: mode? could be more granular
     { user = "261"; group = "261"; directory = "/var/lib/ipfs"; }
   ];
+
+  networking.firewall.allowedTCPPorts = [ 4001 ];
+  networking.firewall.allowedUDPPorts = [ 4001 ];
+
   # services.ipfs.enable = true;
   services.kubo.localDiscovery = true;
   services.kubo.settings = {

@@ -25,6 +25,15 @@ in
     # "/var/lib/dhparams"          # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/security/dhparams.nix
     # "/var/lib/dovecot"
   ];
+
+  networking.firewall.allowedTCPPorts = [
+    25   # SMTP
+    143  # IMAP
+    465  # SMTPS
+    587  # SMTPS/submission
+    993  # IMAPS
+  ];
+
   services.postfix.enable = true;
   services.postfix.hostname = "mx.uninsane.org";
   services.postfix.origin = "uninsane.org";

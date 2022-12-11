@@ -1,6 +1,9 @@
 { config, ... }:
 
 {
+  networking.firewall.allowedUDPPorts = [
+    1900 7359 # DLNA: https://jellyfin.org/docs/general/networking/index.html
+  ];
   sane.impermanence.service-dirs = [
     # TODO: mode? could be more granular
     { user = "jellyfin"; group = "jellyfin"; directory = "/var/lib/jellyfin"; }

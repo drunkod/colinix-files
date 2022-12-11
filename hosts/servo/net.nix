@@ -13,22 +13,7 @@
 
   # networking.firewall.enable = false;
   networking.firewall.enable = true;
-  # TODO: split these into the submodules
-  networking.firewall.allowedTCPPorts = [
-    25   # SMTP
-    53   # DNS
-    80   # HTTP
-    143  # IMAP
-    443  # HTTPS
-    465  # SMTPS
-    587  # SMTPS/submission
-    993  # IMAPS
-    4001 # IPFS
-  ];
-  networking.firewall.allowedUDPPorts = [
-    1900 7359 # DLNA: https://jellyfin.org/docs/general/networking/index.html
-    4001      # IPFS
-  ];
+
   # this is needed to forward packets from the VPN to the host
   boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 

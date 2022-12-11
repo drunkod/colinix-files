@@ -12,6 +12,9 @@ let
   kTLS = true;  # in-kernel TLS for better perf
 in
 {
+
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
+
   services.nginx.enable = true;
   services.nginx.appendConfig = ''
     # use 1 process per core.

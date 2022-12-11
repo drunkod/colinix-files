@@ -1,8 +1,9 @@
 { pkgs, ... }:
 
 {
-
+  networking.firewall.allowedTCPPorts = [ 53 ];
   networking.firewall.allowedUDPPorts = [ 53 ];
+
   systemd.services.trust-dns = {
     description = "trust-dns DNS server";
     serviceConfig = {
