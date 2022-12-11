@@ -54,26 +54,12 @@
   networking.wireguard.interfaces.wg0 = let
     ip = "${pkgs.iproute2}/bin/ip";
     in-ns = "${ip} netns exec ovpns";
-    # resolvconf = "${pkgs.openresolv}/bin/resolvconf";
-    # ns-setup = pkgs.writeShellScript "ns-setup" ''
-    #   # -a <dev> = set DNS for the device <dev>.
-    #   #   it doesn't ADD a new nameserver: it overwrites any prior DNS settings for the device.
-    #   # -m <int> = give the DNS servers a given "metric" (priority?).
-    #   printf "nameserver 46.227.67.134\nnameserver 192.165.9.158" \
-    #     | ${resolvconf} -a wg0 -m 0
-    # '';
   in {
     privateKeyFile = config.sops.secrets.wg_ovpns_privkey.path;
     # wg is active only in this namespace.
     # run e.g. ip netns exec ovpns <some command like ping/curl/etc, it'll go through wg>
     #   sudo ip netns exec ovpns ping www.google.com
-    # note: without the namespace, you'll need to add a specific route through eth0 for the peer (185.157.162.178/32)
-    # TODO: delete the custom DNS above
-    # postSetup = ''
-    #   # postSetup runs in the original (init) namespace
-    #   ${in-ns} ${ns-setup}
-    # '';
-    # DNS = 46.227.67.134, 192.165.9.158, 2a07:a880:4601:10f0:cd45::1, 2001:67c:750:1:cafe:cd45::1
+    # TODO: fold wg0veth service into `postSetup` here
     interfaceNamespace = "ovpns";
     preSetup = "${ip} netns add ovpns || true";
     postShutdown = "${ip} netns delete ovpns";
