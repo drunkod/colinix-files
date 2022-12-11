@@ -50,6 +50,8 @@
 
   # OVPN CONFIG (https://www.ovpn.com):
   # DOCS: https://nixos.wiki/wiki/WireGuard
+  # if you `systemctl restart wireguard-wg0`, make sure to also restart any other services in `NetworkNamespacePath = .../ovpns`.
+  # TODO: why not create the namespace as a seperate operation (nix config for that?)
   networking.wireguard.enable = true;
   networking.wireguard.interfaces.wg0 = let
     ip = "${pkgs.iproute2}/bin/ip";
@@ -93,6 +95,11 @@
       ${in-ns} ip link del ovpns-veth-b || echo "couldn't delete ovpns-veth-b"
       ${ip} link del ovpns-veth-a || echo "couldn't delete ovpns-veth-a"
       ${ip} netns delete ovpns || echo "couldn't delete ovpns"
+      # restore rules/routes
+      ${ip} rule del from ${veth-host-ip} lookup ovpns pref 50 || echo "couldn't delete init -> ovpns rule"
+      ${ip} route del default via ${veth-local-ip} dev ovpns-veth-a proto kernel src ${veth-host-ip} metric 1002 table ovpns || echo "couldn't delete init -> ovpns route"
+      ${ip} rule add from all lookup local pref 0
+      ${ip} rule del from all lookup local pref 100
     '';
     postSetup = "" + ''
       # DOCS:
@@ -110,12 +117,13 @@
 
       # make it so traffic originating from the host side of the veth
       # is sent over the veth no matter its destination.
-      ${ip} rule add from all lookup local pref 100
-      ${ip} rule del from all lookup local pref 0
       ${ip} rule add from ${veth-host-ip} lookup ovpns pref 50
       # for traffic originating at the host veth to the WAN, use the veth as our gateway
       # not sure if the metric 1002 matters.
       ${ip} route add default via ${veth-local-ip} dev ovpns-veth-a proto kernel src ${veth-host-ip} metric 1002 table ovpns
+      # give the default route lower priority
+      ${ip} rule add from all lookup local pref 100
+      ${ip} rule del from all lookup local pref 0
 
       # bridge HTTP traffic:
       # any external port-80 request sent to the VPN addr will be forwarded to the rootns.
