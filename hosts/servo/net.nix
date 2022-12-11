@@ -54,15 +54,18 @@
   networking.wireguard.interfaces.wg0 = let
     ip = "${pkgs.iproute2}/bin/ip";
     in-ns = "${ip} netns exec ovpns";
+    iptables = "${pkgs.iptables}/bin/iptables";
+    veth-host-ip = "10.0.1.5";
+    veth-local-ip = "10.0.1.6";
+    vpn-ip = "185.157.162.178";
+    # DNS = 46.227.67.134, 192.165.9.158, 2a07:a880:4601:10f0:cd45::1, 2001:67c:750:1:cafe:cd45::1
+    vpn-dns = "46.227.67.134";
   in {
     privateKeyFile = config.sops.secrets.wg_ovpns_privkey.path;
     # wg is active only in this namespace.
     # run e.g. ip netns exec ovpns <some command like ping/curl/etc, it'll go through wg>
     #   sudo ip netns exec ovpns ping www.google.com
-    # TODO: fold wg0veth service into `postSetup` here
     interfaceNamespace = "ovpns";
-    preSetup = "${ip} netns add ovpns || true";
-    postShutdown = "${ip} netns delete ovpns";
     ips = [
       "185.157.162.178/32"
     ];
@@ -83,6 +86,53 @@
         # dynamicEndpointRefreshRestartSeconds = 5;
       }
     ];
+    preSetup = "" + ''
+      ${ip} netns add ovpns || echo "ovpns already exists"
+    '';
+    postShutdown = "" + ''
+      ${in-ns} ip link del ovpns-veth-b || echo "couldn't delete ovpns-veth-b"
+      ${ip} link del ovpns-veth-a || echo "couldn't delete ovpns-veth-a"
+      ${ip} netns delete ovpns || echo "couldn't delete ovpns"
+    '';
+    postSetup = "" + ''
+      # DOCS:
+      # - some of this approach is described here: <https://josephmuia.ca/2018-05-16-net-namespaces-veth-nat/>
+      # - iptables primer: <https://danielmiessler.com/study/iptables/>
+      # create veth pair
+      ${ip} link add ovpns-veth-a type veth peer name ovpns-veth-b
+      ${ip} addr add ${veth-host-ip}/24 dev ovpns-veth-a
+      ${ip} link set ovpns-veth-a up
+
+      # mv veth-b into the ovpns namespace
+      ${ip} link set ovpns-veth-b netns ovpns
+      ${in-ns} ip addr add ${veth-local-ip}/24 dev ovpns-veth-b
+      ${in-ns} ip link set ovpns-veth-b up
+
+      # make it so traffic originating from the host side of the veth
+      # is sent over the veth no matter its destination.
+      ${ip} rule add from all lookup local pref 100
+      ${ip} rule del from all lookup local pref 0
+      ${ip} rule add from ${veth-host-ip} lookup ovpns pref 50
+      # for traffic originating at the host veth to the WAN, use the veth as our gateway
+      # not sure if the metric 1002 matters.
+      ${ip} route add default via ${veth-local-ip} dev ovpns-veth-a proto kernel src ${veth-host-ip} metric 1002 table ovpns
+
+      # bridge HTTP traffic:
+      # any external port-80 request sent to the VPN addr will be forwarded to the rootns.
+      # this exists so LetsEncrypt can procure a cert for the MX over http.
+      # TODO: we could use _acme_challence.mx.uninsane.org CNAME to avoid this forwarding
+      # - <https://community.letsencrypt.org/t/where-does-letsencrypt-resolve-dns-from/37607/8>
+      ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 80 -j DNAT --to-destination ${veth-host-ip}:80
+      ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 80 -j SNAT --to-source ${veth-local-ip}
+
+      # we also bridge DNS traffic (TODO: figure out why TCP doesn't work. do we need to rewrite the source addr?)
+      ${in-ns} ${iptables} -A PREROUTING -t nat -p udp --dport 53 -m iprange --dst-range ${vpn-ip} -j DNAT --to-destination ${veth-host-ip}:53
+      ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 53 -m iprange --dst-range ${vpn-ip} -j DNAT --to-destination ${veth-host-ip}:53
+
+      # in order to access DNS in this netns, we need to route it to the VPN's nameservers
+      # - alternatively, we could fix DNS servers like 1.1.1.1.
+      ${in-ns} ${iptables} -A OUTPUT -t nat -p udp --dport 53 -m iprange --dst-range 127.0.0.53 -j DNAT --to-destination ${vpn-dns}:53
+    '';
   };
 
   # create a new routing table that we can use to proxy traffic out of the root namespace
@@ -91,72 +141,6 @@
   5 ovpns
   '';
   networking.iproute2.enable = true;
-
-  systemd.services.wg0veth = {
-    description = "veth pair to allow communication between host and wg0 netns";
-    after = [ "wireguard-wg0.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-
-      ExecStart = let
-        veth-host-ip = "10.0.1.5";
-        veth-local-ip = "10.0.1.6";
-        vpn-ip = "185.157.162.178";
-        # DNS = 46.227.67.134, 192.165.9.158, 2a07:a880:4601:10f0:cd45::1, 2001:67c:750:1:cafe:cd45::1
-        vpn-dns = "46.227.67.134";
-        ip = "${pkgs.iproute2}/bin/ip";
-        in-ns = "${ip} netns exec ovpns";
-        iptables = "${pkgs.iptables}/bin/iptables";
-      in pkgs.writeScript "wg0veth-start" ''
-        #!${pkgs.bash}/bin/bash
-        # DOCS:
-        # - some of this approach is described here: <https://josephmuia.ca/2018-05-16-net-namespaces-veth-nat/>
-        # - iptables primer: <https://danielmiessler.com/study/iptables/>
-        # create veth pair
-        ${ip} link add ovpns-veth-a type veth peer name ovpns-veth-b
-        ${ip} addr add ${veth-host-ip}/24 dev ovpns-veth-a
-        ${ip} link set ovpns-veth-a up
-
-        # mv veth-b into the ovpns namespace
-        ${ip} link set ovpns-veth-b netns ovpns
-        ${ip} -n ovpns addr add ${veth-local-ip}/24 dev ovpns-veth-b
-        ${ip} -n ovpns link set ovpns-veth-b up
-
-        # make it so traffic originating from the host side of the veth
-        # is sent over the veth no matter its destination.
-        ${ip} rule add from all lookup local pref 100
-        ${ip} rule del from all lookup local pref 0
-        ${ip} rule add from ${veth-host-ip} lookup ovpns pref 50
-        # for traffic originating at the host veth to the WAN, use the veth as our gateway
-        # not sure if the metric 1002 matters.
-        ${ip} route add default via ${veth-local-ip} dev ovpns-veth-a proto kernel src ${veth-host-ip} metric 1002 table ovpns
-
-        # bridge HTTP traffic:
-        # any external port-80 request sent to the VPN addr will be forwarded to the rootns.
-        # this exists so LetsEncrypt can procure a cert for the MX over http.
-        # TODO: we could use _acme_challence.mx.uninsane.org CNAME to avoid this forwarding
-        # - <https://community.letsencrypt.org/t/where-does-letsencrypt-resolve-dns-from/37607/8>
-        ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 80 -j DNAT --to-destination ${veth-host-ip}:80
-        ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 80 -j SNAT --to-source ${veth-local-ip}
-
-        # we also bridge DNS traffic (TODO: figure out why TCP doesn't work. do we need to rewrite the source addr?)
-        ${in-ns} ${iptables} -A PREROUTING -t nat -p udp --dport 53 -m iprange --dst-range ${vpn-ip} -j DNAT --to-destination ${veth-host-ip}:53
-        ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 53 -m iprange --dst-range ${vpn-ip} -j DNAT --to-destination ${veth-host-ip}:53
-
-        # in order to access DNS in this netns, we need to route it to the VPN's nameservers
-        # - alternatively, we could fix DNS servers like 1.1.1.1.
-        ${in-ns} ${iptables} -A OUTPUT -t nat -p udp --dport 53 -m iprange --dst-range 127.0.0.53 -j DNAT --to-destination ${vpn-dns}:53
-      '';
-
-      ExecStop = with pkgs; writeScript "wg0veth-stop" ''
-        #!${bash}/bin/bash
-        ${iproute2}/bin/ip -n wg0 link del ovpns-veth-b
-        ${iproute2}/bin/ip link del ovpns-veth-a
-      '';
-    };
-  };
 
   sops.secrets."wg_ovpns_privkey" = {
     sopsFile = ../../secrets/servo.yaml;

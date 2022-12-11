@@ -8,4 +8,4 @@ sudo systemctl stop nginx
 sudo systemctl stop postgresql
 sudo systemctl stop duplicity.timer
 sudo systemctl stop duplicity
-sudo systemctl stop wg0veth wireguard-wg0
+sudo systemctl stop wireguard-wg0
