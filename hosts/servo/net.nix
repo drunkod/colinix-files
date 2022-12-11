@@ -16,6 +16,7 @@
   # TODO: split these into the submodules
   networking.firewall.allowedTCPPorts = [
     25   # SMTP
+    53   # DNS
     80   # HTTP
     143  # IMAP
     443  # HTTPS
