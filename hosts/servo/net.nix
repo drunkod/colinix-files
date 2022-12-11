@@ -47,6 +47,9 @@
     # run e.g. ip netns exec ovpns <some command like ping/curl/etc, it'll go through wg>
     #   sudo ip netns exec ovpns ping www.google.com
     # note: without the namespace, you'll need to add a specific route through eth0 for the peer (185.157.162.178/32)
+    # TODO: add DNS here, and then delete the custom bits above
+    # postSetup = ''printf "nameserver 10.200.100.1" | ${pkgs.openresolv}/bin/resolvconf -a wg0 -m 0''
+    # DNS = 46.227.67.134, 192.165.9.158, 2a07:a880:4601:10f0:cd45::1, 2001:67c:750:1:cafe:cd45::1
     interfaceNamespace = "ovpns";
     preSetup = "${pkgs.iproute2}/bin/ip netns add ovpns || true";
     postShutdown = "${pkgs.iproute2}/bin/ip netns delete ovpns";
@@ -56,10 +59,18 @@
     peers = [
       {
         publicKey = "SkkEZDCBde22KTs/Hc7FWvDBfdOCQA4YtBEuC3n5KGs=";
-        endpoint = "vpn36.prd.amsterdam.ovpn.com:9930";
+        endpoint = "185.157.162.10:9930";
+        # alternatively: use hostname, but that presents bootstrapping issues (e.g. if host net flakes)
+        # endpoint = "vpn36.prd.amsterdam.ovpn.com:9930";
         allowedIPs = [ "0.0.0.0/0" ];
         # nixOS says this is important for keeping NATs active
         persistentKeepalive = 25;
+        # re-executes wg this often. docs hint that this might help wg notice DNS/hostname changes.
+        # so, maybe that helps if we specify endpoint as a domain name
+        # dynamicEndpointRefreshSeconds = 30;
+        # when refresh fails, try it again after this period instead.
+        # TODO: not avail until nixpkgs upgrade
+        # dynamicEndpointRefreshRestartSeconds = 5;
       }
     ];
   };
