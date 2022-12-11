@@ -32,27 +32,66 @@
   # this is needed to forward packets from the VPN to the host
   boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 
-  # we need to use externally-visible nameservers in order for VPNs to be able to resolve hosts.
+  # unless we add interface-specific settings for each VPN, we have to define nameservers globally.
+  # networking.nameservers = [
+  #   "1.1.1.1"
+  #   "9.9.9.9"
+  # ];
+
+  # use systemd's stub resolver.
+  # /etc/resolv.conf isn't sophisticated enough to use different servers per net namespace (or link).
+  # instead, running the stub resolver on a known address in the root ns lets us rewrite packets
+  # in the ovnps namespace to use the provider's DNS resolvers.
+  # a weakness is we can only query 1 NS at a time (unless we were to clone the packets?)
+  # there also seems to be some cache somewhere that's shared between the two namespaces.
+  # i think this is a libc thing. might need to leverage proper cgroups to _really_ kill it.
+  # - getent ahostsv4 www.google.com
+  # - try fix: <https://serverfault.com/questions/765989/connect-to-3rd-party-vpn-server-but-dont-use-it-as-the-default-route/766290#766290>
+  services.resolved.enable = true;
   networking.nameservers = [
-    "1.1.1.1"
-    "9.9.9.9"
+    # use systemd-resolved resolver
+    # full resolver (which understands /etc/hosts) lives on 127.0.0.53
+    # stub resolver (just forwards upstream) lives on 127.0.0.54
+    "127.0.0.53"
   ];
+
+  # services.resolved.extraConfig = ''
+  #   # docs: `man resolved.conf`
+  #   # DNS servers to use via the `wg0` interface.
+  #   #   i hope that from the root ns, these aren't visible.
+  #   DNS=46.227.67.134%wg0 192.165.9.158%wg0
+  #   FallbackDNS=1.1.1.1 9.9.9.9
+  # '';
 
   # OVPN CONFIG (https://www.ovpn.com):
   # DOCS: https://nixos.wiki/wiki/WireGuard
   networking.wireguard.enable = true;
-  networking.wireguard.interfaces.wg0 = {
+  networking.wireguard.interfaces.wg0 = let
+    ip = "${pkgs.iproute2}/bin/ip";
+    in-ns = "${ip} netns exec ovpns";
+    # resolvconf = "${pkgs.openresolv}/bin/resolvconf";
+    # ns-setup = pkgs.writeShellScript "ns-setup" ''
+    #   # -a <dev> = set DNS for the device <dev>.
+    #   #   it doesn't ADD a new nameserver: it overwrites any prior DNS settings for the device.
+    #   # -m <int> = give the DNS servers a given "metric" (priority?).
+    #   printf "nameserver 46.227.67.134\nnameserver 192.165.9.158" \
+    #     | ${resolvconf} -a wg0 -m 0
+    # '';
+  in {
     privateKeyFile = config.sops.secrets.wg_ovpns_privkey.path;
     # wg is active only in this namespace.
     # run e.g. ip netns exec ovpns <some command like ping/curl/etc, it'll go through wg>
     #   sudo ip netns exec ovpns ping www.google.com
     # note: without the namespace, you'll need to add a specific route through eth0 for the peer (185.157.162.178/32)
-    # TODO: add DNS here, and then delete the custom bits above
-    # postSetup = ''printf "nameserver 10.200.100.1" | ${pkgs.openresolv}/bin/resolvconf -a wg0 -m 0''
+    # TODO: delete the custom DNS above
+    # postSetup = ''
+    #   # postSetup runs in the original (init) namespace
+    #   ${in-ns} ${ns-setup}
+    # '';
     # DNS = 46.227.67.134, 192.165.9.158, 2a07:a880:4601:10f0:cd45::1, 2001:67c:750:1:cafe:cd45::1
     interfaceNamespace = "ovpns";
-    preSetup = "${pkgs.iproute2}/bin/ip netns add ovpns || true";
-    postShutdown = "${pkgs.iproute2}/bin/ip netns delete ovpns";
+    preSetup = "${ip} netns add ovpns || true";
+    postShutdown = "${ip} netns delete ovpns";
     ips = [
       "185.157.162.178/32"
     ];
@@ -91,6 +130,11 @@
       RemainAfterExit = true;
 
       ExecStart = let
+        veth-host-ip = "10.0.1.5";
+        veth-local-ip = "10.0.1.6";
+        vpn-ip = "185.157.162.178";
+        # DNS = 46.227.67.134, 192.165.9.158, 2a07:a880:4601:10f0:cd45::1, 2001:67c:750:1:cafe:cd45::1
+        vpn-dns = "46.227.67.134";
         ip = "${pkgs.iproute2}/bin/ip";
         in-ns = "${ip} netns exec ovpns";
         iptables = "${pkgs.iptables}/bin/iptables";
@@ -101,34 +145,38 @@
         # - iptables primer: <https://danielmiessler.com/study/iptables/>
         # create veth pair
         ${ip} link add ovpns-veth-a type veth peer name ovpns-veth-b
-        ${ip} addr add 10.0.1.5/24 dev ovpns-veth-a
+        ${ip} addr add ${veth-host-ip}/24 dev ovpns-veth-a
         ${ip} link set ovpns-veth-a up
 
         # mv veth-b into the ovpns namespace
         ${ip} link set ovpns-veth-b netns ovpns
-        ${ip} -n ovpns addr add 10.0.1.6/24 dev ovpns-veth-b
+        ${ip} -n ovpns addr add ${veth-local-ip}/24 dev ovpns-veth-b
         ${ip} -n ovpns link set ovpns-veth-b up
 
-        # make it so traffic originating from 10.0.1.5 (the root side of the veth)
+        # make it so traffic originating from the host side of the veth
         # is sent over the veth no matter its destination.
         ${ip} rule add from all lookup local pref 100
         ${ip} rule del from all lookup local pref 0
-        ${ip} rule add from 10.0.1.5 lookup ovpns pref 50
-        # for traffic originating at 10.0.1.5 to the WAN, use the veth as our gateway
-        ${ip} route add default via 10.0.1.6 dev ovpns-veth-a proto kernel src 10.0.1.5 metric 1002 table ovpns
+        ${ip} rule add from ${veth-host-ip} lookup ovpns pref 50
+        # for traffic originating at the host veth to the WAN, use the veth as our gateway
+        # not sure if the metric 1002 matters.
+        ${ip} route add default via ${veth-local-ip} dev ovpns-veth-a proto kernel src ${veth-host-ip} metric 1002 table ovpns
 
         # bridge HTTP traffic:
         # any external port-80 request sent to the VPN addr will be forwarded to the rootns.
         # this exists so LetsEncrypt can procure a cert for the MX over http.
         # TODO: we could use _acme_challence.mx.uninsane.org CNAME to avoid this forwarding
         # - <https://community.letsencrypt.org/t/where-does-letsencrypt-resolve-dns-from/37607/8>
-        ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 80 -j DNAT --to-destination 10.0.1.5:80
-        ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 80 -j SNAT --to-source 10.0.1.6
+        ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 80 -j DNAT --to-destination ${veth-host-ip}:80
+        ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 80 -j SNAT --to-source ${veth-local-ip}
 
         # we also bridge DNS traffic (TODO: figure out why TCP doesn't work. do we need to rewrite the source addr?)
-        ${in-ns} ${iptables} -A PREROUTING -t nat -p udp --dport 53 -j DNAT --to-destination 10.0.1.5:53
-        ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 53 -j DNAT --to-destination 10.0.1.5:53
-        # ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 53 -j SNAT --to-source 10.0.1.6
+        ${in-ns} ${iptables} -A PREROUTING -t nat -p udp --dport 53 -m iprange --dst-range ${vpn-ip} -j DNAT --to-destination ${veth-host-ip}:53
+        ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 53 -m iprange --dst-range ${vpn-ip} -j DNAT --to-destination ${veth-host-ip}:53
+
+        # in order to access DNS in this netns, we need to route it to the VPN's nameservers
+        # - alternatively, we could fix DNS servers like 1.1.1.1.
+        ${in-ns} ${iptables} -A OUTPUT -t nat -p udp --dport 53 -m iprange --dst-range 127.0.0.53 -j DNAT --to-destination ${vpn-dns}:53
       '';
 
       ExecStop = with pkgs; writeScript "wg0veth-stop" ''
