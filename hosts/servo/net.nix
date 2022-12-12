@@ -130,16 +130,19 @@
       # this exists so LetsEncrypt can procure a cert for the MX over http.
       # TODO: we could use _acme_challence.mx.uninsane.org CNAME to avoid this forwarding
       # - <https://community.letsencrypt.org/t/where-does-letsencrypt-resolve-dns-from/37607/8>
-      ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 80 -j DNAT --to-destination ${veth-host-ip}:80
-      ${in-ns} ${iptables} -A POSTROUTING -t nat -p tcp --dport 80 -j SNAT --to-source ${veth-local-ip}
+      ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 80 -m iprange --dst-range ${vpn-ip} \
+        -j DNAT --to-destination ${veth-host-ip}:80
 
-      # we also bridge DNS traffic (TODO: figure out why TCP doesn't work. do we need to rewrite the source addr?)
-      ${in-ns} ${iptables} -A PREROUTING -t nat -p udp --dport 53 -m iprange --dst-range ${vpn-ip} -j DNAT --to-destination ${veth-host-ip}:53
-      ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 53 -m iprange --dst-range ${vpn-ip} -j DNAT --to-destination ${veth-host-ip}:53
+      # we also bridge DNS traffic
+      ${in-ns} ${iptables} -A PREROUTING -t nat -p udp --dport 53 -m iprange --dst-range ${vpn-ip} \
+        -j DNAT --to-destination ${veth-host-ip}:53
+      ${in-ns} ${iptables} -A PREROUTING -t nat -p tcp --dport 53 -m iprange --dst-range ${vpn-ip} \
+        -j DNAT --to-destination ${veth-host-ip}:53
 
       # in order to access DNS in this netns, we need to route it to the VPN's nameservers
       # - alternatively, we could fix DNS servers like 1.1.1.1.
-      ${in-ns} ${iptables} -A OUTPUT -t nat -p udp --dport 53 -m iprange --dst-range 127.0.0.53 -j DNAT --to-destination ${vpn-dns}:53
+      ${in-ns} ${iptables} -A OUTPUT -t nat -p udp --dport 53 -m iprange --dst-range 127.0.0.53 \
+        -j DNAT --to-destination ${vpn-dns}:53
     '';
   };
 
