@@ -14,17 +14,17 @@ $TTL 900
                                 7d         ; Expire
                                 5m)        ; Negative response TTL
 
-rev             TXT     "2022120801"
+rev             TXT     "2022121206"
 
-@               A       97.126.41.123
+@               A       %NATIVE%
 ; XXX: RFC's specify that the MX record CANNOT BE A CNAME
 mx              A       185.157.162.178
-; TODO: can we use CNAME for NS records?
-ns1             A       97.126.41.123
-ns2             A       97.126.41.123
+; XXX NS records must also not be CNAME
+ns1             A       %NATIVE%
+ns2             A       %NATIVE%
 ; TODO: we could make native a CNAME of @?
 ; or just make all the `CNAME native`s `CNAME @`s?
-native          A       97.126.41.123
+native          A       %NATIVE%
 ovpns           A       185.157.162.178
 
 
