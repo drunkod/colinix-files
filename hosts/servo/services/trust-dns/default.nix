@@ -27,6 +27,8 @@
       ${sed} s/%NATIVE%/$ip/ ${./uninsane.org.zone} > ${zone-state}.new
 
       # see if anything changed
+      # TODO: instead of diffing, we could `dig` against the actual deployment.
+      # - that could be more resilient to races.
       touch ${zone-state}
       old_sha=$(${sha256sum} ${zone-state} | ${cut} -f 1 -d' ' )
       new_sha=$(${sha256sum} ${zone-state}.new | ${cut} -f 1 -d' ' )
