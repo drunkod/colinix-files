@@ -65,6 +65,7 @@ in
   services.postfix.submissionsOptions = submissionOptions;
 
   systemd.services.postfix.after = [ "wireguard-wg0.service" ];
+  systemd.services.postfix.partOf = [ "wireguard-wg0.service" ];
   systemd.services.postfix.serviceConfig = {
     # run this behind the OVPN static VPN
     NetworkNamespacePath = "/run/netns/ovpns";
@@ -86,6 +87,7 @@ in
   services.opendkim.selector = "mx";
 
   systemd.services.opendkim.after = [ "wireguard-wg0.service" ];
+  systemd.services.opendkim.partOf = [ "wireguard-wg0.service" ];
   systemd.services.opendkim.serviceConfig = {
     # run this behind the OVPN static VPN
     NetworkNamespacePath = "/run/netns/ovpns";
