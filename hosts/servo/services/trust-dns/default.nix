@@ -8,6 +8,7 @@
     description = "update dynamic DNS entries for self-hosted trust-dns";
     after = [ "network.target" ];
     restartTriggers = [ ./uninsane.org.zone ];
+    serviceConfig.Type = "oneshot";
     script = let
       sed = "${pkgs.gnused}/bin/sed";
       curl = "${pkgs.curl}/bin/curl -4";
@@ -17,10 +18,12 @@
       diff = "${pkgs.diffutils}/bin/diff";
       systemctl = "${pkgs.systemd}/bin/systemctl";
     in ''
+      set -ex
       mkdir -p /var/lib/trust-dns
       ip=$(${curl} https://ipinfo.io/ip)
 
       # TODO: validate that this is really our IP!
+      # - i can host a service in ovpns which replies to pings
       ${sed} s/%NATIVE%/$ip/ ${./uninsane.org.zone} > ${zone-state}.new
 
       # see if anything changed
@@ -32,9 +35,15 @@
       # if so, restart trust-dns
       if [ "$new_sha" != "$old_sha" ]
       then
-        echo "zone changed: restarting"
+        echo "zone changed."
         ${diff} -u ${zone-state}.old ${zone-state} || true
-        ${systemctl} restart trust-dns.service
+        status=$(${systemctl} is-active trust-dns.service || true)
+        echo $status
+        if [ "$status" = "active" ]
+        then
+          echo "restarting trust-dns."
+          ${systemctl} restart trust-dns.service
+        fi
       else
         echo "zone unchanged. ip: $ip"
       fi
@@ -42,6 +51,8 @@
   };
 
   systemd.timers.ddns-trust-dns = {
+    # wantedBy = [ "multi-user.target" ];
+    # wantedBy = [ "trust-dns.service" ];
     timerConfig = {
       OnStartupSec =    "10min";
       OnUnitActiveSec = "10min";
@@ -61,8 +72,8 @@
       RestartSec = "10s";
       # TODO: hardening (like, don't run as root!)
     };
+    wants = [ "ddns-trust-dns.service" "ddns-trust-dns.timer" ];
     after = [ "network.target" "ddns-trust-dns.service" ];
-    wants = [ "ddns-trust-dns.timer" ];
     wantedBy = [ "multi-user.target" ];
   };
 }
