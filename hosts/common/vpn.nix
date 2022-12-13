@@ -20,6 +20,12 @@ let
     autostart = false;
   };
 in {
+  # to add a new OVPN VPN:
+  # - generate a privkey `wg genkey`
+  # - add this key to `sops secrets/universal.yaml`
+  # - upload pubkey to OVPN.com
+  # - generate config @ OVPN.com
+  # - copy the Address, PublicKey, Endpoint from OVPN's config
   networking.wg-quick.interfaces.ovpnd-us = def-ovpn {
     endpoint = "vpn31.prd.losangeles.ovpn.com:9929";
     publicKey = "VW6bEWMOlOneta1bf6YFE25N/oMGh1E1UFBCfyggd0k=";
@@ -27,6 +33,15 @@ in {
     address = [
       "172.27.237.218/32"
       "fd00:0000:1337:cafe:1111:1111:ab00:4c8f/128"
+    ];
+  };
+  networking.wg-quick.interfaces.ovpnd-us-atlanta = def-ovpn {
+    endpoint = "vpn18.prd.atlanta.ovpn.com:9929";
+    publicKey = "Dpg/4v5s9u0YbrXukfrMpkA+XQqKIFpf8ZFgyw0IkE0=";
+    privateKeyFile = config.sops.secrets.wg_ovpnd_us_atlanta_privkey.path;
+    address = [
+      "172.21.182.178/32"
+      "fd00:0000:1337:cafe:1111:1111:cfcb:27e3/128"
     ];
   };
 
@@ -41,6 +56,9 @@ in {
   };
 
   sops.secrets."wg_ovpnd_us_privkey" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
+  sops.secrets."wg_ovpnd_us_atlanta_privkey" = {
     sopsFile = ../../secrets/universal.yaml;
   };
   sops.secrets."wg_ovpnd_ukr_privkey" = {
