@@ -6,6 +6,13 @@ fetchpatch: [
     sha256 = "sha256-Ne4hyHQDwBHUlWo8Z3QyRdmEv1rYGOjFGxSfOAcLUvQ=";
   })
 
+  # trust-dns: init at 0.22.0
+  (fetchpatch {
+    # https://git.uninsane.org/colin/nixpkgs/compare/master...pr-trust-dns.diff
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/feee7e0357a74ab0510b2d113a3bdede1d509759.diff";
+    sha256 = "sha256-t4sG+xLDaxbJ/mV5G18N4ag8EC3IXPgtN5FJGANh1Dc=";
+  })
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
