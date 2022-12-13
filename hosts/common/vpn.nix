@@ -6,6 +6,7 @@
 # - upload pubkey to OVPN.com
 # - generate config @ OVPN.com
 # - copy the Address, PublicKey, Endpoint from OVPN's config
+# N.B.: maximum interface name in Linux is 15 characters.
 let
   def-ovpn = name: { endpoint, publicKey, address }: {
     networking.wg-quick.interfaces."ovpnd-${name}" = {
@@ -40,7 +41,7 @@ in lib.mkMerge [
       "fd00:0000:1337:cafe:1111:1111:ab00:4c8f/128"
     ];
   })
-  (def-ovpn "us-atlanta" {
+  (def-ovpn "us-atl" {
     endpoint = "vpn18.prd.atlanta.ovpn.com:9929";
     publicKey = "Dpg/4v5s9u0YbrXukfrMpkA+XQqKIFpf8ZFgyw0IkE0=";
     address = [
