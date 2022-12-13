@@ -2,16 +2,17 @@
 
 # first arg should be the region, e.g. `us` or `ukr`
 
-case $1 in
-ukr)
-  iface=wg-quick-ovpnd-ukr;;
-us)
-  iface=wg-quick-ovpnd-us;;
-us-atlanta)
-  iface=wg-quick-ovpnd-us-atlanta;;
-*)
-  echo "invalid vpn name '$1'"; exit 1;;
-esac
+vpns=$(systemctl list-unit-files | grep wg-quick-ovpnd- | cut -f 1 -d ' ' | sed s'/^wg-quick-ovpnd-\([a-zA-Z-]*\)\.service$/\1/g')
+
+if ! [ $(echo "$vpns" | grep "^$1$") ]
+then
+  echo "invalid vpn name '$1'"
+  echo "choices:"
+  echo "$vpns"
+  exit 1
+fi
+
+iface=wg-quick-ovpnd-$1.service
 
 echo vpn: $(curl https://ipinfo.io/ip)
 sudo systemctl stop $iface

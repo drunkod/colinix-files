@@ -24,6 +24,7 @@ resholve.mkDerivation {
         file
         findutils
         gnugrep
+        gnused
         gocryptfs
         ifuse
         inetutils
@@ -36,6 +37,7 @@ resholve.mkDerivation {
         ssh-to-age
         sops
         sudo
+        systemd
         util-linux
         which
       ];
@@ -69,6 +71,7 @@ resholve.mkDerivation {
         "cannot:${rsync}/bin/rsync"
         "cannot:${sops}/bin/sops"
         "cannot:${ssh-to-age}/bin/ssh-to-age"
+        "cannot:${systemd}/bin/systemctl"
       ];
     };
   };
