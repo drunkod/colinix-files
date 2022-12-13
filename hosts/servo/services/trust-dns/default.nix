@@ -75,7 +75,8 @@
       # TODO: hardening (like, don't run as root!)
     };
     wants = [ "ddns-trust-dns.service" "ddns-trust-dns.timer" ];
-    after = [ "network.target" "ddns-trust-dns.service" ];
+    # XXX: can't be after ddns-trust-dns.service, because the latter `restarts` this one -- *before* it's done activating.
+    after = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];
   };
 }
