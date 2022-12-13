@@ -43,6 +43,7 @@ let
       addon = name: extid: hash: pkgs.fetchFirefoxAddon {
         inherit name hash;
         url = "https://addons.mozilla.org/firefox/downloads/latest/${name}/latest.xpi";
+        # extid can be found by unar'ing the above xpi, and copying browser_specific_settings.gecko.id field
         fixedExtid = extid;
       };
       localAddon = pkg: pkgs.fetchFirefoxAddon {
@@ -56,6 +57,7 @@ let
       (addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-aDBRpcOeMyROnXjmveHKm9zsPC+LzXCG0uhAqI1EWf0=")
       (addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=")
       (addon "ether-metamask" "webextension@metamask.io" "sha256-G+MwJDOcsaxYSUXjahHJmkWnjLeQ0Wven8DU/lGeMzA=")
+      (addon "ublacklist" "@ublacklist" "sha256-564rVP4JQ7MYAYfPPG7JxNDB7q/hLl2T7U2ExYO04mU=")
       # (addon "browserpass-ce" "browserpass@maximbaz.com" "sha256-sXgUBbRvMnRpeIW1MTkmTcoqtW/8RDXAkxAq1evFkpc=")
       (localAddon pkgs.browserpass-extension)
     ];
