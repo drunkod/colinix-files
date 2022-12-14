@@ -4,7 +4,7 @@
 
 {
   inputs = {
-    nixpkgs-stable.url = "nixpkgs/nixos-22.05";
+    nixpkgs-stable.url = "nixpkgs/nixos-22.11";
     nixpkgs.url = "nixpkgs/nixos-unstable";
     mobile-nixos = {
       url = "github:nixos/mobile-nixos";
