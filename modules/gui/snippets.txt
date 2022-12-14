@@ -3,4 +3,5 @@ https://github.com/nixos/nixpkgs/pulls?q=
 https://fed.uninsane.org
 https://jackett.uninsane.org
 https://bt.uninsane.org
+https://sci-hub.se
 https://news.ycombinator.com
