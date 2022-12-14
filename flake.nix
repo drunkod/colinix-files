@@ -69,8 +69,15 @@
               # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
               cross = (nixpkgsFor local target) // (customPackagesFor local target);
               stable = import nixpkgs-stable { system = target; };
+
               # cross-compatible packages
               # gocryptfs = cross.gocryptfs;
+
+              # pinned packages:
+              # 2022/12/13: grpc does not build on aarch64-linux. https://github.com/NixOS/nixpkgs/issues/205887
+              grpc = stable.grpc;
+              # depends on grpc, so pinned.
+              duplicity = stable.duplicity;
             })
           ];
         }
