@@ -298,32 +298,6 @@ in
     locations."/".proxyPass = "http://127.0.0.1:8013";
   };
 
-  # services.nginx.virtualHosts."w.uninsane.org" = let
-  #   fpm = config.services.phpfpm.pools.mediawiki;
-  # in {
-  #   forceSSL = true;
-  #   enableACME = true;
-  #   inherit kTLS;
-  #   # we want fcgi, actually
-  #   # locations."~ ^.+?\.php(/.*)?$".extraConfig = ''
-  #   locations."/".extraConfig = ''
-  #     # fastcgi_pass unix:${fpm.socket}|fcgi://localhost/;
-  #     fastcgi_pass unix:${fpm.socket};
-  #     # some of this might be wrong
-  #     fastcgi_split_path_info ^(.+\.php)(/.*)$;
-  #     set $path_info $fastcgi_path_info;
-  #     fastcgi_param PATH_INFO $path_info;
-  #     include ${pkgs.nginx}/conf/fastcgi_params;
-  #     include ${pkgs.nginx}/conf/fastcgi.conf;
-  #   '';
-
-  #   # locations."/" = {
-  #   #   tryFiles = "$uri $uri/ index.php";
-  #   #   index = "index.php index.html index.htm";
-  #   # };
-  #   # TODO: consider /images directory
-  # };
-
   services.nginx.virtualHosts."rss.uninsane.org" = {
     addSSL = true;
     enableACME = true;
