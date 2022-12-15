@@ -23,8 +23,10 @@ in
     sane.allocations.greeter-uid = mkId 999;
     sane.allocations.greeter-gid = mkId 999;
 
+    # new servo users
     sane.allocations.freshrss-uid = mkId 2401;
     sane.allocations.freshrss-gid = mkId 2401;
+    sane.allocations.mediawiki-uid = mkId 2402;
 
     sane.allocations.colin-uid = mkId 1000;
     sane.allocations.guest-uid = mkId 1100;

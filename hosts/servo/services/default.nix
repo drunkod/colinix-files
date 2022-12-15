@@ -19,5 +19,6 @@
     ./prosody.nix
     ./transmission.nix
     ./trust-dns
+    ./wikipedia.nix
   ];
 }

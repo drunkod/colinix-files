@@ -50,6 +50,7 @@ nixcache        CNAME   native
 pl-dev          CNAME   native
 rss             CNAME   native
 sink            CNAME   native
+w               CNAME   native
 
 xmpp            CNAME   native
 conference.xmpp CNAME   native
