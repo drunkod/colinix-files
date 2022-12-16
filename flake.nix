@@ -38,7 +38,10 @@
     patchedPkgs = system: nixpkgs.legacyPackages.${system}.applyPatches {
       name = "nixpkgs-patched-uninsane";
       src = nixpkgs;
-      patches = import ./nixpatches/list.nix nixpkgs.legacyPackages.${system}.fetchpatch;
+      patches = import ./nixpatches/list.nix {
+        inherit (nixpkgs.legacyPackages.${system}) fetchpatch;
+        inherit (nixpkgs.lib) fakeHash;
+      };
     };
     # return something which behaves like `pkgs`, for the provided system
     # `local` = architecture of builder. `target` = architecture of the system beying deployed to

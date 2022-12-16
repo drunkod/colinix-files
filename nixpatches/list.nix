@@ -1,4 +1,4 @@
-fetchpatch: [
+{ fakeHash, fetchpatch }: [
   # librewolf: build with `MOZ_REQUIRE_SIGNING=false`
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/199134.diff";
@@ -11,6 +11,12 @@ fetchpatch: [
     # https://git.uninsane.org/colin/nixpkgs/compare/master...pr-trust-dns.diff
     url = "https://git.uninsane.org/colin/nixpkgs/commit/feee7e0357a74ab0510b2d113a3bdede1d509759.diff";
     sha256 = "sha256-t4sG+xLDaxbJ/mV5G18N4ag8EC3IXPgtN5FJGANh1Dc=";
+  })
+
+  # kiwix-tools: init at 3.4.0
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/206254.diff";
+    sha256 = "sha256-Z4V9mOv4HYg3kDnWoYcxz3ch03I/1USrLjzlq4X9YqI=";
   })
 
   # # kaiteki: init at 2022-09-03
