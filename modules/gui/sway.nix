@@ -96,6 +96,8 @@ in
         # - <https://www.youtube.com/watch?v=d_11QaTlf1I>
         snip-file = ./snippets.txt;
         snip-cmd = "${wtype} $(cat ${snip-file} | ${fuzzel} -d -i)";
+        # TODO: next splatmoji release should allow `-s none` to disable skin tones
+        emoji-cmd = "${pkgs.splatmoji}/bin/splatmoji -s medium-light type";
       in rec {
         terminal = kitty;
         window = {
@@ -131,6 +133,7 @@ in
           "${modifier}+d" = "exec ${menu}";
           "${modifier}+s" = "exec ${snip-cmd}";
           "${modifier}+l" = "exec ${lock-cmd}";
+          "${modifier}+slash" = "exec ${emoji-cmd}";
 
           # "${modifier}+${left}" = "focus left";
           # "${modifier}+${down}" = "focus down";

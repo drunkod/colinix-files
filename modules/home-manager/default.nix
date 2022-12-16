@@ -26,6 +26,7 @@ in
     ./mpv.nix
     ./nb.nix
     ./neovim.nix
+    ./splatmoji.nix
     ./ssh.nix
     ./sublime-music.nix
     ./vlc.nix
