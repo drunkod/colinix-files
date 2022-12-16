@@ -4,6 +4,7 @@
     ./bluetooth.nix
     ./fs.nix
     ./hardware
+    ./i2p.nix
     ./machine-id.nix
     ./net.nix
     ./secrets.nix

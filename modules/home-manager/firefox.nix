@@ -52,12 +52,16 @@ let
         fixedExtid = pkg.extid;
       };
     in [
+      # get names from:
+      # - ~/ref/nix-community/nur-combined/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
+      # `wget ...xpi`; `unar ...xpi`; `cat */manifest.json | jq '.browser_specific_settings.gecko.id'`
       (addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-+xc4lcdsOwXxMsr4enFsdePbIb6GHq0bFLpqvH5xXos=")
       (addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-30F8oDIgshXVY7YKgnfoc1tUTHfgeFbzXISJuVJs0AM=")
       (addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-7ZDkG8O1rEYdh/La0PLi9tp92JxYeQvaOFt/BmnDv3U=")
       (addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=")
       (addon "ether-metamask" "webextension@metamask.io" "sha256-G+MwJDOcsaxYSUXjahHJmkWnjLeQ0Wven8DU/lGeMzA=")
       (addon "ublacklist" "@ublacklist" "sha256-564rVP4JQ7MYAYfPPG7JxNDB7q/hLl2T7U2ExYO04mU=")
+      (addon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io" "sha256-dJcJ3jxeAeAkRvhODeIVrCflvX+S4E0wT/PyYzQBQWs=")
       # (addon "browserpass-ce" "browserpass@maximbaz.com" "sha256-sXgUBbRvMnRpeIW1MTkmTcoqtW/8RDXAkxAq1evFkpc=")
       (localAddon pkgs.browserpass-extension)
     ];
