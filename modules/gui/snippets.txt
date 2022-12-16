@@ -1,5 +1,5 @@
 https://search.nixos.org/packages?channel=unstable&query=
-https://nixos.wiki/
+https://nixos.wiki/index.php?go=Go&search=
 https://github.com/nixos/nixpkgs/pulls?q=
 https://fed.uninsane.org
 https://jackett.uninsane.org
