@@ -56,6 +56,7 @@ resholve.mkDerivation {
 
           # these are used internally; probably a better fix
           "sane-mount-servo"
+          "sane-private-lock"
           "sane-private-unlock"
         ];
       };

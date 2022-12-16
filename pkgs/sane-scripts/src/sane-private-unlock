@@ -2,8 +2,7 @@
 
 set -ex
 
-# configure persistent, encrypted storage that is auto-mounted on login.
-# this is a one-time setup and user should log out/back in after running it.
+# mounts ~/private
 
 mount=/home/colin/private
 cipher="/nix/persist$mount"
