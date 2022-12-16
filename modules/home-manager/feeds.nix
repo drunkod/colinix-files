@@ -65,6 +65,8 @@ in rec {
     (mkPod "https://feeds.megaphone.fm/recodedecode" // tech // weekly)
     ## Matrix (chat) Live
     (mkPod "https://feed.podbean.com/matrixlive/feed.xml" // tech // weekly)
+    ## Michael Malice - Your Welcome
+    (mkPod "https://www.podcastone.com/podcast?categoryID2=2232" // pol // weekly)
   ];
 
   texts = [
