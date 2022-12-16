@@ -1,6 +1,10 @@
 # docs: <https://nixos.wiki/wiki/MediaWiki>
 { config, lib, ... }:
 
+# XXX: working to host wikipedia with kiwix instead of mediawiki
+# mediawiki does more than i need and isn't obviously superior in any way
+# except that the dumps are more frequent/up-to-date.
+lib.mkIf false
 {
   sops.secrets."mediawiki_pw" = {
     owner = config.users.users.mediawiki.name;

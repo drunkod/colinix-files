@@ -10,6 +10,7 @@
     ./ipfs.nix
     ./jackett.nix
     ./jellyfin.nix
+    ./kiwix-serve.nix
     ./matrix
     ./navidrome.nix
     ./nginx.nix
