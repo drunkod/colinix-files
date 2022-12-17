@@ -45,6 +45,18 @@
     useACMEHost = "uninsane.org";
   };
 
+  sane.services.trust-dns.zones."uninsane.org".records = ''
+    xmpp            CNAME   native
+    conference.xmpp CNAME   native
+    pubsub.xmpp     CNAME   native
+    upload.xmpp     CNAME   native
+    vjid.xmpp       CNAME   native
+
+    ; _Service._Proto.Name TTL Class SRV Priority Weight Port Target
+    _xmpp-client._tcp                SRV 0        0      5222 native
+    _xmpp-server._tcp                SRV 0        0      5269 native
+  '';
+
   # TODO: allocate UIDs/GIDs ?
   services.ejabberd.enable = true;
   services.ejabberd.configFile = builtins.toFile "ejabberd.yaml" ''

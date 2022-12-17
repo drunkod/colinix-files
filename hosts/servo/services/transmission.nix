@@ -74,5 +74,9 @@
       proxyPass = "http://10.0.1.6:9091";
     };
   };
+
+  sane.services.trust-dns.zones."uninsane.org".records = ''
+    bt              CNAME   native
+  '';
 }
 

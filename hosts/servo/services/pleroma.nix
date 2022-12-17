@@ -179,6 +179,10 @@
     };
   };
 
+  sane.services.trust-dns.zones."uninsane.org".records = ''
+    fed             CNAME   native
+  '';
+
   sops.secrets.pleroma_secrets = {
     sopsFile = ../../../secrets/servo.yaml;
     owner = config.users.users.pleroma.name;

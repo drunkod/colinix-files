@@ -26,5 +26,9 @@
       proxyPass = "http://10.0.1.6:9117";
     };
   };
+
+  sane.services.trust-dns.zones."uninsane.org".records = ''
+    jackett         CNAME   native
+  '';
 }
 

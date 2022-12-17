@@ -121,6 +121,11 @@
     };
   };
 
+  sane.services.trust-dns.zones."uninsane.org".records = ''
+    matrix          CNAME   native
+    web.matrix      CNAME   native
+  '';
+
 
   sops.secrets.matrix_synapse_secrets = {
     sopsFile = ../../../../secrets/servo.yaml;

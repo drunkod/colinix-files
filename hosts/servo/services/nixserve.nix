@@ -13,6 +13,11 @@
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     '';
   };
+
+  sane.services.trust-dns.zones."uninsane.org".records = ''
+    nixcache        CNAME   native
+  '';
+
   sane.services.nixserve.enable = true;
   sane.services.nixserve.sopsFile = ../../../secrets/servo.yaml;
 }

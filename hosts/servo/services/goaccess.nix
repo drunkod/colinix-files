@@ -63,4 +63,8 @@
       '';
     };
   };
+
+  sane.services.trust-dns.zones."uninsane.org".records = ''
+    sink            CNAME   native
+  '';
 }
