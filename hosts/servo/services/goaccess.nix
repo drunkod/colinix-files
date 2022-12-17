@@ -43,4 +43,24 @@
     after = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];
   };
+
+  # server statistics
+  services.nginx.virtualHosts."sink.uninsane.org" = {
+    addSSL = true;
+    enableACME = true;
+    # inherit kTLS;
+    root = "/var/lib/uninsane/sink";
+
+    locations."/ws" = {
+      proxyPass = "http://127.0.0.1:7890";
+      # XXX not sure how much of this is necessary
+      extraConfig = ''
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_buffering off;
+        proxy_read_timeout 7d;
+      '';
+    };
+  };
 }

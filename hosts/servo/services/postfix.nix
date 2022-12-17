@@ -34,6 +34,15 @@ in
     993  # IMAPS
   ];
 
+  # exists only to manage certs for dovecot
+  services.nginx.virtualHosts."imap.uninsane.org" = {
+    enableACME = true;
+  };
+  # exists only to manage certs for Postfix
+  services.nginx.virtualHosts."mx.uninsane.org" = {
+    enableACME = true;
+  };
+
   services.postfix.enable = true;
   services.postfix.hostname = "mx.uninsane.org";
   services.postfix.origin = "uninsane.org";

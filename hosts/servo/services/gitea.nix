@@ -72,4 +72,16 @@
       "/var/lib/gitea"
     ];
   };
+
+  # hosted git (web view and for `git <cmd>` use
+  # TODO: enable publog?
+  services.nginx.virtualHosts."git.uninsane.org" = {
+    forceSSL = true;  # gitea complains if served over a different protocol than its config file says
+    enableACME = true;
+    # inherit kTLS;
+
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:3000";
+    };
+  };
 }

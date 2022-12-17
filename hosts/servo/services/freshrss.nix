@@ -49,4 +49,11 @@
   # the default ("*:0/5") is to run every 5 minutes.
   # `systemctl list-timers` to show
   systemd.services.freshrss-updater.startAt = lib.mkForce "*:3/30";
+
+  services.nginx.virtualHosts."rss.uninsane.org" = {
+    addSSL = true;
+    enableACME = true;
+    # inherit kTLS;
+    # the routing is handled by services.freshrss.virtualHost
+  };
 }

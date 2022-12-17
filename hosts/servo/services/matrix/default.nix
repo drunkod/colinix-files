@@ -1,6 +1,6 @@
 # docs: https://nixos.wiki/wiki/Matrix
 # docs: https://nixos.org/manual/nixos/stable/index.html#module-services-matrix-synapse
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports = [
@@ -76,6 +76,50 @@
   #   curl -d '{}' --header "Authorization: Bearer <my_token>" localhost:8008/_synapse/admin/v1/registration_tokens/new
   # create a token with limited uses:
   #   curl -d '{ "uses_allowed": 1 }' --header "Authorization: Bearer <my_token>" localhost:8008/_synapse/admin/v1/registration_tokens/new
+
+  # matrix chat server
+  # TODO: was `publog`
+  services.nginx.virtualHosts."matrix.uninsane.org" = {
+    addSSL = true;
+    enableACME = true;
+    # inherit kTLS;
+
+    # TODO colin: replace this with something helpful to the viewer
+    # locations."/".extraConfig = ''
+    #   return 404;
+    # '';
+
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:8008";
+    };
+    # redirect browsers to the web client.
+    # i don't think native matrix clients ever fetch the root.
+    # ideally this would be put behind some user-agent test though.
+    locations."= /" = {
+      return = "301 https://web.matrix.uninsane.org";
+    };
+
+    # locations."/_matrix" = {
+    #   proxyPass = "http://127.0.0.1:8008";
+    # };
+  };
+
+  # matrix web client
+  # docs: https://nixos.org/manual/nixos/stable/index.html#module-services-matrix-element-web
+  services.nginx.virtualHosts."web.matrix.uninsane.org" = {
+    forceSSL = true;
+    enableACME = true;
+    # inherit kTLS;
+
+    root = pkgs.element-web.override {
+      conf = {
+        default_server_config."m.homeserver" = {
+          "base_url" = "https://matrix.uninsane.org";
+          "server_name" = "uninsane.org";
+        };
+      };
+    };
+  };
 
 
   sops.secrets.matrix_synapse_secrets = {

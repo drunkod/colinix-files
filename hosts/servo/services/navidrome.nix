@@ -14,4 +14,11 @@
     AutoImportPlaylists = false;
     ScanSchedule = "@every 1h";
   };
+
+  services.nginx.virtualHosts."music.uninsane.org" = {
+    forceSSL = true;
+    enableACME = true;
+    # inherit kTLS;
+    locations."/".proxyPass = "http://127.0.0.1:4533";
+  };
 }

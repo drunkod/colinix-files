@@ -13,6 +13,7 @@
     ./kiwix-serve.nix
     ./matrix
     ./navidrome.nix
+    ./nixserve.nix
     ./nginx.nix
     ./pleroma.nix
     ./postfix.nix

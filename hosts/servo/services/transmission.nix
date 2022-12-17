@@ -62,5 +62,17 @@
       OnUnitActiveSec = "240min";
     };
   };
+
+  # transmission web client
+  services.nginx.virtualHosts."bt.uninsane.org" = {
+    # basicAuth is literally cleartext user/pw, so FORCE this to happen over SSL
+    forceSSL = true;
+    enableACME = true;
+    # inherit kTLS;
+    locations."/" = {
+      # proxyPass = "http://ovpns.uninsane.org:9091";
+      proxyPass = "http://10.0.1.6:9091";
+    };
+  };
 }
 

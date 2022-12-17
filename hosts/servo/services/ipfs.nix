@@ -18,6 +18,22 @@ lib.mkIf false # i don't actively use ipfs anymore
   networking.firewall.allowedTCPPorts = [ 4001 ];
   networking.firewall.allowedUDPPorts = [ 4001 ];
 
+  services.nginx.virtualHosts."ipfs.uninsane.org" = {
+    # don't default to ssl upgrades, since this may be dnslink'd from a different domain.
+    # ideally we'd disable ssl entirely, but some places assume it?
+    addSSL = true;
+    enableACME = true;
+    # inherit kTLS;
+
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:8080";
+      extraConfig = ''
+        proxy_set_header Host $host;
+        proxy_set_header X-Ipfs-Gateway-Prefix "";
+      '';
+    };
+  };
+
   # services.ipfs.enable = true;
   services.kubo.localDiscovery = true;
   services.kubo.settings = {

@@ -34,6 +34,17 @@
     "vjid.xmpp.uninsane.org"
   ];
 
+  # exists so the XMPP server's cert can obtain altNames for all its resources
+  services.nginx.virtualHosts."pubsub.xmpp.uninsane.org" = {
+    useACMEHost = "uninsane.org";
+  };
+  services.nginx.virtualHosts."upload.xmpp.uninsane.org" = {
+    useACMEHost = "uninsane.org";
+  };
+  services.nginx.virtualHosts."vjid.xmpp.uninsane.org" = {
+    useACMEHost = "uninsane.org";
+  };
+
   # TODO: allocate UIDs/GIDs ?
   services.ejabberd.enable = true;
   services.ejabberd.configFile = builtins.toFile "ejabberd.yaml" ''

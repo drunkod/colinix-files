@@ -15,8 +15,6 @@
   ];
   sane.impermanence.enable = true;
   # sane.services.duplicity.enable = true;  # TODO: re-enable after HW upgrade
-  sane.services.nixserve.enable = true;
-  sane.services.nixserve.sopsFile = ../../secrets/servo.yaml;
 
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];

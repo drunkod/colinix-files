@@ -15,5 +15,16 @@
     # patch jackett to listen on the public interfaces
     # ExecStart = lib.mkForce "${pkgs.jackett}/bin/Jackett --NoUpdates --DataFolder /var/lib/jackett/.config/Jackett --ListenPublic";
   };
+
+  # jackett torrent search
+  services.nginx.virtualHosts."jackett.uninsane.org" = {
+    forceSSL = true;
+    enableACME = true;
+    # inherit kTLS;
+    locations."/" = {
+      # proxyPass = "http://ovpns.uninsane.org:9117";
+      proxyPass = "http://10.0.1.6:9117";
+    };
+  };
 }
 
