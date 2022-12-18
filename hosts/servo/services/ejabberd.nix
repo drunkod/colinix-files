@@ -35,6 +35,9 @@
   ];
 
   # exists so the XMPP server's cert can obtain altNames for all its resources
+  services.nginx.virtualHosts."conference.xmpp.uninsane.org" = {
+    useACMEHost = "uninsane.org";
+  };
   services.nginx.virtualHosts."pubsub.xmpp.uninsane.org" = {
     useACMEHost = "uninsane.org";
   };
