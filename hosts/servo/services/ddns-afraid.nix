@@ -1,5 +1,7 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
+# using manual ddns now
+lib.mkIf false
 {
   systemd.services.ddns-afraid = {
     description = "update dynamic DNS entries for freedns.afraid.org";

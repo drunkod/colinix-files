@@ -1,5 +1,7 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
+# we use manual DDNS now
+lib.mkIf false
 {
   systemd.services.ddns-he = {
     description = "update dynamic DNS entries for HurricaneElectric";
