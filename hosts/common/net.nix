@@ -76,4 +76,8 @@
     sopsFile = ../../secrets/universal/net/iphone.psk.bin;
     format = "binary";
   };
+
+  sops.secrets."router_passwd" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
 }

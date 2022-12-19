@@ -30,6 +30,7 @@ resholve.mkDerivation {
         inetutils
         inotify-tools
         iwd
+        jq
         ncurses
         oath-toolkit
         openssh
