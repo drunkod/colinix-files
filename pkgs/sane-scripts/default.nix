@@ -18,6 +18,10 @@ resholve.mkDerivation {
       scripts = [ "bin/*" ];
       interpreter = "${pkgs.bash}/bin/bash";
       inputs = with pkgs; [
+        # string is interpreted as relative path from @OUT@.
+        # this lets our scripts reference eachother.
+        # see: <https://github.com/abathur/resholve/issues/26>
+        "bin"
         coreutils
         curl
         duplicity
@@ -55,11 +59,6 @@ resholve.mkDerivation {
           # https://github.com/abathur/resholve/issues/29
           "umount"
           "sudo"
-
-          # these are used internally; probably a better fix
-          "sane-mount-servo"
-          "sane-private-lock"
-          "sane-private-unlock"
         ];
       };
 
