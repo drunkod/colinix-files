@@ -11,7 +11,12 @@
   # since that also depends on `users`.
   system.activationScripts.persist-ssh-host-keys.text = ''
     mkdir -p /etc/ssh/host_keys
-    mount --bind /nix/persist/etc/ssh/host_keys /etc/ssh/host_keys
+    if ! (mountpoint /etc/ssh/host_keys)
+    then
+      # avoid mounting the keys more than once, otherwise we have a million _stacked_ entries.
+      # TODO: should we just symlink? or find a way to make sure the existing mount is correct.
+      mount --bind /nix/persist/etc/ssh/host_keys /etc/ssh/host_keys
+    fi
   '';
 
   services.openssh.hostKeys = [
