@@ -14,6 +14,6 @@ fi
 
 iface=wg-quick-ovpnd-$1.service
 
-echo vpn: $(curl https://ipinfo.io/ip)
+echo vpn: $(sane-ip-check)
 sudo systemctl stop $iface
-echo plain:   $(curl https://ipinfo.io/ip)
+echo plain:   $(sane-ip-check)
