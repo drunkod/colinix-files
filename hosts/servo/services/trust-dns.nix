@@ -49,62 +49,21 @@
     "/var/lib/trust-dns/native.uninsane.org.zone"
   ];
 
-  systemd.services.ddns-trust-dns = {
-    description = "update dynamic DNS entries for self-hosted trust-dns";
-    after = [ "network.target" ];
-    wantedBy = [ "trust-dns.service" ];
-    restartTriggers = [(
-      builtins.toJSON config.sane.services.trust-dns
-    )];
-    serviceConfig.Type = "oneshot";
-    script = let
-      check-ip = "${pkgs.sane-scripts}/bin/sane-ip-check-router-wan";
-      sed = "${pkgs.gnused}/bin/sed";
-      zone-dir = "/var/lib/trust-dns";
-      zone-out = "${zone-dir}/native.uninsane.org.zone";
-      diff = "${pkgs.diffutils}/bin/diff";
-      systemctl = "${pkgs.systemd}/bin/systemctl";
-      zone-template = pkgs.writeText "native.uninsane.org.zone.in" ''
-        @               A       %NATIVE%
-        ns1             A       %NATIVE%
-        native          A       %NATIVE%
-      '';
-    in ''
-      set -ex
-      mkdir -p ${zone-dir}
-      ip=$(${check-ip})
-
-      ${sed} s/%NATIVE%/$ip/ ${zone-template} > ${zone-out}.new
-
-      # see if anything changed
-      # TODO: instead of diffing, we could `dig` against the actual deployment.
-      # - that could be more resilient to races.
-      touch ${zone-out}  # in case it didn't exist yet
-      cp ${zone-out} ${zone-out}.old
-      mv ${zone-out}.new ${zone-out}
-      # if so, restart trust-dns
-      if [ ${diff} -u ${zone-out}.old ${zone-out} ]
-      then
-        echo "zone unchanged. ip: $ip"
-      else
-        echo "zone changed."
-        status=$(${systemctl} is-active trust-dns.service || true)
-        echo $status
-        if [ "$status" = "active" ]
-        then
-          echo "restarting trust-dns."
-          ${systemctl} restart trust-dns.service
-        fi
-      fi
+  systemd.services.trust-dns.preStart = let
+    sed = "${pkgs.gnused}/bin/sed";
+    zone-dir = "/var/lib/trust-dns";
+    zone-out = "${zone-dir}/native.uninsane.org.zone";
+    zone-template = pkgs.writeText "native.uninsane.org.zone.in" ''
+      @               A       %NATIVE%
+      ns1             A       %NATIVE%
+      native          A       %NATIVE%
     '';
-  };
+  in ''
+    # make WAN records available to trust-dns
+    mkdir -p ${zone-dir}
+    ip=$(cat '${config.sane.services.dyn-dns.ipPath}')
+    ${sed} s/%NATIVE%/$ip/ ${zone-template} > ${zone-out}
+  '';
 
-  systemd.timers.ddns-trust-dns = {
-    # wantedBy = [ "multi-user.target" ];
-    wantedBy = [ "trust-dns.service" ];
-    timerConfig = {
-      OnStartupSec =    "10min";
-      OnUnitActiveSec = "10min";
-    };
-  };
+  sane.services.dyn-dns.restartOnChange = [ "trust-dns.service" ];
 }

@@ -41,32 +41,39 @@ in
   config = mkIf cfg.enable {
     systemd.services.dyn-dns = {
       description = "update this host's record of its WAN IP";
-      after = [ "network.target" ];
-      restartTriggers = [(builtins.toJSON cfg)];
       serviceConfig.Type = "oneshot";
+      restartTriggers = [(builtins.toJSON cfg)];
+
+      after = [ "network.target" ];
+      wantedBy = cfg.restartOnChange;
+      before = cfg.restartOnChange;
+
       script = ''
-        mkdir -p $(dirname '${cfg.ipPath}')
+        mkdir -p "$(dirname '${cfg.ipPath}')"
         newIp=$(${cfg.ipCmd})
+        oldIp=$(cat '${cfg.ipPath}' || true)
         # systemd path units are triggered on any file write action,
         # regardless of content change. so only update the file if our IP *actually* changed
-        if [ "$newIp" != "$(cat '${cfg.ipPath}')" ]
+        if [ "$newIp" != "$oldIp" ]
         then
           echo "$newIp" > '${cfg.ipPath}'
+          echo "WAN ip changed $oldIp -> $newIp"
         fi
+        exit $(test -f '${cfg.ipPath}')
       '';
     };
 
     systemd.timers.dyn-dns = {
-      wantedBy = [ "multi-user.target" ];
+      # if anything wants dyn-dns.service, they surely want the timer too.
+      wantedBy = [ "dyn-dns.service" ];
       timerConfig = {
-        OnStartupSec = cfg.interval;
         OnUnitActiveSec = cfg.interval;
       };
     };
 
     systemd.paths.dyn-dns-watcher = {
-      before = [ "dyn-dns.service" ];
-      wantedBy = [ "dyn-dns.service" ];
+      before = [ "dyn-dns.timer" ];
+      wantedBy = [ "dyn-dns.timer" ];
       pathConfig = {
         Unit = "dyn-dns-reactor.service";
         PathChanged = [ cfg.ipPath ];
