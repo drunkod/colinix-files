@@ -45,8 +45,14 @@ in
       restartTriggers = [(builtins.toJSON cfg)];
       serviceConfig.Type = "oneshot";
       script = ''
-        mkdir -p $(dirname "${cfg.ipPath}")
-        ${cfg.ipCmd} > "${cfg.ipPath}"
+        mkdir -p $(dirname '${cfg.ipPath}')
+        newIp=$(${cfg.ipCmd})
+        # systemd path units are triggered on any file write action,
+        # regardless of content change. so only update the file if our IP *actually* changed
+        if [ "$newIp" != "$(cat '${cfg.ipPath}')" ]
+        then
+          echo "$newIp" > '${cfg.ipPath}'
+        fi
       '';
     };
 
