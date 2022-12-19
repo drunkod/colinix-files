@@ -58,8 +58,8 @@
     )];
     serviceConfig.Type = "oneshot";
     script = let
+      check-ip = "${pkgs.sane-scripts}/bin/sane-ip-check-router-wan";
       sed = "${pkgs.gnused}/bin/sed";
-      curl = "${pkgs.curl}/bin/curl -4";
       zone-dir = "/var/lib/trust-dns";
       zone-out = "${zone-dir}/native.uninsane.org.zone";
       diff = "${pkgs.diffutils}/bin/diff";
@@ -72,10 +72,8 @@
     in ''
       set -ex
       mkdir -p ${zone-dir}
-      ip=$(${curl} https://ipinfo.io/ip)
+      ip=$(${check-ip})
 
-      # TODO: validate that this is really our IP!
-      # - i could host a service in ovpns which replies to pings
       ${sed} s/%NATIVE%/$ip/ ${zone-template} > ${zone-out}.new
 
       # see if anything changed
