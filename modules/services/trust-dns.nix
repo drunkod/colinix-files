@@ -4,7 +4,22 @@ with lib;
 let
   cfg = config.sane.services.trust-dns;
   toml = pkgs.formats.toml { };
-  configFile =  toml.generate "trust-dns.toml" {
+  fmtRecord = proto: rrtype: name: value: "${name}\t${proto}\t${rrtype}\t${value}";
+  fmtRecordList = proto: rrtype: name: values: concatStringsSep
+    "\n"
+    (map (fmtRecord proto rrtype name) values)
+  ;
+  fmtRecordAttrs = proto: rrtype: rrAttrs:
+    concatStringsSep
+      "\n"
+      (
+        attrValues (
+          mapAttrs
+            (name: fmtRecordList proto rrtype name)
+            rrAttrs
+        )
+      );
+  configFile = toml.generate "trust-dns.toml" {
     listen_addrs_ipv4 = cfg.listenAddrsIPv4;
     zones = attrValues (
       mapAttrs (zone: zcfg: {
@@ -12,7 +27,7 @@ let
         zone_type = "Primary";
         file = pkgs.writeText "${zone}.zone" (''
           $TTL ${toString zcfg.TTL}
-          ${zcfg.SOA}
+          ${fmtRecordAttrs "IN" "SOA" zcfg.inet.SOA}
         '' + zcfg.extraConfig);
       }) cfg.zones
     );
@@ -39,14 +54,16 @@ in
               default = 3600;
               description = "default TTL";
             };
-            SOA = mkOption {
-              type = types.str;
-              description = "Start of Authority record";
-            };
             extraConfig = mkOption {
               type = types.lines;
               default = "";
               description = "extra lines to append to the zone file";
+            };
+            inet = {
+              SOA = mkOption {
+                type = types.attrsOf (types.listOf types.str);
+                description = "Start of Authority record";
+              };
             };
           };
         });

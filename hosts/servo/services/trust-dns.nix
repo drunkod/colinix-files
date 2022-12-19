@@ -11,22 +11,23 @@
   ];
 
   sane.services.trust-dns.zones."uninsane.org".TTL = 900;
-  sane.services.trust-dns.zones."uninsane.org".SOA = ''
-    ; SOA record structure: <https://en.wikipedia.org/wiki/SOA_record#Structure>
-    ; SOA MNAME RNAME (... rest)
-    ; MNAME = Master name server for this zone. this is where update requests should be sent.
-    ; RNAME = admin contact (encoded email address)
-    ; Serial = YYYYMMDDNN, where N is incremented every time this file changes, to trigger secondary NS to re-fetch it.
-    ; Refresh = how frequently secondary NS should query master
-    ; Retry = how long secondary NS should wait until re-querying master after a failure (must be < Refresh)
-    ; Expire = how long secondary NS should continue to reply to queries after master fails (> Refresh + Retry)
-    @   IN          SOA     ns1.uninsane.org. admin-dns.uninsane.org. (
+
+  # SOA record structure: <https://en.wikipedia.org/wiki/SOA_record#Structure>
+  # SOA MNAME RNAME (... rest)
+  # MNAME = Master name server for this zone. this is where update requests should be sent.
+  # RNAME = admin contact (encoded email address)
+  # Serial = YYYYMMDDNN, where N is incremented every time this file changes, to trigger secondary NS to re-fetch it.
+  # Refresh = how frequently secondary NS should query master
+  # Retry = how long secondary NS should wait until re-querying master after a failure (must be < Refresh)
+  # Expire = how long secondary NS should continue to reply to queries after master fails (> Refresh + Retry)
+  sane.services.trust-dns.zones."uninsane.org".inet.SOA."@" = [''
+    ns1.uninsane.org. admin-dns.uninsane.org. (
                                     2022121601 ; Serial
                                     4h         ; Refresh
                                     30m        ; Retry
                                     7d         ; Expire
                                     5m)        ; Negative response TTL
-  '';
+  ''];
 
   sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
     rev             TXT     "2022121601"
