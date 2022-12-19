@@ -13,7 +13,7 @@
     locations."/".proxyPass = "http://127.0.0.1:8013";
   };
 
-  sane.services.trust-dns.zones."uninsane.org".records = ''
+  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
     w               CNAME   native
   '';
 }

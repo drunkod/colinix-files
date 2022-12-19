@@ -34,7 +34,7 @@ lib.mkIf false # i don't actively use ipfs anymore
     };
   };
 
-  sane.services.trust-dns.zones."uninsane.org".records = ''
+  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
     ipfs            CNAME   native
   '';
 

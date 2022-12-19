@@ -28,7 +28,7 @@
                                     5m)        ; Negative response TTL
   '';
 
-  sane.services.trust-dns.zones."uninsane.org".records = ''
+  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
     rev             TXT     "2022121601"
 
     ; @               A       %NATIVE%

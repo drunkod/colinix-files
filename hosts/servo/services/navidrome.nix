@@ -22,7 +22,7 @@
     locations."/".proxyPass = "http://127.0.0.1:4533";
   };
 
-  sane.services.trust-dns.zones."uninsane.org".records = ''
+  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
     music           CNAME   native
   '';
 }

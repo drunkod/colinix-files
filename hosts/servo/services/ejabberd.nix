@@ -55,7 +55,7 @@
     useACMEHost = "uninsane.org";
   };
 
-  sane.services.trust-dns.zones."uninsane.org".records = ''
+  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
     xmpp                CNAME   native
     conference.xmpp     CNAME   native
     pubsub.xmpp         CNAME   native

@@ -13,7 +13,7 @@ let
         file = pkgs.writeText "${zone}.zone" (''
           $TTL ${toString zcfg.TTL}
           ${zcfg.SOA}
-        '' + zcfg.records);
+        '' + zcfg.extraConfig);
       }) cfg.zones
     );
   };
@@ -43,10 +43,10 @@ in
               type = types.str;
               description = "Start of Authority record";
             };
-            records = mkOption {
+            extraConfig = mkOption {
               type = types.lines;
               default = "";
-              description = "resource records, specified as strings";
+              description = "extra lines to append to the zone file";
             };
           };
         });

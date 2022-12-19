@@ -44,7 +44,7 @@ in
   };
 
 
-  sane.services.trust-dns.zones."uninsane.org".records = ''
+  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
     @               MX      10 mx.uninsane.org.
     ; XXX: RFC's specify that the MX record CANNOT BE A CNAME
     mx              A       185.157.162.178
