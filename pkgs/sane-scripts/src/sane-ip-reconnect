@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# reconnect to best wifi network.
+# lappy frequently DCs from the ideal network
+
+set -ex
+
+sudo iwctl station wlan0 scan
+sleep 5
+# get networks. remove control characters (colors), then leading info, then take the top-rated network
+netname=$(iwctl station wlan0 get-networks | sed 's/\[[0-9;]*m//g' | sed 's/^ [ >]*//g' | sed -n 5p | cut -d' ' -f 1)
+sudo iwctl station wlan0 connect "$netname"

@@ -29,6 +29,7 @@ resholve.mkDerivation {
         ifuse
         inetutils
         inotify-tools
+        iwd
         ncurses
         oath-toolkit
         openssh
@@ -66,6 +67,7 @@ resholve.mkDerivation {
         "cannot:${duplicity}/bin/duplicity"
         "cannot:${gocryptfs}/bin/gocryptfs"
         "cannot:${ifuse}/bin/ifuse"
+        "cannot:${iwd}/bin/iwctl"
         "cannot:${oath-toolkit}/bin/oathtool"
         "cannot:${openssh}/bin/ssh-keygen"
         "cannot:${rmlint}/bin/rmlint"
