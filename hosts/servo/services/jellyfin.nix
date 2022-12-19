@@ -61,9 +61,7 @@ lib.mkIf false
     };
   };
 
-  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
-    jelly           CNAME   native
-  '';
+  sane.services.trust-dns.zones."uninsane.org".inet.CNAME."jelly" = [ "native" ];
 
   # users.users.jellyfin.uid = config.sane.allocations.jellyfin-uid;
   # users.groups.jellyfin.gid = config.sane.allocations.jellyfin-gid;

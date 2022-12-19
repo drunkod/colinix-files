@@ -20,36 +20,34 @@
   # Refresh = how frequently secondary NS should query master
   # Retry = how long secondary NS should wait until re-querying master after a failure (must be < Refresh)
   # Expire = how long secondary NS should continue to reply to queries after master fails (> Refresh + Retry)
-  sane.services.trust-dns.zones."uninsane.org".inet.SOA."@" = [''
-    ns1.uninsane.org. admin-dns.uninsane.org. (
-                                    2022121601 ; Serial
-                                    4h         ; Refresh
-                                    30m        ; Retry
-                                    7d         ; Expire
-                                    5m)        ; Negative response TTL
-  ''];
+  sane.services.trust-dns.zones."uninsane.org".inet = {
+    SOA."@" = [''
+      ns1.uninsane.org. admin-dns.uninsane.org. (
+                                      2022121601 ; Serial
+                                      4h         ; Refresh
+                                      30m        ; Retry
+                                      7d         ; Expire
+                                      5m)        ; Negative response TTL
+    ''];
+    TXT."rev" = [ "2022121801" ];
 
-  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
-    rev             TXT     "2022121601"
+    # XXX NS records must also not be CNAME
+    # it's best that we keep this identical, or a superset of, what org. lists as our NS.
+    # so, org. can specify ns2/ns3 as being to the VPN, with no mention of ns1. we provide ns1 here.
+    # A."ns1" = [ "%NATIVE%" ];
+    A."ns2" = [ "185.157.162.178" ];
+    A."ns3" = [ "185.157.162.178" ];
+    A."ovpns" = [ "185.157.162.178" ];
+    NS."@" = [
+      "ns1.uninsane.org."
+      "ns2.uninsane.org."
+      "ns3.uninsane.org."
+    ];
+  };
 
-    ; @               A       %NATIVE%
-    ; XXX NS records must also not be CNAME
-    ; it's best that we keep this identical, or a superset of, what org. lists as our NS.
-    ; so, org. can specify ns2/ns3 as being to the VPN, with no mention of ns1. we provide ns1 here.
-    ; ns1             A       %NATIVE%
-    ns2             A       185.157.162.178
-    ns3             A       185.157.162.178
-    ; native          A       %NATIVE%
-    ovpns           A       185.157.162.178
-
-    @               NS      ns1.uninsane.org.
-    @               NS      ns2.uninsane.org.
-    @               NS      ns3.uninsane.org.
-    ;@               NS      uninsane.port0.org.
-    ;@               NS      uninsane.psybnc.org.
-
-    $INCLUDE /var/lib/trust-dns/native.uninsane.org.zone
-  '';
+  sane.services.trust-dns.zones."uninsane.org".include = [
+    "/var/lib/trust-dns/native.uninsane.org.zone"
+  ];
 
   systemd.services.ddns-trust-dns = {
     description = "update dynamic DNS entries for self-hosted trust-dns";

@@ -121,10 +121,10 @@
     };
   };
 
-  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
-    matrix          CNAME   native
-    web.matrix      CNAME   native
-  '';
+  sane.services.trust-dns.zones."uninsane.org".inet = {
+    CNAME."matrix" = [ "native" ];
+    CNAME."web.matrix" = [ "native" ];
+  };
 
 
   sops.secrets.matrix_synapse_secrets = {

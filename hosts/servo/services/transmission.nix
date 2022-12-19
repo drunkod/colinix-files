@@ -75,8 +75,6 @@
     };
   };
 
-  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
-    bt              CNAME   native
-  '';
+  sane.services.trust-dns.zones."uninsane.org".inet.CNAME."bt" = ["native"];
 }
 

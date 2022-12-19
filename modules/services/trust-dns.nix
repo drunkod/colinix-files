@@ -19,16 +19,27 @@ let
             rrAttrs
         )
       );
+  fmtIncludes = paths: concatStringsSep
+    "\n"
+    (map (path: "$INCLUDE ${path}") paths);
   configFile = toml.generate "trust-dns.toml" {
     listen_addrs_ipv4 = cfg.listenAddrsIPv4;
     zones = attrValues (
       mapAttrs (zone: zcfg: {
         inherit zone;
         zone_type = "Primary";
-        file = pkgs.writeText "${zone}.zone" (''
+        file = pkgs.writeText "${zone}.zone" ''
           $TTL ${toString zcfg.TTL}
           ${fmtRecordAttrs "IN" "SOA" zcfg.inet.SOA}
-        '' + zcfg.extraConfig);
+          ${fmtRecordAttrs "IN" "A" zcfg.inet.A}
+          ${fmtRecordAttrs "IN" "CNAME" zcfg.inet.CNAME}
+          ${fmtRecordAttrs "IN" "MX" zcfg.inet.MX}
+          ${fmtRecordAttrs "IN" "NS" zcfg.inet.NS}
+          ${fmtRecordAttrs "IN" "SRV" zcfg.inet.SRV}
+          ${fmtRecordAttrs "IN" "TXT" zcfg.inet.TXT}
+          ${fmtIncludes zcfg.include}
+          ${zcfg.extraConfig}
+        '';
       }) cfg.zones
     );
   };
@@ -51,18 +62,54 @@ in
           options = {
             TTL = mkOption {
               type = types.int;
-              default = 3600;
               description = "default TTL";
+              default = 3600;
+            };
+            include = mkOption {
+              type = types.listOf types.str;
+              description = "paths of other zone files to $INCLUDE into this one";
+              default = [];
             };
             extraConfig = mkOption {
               type = types.lines;
-              default = "";
               description = "extra lines to append to the zone file";
+              default = "";
             };
             inet = {
               SOA = mkOption {
                 type = types.attrsOf (types.listOf types.str);
-                description = "Start of Authority record";
+                description = "Start of Authority record(s)";
+                default = {};
+              };
+              A = mkOption {
+                type = types.attrsOf (types.listOf types.str);
+                description = "IPv4 address record(s)";
+                default = {};
+              };
+              CNAME = mkOption {
+                type = types.attrsOf (types.listOf types.str);
+                description = "canonical name record(s)";
+                default = {};
+              };
+              MX = mkOption {
+                type = types.attrsOf (types.listOf types.str);
+                description = "mail exchanger record(s)";
+                default = {};
+              };
+              NS = mkOption {
+                type = types.attrsOf (types.listOf types.str);
+                description = "name server record(s)";
+                default = {};
+              };
+              SRV = mkOption {
+                type = types.attrsOf (types.listOf types.str);
+                description = "service record(s)";
+                default = {};
+              };
+              TXT = mkOption {
+                type = types.attrsOf (types.listOf types.str);
+                description = "text record(s)";
+                default = {};
               };
             };
           };

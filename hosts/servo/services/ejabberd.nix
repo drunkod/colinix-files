@@ -55,20 +55,21 @@
     useACMEHost = "uninsane.org";
   };
 
-  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
-    xmpp                CNAME   native
-    conference.xmpp     CNAME   native
-    pubsub.xmpp         CNAME   native
-    upload.xmpp         CNAME   native
-    vjid.xmpp           CNAME   native
+  sane.services.trust-dns.zones."uninsane.org".inet = {
+    # XXX: toplevel xmpp might not actually be used/needed.
+    CNAME."xmpp" =            [ "native" ];
+    CNAME."conference.xmpp" = [ "native" ];
+    CNAME."pubsub.xmpp" =     [ "native" ];
+    CNAME."upload.xmpp" =     [ "native" ];
+    CNAME."vjid.xmpp" =       [ "native" ];
 
-    ; _Service._Proto.Name TTL Class SRV Priority Weight Port Target
-    _xmpp-client._tcp   SRV  0 0 5222 native
-    _xmpp-server._tcp   SRV  0 0 5269 native
-    _stun._udp          SRV  0 0 3478 native
-    _stun._tcp          SRV  0 0 3478 native
-    _stuns._tcp         SRV  0 0 5349 native
-  '';
+    # _Service._Proto.Name TTL Class SRV Priority Weight Port Target
+    SRV."_xmpp-client._tcp" = [ "0 0 5222 native" ];
+    SRV."_xmpp-server._tcp" = [ "0 0 5269 native" ];
+    SRV."_stun._udp" =        [ "0 0 3478 native" ];
+    SRV."_stun._tcp" =        [ "0 0 3478 native" ];
+    SRV."_stuns._tcp" =       [ "0 0 5349 native" ];
+  };
 
   # TODO: allocate UIDs/GIDs ?
   services.ejabberd.enable = true;

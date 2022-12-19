@@ -179,9 +179,7 @@
     };
   };
 
-  sane.services.trust-dns.zones."uninsane.org".extraConfig = ''
-    fed             CNAME   native
-  '';
+  sane.services.trust-dns.zones."uninsane.org".inet.CNAME."fed" = [ "native" ];
 
   sops.secrets.pleroma_secrets = {
     sopsFile = ../../../secrets/servo.yaml;
