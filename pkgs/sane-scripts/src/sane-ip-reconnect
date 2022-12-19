@@ -7,6 +7,14 @@ set -ex
 
 sudo iwctl station wlan0 scan
 sleep 5
+
 # get networks. remove control characters (colors), then leading info, then take the top-rated network
-netname=$(iwctl station wlan0 get-networks | sed 's/\[[0-9;]*m//g' | sed 's/^ [ >]*//g' | sed -n 5p | cut -d' ' -f 1)
-sudo iwctl station wlan0 connect "$netname"
+networks=$(iwctl station wlan0 get-networks rssi-dbms | sed 's/\[[0-9;]*m//g' | sed 's/ [ >]*/ /g' | sed 's/^ //' | tail -n +5)
+
+strengths=$(echo "$networks" | grep -o '\-[0-9][0-9]* *$')
+best_strength=$(echo "$strengths" | sort -h | tail -n 1)
+best_line=$(echo "$networks" | grep -- "$best_strength$")
+# network names could have spaces in them if someone's evil, so rather than `cut`, we trim the `psk` and `db` columnds
+best_network=$(echo "$best_line" | sed 's/ [a-z][a-z]* -[0-9][0-9]* *$//g')
+
+sudo iwctl station wlan0 connect "$best_network"
