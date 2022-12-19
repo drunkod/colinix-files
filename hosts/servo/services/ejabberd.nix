@@ -4,6 +4,8 @@
 # - <https://github.com/vkleen/machines/blob/138a2586ce185d7cf201d4e1fe898c83c4af52eb/hosts/europium/ejabberd.nix>
 # - <https://github.com/Mic92/stockholm/blob/675ef0088624c9de1cb531f318446316884a9d3d/tv/3modules/ejabberd/default.nix>
 # - <https://github.com/buffet/tararice/blob/bc5b65509f4e622313af3f1f4be690628123f1f3/programs/ejabberd.nix>
+#   - enables STUN and TURN
+#   - uses stun_disco module (but with no options)
 # - <https://github.com/leo60228/dotfiles/blob/39b3abba3009bdc31413d4757ca2f882a33eec8b/files/ejabberd.yml>
 # - <https://github.com/Mic92/dotfiles/blob/ddf0f4821f554f7667fc803344657367c55fb9e6/nixos/eve/modules/ejabberd.nix>
 # - <nixpkgs:nixos/tests/xmpp/ejabberd.nix>
@@ -17,11 +19,16 @@
     { user = "ejabberd"; group = "ejabberd"; directory = "/var/lib/ejabberd"; }
   ];
   networking.firewall.allowedTCPPorts = [
+    3478  # STUN
     5222  # XMPP client -> server
     5269  # XMPP server -> server
     5280  # bosh
     5281  # bosh (https) ??
+    5349  # STUN (TLS)
     5443  # web services (file uploads, websockets, admin)
+  ];
+  networking.firewall.allowedUDPPorts = [
+    3478  # STUN
   ];
 
   # provide access to certs
@@ -49,15 +56,18 @@
   };
 
   sane.services.trust-dns.zones."uninsane.org".records = ''
-    xmpp            CNAME   native
-    conference.xmpp CNAME   native
-    pubsub.xmpp     CNAME   native
-    upload.xmpp     CNAME   native
-    vjid.xmpp       CNAME   native
+    xmpp                CNAME   native
+    conference.xmpp     CNAME   native
+    pubsub.xmpp         CNAME   native
+    upload.xmpp         CNAME   native
+    vjid.xmpp           CNAME   native
 
     ; _Service._Proto.Name TTL Class SRV Priority Weight Port Target
-    _xmpp-client._tcp                SRV 0        0      5222 native
-    _xmpp-server._tcp                SRV 0        0      5269 native
+    _xmpp-client._tcp   SRV  0 0 5222 native
+    _xmpp-server._tcp   SRV  0 0 5269 native
+    _stun._udp          SRV  0 0 3478 native
+    _stun._tcp          SRV  0 0 3478 native
+    _stuns._tcp         SRV  0 0 5349 native
   '';
 
   # TODO: allocate UIDs/GIDs ?
@@ -160,6 +170,19 @@
           /ws: ejabberd_http_ws
           # /.well-known/host-meta: mod_host_meta
           # /.well-known/host-meta.json: mod_host_meta
+      -
+        port: 3478
+        module: ejabberd_stun
+        transport: tcp
+      -
+        port: 3478
+        module: ejabberd_stun
+        transport: udp
+      -
+        port: 5349
+        module: ejabberd_stun
+        transport: tcp
+        tls: true
 
     # TODO: enable mod_client_state for net optimization
     # TODO: enable mod_fail2ban
@@ -241,6 +264,11 @@
       mod_shared_roster: {}  # creates groups for @all, @online, and anything manually administered?
       mod_stream_mgmt:
         resend_on_timeout: if_offline  # resend undelivered messages if the origin client is offline
+      # fallback for when DNS-based STUN discovery is unsupported.
+      # - see: <https://xmpp.org/extensions/xep-0215.html>
+      # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-stun-disco>
+      # people say to just keep this defaulted (i guess ejabberd knows to return its `host` option of uninsane.org?)
+      mod_stun_disco: {}
       # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-vcard>
       mod_vcard:
         allow_return_all: true  # all users are discoverable (?)
