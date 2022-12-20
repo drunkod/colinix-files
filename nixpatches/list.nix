@@ -19,6 +19,8 @@
     sha256 = "sha256-Z4V9mOv4HYg3kDnWoYcxz3ch03I/1USrLjzlq4X9YqI=";
   })
 
+  ./2022-12-19-i2p-aarch64.patch
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
