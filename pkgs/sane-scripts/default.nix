@@ -38,6 +38,7 @@ resholve.mkDerivation {
         ncurses
         oath-toolkit
         openssh
+        openssl
         rmlint
         rsync
         ssh-to-age
@@ -53,6 +54,7 @@ resholve.mkDerivation {
         "/tmp/rmlint.sh" = true;
         # intentionally escapes (into user code)
         "$external_cmd" = true;
+        "$maybe_sudo" = true;
       };
       fake = {
         external = [
