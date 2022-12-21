@@ -102,14 +102,14 @@ in
         );
       in {
         # convenience
-        "knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/knowledge";
+        "knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/private/knowledge";
         "nixos".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/nixos";
         "Videos/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Videos";
         "Videos/servo-incomplete".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/incomplete";
         "Music/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Music";
 
         # used by password managers, e.g. unix `pass`
-        ".password-store".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/knowledge/secrets/accounts";
+        ".password-store".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/knowledge/secrets/accounts";
       } // privates;
 
       # XDG defines things like ~/Desktop, ~/Downloads, etc.
