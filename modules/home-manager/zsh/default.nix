@@ -17,7 +17,18 @@ lib.mkIf config.sane.home-manager.enable
     # defaultKeymap = "vicmd"; # vim normal mode (cmd mode)
 
     # powerlevel10k prompt config
-    initExtraBeforeCompInit = builtins.readFile ./p10k.zsh;
+    initExtraBeforeCompInit = (builtins.readFile ./p10k.zsh) + ''
+      # powerlevel10k launches a gitstatusd daemon to accelerate git prompt queries.
+      # this keeps open file handles for any git repo i touch for 60 minutes (by default).
+      # that prevents unmounting whatever device the git repo is on -- particularly problematic for ~/private.
+      # i can disable gitstatusd and get slower fallback git queries:
+      # - either universally
+      # - or selectively by path
+      # see: <https://github.com/romkatv/powerlevel10k/issues/246>
+      typeset -g POWERLEVEL9K_VCS_DISABLED_DIR_PATTERN='(/home/colin/private/*|/home/colin/knowledge/*)'
+      # typeset -g POWERLEVEL9K_DISABLE_GITSTATUS=true
+    '';
+
     initExtra = ''
       # zmv is a way to do rich moves/renames, with pattern matching/substitution.
       # see for an example: <https://filipe.kiss.ink/zmv-zsh-rename/>
