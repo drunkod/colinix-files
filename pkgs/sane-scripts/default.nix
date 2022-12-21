@@ -27,6 +27,7 @@ resholve.mkDerivation {
         duplicity
         file
         findutils
+        git
         gnugrep
         gnused
         gocryptfs
@@ -75,6 +76,7 @@ resholve.mkDerivation {
       # list of programs which *can* or *cannot* exec their arguments
       execer = with pkgs; [
         "cannot:${duplicity}/bin/duplicity"
+        "cannot:${git}/bin/git"
         "cannot:${gocryptfs}/bin/gocryptfs"
         "cannot:${ifuse}/bin/ifuse"
         "cannot:${iwd}/bin/iwctl"
