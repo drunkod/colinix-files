@@ -44,14 +44,18 @@
   users.users.ejabberd.extraGroups = [ "nginx" ];
 
   security.acme.certs."uninsane.org".extraDomainNames = [
-    "conference.xmpp.uninsane.org"
+    "xmpp.uninsane.org"
+    "muc.xmpp.uninsane.org"
     "pubsub.xmpp.uninsane.org"
     "upload.xmpp.uninsane.org"
     "vjid.xmpp.uninsane.org"
   ];
 
   # exists so the XMPP server's cert can obtain altNames for all its resources
-  services.nginx.virtualHosts."conference.xmpp.uninsane.org" = {
+  services.nginx.virtualHosts."xmpp.uninsane.org" = {
+    useACMEHost = "uninsane.org";
+  };
+  services.nginx.virtualHosts."muc.xmpp.uninsane.org" = {
     useACMEHost = "uninsane.org";
   };
   services.nginx.virtualHosts."pubsub.xmpp.uninsane.org" = {
@@ -65,22 +69,29 @@
   };
 
   sane.services.trust-dns.zones."uninsane.org".inet = {
-    # XXX: toplevel xmpp might not actually be used/needed.
-    CNAME."xmpp" =            [ "native" ];
-    CNAME."conference.xmpp" = [ "native" ];
-    CNAME."pubsub.xmpp" =     [ "native" ];
-    CNAME."upload.xmpp" =     [ "native" ];
-    CNAME."vjid.xmpp" =       [ "native" ];
+    # XXX: SRV records have to point to something with a A/AAAA record; no CNAMEs
+    A."xmpp" =                [ "%NATIVE%" ];
+    CNAME."muc.xmpp" =        [ "xmpp" ];
+    CNAME."pubsub.xmpp" =     [ "xmpp" ];
+    CNAME."upload.xmpp" =     [ "xmpp" ];
+    CNAME."vjid.xmpp" =       [ "xmpp" ];
 
-    # _Service._Proto.Name TTL Class SRV Priority Weight Port Target
-    SRV."_xmpp-client._tcp" = [ "0 0 5222 native" ];
-    SRV."_xmpp-server._tcp" = [ "0 0 5269 native" ];
-    SRV."_stun._udp" =        [ "0 0 3478 native" ];
-    SRV."_stun._tcp" =        [ "0 0 3478 native" ];
-    SRV."_stuns._tcp" =       [ "0 0 5349 native" ];
-    SRV."_turn._udp" =        [ "0 0 3478 native" ];
-    SRV."_turn._tcp" =        [ "0 0 3478 native" ];
-    SRV."_turns._tcp" =       [ "0 0 5349 native" ];
+    # _Service._Proto.Name    TTL Class SRV    Priority Weight Port Target
+    # - <https://xmpp.org/extensions/xep-0368.html>
+    # something's requesting the SRV records for muc.xmpp, so let's include it
+    # nothing seems to request XMPP SRVs for the other records (except @)
+    SRV."_xmpp-client._tcp.muc.xmpp" =        [ "0 0 5222 xmpp" ];
+    SRV."_xmpp-server._tcp.muc.xmpp" =        [ "0 0 5269 xmpp" ];
+
+    SRV."_xmpp-client._tcp"  =                [ "0 0 5222 xmpp" ];
+    SRV."_xmpp-server._tcp"  =                [ "0 0 5269 xmpp" ];
+
+    SRV."_stun._udp" =                        [ "0 0 3478 xmpp" ];
+    SRV."_stun._tcp" =                        [ "0 0 3478 xmpp" ];
+    SRV."_stuns._tcp" =                       [ "0 0 5349 xmpp" ];
+    SRV."_turn._udp" =                        [ "0 0 3478 xmpp" ];
+    SRV."_turn._tcp" =                        [ "0 0 3478 xmpp" ];
+    SRV."_turns._tcp" =                       [ "0 0 5349 xmpp" ];
   };
 
   # TODO: allocate UIDs/GIDs ?
@@ -95,11 +106,14 @@
 
         # none | emergency | alert | critical | error | warning | notice | info | debug
         loglevel: debug
+        # loglevel: info
+        # loglevel: notice
 
         acme:
           auto: false
         certfiles:
         - /var/lib/acme/uninsane.org/full.pem
+        # ca_file: ${pkgs.cacert.unbundled}/etc/ssl/certs/
         # ca_file: ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
 
         pam_userinfotype: jid
@@ -127,7 +141,7 @@
           muc_create:
             allow: local
           pubsub_createnode_access:
-            allow: local
+            allow: all
           trusted_network:
             allow: loopback
 
@@ -277,9 +291,9 @@
             access_mam:
               - allow
             history_size: 100  # messages to show new participants
-            host: conference.xmpp.uninsane.org
+            host: muc.xmpp.uninsane.org
             hosts:
-              - conference.xmpp.uninsane.org
+              - muc.xmpp.uninsane.org
             default_room_options:
               anonymous: false
               lang: en
@@ -295,7 +309,9 @@
           mod_roster:
             versioning: true
           # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-s2s-dialback>
-          # mod_s2s_dialback: {}  # XXX: MIGHT need to enable this to federate with some servers
+          # s2s dialback to verify inbound messages
+          # unclear to what degree the XMPP network requires this
+          mod_s2s_dialback: {}
           mod_shared_roster: {}  # creates groups for @all, @online, and anything manually administered?
           mod_stream_mgmt:
             resend_on_timeout: if_offline  # resend undelivered messages if the origin client is offline
@@ -318,14 +334,19 @@
             host: pubsub.xmpp.uninsane.org
             hosts:
               - pubsub.xmpp.uninsane.org
+            ignore_pep_from_offline: false
+            last_item_cache: true
             plugins:
               - pep
-            #   - flat
+              - flat
             force_node_config:
-              # avoid buggy clients to make their bookmarks public
-              # XXX: not sure if this is necessary: copying config from examples
+              # ensure client bookmarks are private
               storage:bookmarks:
                 access_model: whitelist
+              urn:xmpp:avatar:data:
+                access_model: open
+              urn:xmpp:avatar:metadata:
+                access_model: open
           mod_version: {}
       '';
     };

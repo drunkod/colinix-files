@@ -128,6 +128,28 @@ in
     { user = "colin"; group = "users"; directory = "/var/www/sites"; }
   ];
 
+  # let's encrypt default chain looks like:
+  # - End-entity certificate ← R3 ← ISRG Root X1 ← DST Root CA X3
+  # - <https://community.letsencrypt.org/t/production-chain-changes/150739>
+  # DST Root CA X3 expired in 2021 (?)
+  # the alternative chain is:
+  # - End-entity certificate ← R3 ← ISRG Root X1 (self-signed)
+  # using this alternative chain grants more compatibility for services like ejabberd
+  # but might decrease compatibility with very old clients that don't get updates (e.g. old android, iphone <= 4).
+  # security.acme.defaults.extraLegoFlags = [
+  security.acme.certs."uninsane.org" = rec {
+    # ISRG Root X1 results in lets encrypt sending the same chain as default,
+    # just without the final ISRG Root X1 ← DST Root CA X3 link.
+    # i.e. we could alternative clip the last item and achieve the exact same thing.
+    extraLegoRunFlags = [
+      "--preferred-chain" "ISRG Root X1"
+    ];
+    extraLegoRenewFlags = extraLegoRunFlags;
+  };
+  # TODO: alternatively, we could clip the last cert IF it's expired,
+  # optionally outputting that to a new cert file.
+  # security.acme.defaults.postRun = "";
+
   # create a self-signed SSL certificate for use with literally any domain.
   # browsers will reject this, but proxies and local testing tools can be configured
   # to accept it.

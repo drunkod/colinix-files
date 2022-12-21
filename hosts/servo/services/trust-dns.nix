@@ -23,21 +23,23 @@
   sane.services.trust-dns.zones."uninsane.org".inet = {
     SOA."@" = [''
       ns1.uninsane.org. admin-dns.uninsane.org. (
-                                      2022121601 ; Serial
+                                      2022122001 ; Serial
                                       4h         ; Refresh
                                       30m        ; Retry
                                       7d         ; Expire
                                       5m)        ; Negative response TTL
     ''];
-    TXT."rev" = [ "2022121801" ];
+    TXT."rev" = [ "2022122001" ];
 
     # XXX NS records must also not be CNAME
     # it's best that we keep this identical, or a superset of, what org. lists as our NS.
     # so, org. can specify ns2/ns3 as being to the VPN, with no mention of ns1. we provide ns1 here.
-    # A."ns1" = [ "%NATIVE%" ];
+    A."ns1" = [ "%NATIVE%" ];
     A."ns2" = [ "185.157.162.178" ];
     A."ns3" = [ "185.157.162.178" ];
     A."ovpns" = [ "185.157.162.178" ];
+    A."native" = [ "%NATIVE%" ];
+    A."@" = [ "%NATIVE%" ];
     NS."@" = [
       "ns1.uninsane.org."
       "ns2.uninsane.org."
@@ -45,19 +47,14 @@
     ];
   };
 
-  sane.services.trust-dns.zones."uninsane.org".include = [
-    "/var/lib/trust-dns/native.uninsane.org.zone"
-  ];
+  sane.services.trust-dns.zones."uninsane.org".file =
+    "/var/lib/trust-dns/uninsane.org.zone";
 
   systemd.services.trust-dns.preStart = let
     sed = "${pkgs.gnused}/bin/sed";
     zone-dir = "/var/lib/trust-dns";
-    zone-out = "${zone-dir}/native.uninsane.org.zone";
-    zone-template = pkgs.writeText "native.uninsane.org.zone.in" ''
-      @               A       %NATIVE%
-      ns1             A       %NATIVE%
-      native          A       %NATIVE%
-    '';
+    zone-out = "${zone-dir}/uninsane.org.zone";
+    zone-template = pkgs.writeText "uninsane.org.zone.in" config.sane.services.trust-dns.generatedZones."uninsane.org";
   in ''
     # make WAN records available to trust-dns
     mkdir -p ${zone-dir}

@@ -22,24 +22,30 @@ let
   fmtIncludes = paths: concatStringsSep
     "\n"
     (map (path: "$INCLUDE ${path}") paths);
+
+  genZone = zcfg: ''
+    $TTL ${toString zcfg.TTL}
+    ${fmtRecordAttrs "IN" "SOA" zcfg.inet.SOA}
+    ${fmtRecordAttrs "IN" "A" zcfg.inet.A}
+    ${fmtRecordAttrs "IN" "CNAME" zcfg.inet.CNAME}
+    ${fmtRecordAttrs "IN" "MX" zcfg.inet.MX}
+    ${fmtRecordAttrs "IN" "NS" zcfg.inet.NS}
+    ${fmtRecordAttrs "IN" "SRV" zcfg.inet.SRV}
+    ${fmtRecordAttrs "IN" "TXT" zcfg.inet.TXT}
+    ${fmtIncludes zcfg.include}
+    ${zcfg.extraConfig}
+  '';
+
   configFile = toml.generate "trust-dns.toml" {
     listen_addrs_ipv4 = cfg.listenAddrsIPv4;
     zones = attrValues (
-      mapAttrs (zone: zcfg: {
-        inherit zone;
+      mapAttrs (zname: zcfg: rec {
+        zone = if zcfg.name == null then zname else zcfg.name;
         zone_type = "Primary";
-        file = pkgs.writeText "${zone}.zone" ''
-          $TTL ${toString zcfg.TTL}
-          ${fmtRecordAttrs "IN" "SOA" zcfg.inet.SOA}
-          ${fmtRecordAttrs "IN" "A" zcfg.inet.A}
-          ${fmtRecordAttrs "IN" "CNAME" zcfg.inet.CNAME}
-          ${fmtRecordAttrs "IN" "MX" zcfg.inet.MX}
-          ${fmtRecordAttrs "IN" "NS" zcfg.inet.NS}
-          ${fmtRecordAttrs "IN" "SRV" zcfg.inet.SRV}
-          ${fmtRecordAttrs "IN" "TXT" zcfg.inet.TXT}
-          ${fmtIncludes zcfg.include}
-          ${zcfg.extraConfig}
-        '';
+        file = if zcfg.file == null then
+          pkgs.writeText "${zone}.zone" (genZone zcfg)
+        else
+          zcfg.file;
       }) cfg.zones
     );
   };
@@ -60,6 +66,11 @@ in
       zones = mkOption {
         type = types.attrsOf (types.submodule {
           options = {
+            name = mkOption {
+              type = types.nullOr types.str;
+              description = "zone name. defaults to the attribute name in zones";
+              default = null;
+            };
             TTL = mkOption {
               type = types.int;
               description = "default TTL";
@@ -112,15 +123,27 @@ in
                 default = {};
               };
             };
+
+            file = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "instead of using the generated zone file, use the specified path";
+            };
           };
         });
         default = {};
         description = "Declarative zone config";
       };
+
+      generatedZones = mkOption {
+        type = types.attrsOf types.str;
+        description = "generated zone text for each zone";
+      };
     };
   };
 
   config = mkIf cfg.enable {
+    sane.services.trust-dns.generatedZones = mapAttrs (zone: zcfg: genZone zcfg) cfg.zones;
     networking.firewall.allowedTCPPorts = [ 53 ];
     networking.firewall.allowedUDPPorts = [ 53 ];
 
