@@ -30,7 +30,7 @@ in
     ./ssh.nix
     ./sublime-music.nix
     ./vlc.nix
-    ./zsh.nix
+    ./zsh
   ];
 
   options = {

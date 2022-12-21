@@ -14,11 +14,8 @@ lib.mkIf config.sane.home-manager.enable
     dotDir = ".config/zsh";
     history.path = "/home/colin/.local/share/zsh/history";
 
-    initExtraBeforeCompInit = ''
-      # p10k instant prompt
-      # run p10k configure to configure, but it can't write out its file :-(
-      POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
-    '';
+    # powerlevel10k prompt config
+    initExtraBeforeCompInit = builtins.readFile ./p10k.zsh;
     initExtra = ''
       # zmv is a way to do rich moves/renames, with pattern matching/substitution.
       # see for an example: <https://filipe.kiss.ink/zmv-zsh-rename/>
@@ -47,7 +44,7 @@ lib.mkIf config.sane.home-manager.enable
         "utility"
         "completion"
         "prompt"
-        "git"
+        "git"  # TODO: delete? this defines git aliases i don't use, but might be used by prompt
       ];
       prompt.theme = "powerlevel10k";
       utility.safeOps = false;  # disable `mv` confirmation (and supposedly `rm`, too)
