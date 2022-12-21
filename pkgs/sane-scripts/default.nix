@@ -27,6 +27,7 @@ resholve.mkDerivation {
         duplicity
         file
         findutils
+        git
         gnugrep
         gnused
         gocryptfs
@@ -75,6 +76,7 @@ resholve.mkDerivation {
       # list of programs which *can* or *cannot* exec their arguments
       execer = with pkgs; [
         "cannot:${duplicity}/bin/duplicity"
+        "cannot:${git}/bin/git"
         "cannot:${gocryptfs}/bin/gocryptfs"
         "cannot:${ifuse}/bin/ifuse"
         "cannot:${iwd}/bin/iwctl"
@@ -89,9 +91,16 @@ resholve.mkDerivation {
     };
   };
 
+  patchPhase = ''
+    # remove python scripts
+    # TODO: figure out how to make resholve process only shell scripts
+    rm sane-reclaim-boot-space
+  '';
+
   installPhase = ''
-    mkdir -p "$out/bin"
-    cp -R * "$out"/bin/
+    mkdir -p $out/bin
+    cp -R * $out/bin/
+    # allow scripts to make use of sudo, umount wrappers
     sed -i '3iPATH=$PATH:/run/wrappers/bin' $out/bin/*;
   '';
 
