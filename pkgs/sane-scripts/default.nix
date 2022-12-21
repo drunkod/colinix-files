@@ -89,9 +89,16 @@ resholve.mkDerivation {
     };
   };
 
+  patchPhase = ''
+    # remove python scripts
+    # TODO: figure out how to make resholve process only shell scripts
+    rm sane-reclaim-boot-space
+  '';
+
   installPhase = ''
-    mkdir -p "$out/bin"
-    cp -R * "$out"/bin/
+    mkdir -p $out/bin
+    cp -R * $out/bin/
+    # allow scripts to make use of sudo, umount wrappers
     sed -i '3iPATH=$PATH:/run/wrappers/bin' $out/bin/*;
   '';
 
