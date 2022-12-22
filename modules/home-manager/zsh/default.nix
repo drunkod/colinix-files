@@ -17,6 +17,7 @@ lib.mkIf config.sane.home-manager.enable
     # defaultKeymap = "vicmd"; # vim normal mode (cmd mode)
 
     # powerlevel10k prompt config
+    # p10k.zsh is the auto-generated config, and i overwrite those defaults here, below.
     initExtraBeforeCompInit = (builtins.readFile ./p10k.zsh) + ''
       # powerlevel10k launches a gitstatusd daemon to accelerate git prompt queries.
       # this keeps open file handles for any git repo i touch for 60 minutes (by default).
@@ -27,6 +28,10 @@ lib.mkIf config.sane.home-manager.enable
       # see: <https://github.com/romkatv/powerlevel10k/issues/246>
       typeset -g POWERLEVEL9K_VCS_DISABLED_DIR_PATTERN='(/home/colin/private/*|/home/colin/knowledge/*)'
       # typeset -g POWERLEVEL9K_DISABLE_GITSTATUS=true
+
+      # show user@host also when logged into the current machine.
+      # default behavior is to show it only over ssh.
+      typeset -g POWERLEVEL9K_CONTEXT_{DEFAULT,SUDO}_CONTENT_EXPANSION='$${P9K_CONTENT}'
     '';
 
     initExtra = ''
