@@ -88,6 +88,7 @@ lib.mkIf config.sane.home-manager.enable
       "nixpkgs" = "/home/colin/dev/3rd/nixpkgs";
       "ref" = "/home/colin/ref";
       "secrets" = "/home/colin/knowledge/secrets";
+      "tmp" = "/home/colin/tmp";
       "uninsane" = "/home/colin/dev/uninsane";
     };
   };
