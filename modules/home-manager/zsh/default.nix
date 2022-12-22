@@ -31,7 +31,7 @@ lib.mkIf config.sane.home-manager.enable
 
       # show user@host also when logged into the current machine.
       # default behavior is to show it only over ssh.
-      typeset -g POWERLEVEL9K_CONTEXT_{DEFAULT,SUDO}_CONTENT_EXPANSION='$${P9K_CONTENT}'
+      typeset -g POWERLEVEL9K_CONTEXT_{DEFAULT,SUDO}_CONTENT_EXPANSION='$P9K_CONTENT'
     '';
 
     initExtra = ''
