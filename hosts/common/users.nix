@@ -27,6 +27,8 @@ in
       # sets group to "users" (?)
       isNormalUser = true;
       home = "/home/colin";
+      createHome = true;
+      homeMode = "700";
       uid = config.sane.allocations.colin-uid;
       # i don't get exactly what this is, but nixos defaults to this non-deterministically
       # in /var/lib/nixos/auto-subuid-map and i don't want that.

@@ -83,6 +83,15 @@ in
       # files = [ "/etc/machine-id" ];
     };
 
+    # for each edge in a mount path, impermanence gives that target directory the same permissions
+    # as the matching folder in /nix/persist.
+    # /nix/persist is often created with poor permissions. so patch them to get the desired directory permissions.
+    system.activationScripts.fixImpermanencePerms = {
+      text = "chmod ${config.users.users.colin.homeMode} /nix/persist/home/colin";
+      deps = [ "users" ];
+    };
+    system.activationScripts.createPersistentStorageDirs.deps = [ "fixImpermanencePerms" ];
+
     # secret decoding depends on /etc/ssh keys, which may be persisted
     system.activationScripts.setupSecrets.deps = [ "persist-ssh-host-keys" ];
     system.activationScripts.setupSecretsForUsers = lib.mkIf secretsForUsers {
