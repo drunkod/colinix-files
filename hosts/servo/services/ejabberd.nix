@@ -329,6 +329,12 @@
           mod_ping: {}
           mod_privacy: {}  # deprecated, but required for `ejabberctl export_piefxis`
           mod_private: {}  # allow local clients to persist arbitrary data on my server
+          # push notifications to services integrated with e.g. Apple/Android.
+          # default is for a maximum amount of PII to be withheld, since these push notifs
+          # generally traverse 3rd party services. can opt to include message body, etc, though.
+          mod_push: {}
+          # i don't fully understand what this does, but it seems aimed at making push notifs more reliable.
+          mod_push_keepalive: {}
           mod_roster:
             versioning: true
           # docs: <https://docs.ejabberd.im/admin/configuration/modules/#mod-s2s-dialback>
