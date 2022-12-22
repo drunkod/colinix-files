@@ -40,6 +40,16 @@
     "127.0.0.53"
   ];
 
+  # nscd -- the Name Service Caching Daemon -- caches DNS query responses
+  # in a way that's unaware of my VPN routing, so routes are frequently poor against
+  # services which advertise different IPs based on geolocation.
+  # nscd claims to be usable without a cache, but in practice i can't get it to not cache!
+  # nsncd is the Name Service NON-Caching Daemon. it's a drop-in that doesn't cache;
+  # this is OK on the host -- because systemd-resolved caches. it's probably sub-optimal
+  # in the netns and we query upstream DNS more often than needed. hm.
+  # TODO: run a separate recursive resolver in each namespace.
+  services.nscd.enableNsncd = true;
+
   # services.resolved.extraConfig = ''
   #   # docs: `man resolved.conf`
   #   # DNS servers to use via the `wg0` interface.
