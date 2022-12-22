@@ -11,6 +11,9 @@
 # - <https://github.com/Mic92/dotfiles/blob/ddf0f4821f554f7667fc803344657367c55fb9e6/nixos/eve/modules/ejabberd.nix>
 # - <nixpkgs:nixos/tests/xmpp/ejabberd.nix>
 # - 2013: <https://github.com/processone/ejabberd/blob/master/ejabberd.yml.example>
+#
+# compliance tests:
+# - <https://compliance.conversations.im/server/uninsane.org/#xep0352>
 { config, lib, pkgs, ... }:
 
 # XXX: avatar support works in MUCs but not DMs
@@ -21,8 +24,10 @@
   ];
   networking.firewall.allowedTCPPorts = [
     3478  # STUN/TURN
-    5222  # XMPP client -> server
-    5269  # XMPP server -> server
+    5222  # XMPP  client -> server
+    5223  # XMPPS client -> server (XMPP over TLS)
+    5269  # XMPP  server -> server
+    5270  # XMPPS server -> server (XMPP over TLS)
     5280  # bosh
     5281  # bosh (https) ??
     5349  # STUN/TURN (TLS)
@@ -80,18 +85,23 @@
     # - <https://xmpp.org/extensions/xep-0368.html>
     # something's requesting the SRV records for muc.xmpp, so let's include it
     # nothing seems to request XMPP SRVs for the other records (except @)
-    SRV."_xmpp-client._tcp.muc.xmpp" =        [ "0 0 5222 xmpp" ];
-    SRV."_xmpp-server._tcp.muc.xmpp" =        [ "0 0 5269 xmpp" ];
+    # lower numerical priority field tells clients to prefer this method
+    SRV."_xmpps-client._tcp.muc.xmpp" =       [ "3 50 5223 xmpp" ];
+    SRV."_xmpps-server._tcp.muc.xmpp" =       [ "3 50 5270 xmpp" ];
+    SRV."_xmpp-client._tcp.muc.xmpp" =        [ "5 50 5222 xmpp" ];
+    SRV."_xmpp-server._tcp.muc.xmpp" =        [ "5 50 5269 xmpp" ];
 
-    SRV."_xmpp-client._tcp"  =                [ "0 0 5222 xmpp" ];
-    SRV."_xmpp-server._tcp"  =                [ "0 0 5269 xmpp" ];
+    SRV."_xmpps-client._tcp" =                [ "3 50 5223 xmpp" ];
+    SRV."_xmpps-server._tcp" =                [ "3 50 5270 xmpp" ];
+    SRV."_xmpp-client._tcp" =                 [ "5 50 5222 xmpp" ];
+    SRV."_xmpp-server._tcp" =                 [ "5 50 5269 xmpp" ];
 
-    SRV."_stun._udp" =                        [ "0 0 3478 xmpp" ];
-    SRV."_stun._tcp" =                        [ "0 0 3478 xmpp" ];
-    SRV."_stuns._tcp" =                       [ "0 0 5349 xmpp" ];
-    SRV."_turn._udp" =                        [ "0 0 3478 xmpp" ];
-    SRV."_turn._tcp" =                        [ "0 0 3478 xmpp" ];
-    SRV."_turns._tcp" =                       [ "0 0 5349 xmpp" ];
+    SRV."_stun._udp" =                        [ "5 50 3478 xmpp" ];
+    SRV."_stun._tcp" =                        [ "5 50 3478 xmpp" ];
+    SRV."_stuns._tcp" =                       [ "5 50 5349 xmpp" ];
+    SRV."_turn._udp" =                        [ "5 50 3478 xmpp" ];
+    SRV."_turn._tcp" =                        [ "5 50 3478 xmpp" ];
+    SRV."_turns._tcp" =                       [ "5 50 5349 xmpp" ];
   };
 
   # TODO: allocate UIDs/GIDs ?
@@ -186,9 +196,20 @@
             starttls: true
             access: c2s_access
           -
+            port: 5223
+            module: ejabberd_c2s
+            shaper: c2s_shaper
+            tls: true
+            access: c2s_access
+          -
             port: 5269
             module: ejabberd_s2s_in
             shaper: s2s_shaper
+          -
+            port: 5270
+            module: ejabberd_s2s_in
+            shaper: s2s_shaper
+            tls: true
           -
             port: 5443
             module: ejabberd_http
@@ -233,7 +254,6 @@
             turn_max_port: 65535
             turn_ipv4_address: %NATIVE%
 
-        # TODO: enable mod_client_state for net optimization
         # TODO: enable mod_fail2ban
         # TODO(low): look into mod_http_fileserver for serving macros?
         modules:
@@ -245,6 +265,9 @@
           mod_avatar: {}
           mod_caps: {}  # for mod_pubsub
           mod_carboncopy: {}  # allows multiple clients to receive a user's message
+          # queues messages when recipient is offline, including PEP and presence messages.
+          # compliance test suggests this be enabled
+          mod_client_state: {}
           # mod_conversejs: TODO: enable once on 21.12
           # allows clients like Dino to discover where to upload files
           mod_disco:

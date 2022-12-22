@@ -23,13 +23,13 @@
   sane.services.trust-dns.zones."uninsane.org".inet = {
     SOA."@" = [''
       ns1.uninsane.org. admin-dns.uninsane.org. (
-                                      2022122001 ; Serial
+                                      2022122101 ; Serial
                                       4h         ; Refresh
                                       30m        ; Retry
                                       7d         ; Expire
                                       5m)        ; Negative response TTL
     ''];
-    TXT."rev" = [ "2022122001" ];
+    TXT."rev" = [ "2022122101" ];
 
     # XXX NS records must also not be CNAME
     # it's best that we keep this identical, or a superset of, what org. lists as our NS.
