@@ -95,7 +95,7 @@ in
         # "bookmarking"/snippets inspired by Luke Smith:
         # - <https://www.youtube.com/watch?v=d_11QaTlf1I>
         snip-file = ./snippets.txt;
-        snip-cmd = "${wtype} $(cat ${snip-file} | ${fuzzel} -d -i)";
+        snip-cmd = "${wtype} $(cat ${snip-file} | ${fuzzel} -d -i -w 60)";
         # TODO: next splatmoji release should allow `-s none` to disable skin tones
         emoji-cmd = "${pkgs.splatmoji}/bin/splatmoji -s medium-light type";
       in rec {

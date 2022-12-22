@@ -11,7 +11,7 @@
       # TODO: wayland equiv
       paste_command=xdotool key ctrl+v
       # rofi_command=${pkgs.wofi}/bin/wofi --dmenu --insensitive --cache-file /dev/null
-      rofi_command=${pkgs.fuzzel}/bin/fuzzel -d -i -w 80
+      rofi_command=${pkgs.fuzzel}/bin/fuzzel -d -i -w 60
       xdotool_command=${pkgs.wtype}/bin/wtype
       # TODO: wayland equiv
       xsel_command=xsel -b -i
