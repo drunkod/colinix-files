@@ -1,0 +1,480 @@
+#!/usr/bin/env python3
+
+# i just went overboard playing around with parsers, is all.
+# use this like `./sane-date-math 'today - 5d'`
+# of course, it handles parenthesizes and operator precedence, so you can do sillier things like
+# `./sane-date-math '  today - (3*4+1 - ((0)) ) *7d '`
+
+
+import abc
+from datetime import datetime, timedelta
+import sys
+
+class Token:
+    def __init__(self, c: str):
+        self.c = c
+
+    def __repr__(self) -> str:
+        if self == EOF:
+            return "<EOF>"
+        return f"{self.c!r}"
+
+    def __str__(self) -> str:
+        return self.c
+
+    def __eq__(self, other: 'Token') -> bool:
+        return self.c == other.c
+
+EOF = Token('\x05')
+PLUS = Token('+')
+MINUS = Token('-')
+ASTERISK = Token('*')
+SPACE = Token(' ')
+OPEN_PAREN = Token('(')
+CLOSE_PAREN = Token(')')
+UNDERSCORE = Token('_')
+DIGITS = [Token(c) for c in '0123456789']
+ALPHA_LOWER = [Token(c) for c in 'abcdefghijklmnopqrstuvwxyz']
+ALPHA_UPPER = [Token(t.c.upper()) for t in ALPHA_LOWER]
+ALPHA = ALPHA_LOWER + ALPHA_UPPER
+ALPHA_UNDER = ALPHA + [UNDERSCORE]
+ALPHA_NUM_UNDER = ALPHA_UNDER + DIGITS
+
+
+
+# TODO: should be enum
+class ParseCode:
+    # return if the parser cannot parse the provided token
+    HALT = 0
+    # return if the parser is already "complete" and the token should be yielded to the outer context instead
+    YIELD = 1
+    # return is the parser successfully consumed the provided token and parsing should continue
+    CONTINUE = 2
+
+class ParserContext(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def feed(self, token: Token) -> ParseCode:
+        """
+        possibly ingests this token, modifying internal state,
+        and providing instruction to the outer parser layer on
+        how to proceed.
+        """
+        pass
+
+    def context(self) -> 'ParserContext':
+        """
+        hack to make type-level "Productions" compatible with instance-level "ParserContext"s.
+        """
+        return self
+
+    def destructure(self) -> object:
+        """
+        destructure the outer layer of this ParserContext to obtain access to whatever state it captured.
+        e.g. Then([A, Choice([B, C])]) destructures first to [A, Choice([B, C])].
+        it's not recursive; the inner layers must be manually destructured.
+        """
+        return self
+
+class Then(ParserContext):
+    """
+    primitive combinator: given a sequence of parser constructs, parse the input
+    using the first parser until that parser yields, then parse using the second
+    parser, and so on.
+    """
+    def __init__(self, items: list):
+        self.items = [i.context() for i in items]
+
+    def __repr__(self) -> str:
+        return f"Then({self.items!r})"
+
+    def __str__(self) -> str:
+        return str(self.items)
+
+    def feed(self, token: Token) -> ParseCode:
+        # we expect parser contexts to be fused: once they YIELD,
+        # they should yield on all future calls as well
+        for i in self.items:
+            result = i.feed(token)
+            if result != ParseCode.YIELD: return result
+        else:
+            # all items are done parsing; so are we!
+            return ParseCode.YIELD
+
+    def destructure(self) -> list:
+        return self.items
+
+class Choice(ParserContext):
+    """
+    primitive combinator: try each parser in order and use the first match.
+    NB: there's no lookahead. whichever parser is able to parse the first token
+    is used for the entire stream.
+    """
+    def __init__(self, choices: list):
+        self.choices = choices
+        self.active = None
+
+    def __repr__(self) -> str:
+        return f"Choice({self.choices!r})"
+
+    def __str__(self) -> str:
+        if self.active is not None:
+            return str(self.active)
+        else:
+            return repr(self)
+
+    def feed(self, token: Token) -> ParseCode:
+        if self.active is not None:
+            return self.active.feed(token)
+
+        for choice in self.choices:
+            item = choice.context()
+            result = item.feed(token)
+            if result is not ParseCode.HALT:
+                self.active = item
+                return result
+
+        return ParseCode.HALT  # no matches
+
+    def destructure(self) -> ParserContext:
+        return self.active
+
+class WantToken(ParserContext):
+    """
+    match a single token out of a list of valid tokens
+    """
+    def __init__(self, want: list):
+        self.has = None
+        self.want = [want] if isinstance(want, Token) else want
+
+    def __repr__(self) -> str:
+        return f"WantToken({self.want!r})"
+
+    def feed(self, token: Token) -> ParseCode:
+        if self.has is not None: return ParseCode.YIELD
+        if token in self.want:
+            self.has = token
+            return ParseCode.CONTINUE
+        return ParseCode.HALT
+
+    def destructure(self) -> Token:
+        return self.has
+
+class Empty(ParserContext):
+    """
+    used as a terminal to allow for constructs like `optional`
+    """
+    def feed(self, token: Token) -> ParseCode:
+        return ParseCode.YIELD
+
+    def destructure(self) -> None:
+        return None
+
+def optional(context: ParserContext) -> ParserContext:
+    return Choice([context, Empty()])
+
+
+## "Productions" sit on top of these base ParserContexts in order to give names to
+## large token sequences and to "reduce" them into AST types more intelligently.
+
+class ProductionContext(ParserContext):
+    """
+    this adapts from the Production system of specification to the ParserContext system.
+    this is instantiated for high-level productions where we specify a grammar
+    and then parse "all in one go", sealing away incomplete state, and converting
+    the parsed tokens into actually useful abstractions (like signed numbers).
+    """
+    def __init__(self, production_cls: type, grammar: ParserContext):
+        self.production_cls = production_cls
+        self.context = grammar
+
+    def __repr__(self) -> str:
+        return f"ProductionContext({self.production_cls.__name__!r}, {self.context!r})"
+
+    def __str__(self) -> str:
+        return str(self.context)
+
+    def feed(self, token: Token) -> ParseCode:
+        return self.context.feed(token)
+
+    def reduce_inner(self, inner: ParserContext):
+        if isinstance(inner, ProductionContext):
+            return inner.reduce()  # easy
+        elif isinstance(inner, ParserContext):
+            return self.reduce_inner(inner.destructure())
+        elif isinstance(inner, list):  # happens via unpacking of Then objects
+            return [self.reduce_inner(i) for i in inner]
+        else:
+            return inner
+
+    def reduce(self) -> object:
+        # XXX this ends up being a leaf -> root reduction,
+        # which generally makes it harder to achieve detailed control when nesting.
+        return self.production_cls.reduce(self.reduce_inner(self.context))
+
+class Production:
+    """
+    non-generic, likely multi-token productions,
+    specified in terms of other Productions and the above primitives
+    """
+    @staticmethod
+    def grammar() -> ParserContext:
+        raise NotImplementedError()
+
+    @classmethod
+    def context(cls) -> ParserContext:
+        return ProductionContext(cls, cls.grammar())
+
+    @classmethod
+    def reduce(cls, inner: object) -> object:
+        """
+        use to construct the outer types out of already-converted inner types.
+        e.g. Number = Then([optional(Minus), Digits, optional(Suffix)])
+            gets called with reduce([a, b, c]), where a is the already reduced `optional(Minus)`,
+            i.e. `None` or whatever type corresponds to the Minus token.
+        """
+        return inner
+
+class DigitProduction(Production):
+    """ one digit token """
+    @staticmethod
+    def grammar() -> ParserContext:
+        return WantToken(DIGITS)
+
+    @staticmethod
+    def reduce(inner: Token) -> int:
+        return int(inner.c)
+
+class IntProduction(Production):
+    """ multi-digit integer """
+    @staticmethod
+    def grammar() -> ParserContext:
+        return Then([
+            DigitProduction,
+            optional(IntProduction),
+        ])
+
+    @staticmethod
+    def reduce(inner: list) -> int:
+        leading, trailing = inner
+        if trailing is None:
+            return leading
+        else:
+            return leading*10 + trailing
+
+class DurationOrIntProduction(Production):
+    # due to a lack of lookahead, we combine duration and int parsing into one production
+    # because a duration shares a complete int as prefix
+    @staticmethod
+    def grammar() -> ParserContext:
+        return Then([
+            IntProduction,
+            optional(WantToken(Token('d'))),
+        ])
+
+    def reduce(inner: list) -> 'Literal':
+        value, suffix = inner
+        if suffix is None:
+            return Literal(value)
+        else:
+            return Literal(timedelta(value))
+
+class Whitespace(Production):
+    @staticmethod
+    def grammar() -> ParserContext:
+        return Then([
+            WantToken(SPACE),
+            optional(Whitespace),
+        ])
+
+class ParenthesizedExpr(Production):
+    @staticmethod
+    def grammar() -> ParserContext:
+        return Then([
+            WantToken(OPEN_PAREN),
+            Expr,
+            WantToken(CLOSE_PAREN),
+        ])
+
+    def reduce(inner: list) -> object:
+        open, expr, close = inner
+        return expr
+
+class IdentifierTail(Production):
+    @staticmethod
+    def grammar() -> ParserContext:
+        return Then([
+            WantToken(ALPHA_NUM_UNDER),
+            optional(IdentifierTail),
+        ])
+
+
+class Identifier(Production):
+    """ variable-style identifier, e.g. 'TODAY' """
+    @staticmethod
+    def grammar() -> ParserContext:
+        return Then([
+            WantToken(ALPHA_UNDER),
+            optional(IdentifierTail),
+        ])
+
+    @staticmethod
+    def reduce(inner: list) -> 'Literal':
+        # fold the tokens into a string
+        first, rest = inner
+        head = first.c
+        while rest is not None:
+            next, rest = rest
+            head += next.c
+        return Variable(head)
+
+class UnaryExpr(Production):
+    """ some expression which does not invoke any operators at the outermost level """
+    @staticmethod
+    def grammar() -> ParserContext:
+        return Then([
+            optional(Whitespace),
+            Choice([
+                DurationOrIntProduction,
+                Identifier,
+                ParenthesizedExpr,
+            ]),
+            optional(Whitespace),
+        ])
+
+    @staticmethod
+    def reduce(inner: list):
+        # drop the whitespace
+        leading, primary, trailing = inner
+        return primary
+
+class ExprRHS(Production):
+    """ right hand side of a binary operation """
+    @staticmethod
+    def grammar() -> ParserContext:
+        return Then([
+            Choice([WantToken(ASTERISK), WantToken(PLUS), WantToken(MINUS)]),
+            # remaining, is just another `Expr`, but we need to keep the fields expanded here to control precedence.
+            UnaryExpr,
+            Choice([ExprRHS, Empty()]),
+        ])
+
+class Expr(Production):
+    """ this is the top-level production """
+    @staticmethod
+    def grammar() -> ParserContext:
+        return Then([
+            UnaryExpr,
+            Choice([ExprRHS, Empty()])
+        ])
+
+    @staticmethod
+    def reduce(inner: list):
+        lhs, rhs = inner
+        if rhs is None: return lhs
+
+        # convert the whole right-hand-side of the tree, iteratively.
+        oper, rhs, rhs_next = rhs
+        if oper == ASTERISK:
+            # multiplication has high precedence and we grab the adjacent token ASAP
+            lhs = MulOp(lhs, rhs)
+            if rhs_next is not None:
+                lhs = Expr.reduce([lhs, rhs_next])
+        else:
+            # reduce the rhs and *then* apply this operator
+            if rhs_next is not None:
+                rhs = Expr.reduce([rhs, rhs_next])
+
+            if oper == PLUS:
+                lhs = AddOp(lhs, rhs)
+            elif oper == MINUS:
+                lhs = SubOp(lhs, rhs)
+
+        return lhs
+
+
+## parsed productions are `reduce`d to more useful `AstItem` items which we use
+## for the actual evaluation/computation
+
+class AstItem(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def eval(self, context: dict):
+        pass
+
+class Literal(AstItem):
+    def __init__(self, v):
+        self.v = v
+
+    def __str__(self) -> str:
+        return str(self.v)
+
+    def eval(self, context: dict):
+        return self.v
+
+class Variable(AstItem):
+    def __init__(self, name: str):
+        self.name = name
+
+    def __str__(self) -> str:
+        return self.name
+
+    def eval(self, context: dict):
+        return context[self.name]
+
+class BinaryOp(AstItem):
+    def __init__(self, lhs, rhs):
+        self.lhs = lhs
+        self.rhs = rhs
+
+class AddOp(BinaryOp):
+    def __str__(self):
+        return f"({self.lhs} + {self.rhs})"
+
+    def eval(self, context: dict):
+        return self.lhs.eval(context) + self.rhs.eval(context)
+
+class SubOp(BinaryOp):
+    def __str__(self):
+        return f"({self.lhs} - {self.rhs})"
+
+    def eval(self, context: dict):
+        return self.lhs.eval(context) - self.rhs.eval(context)
+
+class MulOp(BinaryOp):
+    def __str__(self):
+        return f"({self.lhs} * {self.rhs})"
+
+    def eval(self, context: dict):
+        return self.lhs.eval(context) * self.rhs.eval(context)
+
+def tokenize(stream: str) -> list:
+    return [Token(char) for char in stream]
+
+def parse(ty: type, tokens: list) -> AstItem:
+    ctx = Then([ty, Empty()])
+    for i, t in enumerate(tokens):
+        result = ctx.feed(t)
+        # print(f"i={i}; t={t}; state: {ctx!r}")
+        assert result == ParseCode.CONTINUE, f"unexpected token '{t}' at {i}; state: {ctx!r}"
+
+    # feed a trailing EOF which no production should consume.
+    # this either drives the context to a HALT state, if it's expecting
+    # some specific other token, or YIELD if it's happy for the stream to be closed.
+    assert ctx.feed(EOF) == ParseCode.YIELD, f"incomplete expression: {ctx!r}"
+
+    return ctx.destructure()[0].reduce()
+
+
+def evaluate(expr: str) -> object:
+    tok = tokenize(expr)
+    expr = parse(Expr, tok)
+    print(expr)
+    env = dict(
+        today=datetime.now()
+    )
+    return expr.eval(env)
+
+
+if __name__ == '__main__':
+    expr = " ".join(sys.argv[1:])
+    print(evaluate(expr))
+
