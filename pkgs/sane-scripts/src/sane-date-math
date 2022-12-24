@@ -183,12 +183,12 @@ class ProductionContext(ParserContext):
     and then parse "all in one go", sealing away incomplete state, and converting
     the parsed tokens into actually useful abstractions (like signed numbers).
     """
-    def __init__(self, production_cls: type, grammar: ParserContext):
-        self.production_cls = production_cls
-        self.context = grammar
+    def __init__(self, production: 'Production', context: ParserContext = None):
+        self.production = production
+        self.context = context if context is not None else production.grammar()
 
     def __repr__(self) -> str:
-        return f"ProductionContext({self.production_cls.__name__!r}, {self.context!r})"
+        return f"ProductionContext({self.production!r}, {self.context!r})"
 
     def __str__(self) -> str:
         return str(self.context)
@@ -209,23 +209,20 @@ class ProductionContext(ParserContext):
     def reduce(self) -> object:
         # XXX this ends up being a leaf -> root reduction,
         # which generally makes it harder to achieve detailed control when nesting.
-        return self.production_cls.reduce(self.reduce_inner(self.context))
+        return self.production.reduce(self.reduce_inner(self.context))
 
 class Production:
     """
     non-generic, likely multi-token productions,
     specified in terms of other Productions and the above primitives
     """
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         raise NotImplementedError()
 
-    @classmethod
-    def context(cls) -> ParserContext:
-        return ProductionContext(cls, cls.grammar())
+    def context(self) -> ParserContext:
+        return ProductionContext(self)
 
-    @classmethod
-    def reduce(cls, inner: object) -> object:
+    def reduce(self, inner: object) -> object:
         """
         use to construct the outer types out of already-converted inner types.
         e.g. Number = Then([optional(Minus), Digits, optional(Suffix)])
@@ -236,25 +233,22 @@ class Production:
 
 class DigitProduction(Production):
     """ one digit token """
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         return WantToken(DIGITS)
 
-    @staticmethod
-    def reduce(inner: Token) -> int:
+    def reduce(self, inner: Token) -> int:
         return int(inner.c)
 
 class IntProduction(Production):
     """ multi-digit integer """
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         return Then([
-            DigitProduction,
-            optional(IntProduction),
+            DigitProduction(),
+            optional(IntProduction()),
         ])
 
-    @staticmethod
-    def reduce(inner: list) -> int:
+    def reduce(self, inner: list) -> int:
+        # TODO: wrong associativity
         leading, trailing = inner
         if trailing is None:
             return leading
@@ -264,14 +258,13 @@ class IntProduction(Production):
 class DurationOrIntProduction(Production):
     # due to a lack of lookahead, we combine duration and int parsing into one production
     # because a duration shares a complete int as prefix
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         return Then([
-            IntProduction,
+            IntProduction(),
             optional(WantToken(Token('d'))),
         ])
 
-    def reduce(inner: list) -> 'Literal':
+    def reduce(self, inner: list) -> 'Literal':
         value, suffix = inner
         if suffix is None:
             return Literal(value)
@@ -279,46 +272,41 @@ class DurationOrIntProduction(Production):
             return Literal(timedelta(value))
 
 class Whitespace(Production):
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         return Then([
             WantToken(SPACE),
-            optional(Whitespace),
+            optional(Whitespace()),
         ])
 
 class ParenthesizedExpr(Production):
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         return Then([
             WantToken(OPEN_PAREN),
-            Expr,
+            Expr(),
             WantToken(CLOSE_PAREN),
         ])
 
-    def reduce(inner: list) -> object:
+    def reduce(self, inner: list) -> 'AstItem':
         open, expr, close = inner
         return expr
 
 class IdentifierTail(Production):
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         return Then([
             WantToken(ALPHA_NUM_UNDER),
-            optional(IdentifierTail),
+            optional(IdentifierTail()),
         ])
 
 
 class Identifier(Production):
     """ variable-style identifier, e.g. 'TODAY' """
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         return Then([
             WantToken(ALPHA_UNDER),
-            optional(IdentifierTail),
+            optional(IdentifierTail()),
         ])
 
-    @staticmethod
-    def reduce(inner: list) -> 'Literal':
+    def reduce(self, inner: list) -> 'Literal':
         # fold the tokens into a string
         first, rest = inner
         head = first.c
@@ -329,46 +317,41 @@ class Identifier(Production):
 
 class UnaryExpr(Production):
     """ some expression which does not invoke any operators at the outermost level """
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         return Then([
-            optional(Whitespace),
+            optional(Whitespace()),
             Choice([
-                DurationOrIntProduction,
-                Identifier,
-                ParenthesizedExpr,
+                DurationOrIntProduction(),
+                Identifier(),
+                ParenthesizedExpr(),
             ]),
-            optional(Whitespace),
+            optional(Whitespace()),
         ])
 
-    @staticmethod
-    def reduce(inner: list):
+    def reduce(self, inner: list):
         # drop the whitespace
         leading, primary, trailing = inner
         return primary
 
 class ExprRHS(Production):
     """ right hand side of a binary operation """
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         return Then([
             Choice([WantToken(ASTERISK), WantToken(PLUS), WantToken(MINUS)]),
             # remaining, is just another `Expr`, but we need to keep the fields expanded here to control precedence.
-            UnaryExpr,
-            Choice([ExprRHS, Empty()]),
+            UnaryExpr(),
+            Choice([ExprRHS(), Empty()]),
         ])
 
 class Expr(Production):
     """ this is the top-level production """
-    @staticmethod
-    def grammar() -> ParserContext:
+    def grammar(self) -> ParserContext:
         return Then([
-            UnaryExpr,
-            Choice([ExprRHS, Empty()])
+            UnaryExpr(),
+            Choice([ExprRHS(), Empty()])
         ])
 
-    @staticmethod
-    def reduce(inner: list):
+    def reduce(self, inner: list):
         lhs, rhs = inner
         if rhs is None: return lhs
 
@@ -378,11 +361,11 @@ class Expr(Production):
             # multiplication has high precedence and we grab the adjacent token ASAP
             lhs = MulOp(lhs, rhs)
             if rhs_next is not None:
-                lhs = Expr.reduce([lhs, rhs_next])
+                lhs = self.reduce([lhs, rhs_next])
         else:
             # reduce the rhs and *then* apply this operator
             if rhs_next is not None:
-                rhs = Expr.reduce([rhs, rhs_next])
+                rhs = self.reduce([rhs, rhs_next])
 
             if oper == PLUS:
                 lhs = AddOp(lhs, rhs)
@@ -449,7 +432,7 @@ class MulOp(BinaryOp):
 def tokenize(stream: str) -> list:
     return [Token(char) for char in stream]
 
-def parse(ty: type, tokens: list) -> AstItem:
+def parse(ty: Production, tokens: list) -> AstItem:
     ctx = Then([ty, Empty()])
     for i, t in enumerate(tokens):
         result = ctx.feed(t)
@@ -466,7 +449,7 @@ def parse(ty: type, tokens: list) -> AstItem:
 
 def evaluate(expr: str) -> object:
     tok = tokenize(expr)
-    expr = parse(Expr, tok)
+    expr = parse(Expr(), tok)
     print(expr)
     env = dict(
         today=datetime.now()
