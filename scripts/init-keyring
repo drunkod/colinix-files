@@ -10,9 +10,10 @@ fi
 
 keyring=~/.local/share/keyrings/Default_keyring.keyring
 
-echo 'initializing default user keyring:' "$keyring"
-echo '[keyring]' > "$keyring"
-echo 'display-name=Default keyring' >> "$keyring"
-echo 'lock-on-idle=false' >> "$keyring"
-echo 'lock-after=false' >> "$keyring"
-echo -n "Default_keyring" > ~/.local/share/keyrings/default
+echo 'initializing default user keyring:' "$keyring.new"
+echo '[keyring]' > "$keyring.new"
+echo 'display-name=Default keyring' >> "$keyring.new"
+echo 'lock-on-idle=false' >> "$keyring.new"
+echo 'lock-after=false' >> "$keyring.new"
+# closest to an atomic update we can achieve
+mv "$keyring.new" "$keyring" && echo -n "Default_keyring" > ~/.local/share/keyrings/default
