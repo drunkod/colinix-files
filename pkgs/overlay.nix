@@ -39,6 +39,8 @@
 
   browserpass = prev.callPackage ./browserpass { pkgs = prev; inherit sane-scripts; };
 
+  fractal-latest = prev.callPackage ./fractal-latest { };
+
   #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
   kaiteki = prev.callPackage ./kaiteki { };
   lightdm-mobile-greeter = prev.callPackage ./lightdm-mobile-greeter { pkgs = next; };
