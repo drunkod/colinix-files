@@ -1,6 +1,6 @@
-{ pkgs, fetchurl }:
+{ buildUBoot, fetchurl }:
 
-(pkgs.buildUBoot {
+(buildUBoot {
   # nixos-22.05 is on 2022.01 at time of writing, which lacks rpi-4 dtb.
   # TODO: remove this version/src override once upstream bumps u-boot version.
   version = "2022.04";

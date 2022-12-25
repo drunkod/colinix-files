@@ -1,8 +1,8 @@
-{ pkgs
+{ lib
+, browserpass
 , bash
 , fetchFromGitea
 , gnused
-, lib
 , sane-scripts
 , sops
 , stdenv
@@ -26,7 +26,7 @@ let
 
   };
 in
-(pkgs.browserpass.overrideAttrs (upstream: {
+(browserpass.overrideAttrs (upstream: {
   src = fetchFromGitea {
     domain = "git.uninsane.org";
     owner = "colin";

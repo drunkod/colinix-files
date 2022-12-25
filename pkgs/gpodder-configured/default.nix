@@ -1,12 +1,14 @@
-{ pkgs
+{ makeWrapper
+, gpodder
+, symlinkJoin
 , writeShellScript
 , config
 }:
 
-(pkgs.symlinkJoin {
+(symlinkJoin {
   name = "gpodder-configured";
-  paths = [ pkgs.gpodder ];
-  buildInputs = [ pkgs.makeWrapper ];
+  paths = [ gpodder ];
+  buildInputs = [ makeWrapper ];
 
   # gpodder keeps all its feeds in a sqlite3 database.
   # we can configure the feeds externally by wrapping gpodder and just instructing it to import

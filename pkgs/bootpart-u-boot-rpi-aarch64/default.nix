@@ -1,10 +1,14 @@
-{ stdenv, pkgs }:
+{ stdenv
+, ubootRaspberryPi4_64bit
+, raspberrypifw
+, raspberrypi-armstubs
+}:
 
 stdenv.mkDerivation rec {
   pname = "bootpart-u-boot-rpi-aarch64";
   version = "1";
 
-  buildInputs = with pkgs; [ 
+  buildInputs = [
     ubootRaspberryPi4_64bit
     raspberrypifw  # for bootcode.bin, *.dat, *.elf, *.dtb
     raspberrypi-armstubs  # for armstub*
@@ -15,7 +19,7 @@ stdenv.mkDerivation rec {
 
   dontUnpack = true;
 
-  installPhase = with pkgs; ''
+  installPhase = ''
     mkdir "$out"
     cp ${ubootRaspberryPi4_64bit}/u-boot.bin "$out"/
     cp ${ubootRaspberryPi4_64bit}/*.dtb "$out"/

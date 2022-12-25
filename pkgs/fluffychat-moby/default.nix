@@ -1,9 +1,9 @@
-{ pkgs }:
+{ symlinkJoin, fluffychat, makeWrapper }:
 
-(pkgs.symlinkJoin {
+(symlinkJoin {
   name = "fluffychat-moby";
-  paths = [ pkgs.fluffychat ];
-  buildInputs = [ pkgs.makeWrapper ];
+  paths = [ fluffychat ];
+  buildInputs = [ makeWrapper ];
 
   # ordinary fluffychat on moby displays blank window;
   # > Failed to start Flutter renderer: Unable to create a GL context

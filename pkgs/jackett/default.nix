@@ -1,6 +1,6 @@
-{ pkgs }:
+{ jackett }:
 
-(pkgs.jackett.overrideAttrs (upstream: {
+(jackett.overrideAttrs (upstream: {
   # 2022-07-29: check phase segfaults on arm (with or without my patches)
   doCheck = false;
   patches = (upstream.patches or []) ++ [

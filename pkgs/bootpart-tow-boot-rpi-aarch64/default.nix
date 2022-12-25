@@ -1,10 +1,10 @@
-{ stdenv, pkgs }:
+{ stdenv, tow-boot-rp4, raspberrypifw, raspberrypi-armstubs }:
 
 stdenv.mkDerivation rec {
   pname = "bootpart-tow-boot-rpi-aarch64";
   version = "1";
 
-  buildInputs = with pkgs; [ 
+  buildInputs = with [ 
     tow-boot-rpi4  # for Tow-Boot.*.bin
     raspberrypifw  # for bootcode.bin, *.dat, *.elf, *.dtb
     raspberrypi-armstubs  # for armstub*
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   dontUnpack = true;
 
-  installPhase = with pkgs; ''
+  installPhase = ''
     mkdir "$out"
     cp ${tow-boot-rpi4}/Tow-Boot.noenv.*.bin "$out"/
     cp -R ${raspberrypifw}/share/raspberrypi/boot/*.dtb "$out"/

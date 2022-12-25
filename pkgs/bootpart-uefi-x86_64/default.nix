@@ -1,14 +1,14 @@
-{ stdenv, pkgs }:
+{ stdenv, syslinux }:
 
 stdenv.mkDerivation rec {
   pname = "bootpart-uefi-x86_64";
   version = "1";
 
-  buildInputs = [ pkgs.syslinux ];
+  buildInputs = [ syslinux ];
 
   dontUnpack = true;
 
-  installPhase = with pkgs; ''
+  installPhase = ''
     # populate the EFI directory with syslinux, and configure it to read that extlinux.conf file managed by nixos
     mkdir -p "$out/EFI/syslinux"  "$out/EFI/BOOT"  "$out/syslinux"
     cp -R "${syslinux}/share/syslinux/efi64"/* "$out/EFI/syslinux"
