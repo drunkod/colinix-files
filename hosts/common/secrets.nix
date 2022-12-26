@@ -50,8 +50,37 @@
   # sops.secrets."myservice/my_subdir/my_secret" = {};
 
   ## universal secrets
+  # TODO: glob these?
 
-  # TODO: use a glob, or a list, or something?
+  sops.secrets."router_passwd" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
+  sops.secrets."wg_ovpnd_us_privkey" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
+  sops.secrets."wg_ovpnd_us-atl_privkey" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
+  sops.secrets."wg_ovpnd_us-mi_privkey" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
+  sops.secrets."wg_ovpnd_ukr_privkey" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
+
+  sops.secrets."bt/car" = {
+    sopsFile = ../../secrets/universal/bt/car.bin;
+    format = "binary";
+  };
+  sops.secrets."bt/earbuds" = {
+    sopsFile = ../../secrets/universal/bt/earbuds.bin;
+    format = "binary";
+  };
+  sops.secrets."bt/portable-speaker" = {
+    sopsFile = ../../secrets/universal/bt/portable-speaker.bin;
+    format = "binary";
+  };
+
   sops.secrets."iwd/community-university.psk" = {
     sopsFile = ../../secrets/universal/net/community-university.psk.bin;
     format = "binary";
@@ -79,10 +108,6 @@
   sops.secrets."iwd/iphone" = {
     sopsFile = ../../secrets/universal/net/iphone.psk.bin;
     format = "binary";
-  };
-
-  sops.secrets."router_passwd" = {
-    sopsFile = ../../secrets/universal.yaml;
   };
 }
 

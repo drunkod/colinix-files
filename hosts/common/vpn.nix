@@ -28,9 +28,6 @@ let
       # to start: `systemctl start wg-quick-ovpnd-${name}`
       autostart = false;
     };
-    sops.secrets."wg_ovpnd_${name}_privkey" = {
-      sopsFile = ../../secrets/universal.yaml;
-    };
   };
 in lib.mkMerge [
   (def-ovpn "us" {
