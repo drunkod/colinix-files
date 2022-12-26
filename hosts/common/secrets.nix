@@ -72,6 +72,12 @@
     sopsFile = ../../secrets/universal.yaml;
   };
 
+  sops.secrets."snippets" = {
+    sopsFile = ../../secrets/universal/snippets.bin;
+    format = "binary";
+    owner = config.users.users.colin.name;
+  };
+
   sops.secrets."bt/car" = {
     sopsFile = ../../secrets/universal/bt/car.bin;
     format = "binary";
