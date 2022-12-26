@@ -140,7 +140,7 @@ let
     { pkg = sublime-music-mobile; dir = [ ".local/share/sublime-music" ]; }
     tdesktop  # broken on phosh
 
-    { pkg = tokodon; dir = [ ".cache/KDE/tokodon" ]; }
+    { pkg = tokodon; private = [ ".cache/KDE/tokodon" ]; }
 
     # vlc remembers play position in ~/.config/vlc/vlc-qt-interface.conf
     { pkg = vlc; dir = [ ".config/vlc" ]; }
@@ -158,7 +158,7 @@ let
       # XXX 2022-07-31: fix to allow links to open in default web-browser:
       #   https://github.com/NixOS/nixpkgs/issues/78961
       nss = pkgs.nss_latest;
-    }); in { pkg = discord; dir = [ ".config/discord" ]; })
+    }); in { pkg = discord; private = [ ".config/discord" ]; })
 
     # kaiteki  # Pleroma client
     # gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
@@ -172,7 +172,7 @@ let
     { pkg = monero-gui; dir = [ ".bitmonero" ]; }
 
     # creds, media
-    { pkg = signal-desktop; dir = [ ".config/Signal" ]; }
+    { pkg = signal-desktop; private = [ ".config/Signal" ]; }
 
     # creds. TODO: can i manage this with home-manager?
     { pkg = spotify; dir = [ ".config/spotify" ]; }
