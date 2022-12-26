@@ -66,18 +66,18 @@ let
     celluloid  # mpv frontend
     chromium
     clinfo
-    { pkg = dino; private = ".local/share/dino"; }
+    { pkg = dino; private = [ ".local/share/dino" ]; }
     electrum
 
     # creds/session keys, etc
-    { pkg = element-desktop; private = ".config/Element"; }
+    { pkg = element-desktop; private = [ ".config/Element" ]; }
     # `emote` will show a first-run dialog based on what's in this directory.
     # mostly, it just keeps a LRU of previously-used emotes to optimize display order.
     # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
-    { pkg = emote; dir = ".local/share/Emote"; }
+    { pkg = emote; dir = [ ".local/share/Emote" ]; }
     evince  # works on phosh
 
-    # { pkg = fluffychat-moby; dir = ".local/share/chat.fluffy.fluffychat"; }  # TODO: ship normal fluffychat on non-moby?
+    # { pkg = fluffychat-moby; dir = [ ".local/share/chat.fluffy.fluffychat" ]; }  # TODO: ship normal fluffychat on non-moby?
 
     foliate
     font-manager
@@ -85,8 +85,8 @@ let
     # XXX by default fractal stores its state in ~/.local/share/<UUID>.
     # after logging in, manually change ~/.local/share/keyrings/... to point it to some predictable subdir.
     # then reboot (so that libsecret daemon re-loads the keyring...?)
-    { pkg = fractal-latest; private = ".local/share/fractal"; }
-    # { pkg = fractal-next; private = ".local/share/fractal"; }
+    { pkg = fractal-latest; private = [ ".local/share/fractal" ]; }
+    # { pkg = fractal-next; private = [ ".local/share/fractal" ]; }
 
     gajim  # XMPP client
     gimp  # broken on phosh
@@ -102,7 +102,7 @@ let
     gnome.gnome-terminal  # works on phosh
     gnome.gnome-weather
 
-    { pkg = gpodder-configured; dir = "gPodder/Downloads"; }
+    { pkg = gpodder-configured; dir = [ "gPodder/Downloads" ]; }
 
     gthumb
     handbrake
@@ -115,15 +115,15 @@ let
     lollypop
     mesa-demos
 
-    { pkg = mpv; dir = ".config/mpv/watch_later"; }
+    { pkg = mpv; dir = [ ".config/mpv/watch_later" ]; }
 
     networkmanagerapplet
 
     # not strictly necessary, but allows caching articles; offline use, etc.
-    { pkg = newsflash; dir = ".local/share/news-flash"; }
+    { pkg = newsflash; dir = [ ".local/share/news-flash" ]; }
 
     # settings (electron app). TODO: can i manage these settings with home-manager?
-    { pkg = obsidian; dir = ".config/obsidian"; }
+    { pkg = obsidian; dir = [ ".config/obsidian" ]; }
 
     pavucontrol
     # picard  # music tagging
@@ -136,14 +136,14 @@ let
     # it doesn't obey a conventional ~/Music/{Artist}/{Album}/{Track} notation, so no symlinking
     # config (e.g. server connection details) is persisted in ~/.config/sublime-music/config.json
     #   possible to pass config as a CLI arg (sublime-music -c config.json)
-    # { pkg = sublime-music; dir = ".local/share/sublime-music"; }
-    { pkg = sublime-music-mobile; dir = ".local/share/sublime-music"; }
+    # { pkg = sublime-music; dir = [ ".local/share/sublime-music" ]; }
+    { pkg = sublime-music-mobile; dir = [ ".local/share/sublime-music" ]; }
     tdesktop  # broken on phosh
 
-    { pkg = tokodon; dir = ".cache/KDE/tokodon"; }
+    { pkg = tokodon; dir = [ ".cache/KDE/tokodon" ]; }
 
     # vlc remembers play position in ~/.config/vlc/vlc-qt-interface.conf
-    { pkg = vlc; dir = ".config/vlc"; }
+    { pkg = vlc; dir = [ ".config/vlc" ]; }
 
     whalebird # pleroma client. input is broken on phosh
     xdg-utils  # for xdg-open
@@ -158,7 +158,7 @@ let
       # XXX 2022-07-31: fix to allow links to open in default web-browser:
       #   https://github.com/NixOS/nixpkgs/issues/78961
       nss = pkgs.nss_latest;
-    }); in { pkg = discord; dir = ".config/discord"; })
+    }); in { pkg = discord; dir = [ ".config/discord" ]; })
 
     # kaiteki  # Pleroma client
     # gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
@@ -169,19 +169,19 @@ let
     makemkv
 
     # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
-    { pkg = monero-gui; dir = ".bitmonero"; }
+    { pkg = monero-gui; dir = [ ".bitmonero" ]; }
 
     # creds, media
-    { pkg = signal-desktop; dir = ".config/Signal"; }
+    { pkg = signal-desktop; dir = [ ".config/Signal" ]; }
 
     # creds. TODO: can i manage this with home-manager?
-    { pkg = spotify; dir = ".config/spotify"; }
+    { pkg = spotify; dir = [ ".config/spotify" ]; }
 
     # hardenedMalloc solves a crash at startup
     (tor-browser-bundle-bin.override { useHardenedMalloc = false; })
 
     # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
-    { pkg = zecwallet-lite; private = ".zcash"; }
+    { pkg = zecwallet-lite; private = [ ".zcash" ]; }
   ] else []);
 
   # general-purpose utilities that we want any user to be able to access
@@ -240,15 +240,31 @@ let
     rustup
     swig
   ];
+
+  pkgSpec = types.submodule {
+    options = {
+      pkg = mkOption {
+        type = types.package;
+      };
+      dir = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = "list of home-relative paths to persist for this package";
+      };
+      private = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = "list of home-relative paths to persist (in encrypted format) for this package";
+      };
+    };
+  };
 in
 {
   options = {
     # packages to deploy to the user's home
     sane.packages.extraUserPkgs = mkOption {
       default = [ ];
-      # each entry can be either a package, or attrs:
-      #   { pkg = package; dir = optional string; private = optional string };
-      type = types.listOf (types.either types.package types.attrs);
+      type = types.listOf (types.either types.package pkgSpec);
     };
     sane.packages.enableConsolePkgs = mkOption {
       default = false;

@@ -12,8 +12,8 @@ let
   # extract package from `sane.packages.enabledUserPkgs`
   pkg-list = pkgspec: builtins.map (e: e.pkg or e) pkgspec;
   # extract `dir` from `sane.packages.enabledUserPkgs`
-  dir-list = pkgspec: builtins.concatLists (builtins.map (e: if e ? "dir" then [ e.dir ] else []) pkgspec);
-  private-list = pkgspec: builtins.concatLists (builtins.map (e: if e ? "private" then [ e.private ] else []) pkgspec);
+  dir-list = pkgspec: builtins.concatLists (builtins.map (e: e.dir or []) pkgspec);
+  private-list = pkgspec: builtins.concatLists (builtins.map (e: e.private or []) pkgspec);
   feeds = import ./feeds.nix { inherit lib; };
 in
 {
