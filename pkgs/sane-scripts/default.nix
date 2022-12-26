@@ -70,8 +70,7 @@ resholve.mkDerivation {
         # not sure if/where that lack of suid causes problems.
         umount = true;
       };
-      # prologue is broken; see <https://github.com/abathur/resholve/issues/89>
-      # prologue = "bin/prologue";
+      prologue = "bin/sane-resholve-prologue";
 
       # list of programs which *can* or *cannot* exec their arguments
       execer = with pkgs; [
@@ -102,8 +101,6 @@ resholve.mkDerivation {
   installPhase = ''
     mkdir -p $out/bin
     cp -R * $out/bin/
-    # allow scripts to make use of sudo, umount wrappers
-    sed -i '3iPATH=$PATH:/run/wrappers/bin' $out/bin/*;
   '';
 
   meta = {
