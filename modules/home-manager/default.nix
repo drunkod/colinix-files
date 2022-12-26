@@ -19,7 +19,6 @@ in
 {
   imports = [
     ./aerc.nix
-    ./discord.nix
     ./firefox.nix
     ./git.nix
     ./kitty.nix
