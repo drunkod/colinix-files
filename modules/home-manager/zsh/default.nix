@@ -90,6 +90,7 @@ lib.mkIf config.sane.home-manager.enable
       "secrets" = "/home/colin/knowledge/secrets";
       "tmp" = "/home/colin/tmp";
       "uninsane" = "/home/colin/dev/uninsane";
+      "Videos" = "/home/colin/Videos";
     };
   };
 
