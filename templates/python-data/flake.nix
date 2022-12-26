@@ -11,6 +11,7 @@
         natsort
         pandas
         plotly
+        requests
         scipy
       ];
       python3 = pkgs.python3.withPackages python-packages;
