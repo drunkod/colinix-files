@@ -122,6 +122,12 @@ let
     # not strictly necessary, but allows caching articles; offline use, etc.
     { pkg = newsflash; dir = [ ".local/share/news-flash" ]; }
 
+    { pkg = nheko; private = [
+      ".config/nheko"  # config file (including client token)
+      ".cache/nheko"  # media cache
+      ".local/share/nheko"  # per-account state database
+    ]; }
+
     # settings (electron app). TODO: can i manage these settings with home-manager?
     { pkg = obsidian; dir = [ ".config/obsidian" ]; }
 
