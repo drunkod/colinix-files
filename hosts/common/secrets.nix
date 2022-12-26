@@ -52,6 +52,10 @@
   ## universal secrets
   # TODO: glob these?
 
+  sops.secrets."jackett_apikey" = {
+    sopsFile = ../../secrets/universal.yaml;
+    owner = config.users.users.colin.name;
+  };
   sops.secrets."router_passwd" = {
     sopsFile = ../../secrets/universal.yaml;
   };

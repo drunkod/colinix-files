@@ -94,8 +94,9 @@ resholve.mkDerivation {
   patchPhase = ''
     # remove python scripts
     # TODO: figure out how to make resholve process only shell scripts
-    rm sane-reclaim-boot-space
+    rm sane-bt-search
     rm sane-date-math
+    rm sane-reclaim-boot-space
   '';
 
   installPhase = ''

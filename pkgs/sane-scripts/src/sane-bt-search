@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+"""
+usage: sane-bt-search <query_string>
+
+searches Jackett for torrent files matching the title.
+returns select results and magnet links
+"""
+
+from dataclasses import dataclass
+from datetime import datetime
+import natsort
+import requests
+import sys
+import time
+
+SERVICE = "https://jackett.uninsane.org"
+ENDPOINTS = dict(
+    results="api/v2.0/indexers/all/results"
+)
+
+@dataclass(eq=True, order=True)
+class Torrent:
+    seeders: int
+    pub_date: datetime
+    title: str
+    magnet: str
+
+    def __str__(self) -> str:
+        return f"{self.seeders}[S]\t{self.pub_date}\t{self.title}\t{self.magnet}"
+
+    @staticmethod
+    def from_dict(d: dict) -> 'Torrent':
+        seeders = d.get("Seeders")
+        pub_date = d.get("PublishDate")
+        title = d.get("Title")
+        magnet = d.get("MagnetUri")
+        if seeders is not None and pub_date is not None and title is not None and magnet is not None:
+            pub_date = datetime.fromisoformat(pub_date)
+            return Torrent(seeders, pub_date, title, magnet)
+
+class Client:
+    def __init__(self):
+        self.apikey = open("/run/secrets/jackett_apikey").read()
+
+    def api_call(self, method: str, params: dict) -> dict:
+        endpoint = ENDPOINTS[method]
+        url = f"{SERVICE}/{endpoint}"
+        params = params.copy()
+        params.update(apikey=self.apikey, _=str(int(time.time())))
+        print(url)
+        print(params)
+        resp = requests.get(url, params=params)
+        print(resp)
+        return resp.json()
+
+    def query(self, q: str) -> list:
+        torrents = []
+        api_res = self.api_call("results", dict(Query=q))
+        for r in api_res["Results"]:
+            t = Torrent.from_dict(r)
+            if t is not None:
+                torrents.append(t)
+
+        return sorted(torrents, reverse=True)
+
+q = " ".join(sys.argv[1:])
+
+client = Client()
+res = client.query(q)
+for r in res[:5]:
+    print(r)
