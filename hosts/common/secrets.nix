@@ -48,6 +48,42 @@
   #   owner = config.users.users.colin.name;
   # };
   # sops.secrets."myservice/my_subdir/my_secret" = {};
+
+  ## universal secrets
+
+  # TODO: use a glob, or a list, or something?
+  sops.secrets."iwd/community-university.psk" = {
+    sopsFile = ../../secrets/universal/net/community-university.psk.bin;
+    format = "binary";
+  };
+  sops.secrets."iwd/friend-libertarian-dod.psk" = {
+    sopsFile = ../../secrets/universal/net/friend-libertarian-dod.psk.bin;
+    format = "binary";
+  };
+  sops.secrets."iwd/friend-rationalist-empathist.psk" = {
+    sopsFile = ../../secrets/universal/net/friend-rationalist-empathist.psk.bin;
+    format = "binary";
+  };
+  sops.secrets."iwd/home-bedroom.psk" = {
+    sopsFile = ../../secrets/universal/net/home-bedroom.psk.bin;
+    format = "binary";
+  };
+  sops.secrets."iwd/home-shared-24G.psk" = {
+    sopsFile = ../../secrets/universal/net/home-shared-24G.psk.bin;
+    format = "binary";
+  };
+  sops.secrets."iwd/home-shared.psk" = {
+    sopsFile = ../../secrets/universal/net/home-shared.psk.bin;
+    format = "binary";
+  };
+  sops.secrets."iwd/iphone" = {
+    sopsFile = ../../secrets/universal/net/iphone.psk.bin;
+    format = "binary";
+  };
+
+  sops.secrets."router_passwd" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
 }
 
 
