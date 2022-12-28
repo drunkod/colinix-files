@@ -54,17 +54,33 @@ in
       shell = pkgs.zsh;
       openssh.authorizedKeys.keys = builtins.attrValues (import ../../modules/pubkeys.nix).users;
 
+      # some other nix pam users:
+      # - <https://github.com/g00pix/nixconf/blob/32c04f6fa843fed97639dd3f09e157668d3eea1f/profiles/sshfs.nix>
+      # - <https://github.com/lourkeur/distro/blob/11173454c6bb50f7ccab28cc2c757dca21446d1d/nixos/profiles/users/louis-full.nix>
+      # - <https://github.com/dnr/sample-nix-code/blob/03494480c1fae550c033aa54fd96aeb3827761c5/nixos/laptop.nix>
       pamMount = {
         # mount encrypted stuff at login
         # requires that login password == fs encryption password
-        # fstype = "fuse";
+        fstype = "fuse";
+        path = "gocryptfs#/nix/persist/home/colin/private";
         # path = "${pkgs.gocryptfs}/bin/gocryptfs#/nix/persist/home/colin/private";
-        fstype = "fuse.gocryptfs";
-        path = "/nix/persist/home/colin/private";
+        # fstype = "fuse.gocryptfs";
+        # path = "/nix/persist/home/colin/private";
         mountpoint = "/home/colin/private";
-        options="nodev,nosuid,quiet,allow_other";
+        # without allow_other, *root* isn't allowed to list anything in ~/private.
+        # which is weird (root can just `su colin`), but probably doesn't *hurt* anything -- right?
+        options="nodev,nosuid,quiet";  # allow_other
       };
     };
+
+    # required for PAM to find gocryptfs
+    security.pam.mount.additionalSearchPaths = [ pkgs.gocryptfs ];
+    security.pam.mount.enable = true;
+    # security.pam.mount.debugLevel = 1;
+    # security.pam.enableSSHAgentAuth = true; # ??
+    # needed for `allow_other` in e.g. gocryptfs mounts
+    # or i guess going through mount.fuse sets suid so that's not necessary?
+    # programs.fuse.userAllowOther = true;
 
     sane.impermanence.home-dirs = [
       # cache is probably too big to fit on the tmpfs
@@ -72,6 +88,7 @@ in
       ".cache"
       ".cargo"
       ".rustup"
+      # TODO: move this to ~/private!
       ".local/share/keyrings"
     ];
 

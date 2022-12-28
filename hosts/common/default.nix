@@ -58,19 +58,8 @@
   };
   # enable zsh completions
   environment.pathsToLink = [ "/share/zsh" ];
-  environment.systemPackages = with pkgs; [
-    # required for pam_mount
-    gocryptfs
-  ];
 
   # link debug symbols into /run/current-system/sw/lib/debug
   # hopefully picked up by gdb automatically?
   environment.enableDebugInfo = true;
-
-  security.pam.mount.enable = true;
-  # security.pam.mount.debugLevel = 1;
-  # security.pam.enableSSHAgentAuth = true; # ??
-  # needed for `allow_other` in e.g. gocryptfs mounts
-  # or i guess going through mount.fuse sets suid so that's not necessary?
-  # programs.fuse.userAllowOther = true;
 }

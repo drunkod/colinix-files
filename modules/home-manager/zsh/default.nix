@@ -2,9 +2,14 @@
 
 lib.mkIf config.sane.home-manager.enable
 {
-  # we don't need to full zsh dir -- just the history file --
-  # but zsh will sometimes backup the history file and we get fewer errors if we do proper mounts instead of symlinks.
-  sane.impermanence.home-dirs = [ ".local/share/zsh" ];
+  sane.impermanence.home-dirs = [
+    # we don't need to full zsh dir -- just the history file --
+    # but zsh will sometimes backup the history file and we get fewer errors if we do proper mounts instead of symlinks.
+    # TODO: should be private?
+    ".local/share/zsh"
+    # cache gitstatus otherwise p10k fetched it from the net EVERY BOOT
+    ".cache/gitstatus"
+  ];
 
   home-manager.users.colin.programs.zsh = {
     enable = true;

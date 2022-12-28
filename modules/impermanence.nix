@@ -114,26 +114,46 @@ in
     })
 
     (lib.mkIf cfg.encrypted-clear-on-boot {
-      system.activationScripts.mountEncryptedClearedOnBoot.text = let
-        gocryptfs = "${pkgs.gocryptfs}/bin/gocryptfs";
-        backing = "/nix/persist/crypt/cleared-on-boot";
-        mountpt = encrypted-clear-on-boot-base;
+      # without this, we get `fusermount: fuse device not found, try 'modprobe fuse' first`.
+      # - that only happens after a activation-via-boot -- not activation-after-rebuild-switch.
+      # it seems likely that systemd loads `fuse` by default. see:
+      # - </etc/systemd/system/sysinit.target.wants/sys-fs-fuse-connections.mount>
+      #   - triggers: /etc/systemd/system/modprobe@.service
+      #     - calls `modprobe`
+      # note: even `boot.kernelModules = ...` isn't enough: that option creates /etc/modules-load.d/, which is ingested only by systemd.
+      # note: `boot.initrd.availableKernelModules` ALSO isn't enough: idk why.
+      boot.initrd.kernelModules = [ "fuse" ];
+
+      system.activationScripts.mountEncryptedClearedOnBoot =
+      let
         pass-template = "/tmp/encrypted-clear-on-boot.XXXXXXXX";
         tmpdir = "/tmp/impermanence";
-      in ''
-        if !(test -e ${mountpt}/init)
-        then
-          mkdir -p ${backing} ${mountpt} ${tmpdir}
-          rm -rf ${backing}/*
-          passfile=$(mktemp ${pass-template})
-          dd if=/dev/random bs=128 count=1 | base64 --wrap=0 > $passfile
-          ${gocryptfs} -quiet -passfile $passfile -init ${backing}
-          ${gocryptfs} -quiet -passfile $passfile ${backing} ${mountpt}
-          rm $passfile
-          unset passfile
-          touch ${mountpt}/init
-        fi
-      '';
+        script = pkgs.writeShellApplication {
+          name = "mountEncryptedClearedOnBoot";
+          runtimeInputs = with pkgs; [ fuse gocryptfs ];
+          text = ''
+            backing="$1"
+            mountpt="$2"
+            if ! test -e "$mountpt"/init
+            then
+              mkdir -p "$backing" "$mountpt" ${tmpdir}
+              rm -rf "''${backing:?}"/*
+              passfile=$(mktemp ${pass-template})
+              dd if=/dev/random bs=128 count=1 | base64 --wrap=0 > "$passfile"
+              gocryptfs -quiet -passfile "$passfile" -init "$backing"
+              mount.fuse "gocryptfs#$backing" "$mountpt" -o nodev,nosuid,allow_other,passfile="$passfile"
+              # mount -t fuse.gocryptfs -o passfile="$passfile" "$backing" "$mountpt"
+              # gocryptfs -quiet -passfile "$passfile" "$backing" "$mountpt"
+              rm "$passfile"
+              unset passfile
+              touch "$mountpt"/init
+            fi
+          '';
+        };
+      in {
+        deps = [ "modprobe" ];
+        text = ''${script}/bin/mountEncryptedClearedOnBoot /nix/persist/crypt/cleared-on-boot "${encrypted-clear-on-boot-base}"'';
+      };
 
       system.activationScripts.createPersistentStorageDirs.deps = [ "mountEncryptedClearedOnBoot" ];
     })
