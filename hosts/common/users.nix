@@ -84,8 +84,7 @@ in
 
     sane.impermanence.home-dirs = [
       # cache is probably too big to fit on the tmpfs
-      # TODO: we could bind-mount it to something which gets cleared per boot, though.
-      ".cache"
+      { directory = ".cache"; encryptedClearOnBoot = true; }
       ".cargo"
       ".rustup"
       # TODO: move this to ~/private!
