@@ -16,6 +16,11 @@ in
       default = false;
       type = types.bool;
     };
+    sane.impermanence.root-on-tmpfs = mkOption {
+      default = false;
+      type = types.bool;
+      description = "define / to be a tmpfs. make sure to mount some other device to /nix";
+    };
     sane.impermanence.home-dirs = mkOption {
       default = [];
       type = types.listOf (types.either types.str (types.attrsOf types.str));
@@ -38,6 +43,17 @@ in
     map-sys-dirs = map-dirs { user = "root"; group = "root"; mode = "0755"; directory = ""; };
 
   in mkIf cfg.enable {
+    fileSystems."/" = lib.mkIf cfg.root-on-tmpfs {
+      device = "none";
+      fsType = "tmpfs";
+      options = [
+        "mode=755"
+        "size=1G"
+        "defaults"
+      ];
+    };
+
+    # XXX: why is this necessary?
     sane.image.extraDirectories = [ "/nix/persist/var/log" ];
     environment.persistence."/nix/persist" = {
       directories = (map-home-dirs cfg.home-dirs) ++ (map-sys-dirs [

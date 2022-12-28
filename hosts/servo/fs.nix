@@ -1,16 +1,7 @@
 { ... }:
 
 {
-  # root is a tmpfs so that we have an ephemeral system ("impermanence" handles the state)
-  fileSystems."/" = {
-    device = "none";
-    fsType = "tmpfs";
-    options = [
-      "mode=755"
-      "size=1G"
-      "defaults"
-    ];
-  };
+  sane.impermanence.root-on-tmpfs = true;
   # we need a /tmp for building large nix things
   fileSystems."/tmp" = {
     device = "none";
