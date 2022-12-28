@@ -10,7 +10,9 @@ let
   # taken from sops-nix code: checks if any secrets are needed to create /etc/shadow
   secretsForUsers = (lib.filterAttrs (_: v: v.neededForUsers) config.sops.secrets) != {};
   persist-base = "/nix/persist";
-  encrypted-clear-on-boot-base = "/var/lib/impermanence/cleared-on-boot";
+  encrypted-clear-on-boot-base = "/mnt/crypt/clearedonboot";
+  encrypted-clear-on-boot-store = "/nix/persist/crypt/clearedonboot";
+  encrypted-clear-on-boot-key = "/mnt/crypt/clearedonboot.key";  # TODO: move this to /tmp, but that requires tmp be mounted first?
   home-dir-defaults = {
     user = "colin";
     group = "users";
@@ -23,6 +25,15 @@ let
     mode = "0755";
     relativeTo = "";
   };
+
+  # turn a path into a name suitable for systemd
+  clean-name = path: let
+    dashes = builtins.replaceStrings ["/"] ["-"] path;
+    startswith = builtins.substring 0 1 dashes;
+  in if startswith == "-"
+    then substring 1 255 dashes
+    else dashes
+  ;
 
   dir-options = defaults: types.submodule {
     options = {
@@ -52,8 +63,13 @@ let
     if isString opt then
       ingest-dir-option defaults { directory = opt; }
     else
-      {
+      rec {
         encryptedClearOnBoot = opt.encryptedClearOnBoot or false;
+        srcDevice = if encryptedClearOnBoot
+          then encrypted-clear-on-boot-base
+          else persist-base
+        ;
+        srcPath = "${srcDevice}${directory}";
         directory = defaults.relativeTo + opt.directory;
         user = opt.user or defaults.user;
         group = opt.group or defaults.group;
@@ -73,6 +89,8 @@ let
     "/var/lib/machines"            # maybe not needed, but would be painful to add a VM and forget.
   ];
   ingested-dirs = ingested-home-dirs ++ ingested-sys-dirs ++ ingested-default-dirs;
+  ingested-crypt-dirs = builtins.filter (o: o.encryptedClearOnBoot) ingested-dirs;
+  ingested-plain-dirs = builtins.filter (o: !o.encryptedClearOnBoot) ingested-dirs;
 in
 {
   options = {
@@ -88,7 +106,7 @@ in
     sane.impermanence.encrypted-clear-on-boot = mkOption {
       default = builtins.any (opt: opt.encryptedClearOnBoot) ingested-dirs;
       type = types.bool;
-      description = "define /nix/persist/crypt/cleared-on-boot to be an encrypted filesystem which is unreadable after power-off";
+      description = "define ${encrypted-clear-on-boot-base} to be an encrypted filesystem which is unreadable after power-off";
     };
     sane.impermanence.home-dirs = mkOption {
       default = [];
@@ -124,56 +142,99 @@ in
       # note: `boot.initrd.availableKernelModules` ALSO isn't enough: idk why.
       boot.initrd.kernelModules = [ "fuse" ];
 
-      system.activationScripts.mountEncryptedClearedOnBoot =
+      system.activationScripts.prepareEncryptedClearedOnBoot =
       let
-        pass-template = "/tmp/encrypted-clear-on-boot.XXXXXXXX";
-        tmpdir = "/tmp/impermanence";
         script = pkgs.writeShellApplication {
-          name = "mountEncryptedClearedOnBoot";
-          runtimeInputs = with pkgs; [ fuse gocryptfs ];
+          name = "prepareEncryptedClearedOnBoot";
+          runtimeInputs = with pkgs; [ gocryptfs ];
           text = ''
             backing="$1"
-            mountpt="$2"
-            if ! test -e "$mountpt"/init
+            passfile="$2"
+            if ! test -e "$passfile"
             then
-              mkdir -p "$backing" "$mountpt" ${tmpdir}
+              tmpdir=$(dirname "$passfile")
+              mkdir -p "$backing" "$tmpdir"
+              # if the key doesn't exist, it's probably not mounted => delete the backing dir
               rm -rf "''${backing:?}"/*
-              passfile=$(mktemp ${pass-template})
+              # generate key. we can "safely" keep it around for the lifetime of this boot
               dd if=/dev/random bs=128 count=1 | base64 --wrap=0 > "$passfile"
+              # initialize the crypt store
               gocryptfs -quiet -passfile "$passfile" -init "$backing"
-              mount.fuse "gocryptfs#$backing" "$mountpt" -o nodev,nosuid,allow_other,passfile="$passfile"
-              # mount -t fuse.gocryptfs -o passfile="$passfile" "$backing" "$mountpt"
-              # gocryptfs -quiet -passfile "$passfile" "$backing" "$mountpt"
-              rm "$passfile"
-              unset passfile
-              touch "$mountpt"/init
             fi
           '';
         };
       in {
-        deps = [ "modprobe" ];
-        text = ''${script}/bin/mountEncryptedClearedOnBoot /nix/persist/crypt/cleared-on-boot "${encrypted-clear-on-boot-base}"'';
+        text = ''${script}/bin/prepareEncryptedClearedOnBoot ${encrypted-clear-on-boot-store} ${encrypted-clear-on-boot-key}'';
       };
 
-      system.activationScripts.createPersistentStorageDirs.deps = [ "mountEncryptedClearedOnBoot" ];
+      fileSystems."${encrypted-clear-on-boot-base}" = {
+        device = encrypted-clear-on-boot-store;
+        fsType = "fuse.gocryptfs";
+        options = [
+          "nodev"
+          "nosuid"
+          "allow_other"
+          "passfile=${encrypted-clear-on-boot-key}"
+          "defaults"
+        ];
+        noCheck = true;
+      };
+
+      environment.systemPackages = [ pkgs.gocryptfs ];  # fuse needs to find gocryptfs
+
+      system.activationScripts.createPersistentStorageDirs.deps = [ "prepareEncryptedClearedOnBoot" ];
     })
 
     ({
       # XXX: why is this necessary?
       sane.image.extraDirectories = [ "/nix/persist/var/log" ];
 
-      environment.persistence = lib.mkMerge (builtins.map (opt:
-        let
-          base = if opt.encryptedClearOnBoot
-            then encrypted-clear-on-boot-base
-            else persist-base
-          ;
-        in {
-          "${base}".directories = [
-            { inherit (opt) directory user group mode; }
-          ];
-        }
-      ) ingested-dirs);
+      environment.persistence."${persist-base}".directories = builtins.map (opt: {
+        inherit (opt) directory user group mode;
+      }) ingested-plain-dirs;
+
+      fileSystems = listToAttrs (builtins.map
+        (opt: rec {
+          name = opt.directory;
+          value = {
+            device = "${encrypted-clear-on-boot-base}${opt.directory}";
+            options = [
+              "bind"
+              "x-systemd.requires=mnt-crypt-clearedonboot.mount"
+              "x-systemd.after=impermanence-perms-${clean-name name}.service"
+              # `wants` doesn't seem to make it to the service file here :-(
+              "x-systemd.wants=impermanence-perms-${clean-name name}.service"
+            ];
+            # fsType = "bind";
+            noCheck = true;
+          };
+        })
+        ingested-crypt-dirs
+      );
+
+      # create services which ensure the source directories exist and have correct ownership/perms before mounting
+      systemd.services = listToAttrs (builtins.map
+        (opt: rec {
+          name = "impermanence-perms-${clean-name opt.directory}";
+          value = {
+            description = "prepare permissions for ${opt.directory}";
+            serviceConfig = {
+              ExecStart = let
+                srcPath = "${opt.srcPath}";
+              in pkgs.writeShellScript "prepare-${name}" ''
+                mkdir -p ${srcPath}
+                chown ${opt.user}:${opt.group} ${srcPath}
+                chmod ${opt.mode} ${srcPath}
+              '';
+              Type = "oneshot";
+            };
+            after = [ "mnt-crypt-clearedonboot.mount" ];
+            wants = [ "mnt-crypt-clearedonboot.mount" ];
+            wantedBy = [ "${clean-name opt.directory}.mount" ];
+          };
+        })
+        ingested-crypt-dirs
+      );
 
       # for each edge in a mount path, impermanence gives that target directory the same permissions
       # as the matching folder in /nix/persist.
