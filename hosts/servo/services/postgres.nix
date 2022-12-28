@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  sane.impermanence.service-dirs = [
+  sane.impermanence.dirs = [
     # TODO: mode?
     { user = "postgres"; group = "postgres"; directory = "/var/lib/postgresql"; }
   ];

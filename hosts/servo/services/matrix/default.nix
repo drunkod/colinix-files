@@ -8,7 +8,7 @@
     # ./irc.nix
   ];
 
-  sane.impermanence.service-dirs = [
+  sane.impermanence.dirs = [
     { user = "matrix-synapse"; group = "matrix-synapse"; directory = "/var/lib/matrix-synapse"; }
   ];
   services.matrix-synapse.enable = true;

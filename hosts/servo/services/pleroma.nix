@@ -6,7 +6,7 @@
 { config, pkgs, ... }:
 
 {
-  sane.impermanence.service-dirs = [
+  sane.impermanence.dirs = [
     # TODO: mode? could be more granular
     { user = "pleroma"; group = "pleroma"; directory = "/var/lib/pleroma"; }
   ];

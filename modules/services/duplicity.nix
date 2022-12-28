@@ -15,7 +15,7 @@ in
 
   config = mkIf cfg.enable {
     # we need this mostly because of the size of duplicity's cache
-    sane.impermanence.service-dirs = [ "/var/lib/duplicity" ];
+    sane.impermanence.dirs = [ "/var/lib/duplicity" ];
 
     services.duplicity.enable = true;
     services.duplicity.targetUrl = "$DUPLICITY_URL";

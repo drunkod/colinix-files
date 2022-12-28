@@ -75,7 +75,7 @@ in
       ".local/share/keyrings"
     ];
 
-    sane.impermanence.service-dirs = mkIf cfg.guest.enable [
+    sane.impermanence.dirs = mkIf cfg.guest.enable [
       { user = "guest"; group = "users"; directory = "/home/guest"; }
     ];
     users.users.guest = mkIf cfg.guest.enable {

@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  sane.impermanence.service-dirs = [
+  sane.impermanence.dirs = [
     { user = "navidrome"; group = "navidrome"; directory = "/var/lib/private/navidrome"; }
   ];
   services.navidrome.enable = true;

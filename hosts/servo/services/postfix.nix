@@ -16,7 +16,7 @@ let
   };
 in
 {
-  sane.impermanence.service-dirs = [
+  sane.impermanence.dirs = [
     # TODO: mode? could be more granular
     { user = "opendkim"; group = "opendkim"; directory = "/var/lib/opendkim"; }
     { user = "root"; group = "root"; directory = "/var/lib/postfix"; }

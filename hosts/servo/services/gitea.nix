@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
 {
-  sane.impermanence.service-dirs = [
+  sane.impermanence.dirs = [
     # TODO: mode? could be more granular
     { user = "git"; group = "gitea"; directory = "/var/lib/gitea"; }
   ];

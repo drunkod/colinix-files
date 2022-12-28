@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  sane.impermanence.service-dirs = [
+  sane.impermanence.dirs = [
     # TODO: mode? we need this specifically for the stats tracking in .config/
     { user = "transmission"; group = "transmission"; directory = "/var/lib/transmission"; }
   ];
