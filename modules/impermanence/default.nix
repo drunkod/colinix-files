@@ -90,8 +90,6 @@ let
   ingestDirOption = defaults: opt: {
     inherit (opt) user group mode;
     directory = concatPaths [ defaults.relativeTo opt.directory ];
-    # directory = throw (builtins.toString opt.directory);
-    # directory = builtins.traceVerbose opt.directory (concatPaths [ defaults.relativeTo opt.directory ]);
 
     ## helpful context
     store = builtins.addErrorContext ''while ingestDirOption on ${opt.directory} with attrs ${builtins.concatStringsSep " " (attrNames opt)}''
