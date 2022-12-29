@@ -140,6 +140,7 @@ in
       #     - calls `modprobe`
       # note: even `boot.kernelModules = ...` isn't enough: that option creates /etc/modules-load.d/, which is ingested only by systemd.
       # note: `boot.initrd.availableKernelModules` ALSO isn't enough: idk why.
+      # TODO: might not be necessary now we're using fileSystems and systemd
       boot.initrd.kernelModules = [ "fuse" ];
 
       system.activationScripts.prepareEncryptedClearedOnBoot =
@@ -185,56 +186,61 @@ in
       system.activationScripts.createPersistentStorageDirs.deps = [ "prepareEncryptedClearedOnBoot" ];
     })
 
+    (
+      let cfgFor = opt:
+        let
+          parent-mount = "mnt-crypt-clearedonboot";
+          mount-service = clean-name opt.directory;
+          perms-service = "impermanence-perms-${mount-service}";
+        in {
+          fileSystems = {
+            name = opt.directory;
+            value = {
+              device = opt.srcPath;
+              options = [
+                "bind"
+                "x-systemd.requires=${parent-mount}.mount"
+                "x-systemd.after=${perms-service}.service"
+                # `wants` doesn't seem to make it to the service file here :-(
+                "x-systemd.wants=${perms-service}.service"
+              ];
+              # fsType = "bind";
+              noCheck = true;
+            };
+          };
+
+          # create services which ensure the source directories exist and have correct ownership/perms before mounting
+          systemd.services = {
+            name = "${perms-service}";
+            value = {
+              description = "prepare permissions for ${opt.directory}";
+              serviceConfig = {
+                ExecStart = pkgs.writeShellScript "${perms-service}" ''
+                  mkdir -p ${opt.srcPath}
+                  chmod ${opt.mode} ${opt.srcPath}
+                  chown ${opt.user}:${opt.group} ${opt.srcPath}
+                '';
+                Type = "oneshot";
+              };
+              after = [ "${parent-mount}.mount" ];
+              wants = [ "${parent-mount}.mount" ];
+              wantedBy = [ "${mount-service}.mount" ];
+            };
+          };
+        };
+      in {
+        fileSystems = builtins.listToAttrs (builtins.map (opt: (cfgFor opt).fileSystems) ingested-crypt-dirs);
+        systemd.services = builtins.listToAttrs (builtins.map (opt: (cfgFor opt).systemd.services) ingested-crypt-dirs);
+      }
+    )
+
     ({
-      # XXX: why is this necessary?
+      # make sure logs from initrd can be persisted to disk -- i think?
       sane.image.extraDirectories = [ "/nix/persist/var/log" ];
 
       environment.persistence."${persist-base}".directories = builtins.map (opt: {
         inherit (opt) directory user group mode;
       }) ingested-plain-dirs;
-
-      fileSystems = listToAttrs (builtins.map
-        (opt: rec {
-          name = opt.directory;
-          value = {
-            device = "${encrypted-clear-on-boot-base}${opt.directory}";
-            options = [
-              "bind"
-              "x-systemd.requires=mnt-crypt-clearedonboot.mount"
-              "x-systemd.after=impermanence-perms-${clean-name name}.service"
-              # `wants` doesn't seem to make it to the service file here :-(
-              "x-systemd.wants=impermanence-perms-${clean-name name}.service"
-            ];
-            # fsType = "bind";
-            noCheck = true;
-          };
-        })
-        ingested-crypt-dirs
-      );
-
-      # create services which ensure the source directories exist and have correct ownership/perms before mounting
-      systemd.services = listToAttrs (builtins.map
-        (opt: rec {
-          name = "impermanence-perms-${clean-name opt.directory}";
-          value = {
-            description = "prepare permissions for ${opt.directory}";
-            serviceConfig = {
-              ExecStart = let
-                srcPath = "${opt.srcPath}";
-              in pkgs.writeShellScript "prepare-${name}" ''
-                mkdir -p ${srcPath}
-                chown ${opt.user}:${opt.group} ${srcPath}
-                chmod ${opt.mode} ${srcPath}
-              '';
-              Type = "oneshot";
-            };
-            after = [ "mnt-crypt-clearedonboot.mount" ];
-            wants = [ "mnt-crypt-clearedonboot.mount" ];
-            wantedBy = [ "${clean-name opt.directory}.mount" ];
-          };
-        })
-        ingested-crypt-dirs
-      );
 
       # for each edge in a mount path, impermanence gives that target directory the same permissions
       # as the matching folder in /nix/persist.
