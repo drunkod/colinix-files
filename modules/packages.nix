@@ -115,8 +115,7 @@ let
     lollypop
     mesa-demos
 
-    # TODO(impermanence): re-enable!
-    # { pkg = mpv; dir = [ ".config/mpv/watch_later" ]; }
+    { pkg = mpv; dir = [ ".config/mpv/watch_later" ]; }
 
     networkmanagerapplet
 
