@@ -2,7 +2,7 @@
 #   https://xeiaso.net/blog/paranoid-nixos-2021-07-18
 #   https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/
 #   https://github.com/nix-community/impermanence
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, utils, ... }:
 
 with lib;
 let
@@ -41,13 +41,7 @@ let
   };
 
   # turn a path into a name suitable for systemd
-  cleanName = path: let
-    dashes = builtins.replaceStrings ["/"] ["-"] path;
-    startswith = builtins.substring 0 1 dashes;
-  in if startswith == "-"
-    then substring 1 255 dashes
-    else dashes
-  ;
+  cleanName = utils.escapeSystemdPath;
 
   # split the string path into a list of string components.
   # root directory "/" becomes the empty list [].
