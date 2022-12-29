@@ -7,7 +7,7 @@
     ./home-manager
     ./packages.nix
     ./image.nix
-    ./impermanence.nix
+    ./impermanence
     ./nixcache.nix
     ./services
   ];

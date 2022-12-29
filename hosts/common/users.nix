@@ -84,7 +84,8 @@ in
 
     sane.impermanence.home-dirs = [
       # cache is probably too big to fit on the tmpfs
-      { directory = ".cache"; encryptedClearOnBoot = true; }
+      # { directory = ".cache"; encryptedClearOnBoot = true; }
+      { directory = ".cache/mozilla"; encryptedClearOnBoot = true; }
       ".cargo"
       ".rustup"
       # TODO: move this to ~/private!

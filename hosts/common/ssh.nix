@@ -6,6 +6,8 @@
   # since that also depends on `users`.
   # previously we manually `mount --bind` the host_keys here, but it's difficult to make that idempotent.
   # symlinking seems to work just as well, and is easier to make idempotent
+  #
+  # TODO: this is just a symlink: can we define this the same way we would `environment.etc.<blah> = <text>`?
   system.activationScripts.persist-ssh-host-keys.text = ''
     mkdir -p /etc/ssh
     ln -sf /nix/persist/etc/ssh/host_keys /etc/ssh/

@@ -115,12 +115,14 @@ let
     lollypop
     mesa-demos
 
-    { pkg = mpv; dir = [ ".config/mpv/watch_later" ]; }
+    # TODO(impermanence): re-enable!
+    # { pkg = mpv; dir = [ ".config/mpv/watch_later" ]; }
 
     networkmanagerapplet
 
     # not strictly necessary, but allows caching articles; offline use, etc.
-    { pkg = newsflash; dir = [ ".local/share/news-flash" ]; }
+    # TODO(impermanence): re-enable!
+    # { pkg = newsflash; dir = [ ".local/share/news-flash" ]; }
 
     { pkg = nheko; private = [
       ".config/nheko"  # config file (including client token)
@@ -143,7 +145,8 @@ let
     # config (e.g. server connection details) is persisted in ~/.config/sublime-music/config.json
     #   possible to pass config as a CLI arg (sublime-music -c config.json)
     # { pkg = sublime-music; dir = [ ".local/share/sublime-music" ]; }
-    { pkg = sublime-music-mobile; dir = [ ".local/share/sublime-music" ]; }
+    # TODO(impermanence): re-enable!
+    # { pkg = sublime-music-mobile; dir = [ ".local/share/sublime-music" ]; }
     tdesktop  # broken on phosh
 
     { pkg = tokodon; private = [ ".cache/KDE/tokodon" ]; }

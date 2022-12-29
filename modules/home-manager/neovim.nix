@@ -2,7 +2,8 @@
 
 lib.mkIf config.sane.home-manager.enable
 {
-  sane.impermanence.home-dirs = [ ".cache/vim-swap" ];
+  # TODO(impermanence): re-enable!
+  # sane.impermanence.home-dirs = [ ".cache/vim-swap" ];
 
   home-manager.users.colin.programs.neovim = {
     # neovim: https://github.com/neovim/neovim
