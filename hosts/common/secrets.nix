@@ -119,6 +119,10 @@
     sopsFile = ../../secrets/universal/net/iphone.psk.bin;
     format = "binary";
   };
+  sops.secrets."iwd/parents" = {
+    sopsFile = ../../secrets/universal/net/parents.psk.bin;
+    format = "binary";
+  };
 }
 
 
