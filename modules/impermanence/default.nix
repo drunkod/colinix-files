@@ -264,8 +264,8 @@ in
               group="$3"
               mode="$4"
               mkdir "$path" || test -d "$path"
-              chmod "$mode" "$src"
-              chown "$user:$group" "$src"
+              chmod "$mode" "$path"
+              chown "$user:$group" "$path"
             '';
           in {
             description = "prepare permissions for ${opt.directory}";
