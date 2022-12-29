@@ -1,13 +1,10 @@
 { ... }:
 {
-  # we can't naively `mount /etc/ssh/host_keys` directly,
-  # as /etc/fstab may not be populated yet (since that file depends on e.g. activationScripts.users)
-  # we can't even depend on impermanence's `createPersistentStorageDirs` to create the source/target directories
-  # since that also depends on `users`.
+  # we can't naively `mount /etc/ssh/host_keys` directly, as all of the `etc` activationScript
+  #   (which includes /etc/fstab, and wherein we'd normally insert a nix-store symlink) depends on activationScripts.users.
+  #
   # previously we manually `mount --bind` the host_keys here, but it's difficult to make that idempotent.
   # symlinking seems to work just as well, and is easier to make idempotent
-  #
-  # TODO: this is just a symlink: can we define this the same way we would `environment.etc.<blah> = <text>`?
   system.activationScripts.persist-ssh-host-keys.text = ''
     mkdir -p /etc/ssh
     ln -sf /nix/persist/etc/ssh/host_keys /etc/ssh/
