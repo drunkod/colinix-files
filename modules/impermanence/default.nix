@@ -242,12 +242,16 @@ in
           parent-mount-service = cleanName (parentDir opt.directory);
           parent-perms-service = "impermanence-perms-${parent-mount-service}";
           is-mount = opt ? store;
+          backing-path = if is-mount then
+            concatPaths [ opt.store.device opt.directory ]
+          else
+            opt.directory;
         in {
           fileSystems."${opt.directory}" = lib.mkIf is-mount {
             device = concatPaths [ opt.store.device opt.directory ];
             options = [
               "bind"
-              "x-systemd.requires=${backing-mount}.mount"  # this should be implicit
+              # "x-systemd.requires=${backing-mount}.mount"  # this should be implicit
               "x-systemd.after=${perms-service}.service"
               # `wants` doesn't seem to make it to the service file here :-(
               "x-systemd.wants=${perms-service}.service"
@@ -259,19 +263,34 @@ in
           # create services which ensure the source directories exist and have correct ownership/perms before mounting
           systemd.services."${perms-service}" = let
             perms-script = pkgs.writeShellScript "impermanence-prepare-perms" ''
-              path="$1"
-              user="$2"
-              group="$3"
-              mode="$4"
+              backing="$1"
+              path="$2"
+              user="$3"
+              group="$4"
+              mode="$5"
               mkdir "$path" || test -d "$path"
               chmod "$mode" "$path"
               chown "$user:$group" "$path"
+
+              # XXX: fix up the permissions of the origin, otherwise it overwrites the mountpoint with defaults.
+              # TODO: apply to the full $backing path? like, construct it entirely in parallel?
+              if [ "$backing" != "$path" ]
+              then
+                mkdir -p "$backing"
+                chmod "$mode" "$backing"
+                chown "$user:$group" "$backing"
+              fi
             '';
           in {
             description = "prepare permissions for ${opt.directory}";
             serviceConfig = {
-              ExecStart = ''${perms-script} ${opt.directory} ${opt.user} ${opt.group} ${opt.mode}'';
+              ExecStart = ''${perms-script} ${backing-path} ${opt.directory} ${opt.user} ${opt.group} ${opt.mode}'';
               Type = "oneshot";
+            };
+            unitConfig = {
+              # prevent systemd making this unit implicitly dependent on sysinit.target.
+              # see: <https://www.freedesktop.org/software/systemd/man/systemd.special.html>
+              DefaultDependencies = "no";
             };
             wantedBy = lib.mkIf is-mount [ "${mount-service}.mount" ];
             after = lib.mkIf (opt.directory != "/") [ "${parent-perms-service}.service" ];
