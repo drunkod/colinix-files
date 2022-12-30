@@ -33,10 +33,6 @@
   # You can avoid this by adding a string to the full path instead, i.e.
   # sops.defaultSopsFile = "/root/.sops/secrets/example.yaml";
   sops.defaultSopsFile = ../../secrets/universal.yaml;
-  # This will automatically import SSH keys as age keys
-  sops.age.sshKeyPaths = [
-    "/etc/ssh/host_keys/ssh_host_ed25519_key"
-  ];
   sops.gnupg.sshKeyPaths = [];  # disable RSA key import
   # This is using an age key that is expected to already be in the filesystem
   # sops.age.keyFile = "/home/colin/.ssh/age.pub";
