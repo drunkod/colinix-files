@@ -300,14 +300,26 @@ in
       }
     )
 
-    ({
-      # secret decoding depends on /etc/ssh keys, which may be persisted
-      system.activationScripts.setupSecrets.deps = [ "persist-ssh-host-keys" ];
+    (lib.mkIf secrets-for-users {
+      # secret decoding depends on /etc/ssh keys, so make sure those are present.
       system.activationScripts.setupSecretsForUsers = lib.mkIf secrets-for-users {
-        deps = [ "persist-ssh-host-keys" ];
+        deps = [ "etc" ];
       };
-      # populated by ssh.nix, which persists /etc/ssh/host_keys
-      system.activationScripts.persist-ssh-host-keys.text = lib.mkDefault "";
+      system.activationScripts.etc.deps = lib.mkForce [];
+      assertions = builtins.concatLists (builtins.attrValues (
+        builtins.mapAttrs
+          (path: value: [
+            {
+              assertion = (builtins.substring 0 1 value.user) == "+";
+              message = "non-numeric user for /etc/${path}: ${value.user} prevents early /etc linking";
+            }
+            {
+              assertion = (builtins.substring 0 1 value.group) == "+";
+              message = "non-numeric group for /etc/${path}: ${value.group} prevents early /etc linking";
+            }
+          ])
+          config.environment.etc
+      ));
     })
   ]);
 }

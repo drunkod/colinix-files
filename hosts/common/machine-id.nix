@@ -10,7 +10,7 @@
   # so for now, generate something unique from the host ssh key.
   # TODO: move this into modules?
   system.activationScripts.machine-id = {
-    deps = [ "persist-ssh-host-keys" ];
+    deps = [ "etc" ];
     text = "sha256sum /etc/ssh/host_keys/ssh_host_ed25519_key | cut -c 1-32 > /etc/machine-id";
   };
 }
