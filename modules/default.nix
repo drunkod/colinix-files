@@ -10,5 +10,6 @@
     ./impermanence
     ./nixcache.nix
     ./services
+    ./sops.nix
   ];
 }

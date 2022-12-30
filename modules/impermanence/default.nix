@@ -7,8 +7,6 @@
 with lib;
 let
   cfg = config.sane.impermanence;
-  # taken from sops-nix code: checks if any secrets are needed to create /etc/shadow
-  secrets-for-users = (lib.filterAttrs (_: v: v.neededForUsers) config.sops.secrets) != {};
   getStore = { encryptedClearOnBoot, ... }: (
     if encryptedClearOnBoot then {
       device = "/mnt/impermanence/crypt/clearedonboot";
@@ -300,27 +298,6 @@ in
       }
     )
 
-    (lib.mkIf secrets-for-users {
-      # secret decoding depends on /etc/ssh keys, so make sure those are present.
-      system.activationScripts.setupSecretsForUsers = lib.mkIf secrets-for-users {
-        deps = [ "etc" ];
-      };
-      system.activationScripts.etc.deps = lib.mkForce [];
-      assertions = builtins.concatLists (builtins.attrValues (
-        builtins.mapAttrs
-          (path: value: [
-            {
-              assertion = (builtins.substring 0 1 value.user) == "+";
-              message = "non-numeric user for /etc/${path}: ${value.user} prevents early /etc linking";
-            }
-            {
-              assertion = (builtins.substring 0 1 value.group) == "+";
-              message = "non-numeric group for /etc/${path}: ${value.group} prevents early /etc linking";
-            }
-          ])
-          config.environment.etc
-      ));
-    })
   ]);
 }
 
