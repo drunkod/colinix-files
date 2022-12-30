@@ -287,6 +287,12 @@ in
         # fileSystems = myMerge (catAttrs "fileSystems" cfgs);
         fileSystems = lib.mkMerge (builtins.catAttrs "fileSystems" cfgs);
         systemd = lib.mkMerge (catAttrs "systemd" cfgs);
+
+        # sane.fs."/home/colin".dir = {
+        #   user = "colin";
+        #   group = "users";
+        #   mode = "0755";
+        # };
       }
     )
 
