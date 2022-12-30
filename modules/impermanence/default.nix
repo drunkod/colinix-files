@@ -149,19 +149,11 @@ in
     sane.impermanence.dirs = mkDirsOption sys-dir-defaults;
   };
 
-  config = mkIf cfg.enable (lib.mkMerge [
-    (lib.mkIf cfg.root-on-tmpfs {
-      fileSystems."/" = {
-        device = "none";
-        fsType = "tmpfs";
-        options = [
-          "mode=755"
-          "size=1G"
-          "defaults"
-        ];
-      };
-    })
+  imports = [
+    ./root-on-tmpfs.nix
+  ];
 
+  config = mkIf cfg.enable (lib.mkMerge [
     {
       # without this, we get `fusermount: fuse device not found, try 'modprobe fuse' first`.
       # - that only happens after a activation-via-boot -- not activation-after-rebuild-switch.
