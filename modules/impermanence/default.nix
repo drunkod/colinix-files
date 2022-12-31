@@ -25,16 +25,11 @@ let
       # };
     }
   );
+  # TODO: flatten these!
   home-dir-defaults = {
-    user = "colin";
-    group = "users";
-    mode = "0755";
     relativeTo = "/home/colin";
   };
   sys-dir-defaults = {
-    user = "root";
-    group = "root";
-    mode = "0755";
     relativeTo = "";
   };
 
@@ -61,16 +56,16 @@ let
         type = types.str;
       };
       user = mkOption {
-        type = types.str;
-        default = defaults.user;
+        type = types.nullOr types.str;
+        default = null;
       };
       group = mkOption {
-        type = types.str;
-        default = defaults.group;
+        type = types.nullOr types.str;
+        default = null;
       };
       mode = mkOption {
-        type = types.str;
-        default = defaults.mode;
+        type = types.nullOr types.str;
+        default = null;
       };
     };
   };
@@ -118,6 +113,22 @@ in
     {
       # TODO: move to sane.fs, to auto-ensure all user dirs?
       sane.fs."/home/colin".dir = {
+        user = "colin";
+        group = config.users.users.colin.group;
+        mode = config.users.users.colin.homeMode;
+      };
+      # N.B.: we have a similar problem with all mounts:
+      # <crypt>/.cache/mozilla won't inherit <plain>/.cache perms.
+      # this is less of a problem though, since we don't really support overlapping mounts like that in the first place.
+      # what is a problem is if the user specified some other dir we don't know about here.
+      # like "/var", and then "/nix/persist/var" has different perms and something mounts funny.
+      # TODO: just add assertions that sane.fs."${backing}/${dest}".dir == sane.fs."${dest}" for each mount point?
+      sane.fs."/nix/persist/home/colin".dir = {
+        user = "colin";
+        group = config.users.users.colin.group;
+        mode = config.users.users.colin.homeMode;
+      };
+      sane.fs."/mnt/impermanence/crypt/clearedonboot/home/colin".dir = {
         user = "colin";
         group = config.users.users.colin.group;
         mode = config.users.users.colin.homeMode;
@@ -192,14 +203,15 @@ in
 
           dir-service = config.sane.fs."${opt.directory}".service;
           backing-service = config.sane.fs."${backing-path}".service;
+          dir-opts = {
+            user = lib.mkIf (opt.user != null) opt.user;
+            group = lib.mkIf (opt.group != null) opt.group;
+            mode = lib.mkIf (opt.mode != null) opt.mode;
+          };
         in {
           # create destination and backing directory, with correct perms
-          sane.fs."${opt.directory}".dir = {
-            inherit (opt) user group mode;
-          };
-          sane.fs."${backing-path}".dir = {
-            inherit (opt) user group mode;
-          };
+          sane.fs."${opt.directory}".dir = dir-opts;
+          sane.fs."${backing-path}".dir = dir-opts;
           # define the mountpoint.
           fileSystems."${opt.directory}" = {
             device = backing-path;
