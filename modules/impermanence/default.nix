@@ -8,26 +8,11 @@ with lib;
 let
   cfg = config.sane.impermanence;
   getStore = { encryptedClearOnBoot, ... }: (
-    if encryptedClearOnBoot then {
-      device = "/mnt/impermanence/crypt/clearedonboot";
-      underlying = {
-        path = "/nix/persist/crypt/clearedonboot";
-        # TODO: consider moving this to /tmp, but that requires tmp be mounted first?
-        type = "gocryptfs";
-        key = "/mnt/impermanence/crypt/clearedonboot.key";
-      };
-    } else {
-      device = "/nix/persist";
-      # device = "/mnt/impermenanence/persist/plain";
-      # underlying = {
-      #   path = "/nix/persist";
-      #   type = "bind";
-      # };
-    }
+    if encryptedClearOnBoot then
+      "/mnt/impermanence/crypt/clearedonboot"
+    else
+      "/nix/persist"
   );
-
-  # turn a path into a name suitable for systemd
-  cleanName = utils.escapeSystemdPath;
 
   # split the string path into a list of string components.
   # root directory "/" becomes the empty list [].
@@ -104,6 +89,7 @@ in
   };
 
   imports = [
+    ./crypt.nix
     ./root-on-tmpfs.nix
   ];
 
@@ -131,52 +117,6 @@ in
         group = config.users.users.colin.group;
         mode = config.users.users.colin.homeMode;
       };
-
-      # TODO: convert this to a systemd unit file?
-      system.activationScripts.prepareEncryptedClearedOnBoot =
-      let
-        script = pkgs.writeShellApplication {
-          name = "prepareEncryptedClearedOnBoot";
-          runtimeInputs = with pkgs; [ gocryptfs ];
-          text = ''
-            backing="$1"
-            passfile="$2"
-            if ! test -e "$passfile"
-            then
-              tmpdir=$(dirname "$passfile")
-              mkdir -p "$backing" "$tmpdir"
-              # if the key doesn't exist, it's probably not mounted => delete the backing dir
-              rm -rf "''${backing:?}"/*
-              # generate key. we can "safely" keep it around for the lifetime of this boot
-              dd if=/dev/random bs=128 count=1 | base64 --wrap=0 > "$passfile"
-              # initialize the crypt store
-              gocryptfs -quiet -passfile "$passfile" -init "$backing"
-            fi
-          '';
-        };
-        store = getStore { encryptedClearOnBoot = true; };
-      in {
-        text = ''${script}/bin/prepareEncryptedClearedOnBoot ${store.underlying.path} ${store.underlying.key}'';
-      };
-
-      fileSystems = let
-        store = getStore { encryptedClearOnBoot = true; };
-      in {
-        "${store.device}" = {
-          device = store.underlying.path;
-          fsType = "fuse.gocryptfs";
-          options = [
-            "nodev"
-            "nosuid"
-            "allow_other"
-            "passfile=${store.underlying.key}"
-            "defaults"
-          ];
-          noCheck = true;
-        };
-      };
-
-      environment.systemPackages = [ pkgs.gocryptfs ];  # fuse needs to find gocryptfs
     }
 
     (
@@ -184,9 +124,8 @@ in
         let
           # systemd creates <path>.mount services for every fileSystems entry.
           # <path> gets escaped as part of that: this code tries to guess that escaped name here.
-          # backing-mount = cleanName opt.store.device;
-          mount-service = cleanName opt.directory;
-          backing-path = concatPaths [ opt.store.device opt.directory ];
+          mount-service = utils.escapeSystemdPath opt.directory;
+          backing-path = concatPaths [ opt.store opt.directory ];
 
           dir-service = config.sane.fs."${opt.directory}".service;
           backing-service = config.sane.fs."${backing-path}".service;
