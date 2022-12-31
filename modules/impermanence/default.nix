@@ -25,13 +25,6 @@ let
       # };
     }
   );
-  # TODO: flatten these!
-  home-dir-defaults = {
-    relativeTo = "/home/colin";
-  };
-  sys-dir-defaults = {
-    relativeTo = "";
-  };
 
   # turn a path into a name suitable for systemd
   cleanName = utils.escapeSystemdPath;
@@ -46,14 +39,15 @@ let
   joinPathAbs = comps: "/" + (builtins.concatStringsSep "/" comps);
   concatPaths = paths: joinPathAbs (builtins.concatLists (builtins.map (p: splitPath p) paths));
 
-  dirOptions = defaults: types.submodule {
+  # options for a single mountpoint / persistence
+  dirEntry = types.submodule {
     options = {
+      directory = mkOption {
+        type = types.str;
+      };
       encryptedClearOnBoot = mkOption {
         default = false;
         type = types.bool;
-      };
-      directory = mkOption {
-        type = types.str;
       };
       user = mkOption {
         type = types.nullOr types.str;
@@ -69,25 +63,21 @@ let
       };
     };
   };
-  mkDirsOption = defaults: mkOption {
-    default = [];
-    type = types.listOf (types.coercedTo types.str (d: { directory = d; }) (dirOptions defaults));
-    # apply = map (d: if isString d then { directory = d; } else d);
-  };
+  # allow "bar/baz" as shorthand for { directory = "bar/baz"; }
+  coercedDirEntry = types.coercedTo types.str (d: { directory = d; }) dirEntry;
 
   # expand user options with more context
-  ingestDirOption = defaults: opt: {
+  ingestDirEntry = relativeTo: opt: {
     inherit (opt) user group mode;
-    directory = concatPaths [ defaults.relativeTo opt.directory ];
+    directory = concatPaths [ relativeTo opt.directory ];
 
     ## helpful context
-    store = builtins.addErrorContext ''while ingestDirOption on ${opt.directory} with attrs ${builtins.concatStringsSep " " (attrNames opt)}''
-      (getStore opt);
+    store = getStore opt;
   };
 
-  ingestDirOptions = defaults: opts: builtins.map (ingestDirOption defaults) opts;
-  ingested-home-dirs = ingestDirOptions home-dir-defaults cfg.home-dirs;
-  ingested-sys-dirs = ingestDirOptions sys-dir-defaults cfg.dirs;
+  ingestDirEntries = relativeTo: opts: builtins.map (ingestDirEntry relativeTo) opts;
+  ingested-home-dirs = ingestDirEntries "/home/colin" cfg.home-dirs;
+  ingested-sys-dirs = ingestDirEntries "/" cfg.dirs;
   ingested-dirs = ingested-home-dirs ++ ingested-sys-dirs;
 in
 {
@@ -101,8 +91,16 @@ in
       type = types.bool;
       description = "define / to be a tmpfs. make sure to mount some other device to /nix";
     };
-    sane.impermanence.home-dirs = mkDirsOption home-dir-defaults;
-    sane.impermanence.dirs = mkDirsOption sys-dir-defaults;
+    sane.impermanence.home-dirs = mkOption {
+      default = [];
+      type = types.listOf coercedDirEntry;
+      description = "list of directories (and optional config) to persist to disk, relative to the user's home ~";
+    };
+    sane.impermanence.dirs = mkOption {
+      default = [];
+      type = types.listOf coercedDirEntry;
+      description = "list of directories (and optional config) to persist to disk, relative to the fs root /";
+    };
   };
 
   imports = [
@@ -203,6 +201,7 @@ in
 
           dir-service = config.sane.fs."${opt.directory}".service;
           backing-service = config.sane.fs."${backing-path}".service;
+          # pass through the perm/mode overrides
           dir-opts = {
             user = lib.mkIf (opt.user != null) opt.user;
             group = lib.mkIf (opt.group != null) opt.group;
