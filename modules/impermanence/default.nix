@@ -132,17 +132,6 @@ in
         mode = config.users.users.colin.homeMode;
       };
 
-      # without this, we get `fusermount: fuse device not found, try 'modprobe fuse' first`.
-      # - that only happens after a activation-via-boot -- not activation-after-rebuild-switch.
-      # it seems likely that systemd loads `fuse` by default. see:
-      # - </etc/systemd/system/sysinit.target.wants/sys-fs-fuse-connections.mount>
-      #   - triggers: /etc/systemd/system/modprobe@.service
-      #     - calls `modprobe`
-      # note: even `boot.kernelModules = ...` isn't enough: that option creates /etc/modules-load.d/, which is ingested only by systemd.
-      # note: `boot.initrd.availableKernelModules` ALSO isn't enough: idk why.
-      # TODO: might not be necessary now we're using fileSystems and systemd
-      boot.initrd.kernelModules = [ "fuse" ];
-
       # TODO: convert this to a systemd unit file?
       system.activationScripts.prepareEncryptedClearedOnBoot =
       let
