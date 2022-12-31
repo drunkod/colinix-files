@@ -17,12 +17,12 @@ let
       passfile="$2"
       if ! test -e "$passfile"
       then
-        tmpdir=$(dirname "$passfile")
-        mkdir -p "$backing" "$tmpdir"
         # if the key doesn't exist, it's probably not mounted => delete the backing dir
         rm -rf "''${backing:?}"/*
         # generate key. we can "safely" keep it around for the lifetime of this boot
+        umask 266
         dd if=/dev/random bs=128 count=1 | base64 --wrap=0 > "$passfile"
+        umask 022
         # initialize the crypt store
         gocryptfs -quiet -passfile "$passfile" -init "$backing"
       fi
@@ -35,10 +35,13 @@ in lib.mkIf config.sane.impermanence.enable
     "prepareEncryptedClearedOnBoot.service"
   ];
 
+  # declare our backing storage
+  sane.fs."${store.underlying.path}".dir = {};
+
   systemd.services."prepareEncryptedClearedOnBoot" =
   let
     mount-unit = "${utils.escapeSystemdPath store.device}.mount";
-  in {
+  in rec {
     description = "prepare keys for ${store.device}";
     serviceConfig.ExecStart = ''
       ${prepareEncryptedClearedOnBoot}/bin/prepareEncryptedClearedOnBoot ${store.underlying.path} ${store.underlying.key}
@@ -47,9 +50,17 @@ in lib.mkIf config.sane.impermanence.enable
     # remove implicit dep on sysinit.target
     unitConfig.DefaultDependencies = "no";
 
+    # we need the key directory to be created, and the backing directory to exist
+    after = [
+      (config.sane.fs."${store.underlying.path}".service + ".service")
+      # TODO: "${parentDir store.device}"
+      (config.sane.fs."/mnt/impermanence/crypt".service + ".service")
+    ];
+    wants = after;
+
     # make sure the encrypted file system is mounted *after* its keys have been generated.
-    wantedBy = [ mount-unit ];
     before = [ mount-unit ];
+    wantedBy = before;
   };
 
 

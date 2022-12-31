@@ -145,8 +145,8 @@ in
             options = [
               "bind"
               # "x-systemd.requires=${backing-mount}.mount"  # this should be implicit
-              "x-systemd.after=${backing-service}"
-              "x-systemd.after=${dir-service}"
+              "x-systemd.after=${backing-service}.service"
+              "x-systemd.after=${dir-service}.service"
               # `wants` doesn't seem to make it to the service file here :-(
               # "x-systemd.wants=${backing-service}"
               # "x-systemd.wants=${dir-service}"
