@@ -10,14 +10,11 @@ let
     parent = parentDir name;
     has-parent = hasParent name;
     parent-cfg = if has-parent then cfg."${parent}" else {};
+    parent-dir = parent-cfg.dir or {};
   in {
     options = {
       dir = mkOption {
-        type = mkDirEntryType (parent-cfg.dir or {
-          user = "root";
-          group = "root";
-          mode = "0755";
-        });
+        type = dirEntry;
       };
       unit = mkOption {
         type = types.str;
@@ -25,6 +22,9 @@ let
       };
     };
     config = {
+      dir.user = lib.mkDefault (parent-dir.user or "root");
+      dir.group = lib.mkDefault (parent-dir.group or "root");
+      dir.mode = lib.mkDefault (parent-dir.mode or "0755");
       # we put this here instead of as a `default` to ensure that users who specify additional
       # dependencies still get a dep on the parent (unless they assign with `mkForce`).
       dir.depends = if has-parent then [ parent-cfg.unit ] else [];
@@ -37,7 +37,7 @@ let
     };
   });
   # sane.fs."<path>".dir sub-options
-  mkDirEntryType = defaults: types.submodule {
+  dirEntry = types.submodule {
     options = {
       user = mkOption {
         type = types.str;  # TODO: use uid?
@@ -62,9 +62,6 @@ let
         type = types.str;
         description = "name of the systemd unit which ensures this directory";
       };
-    };
-    config = lib.mkDefault {
-      inherit (defaults) user group mode;
     };
   };
 
