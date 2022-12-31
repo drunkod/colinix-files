@@ -137,33 +137,30 @@ in
           };
         in {
           # create destination and backing directory, with correct perms
-          sane.fs."${opt.directory}".dir = dir-opts;
-          sane.fs."${backing-path}".dir = dir-opts;
+          sane.fs."${opt.directory}" = {
+            # inherit perms & make sure we don't mount until after the mount point is setup correctly.
+            dir = dir-opts // { reverseDepends = [ mount-unit ]; };
+            # HACK: anything depending on this directory should actually depend on it being mounted.
+            unit = mount-unit;
+          };
+          sane.fs."${backing-path}" = {
+            # inherit perms & make sure we don't mount until after the backing dir is setup correctly.
+            dir = dir-opts // { reverseDepends = [ mount-unit ]; };
+          };
           # define the mountpoint.
           fileSystems."${opt.directory}" = {
             device = backing-path;
             options = [
               "bind"
-              # "x-systemd.requires=${backing-mount}.mount"  # this should be implicit
-              "x-systemd.after=${backing-unit}"
-              "x-systemd.after=${dir-unit}"
-              # `wants` doesn't seem to make it to the service file here :-(
-              # "x-systemd.wants=${backing-unit}"
-              # "x-systemd.wants=${dir-unit}"
             ];
             # fsType = "bind";
             noCheck = true;
           };
-          # mounting <opt.directory> must happen after the backing directory is created *and* the mountpt directory is created.
-          systemd.units."${backing-unit}".wantedBy = [ mount-unit ];
-          systemd.units."${dir-unit}".wantedBy = [ mount-unit ];
-
         };
         cfgs = builtins.map cfgFor ingested-dirs;
       in {
         fileSystems = lib.mkMerge (catAttrs "fileSystems" cfgs);
         sane.fs = lib.mkMerge (catAttrs "fs" (catAttrs "sane" cfgs));
-        systemd = lib.mkMerge (catAttrs "systemd" cfgs);
       }
     )
 
