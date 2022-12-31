@@ -3,6 +3,8 @@ with lib;
 let
   cfg = config.sane.fs;
 
+  serviceNameFor = path: "ensure-${utils.escapeSystemdPath path}";
+
   # sane.fs."<path>" top-level options
   fsEntry = types.submodule ({ name, ...}: let
     parent = parentDir name;
@@ -19,19 +21,21 @@ let
       };
       depends = mkOption {
         type = types.listOf types.str;
-        description = "list of systemd services needed to be run before this service";
+        description = "list of systemd units needed to be run before this service";
         default = [];
       };
-      service = mkOption {
+      unit = mkOption {
         type = types.str;
-        description = "name of the systemd service which ensures this entry";
-        default = "ensure-${utils.escapeSystemdPath name}";
+        description = "name of the systemd unit which ensures this entry";
       };
     };
     config = {
       # we put this here instead of as a `default` to ensure that users who specify additional
       # dependencies still get a dep on the parent (unless they assign with `mkForce`).
-      depends = if has-parent then [ "${parent-cfg.service}.service" ] else [];
+      depends = if has-parent then [ parent-cfg.unit ] else [];
+      # this option for the benefit of being read by users (for now).
+      # making it read-only simplifies our impl.
+      unit = (serviceNameFor name) + ".service";
     };
   });
   # sane.fs."<path>".dir sub-options
@@ -52,7 +56,7 @@ let
 
   # given a fsEntry definition, output the `config` attrs it generates.
   mkFsConfig = path: opt: {
-    systemd.services."${opt.service}" = {
+    systemd.services."${serviceNameFor path}" = {
       description = "prepare ${path}";
       script = ensure-dir-script;
       scriptArgs = "${path} ${opt.dir.user} ${opt.dir.group} ${opt.dir.mode}";

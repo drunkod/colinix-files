@@ -124,11 +124,11 @@ in
         let
           # systemd creates <path>.mount services for every fileSystems entry.
           # <path> gets escaped as part of that: this code tries to guess that escaped name here.
-          mount-service = utils.escapeSystemdPath opt.directory;
+          mount-unit = "${utils.escapeSystemdPath opt.directory}.mount";
           backing-path = concatPaths [ opt.store opt.directory ];
 
-          dir-service = config.sane.fs."${opt.directory}".service;
-          backing-service = config.sane.fs."${backing-path}".service;
+          dir-unit = config.sane.fs."${opt.directory}".unit;
+          backing-unit = config.sane.fs."${backing-path}".unit;
           # pass through the perm/mode overrides
           dir-opts = {
             user = lib.mkIf (opt.user != null) opt.user;
@@ -145,17 +145,18 @@ in
             options = [
               "bind"
               # "x-systemd.requires=${backing-mount}.mount"  # this should be implicit
-              "x-systemd.after=${backing-service}.service"
-              "x-systemd.after=${dir-service}.service"
+              "x-systemd.after=${backing-unit}"
+              "x-systemd.after=${dir-unit}"
               # `wants` doesn't seem to make it to the service file here :-(
-              # "x-systemd.wants=${backing-service}"
-              # "x-systemd.wants=${dir-service}"
+              # "x-systemd.wants=${backing-unit}"
+              # "x-systemd.wants=${dir-unit}"
             ];
             # fsType = "bind";
             noCheck = true;
           };
-          systemd.services."${backing-service}".wantedBy = [ "${mount-service}.mount" ];
-          systemd.services."${dir-service}".wantedBy = [ "${mount-service}.mount" ];
+          # mounting <opt.directory> must happen after the backing directory is created *and* the mountpt directory is created.
+          systemd.units."${backing-unit}".wantedBy = [ mount-unit ];
+          systemd.units."${dir-unit}".wantedBy = [ mount-unit ];
 
         };
         cfgs = builtins.map cfgFor ingested-dirs;

@@ -30,11 +30,6 @@ let
   };
 in lib.mkIf config.sane.impermanence.enable
 {
-  # the crypt store requires keys before being mounted
-  sane.fs."${store.device}".depends = [
-    "prepareEncryptedClearedOnBoot.service"
-  ];
-
   # declare our backing storage
   sane.fs."${store.underlying.path}".dir = {};
 
@@ -52,9 +47,9 @@ in lib.mkIf config.sane.impermanence.enable
 
     # we need the key directory to be created, and the backing directory to exist
     after = [
-      (config.sane.fs."${store.underlying.path}".service + ".service")
+      config.sane.fs."${store.underlying.path}".unit
       # TODO: "${parentDir store.device}"
-      (config.sane.fs."/mnt/impermanence/crypt".service + ".service")
+      config.sane.fs."/mnt/impermanence/crypt".unit
     ];
     wants = after;
 
@@ -62,7 +57,6 @@ in lib.mkIf config.sane.impermanence.enable
     before = [ mount-unit ];
     wantedBy = before;
   };
-
 
   fileSystems."${store.device}" = {
     device = store.underlying.path;
