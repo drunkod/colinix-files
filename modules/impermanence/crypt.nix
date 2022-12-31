@@ -1,8 +1,9 @@
 { config, lib, pkgs, utils, ... }:
 
 let
-  store = {
+  store = rec {
     device = "/mnt/impermanence/crypt/clearedonboot";
+    mount-unit = "${utils.escapeSystemdPath device}.mount";
     underlying = {
       path = "/nix/persist/crypt/clearedonboot";
       # TODO: consider moving this to /tmp, but that requires tmp be mounted first?
@@ -33,10 +34,7 @@ in lib.mkIf config.sane.impermanence.enable
   # declare our backing storage
   sane.fs."${store.underlying.path}".dir = {};
 
-  systemd.services."prepareEncryptedClearedOnBoot" =
-  let
-    mount-unit = "${utils.escapeSystemdPath store.device}.mount";
-  in rec {
+  systemd.services."prepareEncryptedClearedOnBoot" = rec {
     description = "prepare keys for ${store.device}";
     serviceConfig.ExecStart = ''
       ${prepareEncryptedClearedOnBoot}/bin/prepareEncryptedClearedOnBoot ${store.underlying.path} ${store.underlying.key}
@@ -54,7 +52,7 @@ in lib.mkIf config.sane.impermanence.enable
     wants = after;
 
     # make sure the encrypted file system is mounted *after* its keys have been generated.
-    before = [ mount-unit ];
+    before = [ store.mount-unit ];
     wantedBy = before;
   };
 
@@ -69,6 +67,12 @@ in lib.mkIf config.sane.impermanence.enable
       "defaults"
     ];
     noCheck = true;
+  };
+  sane.fs."${store.device}" = {
+    # ensure the fs is mounted only after the mountpoint directory is created
+    dir.reverseDepends = [ store.mount-unit ];
+    # HACK: this fs entry is provided by our mount service.
+    unit = store.mount-unit;
   };
 
   # TODO: could add this *specifically* to the .mount file for the encrypted fs?

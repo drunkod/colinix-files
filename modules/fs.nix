@@ -6,7 +6,7 @@ let
   serviceNameFor = path: "ensure-${utils.escapeSystemdPath path}";
 
   # sane.fs."<path>" top-level options
-  fsEntry = types.submodule ({ name, ...}: let
+  fsEntry = types.submodule ({ name, config, ...}: let
     parent = parentDir name;
     has-parent = hasParent name;
     parent-cfg = if has-parent then cfg."${parent}" else {};
@@ -19,11 +19,6 @@ let
           mode = "0755";
         });
       };
-      depends = mkOption {
-        type = types.listOf types.str;
-        description = "list of systemd units needed to be run before this service";
-        default = [];
-      };
       unit = mkOption {
         type = types.str;
         description = "name of the systemd unit which ensures this entry";
@@ -32,10 +27,13 @@ let
     config = {
       # we put this here instead of as a `default` to ensure that users who specify additional
       # dependencies still get a dep on the parent (unless they assign with `mkForce`).
-      depends = if has-parent then [ parent-cfg.unit ] else [];
-      # this option for the benefit of being read by users (for now).
-      # making it read-only simplifies our impl.
-      unit = (serviceNameFor name) + ".service";
+      dir.depends = if has-parent then [ parent-cfg.unit ] else [];
+      # if defaulted, this module is responsible for creating the directory
+      dir.unit = lib.mkDefault ((serviceNameFor name) + ".service");
+      # if defaulted, this module is responsible for finalizing the entry.
+      # the user could override this if, say, they provide an alternate unit
+      # which finalizes the entry (by mounting it, for example).
+      unit = lib.mkDefault config.dir.unit;
     };
   });
   # sane.fs."<path>".dir sub-options
@@ -50,22 +48,43 @@ let
       mode = mkOption {
         type = types.str;
       };
+      depends = mkOption {
+        type = types.listOf types.str;
+        description = "list of systemd units needed to be run before this directory can be made";
+        default = [];
+      };
+      reverseDepends = mkOption {
+        type = types.listOf types.str;
+        description = "list of systemd units which should be made to depend on this unit (controls `wantedBy` and `before`)";
+        default = [];
+      };
+      unit = mkOption {
+        type = types.str;
+        description = "name of the systemd unit which ensures this directory";
+      };
     };
-    config = lib.mkDefault defaults;
+    config = lib.mkDefault {
+      inherit (defaults) user group mode;
+    };
   };
 
   # given a fsEntry definition, output the `config` attrs it generates.
   mkFsConfig = path: opt: {
     systemd.services."${serviceNameFor path}" = {
       description = "prepare ${path}";
+      serviceConfig.Type = "oneshot";
+
       script = ensure-dir-script;
       scriptArgs = "${path} ${opt.dir.user} ${opt.dir.group} ${opt.dir.mode}";
-      serviceConfig.Type = "oneshot";
-      after = opt.depends;
-      wants = opt.depends;
+
+      after = opt.dir.depends;
+      wants = opt.dir.depends;
       # prevent systemd making this unit implicitly dependent on sysinit.target.
       # see: <https://www.freedesktop.org/software/systemd/man/systemd.special.html>
       unitConfig.DefaultDependencies = "no";
+
+      wantedBy = opt.dir.reverseDepends;
+      before = opt.dir.reverseDepends;
     };
   };
 
