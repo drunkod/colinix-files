@@ -50,10 +50,6 @@ let
   # return a string path, with leading slash but no trailing slash
   joinPathAbs = comps: "/" + (builtins.concatStringsSep "/" comps);
   concatPaths = paths: joinPathAbs (builtins.concatLists (builtins.map (p: splitPath p) paths));
-  # normalize the given path
-  normPath = str: joinPathAbs (splitPath str);
-  # return the parent directory. doesn't care about leading/trailing slashes.
-  parentDir = str: normPath (builtins.dirOf (normPath str));
 
   dirOptions = defaults: types.submodule {
     options = {
@@ -98,41 +94,6 @@ let
   ingested-home-dirs = ingestDirOptions home-dir-defaults cfg.home-dirs;
   ingested-sys-dirs = ingestDirOptions sys-dir-defaults cfg.dirs;
   ingested-dirs = ingested-home-dirs ++ ingested-sys-dirs;
-
-  # include these anchor points as "virtual" nodes in below fs tree.
-  home-dir = {
-    inherit (home-dir-defaults) user group mode;
-    directory = normPath home-dir-defaults.relativeTo;
-  };
-  root-dir = {
-    inherit (sys-dir-defaults) user group mode;
-    directory = normPath sys-dir-defaults.relativeTo;
-  };
-
-  unexpanded-tree = builtins.listToAttrs (builtins.map
-    (dir: {
-      name = dir.directory;
-      value = dir;
-    })
-    (ingested-dirs ++ [ home-dir root-dir ])
-  );
-
-  # ensures the provided node and all parent nodes exist
-  ensureNode = tree: path: (
-    let
-      parent-path = parentDir path;
-      tree-with-parent = if parent-path == "/"
-        then tree
-        else ensureNode tree parent-path;
-      parent = tree-with-parent."${parent-path}";
-      # how to initialize this node if it doesn't exist explicitly.
-      default-node = parent // { directory = path; };
-    in
-      { "${path}" = default-node; } // tree-with-parent
-  );
-
-  # finally, this tree has no orphan nodes
-  expanded-tree = foldl' ensureNode unexpanded-tree (builtins.attrNames unexpanded-tree);
 in
 {
   options = {
@@ -155,6 +116,13 @@ in
 
   config = mkIf cfg.enable (lib.mkMerge [
     {
+      # TODO: move to sane.fs, to auto-ensure all user dirs?
+      sane.fs."/home/colin".dir = {
+        user = "colin";
+        group = config.users.users.colin.group;
+        mode = config.users.users.colin.homeMode;
+      };
+
       # without this, we get `fusermount: fuse device not found, try 'modprobe fuse' first`.
       # - that only happens after a activation-via-boot -- not activation-after-rebuild-switch.
       # it seems likely that systemd loads `fuse` by default. see:
@@ -218,81 +186,44 @@ in
         let
           # systemd creates <path>.mount services for every fileSystems entry.
           # <path> gets escaped as part of that: this code tries to guess that escaped name here.
-          backing-mount = cleanName opt.store.device;
+          # backing-mount = cleanName opt.store.device;
           mount-service = cleanName opt.directory;
-          perms-service = "impermanence-perms-${mount-service}";
-          parent-mount-service = cleanName (parentDir opt.directory);
-          parent-perms-service = "impermanence-perms-${parent-mount-service}";
-          is-mount = opt ? store;
-          backing-path = if is-mount then
-            concatPaths [ opt.store.device opt.directory ]
-          else
-            opt.directory;
+          backing-path = concatPaths [ opt.store.device opt.directory ];
+
+          dir-service = config.sane.fs."${opt.directory}".service;
+          backing-service = config.sane.fs."${backing-path}".service;
         in {
-          fileSystems."${opt.directory}" = lib.mkIf is-mount {
-            device = concatPaths [ opt.store.device opt.directory ];
+          # create destination and backing directory, with correct perms
+          sane.fs."${opt.directory}".dir = {
+            inherit (opt) user group mode;
+          };
+          sane.fs."${backing-path}".dir = {
+            inherit (opt) user group mode;
+          };
+          # define the mountpoint.
+          fileSystems."${opt.directory}" = {
+            device = backing-path;
             options = [
               "bind"
               # "x-systemd.requires=${backing-mount}.mount"  # this should be implicit
-              "x-systemd.after=${perms-service}.service"
+              "x-systemd.after=${backing-service}"
+              "x-systemd.after=${dir-service}"
               # `wants` doesn't seem to make it to the service file here :-(
-              "x-systemd.wants=${perms-service}.service"
+              # "x-systemd.wants=${backing-service}"
+              # "x-systemd.wants=${dir-service}"
             ];
             # fsType = "bind";
             noCheck = true;
           };
+          systemd.services."${backing-service}".wantedBy = [ "${mount-service}.mount" ];
+          systemd.services."${dir-service}".wantedBy = [ "${mount-service}.mount" ];
 
-          # create services which ensure the source directories exist and have correct ownership/perms before mounting
-          systemd.services."${perms-service}" = let
-            perms-script = pkgs.writeShellScript "impermanence-prepare-perms" ''
-              backing="$1"
-              path="$2"
-              user="$3"
-              group="$4"
-              mode="$5"
-              mkdir "$path" || test -d "$path"
-              chmod "$mode" "$path"
-              chown "$user:$group" "$path"
-
-              # XXX: fix up the permissions of the origin, otherwise it overwrites the mountpoint with defaults.
-              # TODO: apply to the full $backing path? like, construct it entirely in parallel?
-              if [ "$backing" != "$path" ]
-              then
-                mkdir -p "$backing"
-                chmod "$mode" "$backing"
-                chown "$user:$group" "$backing"
-              fi
-            '';
-          in {
-            description = "prepare permissions for ${opt.directory}";
-            serviceConfig = {
-              ExecStart = ''${perms-script} ${backing-path} ${opt.directory} ${opt.user} ${opt.group} ${opt.mode}'';
-              Type = "oneshot";
-            };
-            unitConfig = {
-              # prevent systemd making this unit implicitly dependent on sysinit.target.
-              # see: <https://www.freedesktop.org/software/systemd/man/systemd.special.html>
-              DefaultDependencies = "no";
-            };
-            wantedBy = lib.mkIf is-mount [ "${mount-service}.mount" ];
-            after = lib.mkIf (opt.directory != "/") [ "${parent-perms-service}.service" ];
-            wants = lib.mkIf (opt.directory != "/") [ "${parent-perms-service}.service" ];
-          };
         };
-        cfgs = builtins.map cfgFor (builtins.attrValues expanded-tree);
-        # cfgs = builtins.map cfgFor ingested-dirs;
-        # cfgs = [ (cfgFor (ingestDirOption home-dir-defaults ".cache")) ];
-        # myMerge = items: builtins.foldl' (acc: new: acc // new) {} items;
+        cfgs = builtins.map cfgFor ingested-dirs;
       in {
-        # fileSystems = myMerge (catAttrs "fileSystems" cfgs);
-        fileSystems = lib.mkMerge (builtins.catAttrs "fileSystems" cfgs);
+        fileSystems = lib.mkMerge (catAttrs "fileSystems" cfgs);
+        sane.fs = lib.mkMerge (catAttrs "fs" (catAttrs "sane" cfgs));
         systemd = lib.mkMerge (catAttrs "systemd" cfgs);
-
-        # sane.fs."/home/colin".dir = {
-        #   user = "colin";
-        #   group = "users";
-        #   mode = "0755";
-        # };
       }
     )
 
