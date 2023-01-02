@@ -9,10 +9,9 @@
 with lib;
 let
   cfg = config.sane.home-manager;
-  # extract package from `sane.packages.enabledUserPkgs`
+  # extract `pkg` from `sane.packages.enabledUserPkgs`
   pkg-list = pkgspec: builtins.map (e: e.pkg) pkgspec;
-  # extract `dir` from `sane.packages.enabledUserPkgs`
-  dir-list = pkgspec: builtins.concatLists (builtins.map (e: e.dir) pkgspec);
+  # extract `private` from `sane.packages.enabledUserPkgs`
   private-list = pkgspec: builtins.concatLists (builtins.map (e: e.private) pkgspec);
   feeds = import ./feeds.nix { inherit lib; };
 in
@@ -61,7 +60,7 @@ in
       "Music"
       "Pictures"
       "Videos"
-    ] ++ (dir-list config.sane.packages.enabledUserPkgs);
+    ];
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
