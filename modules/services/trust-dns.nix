@@ -1,5 +1,8 @@
 { config, lib, pkgs, ... }:
 
+# TODO: consider using this library for .zone file generation:
+# - <https://github.com/kirelagin/dns.nix>
+
 with lib;
 let
   cfg = config.sane.services.trust-dns;
