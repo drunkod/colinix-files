@@ -10,10 +10,10 @@ with lib;
 let
   cfg = config.sane.home-manager;
   # extract package from `sane.packages.enabledUserPkgs`
-  pkg-list = pkgspec: builtins.map (e: e.pkg or e) pkgspec;
+  pkg-list = pkgspec: builtins.map (e: e.pkg) pkgspec;
   # extract `dir` from `sane.packages.enabledUserPkgs`
-  dir-list = pkgspec: builtins.concatLists (builtins.map (e: e.dir or []) pkgspec);
-  private-list = pkgspec: builtins.concatLists (builtins.map (e: e.private or []) pkgspec);
+  dir-list = pkgspec: builtins.concatLists (builtins.map (e: e.dir) pkgspec);
+  private-list = pkgspec: builtins.concatLists (builtins.map (e: e.private) pkgspec);
   feeds = import ./feeds.nix { inherit lib; };
 in
 {

@@ -300,7 +300,7 @@ in
         ++ (if cfg.enableGuiPkgs then guiPkgs else [])
         ++ (if cfg.enableDevPkgs then devPkgs else [])
       ;
-      type = types.listOf (types.either types.package types.attrs);
+      type = types.listOf (types.coercedTo types.package (p: { pkg = p; }) pkgSpec);
       description = "generated from other config options";
     };
   };
