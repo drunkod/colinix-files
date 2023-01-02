@@ -144,7 +144,7 @@ let
     #   possible to pass config as a CLI arg (sublime-music -c config.json)
     # { pkg = sublime-music; dir = [ ".local/share/sublime-music" ]; }
     { pkg = sublime-music-mobile; dir = [ ".local/share/sublime-music" ]; }
-    tdesktop  # broken on phosh
+    { pkg = tdesktop; private = [ ".local/share/TelegramDesktop" ]; }  # broken on phosh
 
     { pkg = tokodon; private = [ ".cache/KDE/tokodon" ]; }
 
