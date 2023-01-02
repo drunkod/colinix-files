@@ -14,7 +14,7 @@
     '';
   };
 
-  sane.services.trust-dns.zones."uninsane.org".inet.CNAME."nixcache" = [ "native" ];
+  sane.services.trust-dns.zones."uninsane.org".inet.CNAME."nixcache" = "native";
 
   sane.services.nixserve.enable = true;
   sane.services.nixserve.sopsFile = ../../../secrets/servo.yaml;

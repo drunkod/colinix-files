@@ -75,33 +75,33 @@
 
   sane.services.trust-dns.zones."uninsane.org".inet = {
     # XXX: SRV records have to point to something with a A/AAAA record; no CNAMEs
-    A."xmpp" =                [ "%NATIVE%" ];
-    CNAME."muc.xmpp" =        [ "xmpp" ];
-    CNAME."pubsub.xmpp" =     [ "xmpp" ];
-    CNAME."upload.xmpp" =     [ "xmpp" ];
-    CNAME."vjid.xmpp" =       [ "xmpp" ];
+    A."xmpp" =                "%NATIVE%";
+    CNAME."muc.xmpp" =        "xmpp";
+    CNAME."pubsub.xmpp" =     "xmpp";
+    CNAME."upload.xmpp" =     "xmpp";
+    CNAME."vjid.xmpp" =       "xmpp";
 
     # _Service._Proto.Name    TTL Class SRV    Priority Weight Port Target
     # - <https://xmpp.org/extensions/xep-0368.html>
     # something's requesting the SRV records for muc.xmpp, so let's include it
     # nothing seems to request XMPP SRVs for the other records (except @)
     # lower numerical priority field tells clients to prefer this method
-    SRV."_xmpps-client._tcp.muc.xmpp" =       [ "3 50 5223 xmpp" ];
-    SRV."_xmpps-server._tcp.muc.xmpp" =       [ "3 50 5270 xmpp" ];
-    SRV."_xmpp-client._tcp.muc.xmpp" =        [ "5 50 5222 xmpp" ];
-    SRV."_xmpp-server._tcp.muc.xmpp" =        [ "5 50 5269 xmpp" ];
+    SRV."_xmpps-client._tcp.muc.xmpp" =       "3 50 5223 xmpp";
+    SRV."_xmpps-server._tcp.muc.xmpp" =       "3 50 5270 xmpp";
+    SRV."_xmpp-client._tcp.muc.xmpp" =        "5 50 5222 xmpp";
+    SRV."_xmpp-server._tcp.muc.xmpp" =        "5 50 5269 xmpp";
 
-    SRV."_xmpps-client._tcp" =                [ "3 50 5223 xmpp" ];
-    SRV."_xmpps-server._tcp" =                [ "3 50 5270 xmpp" ];
-    SRV."_xmpp-client._tcp" =                 [ "5 50 5222 xmpp" ];
-    SRV."_xmpp-server._tcp" =                 [ "5 50 5269 xmpp" ];
+    SRV."_xmpps-client._tcp" =                "3 50 5223 xmpp";
+    SRV."_xmpps-server._tcp" =                "3 50 5270 xmpp";
+    SRV."_xmpp-client._tcp" =                 "5 50 5222 xmpp";
+    SRV."_xmpp-server._tcp" =                 "5 50 5269 xmpp";
 
-    SRV."_stun._udp" =                        [ "5 50 3478 xmpp" ];
-    SRV."_stun._tcp" =                        [ "5 50 3478 xmpp" ];
-    SRV."_stuns._tcp" =                       [ "5 50 5349 xmpp" ];
-    SRV."_turn._udp" =                        [ "5 50 3478 xmpp" ];
-    SRV."_turn._tcp" =                        [ "5 50 3478 xmpp" ];
-    SRV."_turns._tcp" =                       [ "5 50 5349 xmpp" ];
+    SRV."_stun._udp" =                        "5 50 3478 xmpp";
+    SRV."_stun._tcp" =                        "5 50 3478 xmpp";
+    SRV."_stuns._tcp" =                       "5 50 5349 xmpp";
+    SRV."_turn._udp" =                        "5 50 3478 xmpp";
+    SRV."_turn._tcp" =                        "5 50 3478 xmpp";
+    SRV."_turns._tcp" =                       "5 50 5349 xmpp";
   };
 
   # TODO: allocate UIDs/GIDs ?

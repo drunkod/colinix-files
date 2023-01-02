@@ -85,5 +85,5 @@
     };
   };
 
-  sane.services.trust-dns.zones."uninsane.org".inet.CNAME."git" = [ "native" ];
+  sane.services.trust-dns.zones."uninsane.org".inet.CNAME."git" = "native";
 }

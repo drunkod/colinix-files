@@ -45,22 +45,22 @@ in
 
 
   sane.services.trust-dns.zones."uninsane.org".inet = {
-    MX."@" = [ "10 mx.uninsane.org." ];
+    MX."@" = "10 mx.uninsane.org.";
     # XXX: RFC's specify that the MX record CANNOT BE A CNAME
-    A."mx" = [ "185.157.162.178" ];
-    CNAME."imap" = [ "native" ];
+    A."mx" = "185.157.162.178";
+    CNAME."imap" = "native";
 
     # Sender Policy Framework:
     #   +mx     => mail passes if it originated from the MX
     #   +a      => mail passes if it originated from the A address of this domain
     #   +ip4:.. => mail passes if it originated from this IP
     #   -all    => mail fails if none of these conditions were met
-    TXT."@" = [ "v=spf1 a mx -all" ];
+    TXT."@" = "v=spf1 a mx -all";
 
     # DKIM public key:
-    TXT."mx._domainkey" = [
+    TXT."mx._domainkey" =
       "v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkSyMufc2KrRx3j17e/LyB+3eYSBRuEFT8PUka8EDX04QzCwDPdkwgnj3GNDvnB5Ktb05Cf2SJ/S1OLqNsINxJRWtkVfZd/C339KNh9wrukMKRKNELL9HLUw0bczOI4gKKFqyrRE9qm+4csCMAR79Te9FCjGV/jVnrkLdPT0GtFwIDAQAB"
-    ];
+    ;
 
     # DMARC fields <https://datatracker.ietf.org/doc/html/rfc7489>:
     #   p=none|quarantine|reject: what to do with failures
@@ -75,9 +75,9 @@ in
     #   pct = sampling ratio for punishing failures (default 100 for 100%)
     #   rf = report format
     #   ri = report interval
-    TXT."_dmarc" = [
+    TXT."_dmarc" =
       "v=DMARC1;p=quarantine;sp=reject;rua=mailto:admin+mail@uninsane.org;ruf=mailto:admin+mail@uninsane.org;fo=1:d:s"
-    ];
+    ;
   };
 
   services.postfix.enable = true;

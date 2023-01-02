@@ -52,6 +52,13 @@ let
       }) cfg.zones
     );
   };
+
+  # (listOf ty) type which also accepts single-assignment of `ty`.
+  # it's used to allow the user to write:
+  #   CNAME."foo" = "bar";
+  # as shorthand for
+  #   CNAME."foo" = [ "bar" ];
+  listOrUnit = ty: types.coercedTo ty (elem: [ elem ]) (types.listOf ty);
 in
 {
   options = {
@@ -91,37 +98,37 @@ in
             };
             inet = {
               SOA = mkOption {
-                type = types.attrsOf (types.listOf types.str);
+                type = types.attrsOf (listOrUnit types.str);
                 description = "Start of Authority record(s)";
                 default = {};
               };
               A = mkOption {
-                type = types.attrsOf (types.listOf types.str);
+                type = types.attrsOf (listOrUnit types.str);
                 description = "IPv4 address record(s)";
                 default = {};
               };
               CNAME = mkOption {
-                type = types.attrsOf (types.listOf types.str);
+                type = types.attrsOf (listOrUnit types.str);
                 description = "canonical name record(s)";
                 default = {};
               };
               MX = mkOption {
-                type = types.attrsOf (types.listOf types.str);
+                type = types.attrsOf (listOrUnit types.str);
                 description = "mail exchanger record(s)";
                 default = {};
               };
               NS = mkOption {
-                type = types.attrsOf (types.listOf types.str);
+                type = types.attrsOf (listOrUnit types.str);
                 description = "name server record(s)";
                 default = {};
               };
               SRV = mkOption {
-                type = types.attrsOf (types.listOf types.str);
+                type = types.attrsOf (listOrUnit types.str);
                 description = "service record(s)";
                 default = {};
               };
               TXT = mkOption {
-                type = types.attrsOf (types.listOf types.str);
+                type = types.attrsOf (listOrUnit types.str);
                 description = "text record(s)";
                 default = {};
               };

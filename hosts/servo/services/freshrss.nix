@@ -57,5 +57,5 @@
     # the routing is handled by services.freshrss.virtualHost
   };
 
-  sane.services.trust-dns.zones."uninsane.org".inet.CNAME."rss" = [ "native" ];
+  sane.services.trust-dns.zones."uninsane.org".inet.CNAME."rss" = "native";
 }
