@@ -1,4 +1,5 @@
-{ config, lib, pkgs, mobile-nixos, utils, ... }:
+{ config, lib, pkgs, utils, ... }:
+# TODO: replace mobile-nixos parts with Disko <https://github.com/nix-community/disko>
 
 with lib;
 let
@@ -9,7 +10,7 @@ in
     sane.image.enable = mkOption {
       default = true;
       type = types.bool;
-      description = "whether to enable image targets. this doesn't mean they'll be built unless you specifically reference the target.";
+      description = "whether to enable image targets. even so they won't be built unless you specifically reference the `system.build.img` target.";
     };
     # packages whose contents should be copied directly into the /boot partition.
     # e.g. EFI loaders, u-boot bootloader, etc.

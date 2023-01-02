@@ -1,4 +1,4 @@
-{ config, pkgs, lib, mobile-nixos, ... }:
+{ config, pkgs, lib, ... }:
 {
   imports = [
     ./firmware.nix
