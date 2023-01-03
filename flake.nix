@@ -77,10 +77,6 @@
               # gocryptfs = cross.gocryptfs;
 
               # pinned packages:
-              # 2022/12/13: grpc does not build on aarch64-linux. https://github.com/NixOS/nixpkgs/issues/205887
-              grpc = stable.grpc;
-              # depends on grpc, so pinned.
-              duplicity = stable.duplicity;
             })
           ];
         }
