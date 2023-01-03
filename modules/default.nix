@@ -3,7 +3,7 @@
 {
   imports = [
     ./allocations.nix
-    ./fs.nix
+    ./fs
     ./gui
     ./home-manager
     ./packages.nix
