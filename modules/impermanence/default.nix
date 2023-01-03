@@ -181,57 +181,36 @@ in
     ./stores
   ];
 
-  config = mkIf cfg.enable (lib.mkMerge [
-    {
-      # TODO: move to sane.fs, to auto-ensure all user dirs?
-      sane.fs."/home/colin".dir.acl = {
-        user = "colin";
-        group = config.users.users.colin.group;
-        mode = config.users.users.colin.homeMode;
-      };
+  config = let
+    cfgFor = opt:
+      let
+        store = opt.store;
+        store-rel-path = pathFrom store.prefix opt.directory;
+        backing-path = concatPaths [ store.mountpt store-rel-path ];
 
-      # N.B.: we have a similar problem with all mounts:
-      # <crypt>/.cache/mozilla won't inherit <plain>/.cache perms.
-      # this is less of a problem though, since we don't really support overlapping mounts like that in the first place.
-      # what is a problem is if the user specified some other dir we don't know about here.
-      # like "/var", and then "/nix/persist/var" has different perms and something mounts funny.
-      # TODO: just add assertions that sane.fs."${backing}/${dest}".dir == sane.fs."${dest}" for each mount point?
-      sane.fs."/nix/persist/home/colin".dir.acl = config.sane.fs."/home/colin".dir.acl;
-      sane.fs."/mnt/impermanence/crypt/clearedonboot/home/colin".dir.acl = config.sane.fs."/home/colin".dir.acl;
-    }
-
-    (
-      let cfgFor = opt:
-        let
-          store = opt.store;
-          store-rel-path = pathFrom store.prefix opt.directory;
-          backing-path = concatPaths [ store.mountpt store-rel-path ];
-
-          # pass through the perm/mode overrides
-          dir-acl = {
-            user = lib.mkIf (opt.user != null) opt.user;
-            group = lib.mkIf (opt.group != null) opt.group;
-            mode = lib.mkIf (opt.mode != null) opt.mode;
-          };
-        in {
-          # create destination and backing directory, with correct perms
-          sane.fs."${opt.directory}" = {
-            # inherit perms & make sure we don't mount until after the mount point is setup correctly.
-            dir.acl = dir-acl;
-            mount.bind = backing-path;
-            mount.extraOptions = store.extraOptions;
-          };
-          sane.fs."${backing-path}" = {
-            # ensure the backing path has same perms as the mount point
-            dir.acl = config.sane.fs."${opt.directory}".dir.acl;
-          };
+        # pass through the perm/mode overrides
+        dir-acl = {
+          user = lib.mkIf (opt.user != null) opt.user;
+          group = lib.mkIf (opt.group != null) opt.group;
+          mode = lib.mkIf (opt.mode != null) opt.mode;
         };
-        cfgs = builtins.map cfgFor cfg.dirs.all;
       in {
-        sane.fs = lib.mkMerge (catAttrs "fs" (catAttrs "sane" cfgs));
-      }
-    )
-
-  ]);
+        # create destination and backing directory, with correct perms
+        sane.fs."${opt.directory}" = {
+          # inherit perms & make sure we don't mount until after the mount point is setup correctly.
+          dir.acl = dir-acl;
+          mount.bind = backing-path;
+          mount.extraOptions = store.extraOptions;
+        };
+        sane.fs."${backing-path}" = {
+          # ensure the backing path has same perms as the mount point.
+          # TODO: maybe we want to do this, crawling all the way up to the store base?
+          # that would simplify (remove) the code in stores/default.nix
+          dir.acl = config.sane.fs."${opt.directory}".dir.acl;
+        };
+      };
+  in mkIf cfg.enable {
+    sane.fs = lib.mkMerge (map (d: (cfgFor d).sane.fs) cfg.dirs.all);
+  };
 }
 

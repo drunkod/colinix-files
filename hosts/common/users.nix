@@ -71,6 +71,14 @@ in
 
     security.pam.mount.enable = true;
 
+    # ensure ~ perms are known to sane.fs module.
+    # TODO: this is generic enough to be lifted up into sane.fs itself.
+    sane.fs."/home/colin".dir.acl = {
+      user = "colin";
+      group = config.users.users.colin.group;
+      mode = config.users.users.colin.homeMode;
+    };
+
     sane.impermanence.dirs.home.plaintext = [
       "archive"
       "dev"
