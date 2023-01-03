@@ -54,7 +54,6 @@
     in (nixosSystem {
       # by default the local system is the same as the target, employing emulation when they differ
       system = target;
-      specialArgs = { inherit mobile-nixos home-manager impermanence; };
       modules = [
         ./modules
         (import ./hosts/instantiate.nix name)
