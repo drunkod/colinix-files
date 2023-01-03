@@ -6,12 +6,10 @@ in
 {
   imports = [
     ./crypt.nix
+    ./plaintext.nix
     ./private.nix
   ];
 
   config = lib.mkIf cfg.enable {
-    sane.impermanence.stores."plaintext" = {
-      mountpt = "/nix/persist";
-    };
   };
 }
