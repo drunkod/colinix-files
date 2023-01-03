@@ -16,10 +16,20 @@ let
       prefix = mkOption {
         type = types.str;
         default = "/";
+        description = ''
+          optional prefix to strip from children when stored here.
+          for example, prefix="/var/private" and mountpoint="/mnt/crypt/private"
+          would cause /var/private/www/root to be stored at /mnt/crypt/private/www/root instead of
+          /mnt/crypt/private/var/private/www/root.
+        '';
       };
       extraOptions = mkOption {
         type = types.listOf types.str;
         default = [];
+        description = ''
+          extra fstab options to include in all mounts downstream of this store.
+          e.g. ["noauto" "x-systemd.wanted-by=<blah>"] to automount but only after the store is explicitly unlocked.
+        '';
       };
     };
   };
@@ -160,6 +170,9 @@ in
     sane.impermanence.stores = mkOption {
       type = types.attrsOf storeType;
       default = {};
+      description = ''
+        map from human-friendly name to a fs sub-tree from which files are linked into the logical fs.
+      '';
     };
   };
 
