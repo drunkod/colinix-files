@@ -71,7 +71,7 @@ in lib.mkIf config.sane.impermanence.enable
     # ensure the fs is mounted only after the mountpoint directory is created
     dir.reverseDepends = [ store.mount-unit ];
     # HACK: this fs entry is provided by our mount unit.
-    unit = store.mount-unit;
+    mount.unit = store.mount-unit;
   };
   sane.fs."${store.underlying.path}" = {
     # don't mount until after the backing dir is setup correctly.

@@ -96,7 +96,7 @@ in
   config = mkIf cfg.enable (lib.mkMerge [
     {
       # TODO: move to sane.fs, to auto-ensure all user dirs?
-      sane.fs."/home/colin".dir = {
+      sane.fs."/home/colin".dir.acl = {
         user = "colin";
         group = config.users.users.colin.group;
         mode = config.users.users.colin.homeMode;
@@ -107,30 +107,17 @@ in
       # what is a problem is if the user specified some other dir we don't know about here.
       # like "/var", and then "/nix/persist/var" has different perms and something mounts funny.
       # TODO: just add assertions that sane.fs."${backing}/${dest}".dir == sane.fs."${dest}" for each mount point?
-      sane.fs."/nix/persist/home/colin".dir = {
-        user = "colin";
-        group = config.users.users.colin.group;
-        mode = config.users.users.colin.homeMode;
-      };
-      sane.fs."/mnt/impermanence/crypt/clearedonboot/home/colin".dir = {
-        user = "colin";
-        group = config.users.users.colin.group;
-        mode = config.users.users.colin.homeMode;
-      };
+      sane.fs."/nix/persist/home/colin".dir.acl = config.sane.fs."/home/colin".dir.acl;
+      sane.fs."/mnt/impermanence/crypt/clearedonboot/home/colin".dir.acl = config.sane.fs."/home/colin".dir.acl;
     }
 
     (
       let cfgFor = opt:
         let
-          # systemd creates <path>.mount services for every fileSystems entry.
-          # <path> gets escaped as part of that: this code tries to guess that escaped name here.
-          mount-unit = "${utils.escapeSystemdPath opt.directory}.mount";
           backing-path = concatPaths [ opt.store opt.directory ];
 
-          dir-unit = config.sane.fs."${opt.directory}".unit;
-          backing-unit = config.sane.fs."${backing-path}".unit;
           # pass through the perm/mode overrides
-          dir-opts = {
+          dir-acl = {
             user = lib.mkIf (opt.user != null) opt.user;
             group = lib.mkIf (opt.group != null) opt.group;
             mode = lib.mkIf (opt.mode != null) opt.mode;
@@ -139,27 +126,16 @@ in
           # create destination and backing directory, with correct perms
           sane.fs."${opt.directory}" = {
             # inherit perms & make sure we don't mount until after the mount point is setup correctly.
-            dir = dir-opts // { reverseDepends = [ mount-unit ]; };
-            # HACK: anything depending on this directory should actually depend on it being mounted.
-            unit = mount-unit;
+            dir.acl = dir-acl;
+            mount.bind = backing-path;
           };
           sane.fs."${backing-path}" = {
-            # inherit perms & make sure we don't mount until after the backing dir is setup correctly.
-            dir = dir-opts // { reverseDepends = [ mount-unit ]; };
-          };
-          # define the mountpoint.
-          fileSystems."${opt.directory}" = {
-            device = backing-path;
-            options = [
-              "bind"
-            ];
-            # fsType = "bind";
-            noCheck = true;
+            # ensure the backing path has same perms as the mount point
+            dir.acl = config.sane.fs."${opt.directory}".dir.acl;
           };
         };
         cfgs = builtins.map cfgFor ingested-dirs;
       in {
-        fileSystems = lib.mkMerge (catAttrs "fileSystems" cfgs);
         sane.fs = lib.mkMerge (catAttrs "fs" (catAttrs "sane" cfgs));
       }
     )

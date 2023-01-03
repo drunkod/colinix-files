@@ -3,6 +3,7 @@ with lib;
 let
   cfg = config.sane.fs;
 
+  mountNameFor = path: "${utils.escapeSystemdPath path}.mount";
   serviceNameFor = path: "ensure-${utils.escapeSystemdPath path}";
 
   # sane.fs."<path>" top-level options
@@ -11,10 +12,15 @@ let
     has-parent = hasParent name;
     parent-cfg = if has-parent then cfg."${parent}" else {};
     parent-dir = parent-cfg.dir or {};
+    parent-acl = parent-dir.acl or {};
   in {
     options = {
       dir = mkOption {
         type = dirEntry;
+      };
+      mount = mkOption {
+        type = types.nullOr (mountEntryFor name);
+        default = null;
       };
       unit = mkOption {
         type = types.str;
@@ -22,22 +28,25 @@ let
       };
     };
     config = {
-      dir.user = lib.mkDefault (parent-dir.user or "root");
-      dir.group = lib.mkDefault (parent-dir.group or "root");
-      dir.mode = lib.mkDefault (parent-dir.mode or "0755");
+      dir.acl.user = lib.mkDefault (parent-acl.user or "root");
+      dir.acl.group = lib.mkDefault (parent-acl.group or "root");
+      dir.acl.mode = lib.mkDefault (parent-acl.mode or "0755");
       # we put this here instead of as a `default` to ensure that users who specify additional
       # dependencies still get a dep on the parent (unless they assign with `mkForce`).
       dir.depends = if has-parent then [ parent-cfg.unit ] else [];
       # if defaulted, this module is responsible for creating the directory
       dir.unit = lib.mkDefault ((serviceNameFor name) + ".service");
+
       # if defaulted, this module is responsible for finalizing the entry.
-      # the user could override this if, say, they provide an alternate unit
-      # which finalizes the entry (by mounting it, for example).
-      unit = lib.mkDefault config.dir.unit;
+      # the user could override this if, say, they finalize some aspect of the entry
+      # with a custom service.
+      unit = lib.mkDefault (if config.mount != null then
+        config.mount.unit
+      else config.dir.unit);
     };
   });
-  # sane.fs."<path>".dir sub-options
-  dirEntry = types.submodule {
+
+  acl = types.submodule {
     options = {
       user = mkOption {
         type = types.str;  # TODO: use uid?
@@ -47,6 +56,15 @@ let
       };
       mode = mkOption {
         type = types.str;
+      };
+    };
+  };
+
+  # sane.fs."<path>".dir sub-options
+  dirEntry = types.submodule {
+    options = {
+      acl = mkOption {
+        type = acl;
       };
       depends = mkOption {
         type = types.listOf types.str;
@@ -65,14 +83,30 @@ let
     };
   };
 
+  # sane.fs."<path>".mount sub-options
+  mountEntryFor = path: types.submodule {
+    options = {
+      bind = mkOption {
+        type = types.nullOr types.str;
+        description = "fs path to bind-mount from";
+        default = null;
+      };
+      unit = mkOption {
+        type = types.str;
+        description = "name of the systemd unit which mounts this path";
+        default = mountNameFor path;
+      };
+    };
+  };
+
   # given a fsEntry definition, output the `config` attrs it generates.
-  mkFsConfig = path: opt: {
+  mkDirConfig = path: opt: {
     systemd.services."${serviceNameFor path}" = {
       description = "prepare ${path}";
       serviceConfig.Type = "oneshot";
 
       script = ensure-dir-script;
-      scriptArgs = "${path} ${opt.dir.user} ${opt.dir.group} ${opt.dir.mode}";
+      scriptArgs = "${path} ${opt.dir.acl.user} ${opt.dir.acl.group} ${opt.dir.acl.mode}";
 
       after = opt.dir.depends;
       wants = opt.dir.depends;
@@ -83,6 +117,42 @@ let
       wantedBy = opt.dir.reverseDepends;
       before = opt.dir.reverseDepends;
     };
+  };
+
+  mkMountConfig = path: opt: (let
+    underlying = cfg."${opt.mount.bind}";
+  in {
+    fileSystems."${path}" = lib.mkIf (opt.mount.bind != null) {
+      device = opt.mount.bind;
+      options = [
+        "bind"
+        # we can't mount this until after the underlying path is prepared.
+        # if the underlying path disappears, this mount will be stopped.
+        "x-systemd.requires=${underlying.dir.unit}"
+        # the mount depends on its target directory being prepared
+        "x-systemd.requires=${opt.dir.unit}"
+      ];
+      noCheck = true;
+    };
+  });
+
+  mkFsConfig = path: opt: mergeTopLevel [
+    (mkDirConfig path opt)
+    (lib.mkIf (opt.mount != null) (mkMountConfig path opt))
+  ];
+
+  # act as `config = lib.mkMerge [ a b ]` but in a way which avoids infinite recursion,
+  # by extracting only specific options which are known to not be options in this module.
+  mergeTopLevel = items: let
+    # if one of the items is `lib.mkIf cond attrs`, we won't be able to index it until
+    # after we "push down" the mkIf to each attr.
+    indexable = lib.pushDownProperties (lib.mkMerge items);
+    # transform (listOf attrs) to (attrsOf list) by grouping each toplevel attr across lists.
+    top = lib.zipAttrsWith (name: lib.mkMerge) indexable;
+    # extract known-good top-level items in a way which errors if a module tries to define something extra.
+    extract = { fileSystems ? {}, systemd ? {} }@attrs: attrs;
+  in {
+    inherit (extract top) fileSystems systemd;
   };
 
   # systemd/shell script used to create and set perms for a specific dir
@@ -166,10 +236,5 @@ in {
     };
   };
 
-  config = let
-    cfgs = builtins.attrValues (builtins.mapAttrs mkFsConfig cfg);
-  in {
-    # we can't lib.mkMerge at the top-level, so do it per-attribute
-    systemd = lib.mkMerge (catAttrs "systemd" cfgs);
-  };
+  config = mergeTopLevel (lib.mapAttrsToList mkFsConfig cfg);
 }
