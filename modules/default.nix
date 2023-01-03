@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, utils, ... }:
 
 {
   imports = [
@@ -13,4 +13,8 @@
     ./services
     ./sops.nix
   ];
+
+  _module.args =  {
+    sane-lib = import ./lib { inherit lib utils; };
+  };
 }

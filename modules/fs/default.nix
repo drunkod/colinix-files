@@ -1,6 +1,7 @@
-{ config, lib, pkgs, utils, ... }:
+{ config, lib, pkgs, utils, sane-lib, ... }:
 with lib;
 let
+  path-lib = sane-lib.path;
   cfg = config.sane.fs;
 
   mountNameFor = path: "${utils.escapeSystemdPath path}.mount";
@@ -8,8 +9,8 @@ let
 
   # sane.fs."<path>" top-level options
   fsEntry = types.submodule ({ name, config, ...}: let
-    parent = parentDir name;
-    has-parent = hasParent name;
+    parent = path-lib.parent name;
+    has-parent = path-lib.hasParent name;
     parent-cfg = if has-parent then cfg."${parent}" else {};
     parent-dir = parent-cfg.dir or {};
     parent-acl = parent-dir.acl or {};
@@ -46,6 +47,7 @@ let
     };
   });
 
+  # TODO: lift this to sane-lib
   acl = types.submodule {
     options = {
       user = mkOption {
@@ -179,26 +181,10 @@ let
     chown "$user:$group" "$path"
   '';
 
-  # split the string path into a list of string components.
-  # root directory "/" becomes the empty list [].
-  # implicitly performs normalization so that:
-  # splitPath "a//b/" => ["a" "b"]
-  # splitPath "/a/b" =>  ["a" "b"]
-  splitPath = str: builtins.filter (seg: (builtins.isString seg) && seg != "" ) (builtins.split "/" str);
-  # return a string path, with leading slash but no trailing slash
-  joinPathAbs = comps: "/" + (builtins.concatStringsSep "/" comps);
-  concatPaths = paths: joinPathAbs (builtins.concatLists (builtins.map (p: splitPath p) paths));
-  # normalize the given path
-  normPath = str: joinPathAbs (splitPath str);
-  # return the parent directory. doesn't care about leading/trailing slashes.
-  # the parent of "/" is "/".
-  parentDir = str: normPath (builtins.dirOf (normPath str));
-  hasParent = str: (parentDir str) != (normPath str);
-
   # return all ancestors of this path.
   # e.g. ancestorsOf "/foo/bar/baz" => [ "/" "/foo" "/foo/bar" ]
-  ancestorsOf = path: if hasParent path then
-    ancestorsOf (parentDir path) ++ [ (parentDir path) ]
+  ancestorsOf = path: if path-lib.hasParent path then
+    ancestorsOf (path-lib.parent path) ++ [ (path-lib.parent path) ]
   else
     [ ]
   ;
@@ -231,7 +217,7 @@ let
       name = "fsTree";
       description = "attrset representation of a file-system tree";
       # ensure that every path is in canonical form, else we might get duplicates and subtle errors
-      check = tree: builtins.all (p: p == normPath p) (builtins.attrNames tree);
+      check = tree: builtins.all (p: p == path-lib.norm p) (builtins.attrNames tree);
     };
 
 in {
