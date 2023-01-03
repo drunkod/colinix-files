@@ -56,6 +56,6 @@ in lib.mkIf config.sane.impermanence.enable
   };
 
   # TODO: could add this *specifically* to the .mount file for the encrypted fs?
-  environment.systemPackages = [ pkgs.gocryptfs ];  # fuse needs to find gocryptfs
+  system.fsPackages = [ pkgs.gocryptfs ];  # fuse needs to find gocryptfs
 }
 
