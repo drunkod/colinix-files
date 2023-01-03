@@ -15,7 +15,8 @@ in
 
   config = mkIf cfg.enable {
     # we need this mostly because of the size of duplicity's cache
-    sane.impermanence.dirs = [ "/var/lib/duplicity" ];
+    # TODO: move to cryptClearOnBoot and update perms
+    sane.impermanence.dirs.sys.plaintext = [ "/var/lib/duplicity" ];
 
     services.duplicity.enable = true;
     services.duplicity.targetUrl = "$DUPLICITY_URL";

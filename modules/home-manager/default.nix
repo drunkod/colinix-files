@@ -11,8 +11,6 @@ let
   cfg = config.sane.home-manager;
   # extract `pkg` from `sane.packages.enabledUserPkgs`
   pkg-list = pkgspec: builtins.map (e: e.pkg) pkgspec;
-  # extract `private` from `sane.packages.enabledUserPkgs`
-  private-list = pkgspec: builtins.concatLists (builtins.map (e: e.private) pkgspec);
   feeds = import ./feeds.nix { inherit lib; };
 in
 {
@@ -50,9 +48,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    sane.impermanence.home-dirs = [
+    sane.impermanence.dirs.home.plaintext = [
       "archive"
       "dev"
+      # TODO: records should be private
       "records"
       "ref"
       "tmp"
@@ -90,15 +89,7 @@ in
       };
 
 
-      home.file = let
-        privates = builtins.listToAttrs (
-          builtins.map (path: {
-            name = path;
-            value = { source = config.lib.file.mkOutOfStoreSymlink "/home/colin/private/${path}"; };
-          })
-          (private-list sysconfig.sane.packages.enabledUserPkgs)
-        );
-      in {
+      home.file = {
         # convenience
         "knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/private/knowledge";
         "nixos".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/nixos";
@@ -108,7 +99,7 @@ in
 
         # used by password managers, e.g. unix `pass`
         ".password-store".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/knowledge/secrets/accounts";
-      } // privates;
+      };
 
       # XDG defines things like ~/Desktop, ~/Downloads, etc.
       # these clutter the home, so i mostly don't use them.

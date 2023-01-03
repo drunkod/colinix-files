@@ -36,11 +36,12 @@
     ];
   };
 
-  sane.impermanence.dirs = [
+  sane.impermanence.dirs.sys.plaintext = [
     # TODO: this is overly broad; only need media and share directories to be persisted
     { user = "colin"; group = "users"; directory = "/var/lib/uninsane"; }
   ];
   # direct these media directories to external storage
+  # TODO: convert to sane.fs
   environment.persistence."/nix/persist/ext/persist" = {
     directories = [
       ({

@@ -71,17 +71,19 @@ in
 
     security.pam.mount.enable = true;
 
-    sane.impermanence.home-dirs = [
-      # cache is probably too big to fit on the tmpfs
-      # { directory = ".cache"; store = "crypt-clearedonboot"; }
-      { directory = ".cache/mozilla"; store = "crypt-clearedonboot"; }
+    sane.impermanence.dirs.home.plaintext = [
       ".cargo"
       ".rustup"
       # TODO: move this to ~/private!
       ".local/share/keyrings"
     ];
+    sane.impermanence.dirs.home.cryptClearOnBoot = [
+      # cache is probably too big to fit on the tmpfs
+      # ".cache"
+      ".cache/mozilla"
+    ];
 
-    sane.impermanence.dirs = mkIf cfg.guest.enable [
+    sane.impermanence.dirs.sys.plaintext = mkIf cfg.guest.enable [
       { user = "guest"; group = "users"; directory = "/home/guest"; }
     ];
     users.users.guest = mkIf cfg.guest.enable {

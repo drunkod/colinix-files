@@ -1,6 +1,6 @@
 { lib, ... }:
 {
-  sane.impermanence.dirs = [
+  sane.impermanence.dirs.sys.plaintext = [
     { user = "matrix-synapse"; group = "matrix-synapse"; directory = "/var/lib/mx-puppet-discord"; }
   ];
 

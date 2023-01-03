@@ -91,6 +91,11 @@ let
         description = "fs path to bind-mount from";
         default = null;
       };
+      extraOptions = mkOption {
+        type = types.listOf types.str;
+        description = "extra fstab options for this mount";
+        default = [];
+      };
       unit = mkOption {
         type = types.str;
         description = "name of the systemd unit which mounts this path";
@@ -126,12 +131,14 @@ let
       device = opt.mount.bind;
       options = [
         "bind"
+        # x-systemd options documented here:
+        # - <https://www.freedesktop.org/software/systemd/man/systemd.mount.html>
         # we can't mount this until after the underlying path is prepared.
         # if the underlying path disappears, this mount will be stopped.
         "x-systemd.requires=${underlying.dir.unit}"
         # the mount depends on its target directory being prepared
         "x-systemd.requires=${opt.dir.unit}"
-      ];
+      ] ++ opt.mount.extraOptions;
       noCheck = true;
     };
   });

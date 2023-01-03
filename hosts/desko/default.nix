@@ -52,7 +52,7 @@
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
-  sane.impermanence.home-dirs = [
+  sane.impermanence.dirs.home.plaintext = [
     ".steam"
     ".local/share/Steam"
   ];

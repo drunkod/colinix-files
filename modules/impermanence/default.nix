@@ -8,9 +8,20 @@ with lib;
 let
   cfg = config.sane.impermanence;
 
-  stores = {
-    "crypt-clearedonboot" = "/mnt/impermanence/crypt/clearedonboot";
-    "persist" = "/nix/persist";
+  storeType = types.submodule {
+    options = {
+      mountpt = mkOption {
+        type = types.str;
+      };
+      prefix = mkOption {
+        type = types.str;
+        default = "/";
+      };
+      extraOptions = mkOption {
+        type = types.listOf types.str;
+        default = [];
+      };
+    };
   };
 
   # split the string path into a list of string components.
@@ -22,16 +33,17 @@ let
   # return a string path, with leading slash but no trailing slash
   joinPathAbs = comps: "/" + (builtins.concatStringsSep "/" comps);
   concatPaths = paths: joinPathAbs (builtins.concatLists (builtins.map (p: splitPath p) paths));
+  # return the path from `from` to `to`, but generally in absolute form.
+  # e.g. `pathFrom "/home/colin" "/home/colin/foo/bar"` -> "/foo/bar"
+  pathFrom = from: to:
+    assert lib.hasPrefix from to;
+    lib.removePrefix from to;
 
   # options for a single mountpoint / persistence
-  dirEntry = types.submodule {
+  dirEntryOptions = {
     options = {
       directory = mkOption {
         type = types.str;
-      };
-      store = mkOption {
-        default = "persist";
-        type = types.enum (builtins.attrNames stores);
       };
       user = mkOption {
         type = types.nullOr types.str;
@@ -47,22 +59,88 @@ let
       };
     };
   };
+  contextualizedDir = types.submodule dirEntryOptions;
   # allow "bar/baz" as shorthand for { directory = "bar/baz"; }
-  coercedDirEntry = types.coercedTo types.str (d: { directory = d; }) dirEntry;
+  contextualizedDirOrShorthand = types.coercedTo
+    types.str
+    (d: { directory = d; })
+    contextualizedDir;
 
-  # expand user options with more context
-  ingestDirEntry = relativeTo: opt: {
-    inherit (opt) user group mode;
-    directory = concatPaths [ relativeTo opt.directory ];
+  # entry whose `directory` is always an absolute fs path
+  # and has an associated `store`
+  contextFreeDir = types.submodule [
+    dirEntryOptions
+    {
+      options = {
+        store = mkOption {
+          type = storeType;
+        };
+      };
+    }
+  ];
 
-    # resolve the store
-    store = stores."${opt.store}";
-  };
-
-  ingestDirEntries = relativeTo: opts: builtins.map (ingestDirEntry relativeTo) opts;
-  ingested-home-dirs = ingestDirEntries "/home/colin" cfg.home-dirs;
-  ingested-sys-dirs = ingestDirEntries "/" cfg.dirs;
-  ingested-dirs = ingested-home-dirs ++ ingested-sys-dirs;
+  dirsModule = types.submodule ({ config, ... }: {
+    options = {
+      home = mkOption {
+        description = "directories to persist to disk, relative to a user's home ~";
+        default = {};
+        type = types.submodule {
+          options = {
+            plaintext = mkOption {
+              default = [];
+              type = types.listOf contextualizedDirOrShorthand;
+              description = "directories to persist in cleartext";
+            };
+            private = mkOption {
+              default = [];
+              type = types.listOf contextualizedDirOrShorthand;
+              description = "directories to store encrypted to the user's login password and auto-decrypt on login";
+            };
+            cryptClearOnBoot = mkOption {
+              default = [];
+              type = types.listOf contextualizedDirOrShorthand;
+              description = ''
+                directories to store encrypted to an auto-generated in-memory key and
+                wiped on boot. the main use is for sensitive cache dirs too large to fit in memory.
+              '';
+            };
+          };
+        };
+      };
+      sys = mkOption {
+        description = "directories to persist to disk, relative to the fs root /";
+        default = {};
+        type = types.submodule {
+          options = {
+            plaintext = mkOption {
+              default = [];
+              type = types.listOf contextualizedDirOrShorthand;
+              description = "list of directories (and optional config) to persist to disk in plaintext, relative to the fs root /";
+            };
+          };
+        };
+      };
+      all = mkOption {
+        type = types.listOf contextFreeDir;
+        description = "all directories known to the config. auto-computed: users should not set this directly.";
+      };
+    };
+    config = let
+      mapDirs = relativeTo: store: dirs: (map
+        (d: {
+          inherit (d) user group mode;
+          directory = concatPaths [ relativeTo d.directory ];
+          store = cfg.stores."${store}";
+        })
+        dirs
+      );
+    in {
+      all = (mapDirs "/home/colin" "plaintext"        config.home.plaintext)
+         ++ (mapDirs "/home/colin" "private"          config.home.private)
+         ++ (mapDirs "/home/colin" "cryptClearOnBoot" config.home.cryptClearOnBoot)
+         ++ (mapDirs "/"           "plaintext"        config.sys.plaintext);
+    };
+  });
 in
 {
   options = {
@@ -73,23 +151,21 @@ in
     sane.impermanence.root-on-tmpfs = mkOption {
       default = false;
       type = types.bool;
-      description = "define / to be a tmpfs. make sure to mount some other device to /nix";
-    };
-    sane.impermanence.home-dirs = mkOption {
-      default = [];
-      type = types.listOf coercedDirEntry;
-      description = "list of directories (and optional config) to persist to disk, relative to the user's home ~";
+      description = "define / fs root to be a tmpfs. make sure to mount some other device to /nix";
     };
     sane.impermanence.dirs = mkOption {
-      default = [];
-      type = types.listOf coercedDirEntry;
-      description = "list of directories (and optional config) to persist to disk, relative to the fs root /";
+      type = dirsModule;
+      default = {};
+    };
+    sane.impermanence.stores = mkOption {
+      type = types.attrsOf storeType;
+      default = {};
     };
   };
 
   imports = [
-    ./crypt.nix
     ./root-on-tmpfs.nix
+    ./stores
   ];
 
   config = mkIf cfg.enable (lib.mkMerge [
@@ -100,6 +176,7 @@ in
         group = config.users.users.colin.group;
         mode = config.users.users.colin.homeMode;
       };
+
       # N.B.: we have a similar problem with all mounts:
       # <crypt>/.cache/mozilla won't inherit <plain>/.cache perms.
       # this is less of a problem though, since we don't really support overlapping mounts like that in the first place.
@@ -113,7 +190,9 @@ in
     (
       let cfgFor = opt:
         let
-          backing-path = concatPaths [ opt.store opt.directory ];
+          store = opt.store;
+          store-rel-path = pathFrom store.prefix opt.directory;
+          backing-path = concatPaths [ store.mountpt store-rel-path ];
 
           # pass through the perm/mode overrides
           dir-acl = {
@@ -127,13 +206,14 @@ in
             # inherit perms & make sure we don't mount until after the mount point is setup correctly.
             dir.acl = dir-acl;
             mount.bind = backing-path;
+            mount.extraOptions = store.extraOptions;
           };
           sane.fs."${backing-path}" = {
             # ensure the backing path has same perms as the mount point
             dir.acl = config.sane.fs."${opt.directory}".dir.acl;
           };
         };
-        cfgs = builtins.map cfgFor ingested-dirs;
+        cfgs = builtins.map cfgFor cfg.dirs.all;
       in {
         sane.fs = lib.mkMerge (catAttrs "fs" (catAttrs "sane" cfgs));
       }
