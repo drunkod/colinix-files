@@ -7,12 +7,11 @@
 with lib;
 let
   cfg = config.sane.impermanence;
-  getStore = { encryptedClearOnBoot, ... }: (
-    if encryptedClearOnBoot then
-      "/mnt/impermanence/crypt/clearedonboot"
-    else
-      "/nix/persist"
-  );
+
+  stores = {
+    "crypt-clearedonboot" = "/mnt/impermanence/crypt/clearedonboot";
+    "persist" = "/nix/persist";
+  };
 
   # split the string path into a list of string components.
   # root directory "/" becomes the empty list [].
@@ -30,9 +29,9 @@ let
       directory = mkOption {
         type = types.str;
       };
-      encryptedClearOnBoot = mkOption {
-        default = false;
-        type = types.bool;
+      store = mkOption {
+        default = "persist";
+        type = types.enum (builtins.attrNames stores);
       };
       user = mkOption {
         type = types.nullOr types.str;
@@ -56,8 +55,8 @@ let
     inherit (opt) user group mode;
     directory = concatPaths [ relativeTo opt.directory ];
 
-    ## helpful context
-    store = getStore opt;
+    # resolve the store
+    store = stores."${opt.store}";
   };
 
   ingestDirEntries = relativeTo: opts: builtins.map (ingestDirEntry relativeTo) opts;
