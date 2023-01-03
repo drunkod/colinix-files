@@ -2,10 +2,11 @@
 #   https://xeiaso.net/blog/paranoid-nixos-2021-07-18
 #   https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/
 #   https://github.com/nix-community/impermanence
-{ config, lib, pkgs, utils, ... }:
+{ config, lib, pkgs, utils, sane-lib, ... }:
 
 with lib;
 let
+  path = sane-lib.path;
   cfg = config.sane.impermanence;
 
   storeType = types.submodule {
@@ -33,21 +34,6 @@ let
       };
     };
   };
-
-  # split the string path into a list of string components.
-  # root directory "/" becomes the empty list [].
-  # implicitly performs normalization so that:
-  # splitPath "a//b/" => ["a" "b"]
-  # splitPath "/a/b" =>  ["a" "b"]
-  splitPath = str: builtins.filter (seg: (builtins.isString seg) && seg != "" ) (builtins.split "/" str);
-  # return a string path, with leading slash but no trailing slash
-  joinPathAbs = comps: "/" + (builtins.concatStringsSep "/" comps);
-  concatPaths = paths: joinPathAbs (builtins.concatLists (builtins.map (p: splitPath p) paths));
-  # return the path from `from` to `to`, but generally in absolute form.
-  # e.g. `pathFrom "/home/colin" "/home/colin/foo/bar"` -> "/foo/bar"
-  pathFrom = from: to:
-    assert lib.hasPrefix from to;
-    lib.removePrefix from to;
 
   # options for a single mountpoint / persistence
   dirEntryOptions = {
@@ -139,7 +125,7 @@ let
       mapDirs = relativeTo: store: dirs: (map
         (d: {
           inherit (d) user group mode;
-          directory = concatPaths [ relativeTo d.directory ];
+          directory = path.concat [ relativeTo d.directory ];
           store = cfg.stores."${store}";
         })
         dirs
@@ -185,8 +171,8 @@ in
     cfgFor = opt:
       let
         store = opt.store;
-        store-rel-path = pathFrom store.prefix opt.directory;
-        backing-path = concatPaths [ store.mountpt store-rel-path ];
+        store-rel-path = path.from store.prefix opt.directory;
+        backing-path = path.concat [ store.mountpt store-rel-path ];
 
         # pass through the perm/mode overrides
         dir-acl = {
