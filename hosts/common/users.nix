@@ -72,6 +72,17 @@ in
     security.pam.mount.enable = true;
 
     sane.impermanence.dirs.home.plaintext = [
+      "archive"
+      "dev"
+      # TODO: records should be private
+      "records"
+      "ref"
+      "tmp"
+      "use"
+      "Music"
+      "Pictures"
+      "Videos"
+
       ".cargo"
       ".rustup"
       # TODO: move this to ~/private!

@@ -48,19 +48,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    sane.impermanence.dirs.home.plaintext = [
-      "archive"
-      "dev"
-      # TODO: records should be private
-      "records"
-      "ref"
-      "tmp"
-      "use"
-      "Music"
-      "Pictures"
-      "Videos"
-    ];
-
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
 
@@ -87,7 +74,6 @@ in
           data = "${../../scripts/init-keyring}";
         };
       };
-
 
       home.file = {
         # convenience
