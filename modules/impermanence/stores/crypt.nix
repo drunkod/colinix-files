@@ -3,7 +3,7 @@
 let
   store = rec {
     device = "/mnt/impermanence/crypt/clearedonboot";
-    mount-unit = "${utils.escapeSystemdPath device}.mount";
+    mount-unit = config.sane.fs."${device}".mount.unit;
     underlying = {
       path = "/nix/persist/crypt/clearedonboot";
       # TODO: consider moving this to /tmp, but that requires tmp be mounted first?
@@ -74,19 +74,11 @@ lib.mkIf config.sane.impermanence.enable
     ];
     noCheck = true;
   };
+  # let sane.fs know about our fileSystem and automatically add the appropriate dependencies
+  sane.fs."${store.device}".mount = {};
 
-  sane.fs."${store.device}" = {
-    # ensure the fs is mounted only after the mountpoint directory is created
-    dir.reverseDepends = [ store.mount-unit ];
-    # HACK: this fs entry is provided by our mount unit.
-    mount.unit = store.mount-unit;
-  };
-  sane.fs."${store.underlying.path}" = {
-    # don't mount until after the backing dir is setup correctly.
-    # TODO: this isn't necessary? the mount-unit already depends on prepareEncryptedClearOnBoot
-    # which depends on the underlying path?
-    dir.reverseDepends = [ store.mount-unit ];
-  };
+  # let the fs ensure the underlying path is also created
+  sane.fs."${store.underlying.path}".dir = {};
 
   # TODO: could add this *specifically* to the .mount file for the encrypted fs?
   system.fsPackages = [ pkgs.gocryptfs ];  # fuse needs to find gocryptfs

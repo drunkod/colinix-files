@@ -137,21 +137,26 @@ let
 
   # given a mountEntry definition, evaluate its toplevel `config` output.
   mkMountConfig = path: opt: (let
-    underlying = cfg."${opt.mount.bind}";
+    device = config.fileSystems."${path}".device;
+    underlying = cfg."${device}";
+    isBind = opt.mount.bind != null;
+    ifBind = lib.mkIf isBind;
   in {
-    fileSystems."${path}" = lib.mkIf (opt.mount.bind != null) {
-      device = opt.mount.bind;
-      options = [
-        "bind"
-        # x-systemd options documented here:
-        # - <https://www.freedesktop.org/software/systemd/man/systemd.mount.html>
-        # we can't mount this until after the underlying path is prepared.
-        # if the underlying path disappears, this mount will be stopped.
-        "x-systemd.requires=${underlying.dir.unit}"
-        # the mount depends on its target directory being prepared
-        "x-systemd.requires=${opt.dir.unit}"
-      ] ++ opt.mount.extraOptions;
-      noCheck = true;
+    fileSystems."${path}" = {
+      device = ifBind opt.mount.bind;
+      options = (if isBind then ["bind"] else [])
+        ++ [
+          # x-systemd options documented here:
+          # - <https://www.freedesktop.org/software/systemd/man/systemd.mount.html>
+          # we can't mount this until after the underlying path is prepared.
+          # if the underlying path disappears, this mount will be stopped.
+          # TODO: why do we use `underlying.dir.unit` instead of `underlying.unit`?
+          "x-systemd.requires=${underlying.dir.unit}"
+          # the mount depends on its target directory being prepared
+          "x-systemd.requires=${opt.dir.unit}"
+        ]
+        ++ opt.mount.extraOptions;
+      noCheck = ifBind true;
     };
   });
 

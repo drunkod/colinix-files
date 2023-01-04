@@ -1,8 +1,6 @@
 { config, lib, pkgs, utils, ... }:
 
-let
-  private-mount-unit = ''${utils.escapeSystemdPath "/home/colin/private"}.mount'';
-in lib.mkIf config.sane.impermanence.enable
+lib.mkIf config.sane.impermanence.enable
 {
   sane.impermanence.stores."private" = {
     storeDescription = ''
@@ -39,20 +37,15 @@ in lib.mkIf config.sane.impermanence.enable
   };
 
   sane.fs."/home/colin/private" = {
+    # let sane.fs know that this corresponds to a fileSystems entry
+    mount = {};
     dir.reverseDepends = [
-      # mounting relies on the mountpoint first being created.
-      private-mount-unit
       # ensure the directory is created during boot, and before user logs in.
       "multi-user.target"
     ];
-    # HACK: this fs entry is provided by the mount unit.
-    unit = private-mount-unit;
   };
   sane.fs."/nix/persist/home/colin/private" = {
     dir.reverseDepends = [
-      # the mount unit relies on the source having first been created.
-      # (it also relies on the cryptfs having been seeded -- which we can't verify here).
-      private-mount-unit
       # ensure the directory is created during boot, and before user logs in.
       "multi-user.target"
     ];
