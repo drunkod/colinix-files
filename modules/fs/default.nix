@@ -60,6 +60,8 @@ let
         (lib.mkIf (config.dir != null) config.dir.reverseDepends)
         (lib.mkIf (config.symlink != null) config.symlink.reverseDepends)
       ];
+
+      # actually generate the item
       generated.script = lib.mkMerge [
         (lib.mkIf (config.dir != null) (ensureDirScript name config.dir))
         (lib.mkIf (config.symlink != null) (ensureSymlinkScript name config.symlink))
@@ -80,9 +82,9 @@ let
     };
   });
 
-  # sane.fs."<path>".dir sub-options
-  dirEntry = types.submodule {
-    # TODO: options should just be `propagatedGenerateOptions`
+  # options which can be set in dir/symlink generated items,
+  # with intention that they just propagate down
+  propagatedGenerateMod = {
     options = {
       acl = mkOption {
         type = sane-types.aclOverride;
@@ -90,26 +92,25 @@ let
       };
       reverseDepends = mkOption {
         type = types.listOf types.str;
-        description = "list of systemd units which should be made to depend on this unit (controls `wantedBy` and `before`)";
+        description = "list of systemd units which should be made to depend on this item (controls `wantedBy` and `before`)";
         default = [];
       };
     };
   };
 
+  # sane.fs."<path>".dir sub-options
+  # takes no special options
+  dirEntry = types.submodule propagatedGenerateMod;
+
   symlinkEntry = types.submodule {
     options = {
+      inherit (propagatedGenerateMod.options) acl;
       target = mkOption {
         type = types.str;
         description = "fs path to link to";
       };
-      acl = mkOption {
-        type = sane-types.aclOverride;
-        default = {};
-      };
-      reverseDepends = mkOption {
-        type = types.listOf types.str;
-        description = "list of systemd units which should be made to depend on this unit (controls `wantedBy` and `before`)";
-        # symlinks are assumed to be terminals, so create them on start by default
+      reverseDepends = propagatedGenerateMod.options.reverseDepends // {
+        # symlinks are terminal, so by default create them during startup
         default = [ "multi-user.target" ];
       };
     };
@@ -117,6 +118,9 @@ let
 
   generatedEntry = types.submodule {
     options = {
+      # we use a stricter acl type here, so don't inherit that.
+      inherit (propagatedGenerateMod.options) reverseDepends;
+
       acl = mkOption {
         type = sane-types.acl;
       };
@@ -125,11 +129,6 @@ let
         description = ''
           list of systemd units needed to be run before this item can be generated.
         '';
-        default = [];
-      };
-      reverseDepends = mkOption {
-        type = types.listOf types.str;
-        description = "list of systemd units which should be made to depend on this unit (controls `wantedBy` and `before`)";
         default = [];
       };
       script.script = mkOption {
@@ -242,7 +241,9 @@ let
 
       # ensure any things created by the user script have the desired mode.
       # chmod doesn't work on symlinks, so we *have* to use this umask approach.
-      umask $(( 777 - "$aclmode" ))
+      decmask=$(( 0777 - "$aclmode" ))
+      octmask=$(printf "%o" "$decmask")
+      umask "$octmask"
 
       # try to chmod/chown the result even if the user script errors
       _status=0
@@ -251,7 +252,7 @@ let
       ${gen-opt.script.script}
 
       # claim ownership of the new thing (DON'T traverse symlinks)
-      chown --no-derefence "$acluser:$aclgroup" "$fspath"
+      chown --no-dereference "$acluser:$aclgroup" "$fspath"
       exit "$_status"
     '';
     scriptArgs = [ path gen-opt.acl.user gen-opt.acl.group gen-opt.acl.mode ] ++ gen-opt.script.scriptArgs;

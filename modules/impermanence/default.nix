@@ -174,7 +174,7 @@ in
           # ensure the backing path has same perms as the mount point.
           # TODO: maybe we want to do this, crawling all the way up to the store base?
           # that would simplify (remove) the code in stores/default.nix
-          dir.acl = config.sane.fs."${opt.directory}".dir.acl;
+          dir.acl = config.sane.fs."${opt.directory}".generated.acl;
         };
       };
   in mkIf cfg.enable {
