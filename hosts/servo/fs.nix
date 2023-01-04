@@ -36,28 +36,30 @@
     ];
   };
 
+  sane.impermanence.stores."ext" = {
+    mountpt = "/nix/persist/ext/persist";
+    storeDescription = "external HDD storage";
+  };
+
   sane.impermanence.dirs.sys.plaintext = [
     # TODO: this is overly broad; only need media and share directories to be persisted
     { user = "colin"; group = "users"; directory = "/var/lib/uninsane"; }
   ];
-  # direct these media directories to external storage
-  # TODO: convert to sane.fs
-  environment.persistence."/nix/persist/ext/persist" = {
-    directories = [
-      ({
-        user = "colin";
-        group = "users";
-        mode = "0777";
-        directory = "/var/lib/uninsane/media/Videos";
-      })
-      ({
-        user = "colin";
-        group = "users";
-        mode = "0777";
-        directory = "/var/lib/uninsane/media/freeleech";
-      })
-    ];
-  };
+  # make sure large media is stored to the HDD
+  sane.impermanence.dirs.sys.ext = [
+    {
+      user = "colin";
+      group = "users";
+      mode = "0777";
+      directory = "/var/lib/uninsane/media/Videos";
+    }
+    {
+      user = "colin";
+      group = "users";
+      mode = "0777";
+      directory = "/var/lib/uninsane/media/freeleech";
+    }
+  ];
 
   # in-memory compressed RAM (seems to be dynamically sized)
   # zramSwap = {
