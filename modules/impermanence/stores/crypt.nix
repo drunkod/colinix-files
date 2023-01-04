@@ -9,25 +9,6 @@ let
       key = "/mnt/impermanence/crypt/clearedonboot.key";
     };
   };
-  prepareEncryptedClearedOnBoot = pkgs.writeShellApplication {
-    name = "prepareEncryptedClearedOnBoot";
-    runtimeInputs = with pkgs; [ gocryptfs ];
-    text = ''
-      backing="$1"
-      passfile="$2"
-      if ! test -e "$passfile"
-      then
-        # if the key doesn't exist, it's probably not mounted => delete the backing dir
-        rm -rf "''${backing:?}"/*
-        # generate key. we can "safely" keep it around for the lifetime of this boot
-        umask 266
-        dd if=/dev/random bs=128 count=1 | base64 --wrap=0 > "$passfile"
-        umask 022
-        # initialize the crypt store
-        gocryptfs -quiet -passfile "$passfile" -init "$backing"
-      fi
-    '';
-  };
 in
 lib.mkIf config.sane.impermanence.enable
 {
@@ -36,20 +17,9 @@ lib.mkIf config.sane.impermanence.enable
       stored to disk, but encrypted to an in-memory key and cleared on every boot
       so that it's unreadable after power-off
     '';
-    mountpt = "/mnt/impermanence/crypt/clearedonboot";
+    mountpt = store.device;
   };
 
-  systemd.services."prepareEncryptedClearedOnBoot" = rec {
-    description = "prepare keys for ${store.device}";
-    serviceConfig.ExecStart = ''
-      ${prepareEncryptedClearedOnBoot}/bin/prepareEncryptedClearedOnBoot ${store.underlying.path} ${store.underlying.key}
-    '';
-    serviceConfig.Type = "oneshot";
-    # remove implicit dep on sysinit.target
-    unitConfig.DefaultDependencies = "no";
-  };
-  # we need the key directory to be created before we create the key
-  sane.fs."/mnt/impermanence/crypt".dir.reverseDepends = [ "prepareEncryptedClearedOnBoot.service" ];
 
   fileSystems."${store.device}" = {
     device = store.underlying.path;
@@ -59,9 +29,6 @@ lib.mkIf config.sane.impermanence.enable
       "nosuid"
       "allow_other"
       "passfile=${store.underlying.key}"
-      # this is really a 'wants' + 'after'... gocryptfs loads the key
-      # into ram and then doesn't need it again. but this is easy
-      "x-systemd.requires=prepareEncryptedClearedOnBoot.service"
       "defaults"
     ];
     noCheck = true;
@@ -69,8 +36,33 @@ lib.mkIf config.sane.impermanence.enable
   # let sane.fs know about our fileSystem and automatically add the appropriate dependencies
   sane.fs."${store.device}".mount = {};
 
-  # let the fs ensure the underlying path is also created
-  sane.fs."${store.underlying.path}".dir = {};
+  # let sane.fs know how to initialize the gocryptfs store,
+  # and that it MUST do so
+  sane.fs."${store.underlying.path}/gocryptfs.conf".generated = {
+    script.script = ''
+      backing="$1"
+      passfile="$2"
+      # clear the backing store
+      # TODO: we should verify that it's not mounted anywhere...
+      rm -rf "''${backing:?}"/*
+      ${pkgs.gocryptfs}/bin/gocryptfs -quiet -passfile "$passfile" -init "$backing"
+    '';
+    script.scriptArgs = [ store.underlying.path store.underlying.key ];
+    # we need the key in order to initialize the store
+    depends = [ config.sane.fs."${store.underlying.key}".unit ];
+    # the store must be initialized before we can mount it
+    reverseDepends = [ config.sane.fs."${store.device}".unit ];
+  };
+
+  # let sane.fs know how to generate the key for gocryptfs
+  sane.fs."${store.underlying.key}".generated = {
+    script.script = ''
+      dd if=/dev/random bs=128 count=1 | base64 --wrap=0 > "$1"
+    '';
+    script.scriptArgs = [ store.underlying.key ];
+    # no need for anyone else to be able to read the key
+    acl.mode = "0400";
+  };
 
   # TODO: could add this *specifically* to the .mount file for the encrypted fs?
   system.fsPackages = [ pkgs.gocryptfs ];  # fuse needs to find gocryptfs
