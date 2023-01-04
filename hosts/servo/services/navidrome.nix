@@ -2,7 +2,10 @@
 
 {
   sane.impermanence.dirs.sys.plaintext = [
-    { user = "navidrome"; group = "navidrome"; directory = "/var/lib/private/navidrome"; }
+    # TODO: we don't have a static user allocated for navidrome!
+    # the chown would happen too early for us to set static perms
+    "/var/lib/private/navidrome"
+    # { user = "navidrome"; group = "navidrome"; directory = "/var/lib/private/navidrome"; }
   ];
   services.navidrome.enable = true;
   services.navidrome.settings = {
