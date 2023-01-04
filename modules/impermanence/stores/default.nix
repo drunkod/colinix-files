@@ -1,7 +1,8 @@
-{ config, lib, ... }:
+{ config, lib, sane-lib, ... }:
 
 let
   cfg = config.sane.impermanence;
+  path = sane-lib.path;
 in
 {
   imports = [
@@ -20,8 +21,10 @@ in
     # what is a problem is if the user specified some other dir we don't know about here.
     # like "/var", and then "/nix/persist/var" has different perms and something mounts funny.
     # TODO: just add assertions that sane.fs."${backing}/${dest}".dir == sane.fs."${dest}" for each mount point?
-    sane.fs = lib.mapAttrs' (_name: store: {
-      name = "${store.origin}/home/colin";
+    sane.fs = lib.mapAttrs' (_name: store: let
+      home-in-store = path.from store.prefix "/home/colin";
+    in {
+      name = path.concat [ store.origin home-in-store ];
       value.dir.acl = config.sane.fs."/home/colin".generated.acl;
     }) cfg.stores;
   };
