@@ -18,7 +18,6 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    impermanence.url = "github:nix-community/impermanence";
     uninsane = {
       url = "git+https://git.uninsane.org/colin/uninsane";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,7 +31,6 @@
     mobile-nixos,
     home-manager,
     sops-nix,
-    impermanence,
     uninsane
   }: let
     patchedPkgs = system: nixpkgs.legacyPackages.${system}.applyPatches {
@@ -58,7 +56,6 @@
         ./modules
         (import ./hosts/instantiate.nix name)
         home-manager.nixosModule
-        impermanence.nixosModule
         sops-nix.nixosModules.sops
         {
           nixpkgs.overlays = [
