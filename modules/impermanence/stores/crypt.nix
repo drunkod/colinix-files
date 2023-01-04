@@ -3,7 +3,6 @@
 let
   store = rec {
     device = "/mnt/impermanence/crypt/clearedonboot";
-    mount-unit = config.sane.fs."${device}".mount.unit;
     underlying = {
       path = "/nix/persist/crypt/clearedonboot";
       # TODO: consider moving this to /tmp, but that requires tmp be mounted first?
@@ -48,19 +47,9 @@ lib.mkIf config.sane.impermanence.enable
     serviceConfig.Type = "oneshot";
     # remove implicit dep on sysinit.target
     unitConfig.DefaultDependencies = "no";
-
-    # we need the key directory to be created, and the backing directory to exist
-    after = [
-      config.sane.fs."${store.underlying.path}".unit
-      # TODO: "${parentDir store.device}"
-      config.sane.fs."/mnt/impermanence/crypt".unit
-    ];
-    wants = after;
-
-    # make sure the encrypted file system is mounted *after* its keys have been generated.
-    before = [ store.mount-unit ];
-    wantedBy = before;
   };
+  # we need the key directory to be created before we create the key
+  sane.fs."/mnt/impermanence/crypt".dir.reverseDepends = [ "prepareEncryptedClearedOnBoot.service" ];
 
   fileSystems."${store.device}" = {
     device = store.underlying.path;
@@ -70,6 +59,9 @@ lib.mkIf config.sane.impermanence.enable
       "nosuid"
       "allow_other"
       "passfile=${store.underlying.key}"
+      # this is really a 'wants' + 'after'... gocryptfs loads the key
+      # into ram and then doesn't need it again. but this is easy
+      "x-systemd.requires=prepareEncryptedClearedOnBoot.service"
       "defaults"
     ];
     noCheck = true;
