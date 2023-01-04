@@ -13,43 +13,60 @@ let
     parent = path-lib.parent name;
     has-parent = path-lib.hasParent name;
     parent-cfg = if has-parent then cfg."${parent}" else {};
-    parent-dir = parent-cfg.dir or {};
-    parent-acl = parent-dir.acl or {};
+    parent-acl = if has-parent then parent-cfg.generated.acl else {};
   in {
     options = {
       dir = mkOption {
-        type = dirEntry;
+        type = types.nullOr dirEntry;
+        default = null;
+      };
+      symlink = mkOption {
+        type = types.nullOr symlinkEntry;
+        default = null;
+      };
+      generated = mkOption {
+        type = generatedEntry;
+        default = {};
       };
       mount = mkOption {
         type = types.nullOr (mountEntryFor name);
         default = null;
-      };
-      symlink = mkOption {
-        type = types.nullOr (symlinkEntryFor name);
-        default = null;
-      };
-      depends = mkOption {
-        type = types.listOf types.str;
-        description = ''
-          list of systemd units needed to be run before this directory can be made.
-          applies at the moment of dir or symlink creation.
-        '';
-        default = [];
       };
       unit = mkOption {
         type = types.str;
         description = "name of the systemd unit which ensures this entry";
       };
     };
-    config = {
-      dir.acl.user = lib.mkDefault (parent-acl.user or "root");
-      dir.acl.group = lib.mkDefault (parent-acl.group or "root");
-      dir.acl.mode = lib.mkDefault (parent-acl.mode or "0755");
+    config = let
+      default-acl = {
+        user = lib.mkDefault (parent-acl.user or "root");
+        group = lib.mkDefault (parent-acl.group or "root");
+        mode = lib.mkDefault (parent-acl.mode or "0755");
+      };
+    in {
       # we put this here instead of as a `default` to ensure that users who specify additional
       # dependencies still get a dep on the parent (unless they assign with `mkForce`).
-      depends = if has-parent then [ parent-cfg.unit ] else [];
-      # if defaulted, this module is responsible for creating the directory
-      dir.unit = lib.mkDefault ((serviceNameFor name) + ".service");
+      generated.depends = if has-parent then [ parent-cfg.unit ] else [];
+
+      # populate generated items from `dir` or `symlink` shorthands
+      generated.acl = lib.mkMerge [
+        default-acl
+        (lib.mkIf (config.dir != null)
+          (sane-lib.filterNonNull config.dir.acl))
+        (lib.mkIf (config.symlink != null)
+          (sane-lib.filterNonNull config.symlink.acl))
+      ];
+      generated.reverseDepends = lib.mkMerge [
+        (lib.mkIf (config.dir != null) config.dir.reverseDepends)
+        (lib.mkIf (config.symlink != null) config.symlink.reverseDepends)
+      ];
+      generated.script = lib.mkMerge [
+        (lib.mkIf (config.dir != null) (ensureDirScript name config.dir))
+        (lib.mkIf (config.symlink != null) (ensureSymlinkScript name config.symlink))
+      ];
+
+      # make the unit file which generates the underlying thing available so that `mount` can use it.
+      generated.unit = (serviceNameFor name) + ".service";
 
       # if defaulted, this module is responsible for finalizing the entry.
       # the user could override this if, say, they finalize some aspect of the entry
@@ -57,22 +74,68 @@ let
       unit = lib.mkDefault (
         if config.mount != null then
           config.mount.unit
-        else if config.symlink != null then
-          config.symlink.unit
-        else config.dir.unit
+        else
+          config.generated.unit
       );
     };
   });
 
   # sane.fs."<path>".dir sub-options
   dirEntry = types.submodule {
+    # TODO: options should just be `propagatedGenerateOptions`
     options = {
       acl = mkOption {
-        type = sane-types.acl;
+        type = sane-types.aclOverride;
+        default = {};
       };
       reverseDepends = mkOption {
         type = types.listOf types.str;
         description = "list of systemd units which should be made to depend on this unit (controls `wantedBy` and `before`)";
+        default = [];
+      };
+    };
+  };
+
+  symlinkEntry = types.submodule {
+    options = {
+      target = mkOption {
+        type = types.str;
+        description = "fs path to link to";
+      };
+      acl = mkOption {
+        type = sane-types.aclOverride;
+        default = {};
+      };
+      reverseDepends = mkOption {
+        type = types.listOf types.str;
+        description = "list of systemd units which should be made to depend on this unit (controls `wantedBy` and `before`)";
+        default = [];
+      };
+    };
+  };
+
+  generatedEntry = types.submodule {
+    options = {
+      acl = mkOption {
+        type = sane-types.acl;
+      };
+      depends = mkOption {
+        type = types.listOf types.str;
+        description = ''
+          list of systemd units needed to be run before this item can be generated.
+        '';
+        default = [];
+      };
+      reverseDepends = mkOption {
+        type = types.listOf types.str;
+        description = "list of systemd units which should be made to depend on this unit (controls `wantedBy` and `before`)";
+        default = [];
+      };
+      script.script = mkOption {
+        type = types.lines;
+      };
+      script.scriptArgs = mkOption {
+        type = types.listOf types.str;
         default = [];
       };
       unit = mkOption {
@@ -103,38 +166,24 @@ let
     };
   };
 
-  symlinkEntryFor = path: types.submodule {
-    options = {
-      target = mkOption {
-        type = types.str;
-        description = "fs path to link to";
-        default = null;
-      };
-      unit = mkOption {
-        type = types.str;
-        description = "name of the systemd unit which mounts this path";
-        default = mountNameFor path;
-      };
-    };
-  };
-
-  # given a dirEntry definition, evaluate its toplevel `config` output.
-  mkDirConfig = path: opt: {
+  mkGeneratedConfig = path: gen-opt: let
+    wrapper = generateWrapperScript path gen-opt;
+  in {
     systemd.services."${serviceNameFor path}" = {
       description = "prepare ${path}";
       serviceConfig.Type = "oneshot";
 
-      script = ensure-dir-script;
-      scriptArgs = "${path} ${opt.dir.acl.user} ${opt.dir.acl.group} ${opt.dir.acl.mode}";
+      script = wrapper.script;
+      scriptArgs = builtins.concatStringsSep " " wrapper.scriptArgs;
 
-      after = opt.depends;
-      wants = opt.depends;
+      after = gen-opt.depends;
+      wants = gen-opt.depends;
       # prevent systemd making this unit implicitly dependent on sysinit.target.
       # see: <https://www.freedesktop.org/software/systemd/man/systemd.special.html>
       unitConfig.DefaultDependencies = "no";
 
-      wantedBy = opt.dir.reverseDepends;
-      before = opt.dir.reverseDepends;
+      wantedBy = gen-opt.reverseDepends;
+      before = gen-opt.reverseDepends;
     };
   };
 
@@ -155,36 +204,16 @@ let
           # if the underlying path disappears, this mount will be stopped.
           "x-systemd.requires=${underlying.unit}"
           # the mount depends on its target directory being prepared
-          "x-systemd.requires=${opt.dir.unit}"
+          "x-systemd.requires=${opt.generated.unit}"
         ]
         ++ opt.mount.extraOptions;
       noCheck = ifBind true;
     };
   });
 
-  # given a symlinkEntry definition, evaluate its toplevel `config` output.
-  mkSymlinkConfig = path: opt: {
-    systemd.services."${serviceNameFor path}" = {
-      description = "prepare ${path}";
-      serviceConfig.Type = "oneshot";
-
-      script = ensure-symlink-script;
-      scriptArgs = "${path} ${opt.target}";
-
-      after = opt.depends;
-      wants = opt.depends;
-      # prevent systemd making this unit implicitly dependent on sysinit.target.
-      # see: <https://www.freedesktop.org/software/systemd/man/systemd.special.html>
-      unitConfig.DefaultDependencies = "no";
-
-      wantedBy = opt.dir.reverseDepends;
-      before = opt.dir.reverseDepends;
-    };
-  };
 
   mkFsConfig = path: opt: mergeTopLevel [
-    (mkDirConfig path opt)
-    (lib.mkIf (opt.symlink != null) (mkSymlinkConfig path opt))
+    (mkGeneratedConfig path opt.generated)
     (lib.mkIf (opt.mount != null) (mkMountConfig path opt))
   ];
 
@@ -202,33 +231,56 @@ let
     inherit (extract top) fileSystems systemd;
   };
 
-  # systemd/shell script used to create and set perms for a specific dir
-  ensure-dir-script = ''
-    path="$1"
-    user="$2"
-    group="$3"
-    mode="$4"
+  generateWrapperScript = path: gen-opt: {
+    script = ''
+      fspath="$1"
+      acluser="$2"
+      aclgroup="$3"
+      aclmode="$4"
+      shift 4
 
-    if ! test -d "$path"
-    then
-      # if the directory *doesn't* exist, try creating it
-      # if we fail to create it, ensure we raced with something else and that it's actually a directory
-      mkdir "$path" || test -d "$path"
-    fi
-    chmod "$mode" "$path"
-    chown "$user:$group" "$path"
-  '';
+      # try to chmod/chown the result even if the user script errors
+      _status=0
+      trap "_status=\$?" ERR
+
+      ${gen-opt.script.script}
+
+      chmod "$aclmode" "$fspath"
+      chown "$acluser:$aclgroup" "$fspath"
+      exit "$_status"
+    '';
+    scriptArgs = [ path gen-opt.acl.user gen-opt.acl.group gen-opt.acl.mode ] ++ gen-opt.script.scriptArgs;
+  };
+
+  # systemd/shell script used to create and set perms for a specific dir
+  ensureDirScript = path: dir-cfg: {
+    script = ''
+      dirpath="$1"
+
+      if ! test -d "$dirpath"
+      then
+        # if the directory *doesn't* exist, try creating it
+        # if we fail to create it, ensure we raced with something else and that it's actually a directory
+        mkdir "$dirpath" || test -d "$dirpath"
+      fi
+    '';
+    scriptArgs = [ path ];
+  };
 
   # systemd/shell script used to create a symlink
-  ensure-symlink-script = ''
-    from="$1"
-    to="$2"
+  ensureSymlinkScript = path: link-cfg: {
+    script = ''
+      lnfrom="$1"
+      lnto="$2"
 
-    ln -sf "$2" "$1"
-  '';
+      ln -sf "$lnto" "$lnfrom"
+    '';
+    scriptArgs = [ path link-cfg.target ];
+  };
 
   # return all ancestors of this path.
   # e.g. ancestorsOf "/foo/bar/baz" => [ "/" "/foo" "/foo/bar" ]
+  # TODO: move this to path-lib?
   ancestorsOf = path: if path-lib.hasParent path then
     ancestorsOf (path-lib.parent path) ++ [ (path-lib.parent path) ]
   else
