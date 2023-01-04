@@ -2,6 +2,7 @@
 with lib;
 let
   path-lib = sane-lib.path;
+  sane-types = sane-lib.types;
   cfg = config.sane.fs;
 
   mountNameFor = path: "${utils.escapeSystemdPath path}.mount";
@@ -47,26 +48,11 @@ let
     };
   });
 
-  # TODO: lift this to sane-lib
-  acl = types.submodule {
-    options = {
-      user = mkOption {
-        type = types.str;  # TODO: use uid?
-      };
-      group = mkOption {
-        type = types.str;
-      };
-      mode = mkOption {
-        type = types.str;
-      };
-    };
-  };
-
   # sane.fs."<path>".dir sub-options
   dirEntry = types.submodule {
     options = {
       acl = mkOption {
-        type = acl;
+        type = sane-types.acl;
       };
       depends = mkOption {
         type = types.listOf types.str;

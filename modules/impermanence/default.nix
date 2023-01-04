@@ -7,6 +7,7 @@
 with lib;
 let
   path = sane-lib.path;
+  sane-types = sane-lib.types;
   cfg = config.sane.impermanence;
 
   storeType = types.submodule {
@@ -41,18 +42,7 @@ let
       directory = mkOption {
         type = types.str;
       };
-      user = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-      };
-      group = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-      };
-      mode = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-      };
+      inherit (sane-types.aclOverrideMod.options) user group mode;
     };
   };
   contextualizedDir = types.submodule dirEntryOptions;
