@@ -65,46 +65,40 @@ let
     }
   ];
 
+  dirsSubModule = types.submodule {
+    options = {
+      plaintext = mkOption {
+        default = [];
+        type = types.listOf contextualizedDirOrShorthand;
+        description = "directories to persist in cleartext";
+      };
+      private = mkOption {
+        default = [];
+        type = types.listOf contextualizedDirOrShorthand;
+        description = "directories to store encrypted to the user's login password and auto-decrypt on login";
+      };
+      cryptClearOnBoot = mkOption {
+        default = [];
+        type = types.listOf contextualizedDirOrShorthand;
+        description = ''
+          directories to store encrypted to an auto-generated in-memory key and
+          wiped on boot. the main use is for sensitive cache dirs too large to fit in memory.
+        '';
+      };
+    };
+  };
+
   dirsModule = types.submodule ({ config, ... }: {
     options = {
       home = mkOption {
         description = "directories to persist to disk, relative to a user's home ~";
         default = {};
-        type = types.submodule {
-          options = {
-            plaintext = mkOption {
-              default = [];
-              type = types.listOf contextualizedDirOrShorthand;
-              description = "directories to persist in cleartext";
-            };
-            private = mkOption {
-              default = [];
-              type = types.listOf contextualizedDirOrShorthand;
-              description = "directories to store encrypted to the user's login password and auto-decrypt on login";
-            };
-            cryptClearOnBoot = mkOption {
-              default = [];
-              type = types.listOf contextualizedDirOrShorthand;
-              description = ''
-                directories to store encrypted to an auto-generated in-memory key and
-                wiped on boot. the main use is for sensitive cache dirs too large to fit in memory.
-              '';
-            };
-          };
-        };
+        type = dirsSubModule;
       };
       sys = mkOption {
         description = "directories to persist to disk, relative to the fs root /";
         default = {};
-        type = types.submodule {
-          options = {
-            plaintext = mkOption {
-              default = [];
-              type = types.listOf contextualizedDirOrShorthand;
-              description = "list of directories (and optional config) to persist to disk in plaintext, relative to the fs root /";
-            };
-          };
-        };
+        type = dirsSubModule;
       };
       all = mkOption {
         type = types.listOf contextFreeDir;
@@ -120,11 +114,13 @@ let
         })
         dirs
       );
+      mapDirSets = relativeTo: dirsSubOptions: let
+        # list where each elem is a list from calling mapDirs on one store at a time
+        contextFreeDirSets = lib.mapAttrsToList (mapDirs relativeTo) dirsSubOptions;
+      in
+        builtins.concatLists contextFreeDirSets;
     in {
-      all = (mapDirs "/home/colin" "plaintext"        config.home.plaintext)
-         ++ (mapDirs "/home/colin" "private"          config.home.private)
-         ++ (mapDirs "/home/colin" "cryptClearOnBoot" config.home.cryptClearOnBoot)
-         ++ (mapDirs "/"           "plaintext"        config.sys.plaintext);
+      all = (mapDirSets "/home/colin" config.home) ++ (mapDirSets "/" config.sys);
     };
   });
 in
