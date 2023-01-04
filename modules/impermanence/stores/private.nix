@@ -37,8 +37,9 @@ lib.mkIf config.sane.impermanence.enable
     noCheck = true;
   };
 
-  # let sane.fs know about the endpoints
+  # let sane.fs know about the mount
   sane.fs."/home/colin/private".mount = {};
+  # it also needs to know that the underlying device is an ordinary folder
   sane.fs."/nix/persist/home/colin/private".dir = {};
 
   # TODO: could add this *specifically* to the .mount file for the encrypted fs?

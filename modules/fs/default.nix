@@ -195,6 +195,13 @@ let
     underlying = cfg."${device}";
     isBind = opt.mount.bind != null;
     ifBind = lib.mkIf isBind;
+    # before mounting:
+    # - create the target directory
+    # - prepare the source directory -- assuming it's not an external device
+    # - satisfy any user-specified prerequisites ("depends")
+    requires = [ opt.generated.unit ]
+      ++ (if lib.hasPrefix "/dev/disk/" device then [] else [ underlying.unit ])
+      ++ opt.mount.depends;
   in {
     fileSystems."${path}" = {
       device = ifBind opt.mount.bind;
@@ -206,13 +213,8 @@ let
           "nofail"
           # x-systemd options documented here:
           # - <https://www.freedesktop.org/software/systemd/man/systemd.mount.html>
-          # we can't mount this until after the underlying path is prepared.
-          # if the underlying path disappears, this mount will be stopped.
-          "x-systemd.requires=${underlying.unit}"
-          # the mount depends on its target directory being prepared
-          "x-systemd.requires=${opt.generated.unit}"
         ]
-        ++ (builtins.map (unit: "x-systemd.requires=${unit}") opt.mount.depends)
+        ++ (builtins.map (unit: "x-systemd.requires=${unit}") requires)
         ++ (builtins.map (unit: "x-systemd.before=${unit}") opt.wantedBeforeBy)
         ++ (builtins.map (unit: "x-systemd.wanted-by=${unit}") (opt.wantedBy ++ opt.wantedBeforeBy));
       noCheck = ifBind true;

@@ -27,7 +27,7 @@
   };
 
   # slow, external storage (for archiving, etc)
-  fileSystems."/nix/persist/ext" = {
+  fileSystems."/mnt/impermanence/ext" = {
     device = "/dev/disk/by-uuid/aa272cff-0fcc-498e-a4cb-0d95fb60631b";
     fsType = "btrfs";
     options = [
@@ -37,9 +37,10 @@
   };
 
   sane.impermanence.stores."ext" = {
-    mountpt = "/nix/persist/ext/persist";
+    mountpt = "/mnt/impermanence/ext/persist";
     storeDescription = "external HDD storage";
   };
+  sane.fs."/mnt/impermanence/ext".mount = {};
 
   sane.impermanence.dirs.sys.plaintext = [
     # TODO: this is overly broad; only need media and share directories to be persisted
