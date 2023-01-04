@@ -26,6 +26,7 @@
   # usability compromises
   sane.impermanence.dirs.home.private = [
     config.sane.web-browser.dotDir
+    config.sane.web-browser.cacheDir
   ];
   sane.impermanence.dirs.home.plaintext = [
     ".config/pulse"  # persist pulseaudio volume

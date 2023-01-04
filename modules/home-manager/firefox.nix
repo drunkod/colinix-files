@@ -19,12 +19,14 @@ let
     # });
     libName = "librewolf";
     dotDir = ".librewolf";
+    cacheDir = ".cache/librewolf";  # TODO: is it?
     desktop = "librewolf.desktop";
   };
   firefoxSettings = {
     browser = pkgs.firefox-esr-unwrapped;
     libName = "firefox";
     dotDir = ".mozilla/firefox";
+    cacheDir = ".cache/mozilla";
     desktop = "firefox.desktop";
   };
   defaultSettings = firefoxSettings;

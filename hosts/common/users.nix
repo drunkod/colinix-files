@@ -99,10 +99,11 @@ in
       # TODO: move this to ~/private!
       ".local/share/keyrings"
     ];
-    sane.impermanence.dirs.home.cryptClearOnBoot = [
+    # TODO: fix this ugly solution that allows moby to have firefox cache not erased every boot.
+    sane.impermanence.dirs.home.cryptClearOnBoot = lib.mkIf (config.networking.hostName != "moby") [
       # cache is probably too big to fit on the tmpfs
       # ".cache"
-      ".cache/mozilla"
+      config.sane.web-browser.cacheDir
     ];
 
     # convenience
