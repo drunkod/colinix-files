@@ -6,7 +6,7 @@ lib.mkIf config.sane.impermanence.enable
     storeDescription = ''
       encrypted to the user's password and auto-unlocked at login
     '';
-    mountpt = "/home/colin/private";
+    origin = "/home/colin/private";
     # files stored under here *must* have the /home/colin prefix.
     # internally, this prefix is removed so that e.g.
     # /home/colin/foo/bar when stored in `private` is visible at

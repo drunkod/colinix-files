@@ -37,7 +37,7 @@
   };
 
   sane.impermanence.stores."ext" = {
-    mountpt = "/mnt/impermanence/ext/persist";
+    origin = "/mnt/impermanence/ext/persist";
     storeDescription = "external HDD storage";
   };
   sane.fs."/mnt/impermanence/ext".mount = {};

@@ -21,7 +21,7 @@ in
     # like "/var", and then "/nix/persist/var" has different perms and something mounts funny.
     # TODO: just add assertions that sane.fs."${backing}/${dest}".dir == sane.fs."${dest}" for each mount point?
     sane.fs = lib.mapAttrs' (_name: store: {
-      name = "${store.mountpt}/home/colin";
+      name = "${store.origin}/home/colin";
       value.dir.acl = config.sane.fs."/home/colin".generated.acl;
     }) cfg.stores;
   };

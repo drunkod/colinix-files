@@ -17,7 +17,7 @@ lib.mkIf config.sane.impermanence.enable
       stored to disk, but encrypted to an in-memory key and cleared on every boot
       so that it's unreadable after power-off
     '';
-    mountpt = store.device;
+    origin = store.device;
   };
 
 

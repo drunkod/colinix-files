@@ -21,7 +21,7 @@ let
           for example, a store named "private" could have description "ecnrypted to the user's password and decrypted on login".
         '';
       };
-      mountpt = mkOption {
+      origin = mkOption {
         type = types.str;
       };
       prefix = mkOption {
@@ -163,7 +163,7 @@ in
       let
         store = opt.store;
         store-rel-path = path.from store.prefix opt.directory;
-        backing-path = path.concat [ store.mountpt store-rel-path ];
+        backing-path = path.concat [ store.origin store-rel-path ];
 
         # pass through the perm/mode overrides
         dir-acl = sane-lib.filterNonNull {
