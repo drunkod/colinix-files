@@ -24,6 +24,10 @@ let
         type = types.nullOr (mountEntryFor name);
         default = null;
       };
+      symlink = mkOption {
+        type = types.nullOr (symlinkEntryFor name);
+        default = null;
+      };
       unit = mkOption {
         type = types.str;
         description = "name of the systemd unit which ensures this entry";
@@ -42,9 +46,13 @@ let
       # if defaulted, this module is responsible for finalizing the entry.
       # the user could override this if, say, they finalize some aspect of the entry
       # with a custom service.
-      unit = lib.mkDefault (if config.mount != null then
-        config.mount.unit
-      else config.dir.unit);
+      unit = lib.mkDefault (
+        if config.mount != null then
+          config.mount.unit
+        else if config.symlink != null then
+          config.symlink.unit
+        else config.dir.unit
+      );
     };
   });
 
@@ -92,7 +100,22 @@ let
     };
   };
 
-  # given a fsEntry definition, output the `config` attrs it generates.
+  symlinkEntryFor = path: types.submodule {
+    options = {
+      target = mkOption {
+        type = types.str;
+        description = "fs path to link to";
+        default = null;
+      };
+      unit = mkOption {
+        type = types.str;
+        description = "name of the systemd unit which mounts this path";
+        default = mountNameFor path;
+      };
+    };
+  };
+
+  # given a dirEntry definition, evaluate its toplevel `config` output.
   mkDirConfig = path: opt: {
     systemd.services."${serviceNameFor path}" = {
       description = "prepare ${path}";
@@ -112,6 +135,7 @@ let
     };
   };
 
+  # given a mountEntry definition, evaluate its toplevel `config` output.
   mkMountConfig = path: opt: (let
     underlying = cfg."${opt.mount.bind}";
   in {
@@ -131,8 +155,29 @@ let
     };
   });
 
+  # given a symlinkEntry definition, evaluate its toplevel `config` output.
+  mkSymlinkConfig = path: opt: {
+    systemd.services."${serviceNameFor path}" = {
+      description = "prepare ${path}";
+      serviceConfig.Type = "oneshot";
+
+      script = ensure-symlink-script;
+      scriptArgs = "${path} ${opt.target}";
+
+      after = opt.dir.depends;
+      wants = opt.dir.depends;
+      # prevent systemd making this unit implicitly dependent on sysinit.target.
+      # see: <https://www.freedesktop.org/software/systemd/man/systemd.special.html>
+      unitConfig.DefaultDependencies = "no";
+
+      wantedBy = opt.dir.reverseDepends;
+      before = opt.dir.reverseDepends;
+    };
+  };
+
   mkFsConfig = path: opt: mergeTopLevel [
     (mkDirConfig path opt)
+    (lib.mkIf (opt.symlink != null) (mkSymlinkConfig path opt))
     (lib.mkIf (opt.mount != null) (mkMountConfig path opt))
   ];
 
@@ -165,6 +210,14 @@ let
     fi
     chmod "$mode" "$path"
     chown "$user:$group" "$path"
+  '';
+
+  # systemd/shell script used to create a symlink
+  ensure-symlink-script = ''
+    from="$1"
+    to="$2"
+
+    ln -sf "$2" "$1"
   '';
 
   # return all ancestors of this path.
