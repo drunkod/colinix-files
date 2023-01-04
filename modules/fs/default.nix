@@ -32,6 +32,21 @@ let
         type = types.nullOr (mountEntryFor name);
         default = null;
       };
+      wantedBy = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = ''
+          list of units or targets which, when activated, should trigger this fs entry to be created.
+        '';
+      };
+      wantedBeforeBy = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = ''
+          list of units or targets which, when activated, should first start and wait for this fs entry to be created.
+          if this unit fails, it will not block the targets in this list.
+        '';
+      };
       unit = mkOption {
         type = types.str;
         description = "name of the systemd unit which ensures this entry";
@@ -55,10 +70,6 @@ let
           (sane-lib.filterNonNull config.dir.acl))
         (lib.mkIf (config.symlink != null)
           (sane-lib.filterNonNull config.symlink.acl))
-      ];
-      generated.reverseDepends = lib.mkMerge [
-        (lib.mkIf (config.dir != null) config.dir.reverseDepends)
-        (lib.mkIf (config.symlink != null) config.symlink.reverseDepends)
       ];
 
       # actually generate the item
@@ -90,11 +101,6 @@ let
         type = sane-types.aclOverride;
         default = {};
       };
-      reverseDepends = mkOption {
-        type = types.listOf types.str;
-        description = "list of systemd units which should be made to depend on this item (controls `wantedBy` and `before`)";
-        default = [];
-      };
     };
   };
 
@@ -109,18 +115,11 @@ let
         type = types.str;
         description = "fs path to link to";
       };
-      reverseDepends = propagatedGenerateMod.options.reverseDepends // {
-        # symlinks are terminal, so by default create them during startup
-        default = [ "multi-user.target" ];
-      };
     };
   };
 
   generatedEntry = types.submodule {
     options = {
-      # we use a stricter acl type here, so don't inherit that.
-      inherit (propagatedGenerateMod.options) reverseDepends;
-
       acl = mkOption {
         type = sane-types.acl;
       };
@@ -153,9 +152,11 @@ let
         description = "fs path to bind-mount from";
         default = null;
       };
-      extraOptions = mkOption {
+      depends = mkOption {
         type = types.listOf types.str;
-        description = "extra fstab options for this mount";
+        description = ''
+          list of systemd units needed to be run before this entry can be mounted
+        '';
         default = [];
       };
       unit = mkOption {
@@ -166,7 +167,8 @@ let
     };
   };
 
-  mkGeneratedConfig = path: gen-opt: let
+  mkGeneratedConfig = path: opt: let
+    gen-opt = opt.generated;
     wrapper = generateWrapperScript path gen-opt;
   in {
     systemd.services."${serviceNameFor path}" = {
@@ -182,8 +184,8 @@ let
       # see: <https://www.freedesktop.org/software/systemd/man/systemd.special.html>
       unitConfig.DefaultDependencies = "no";
 
-      wantedBy = gen-opt.reverseDepends;
-      before = gen-opt.reverseDepends;
+      before = opt.wantedBeforeBy;
+      wantedBy = opt.wantedBy ++ opt.wantedBeforeBy;
     };
   };
 
@@ -198,6 +200,10 @@ let
       device = ifBind opt.mount.bind;
       options = (if isBind then ["bind"] else [])
         ++ [
+          # disable defaults: don't require this to be mount as part of local-fs.target
+          # we'll handle that stuff precisely.
+          "noauto"
+          "nofail"
           # x-systemd options documented here:
           # - <https://www.freedesktop.org/software/systemd/man/systemd.mount.html>
           # we can't mount this until after the underlying path is prepared.
@@ -206,14 +212,16 @@ let
           # the mount depends on its target directory being prepared
           "x-systemd.requires=${opt.generated.unit}"
         ]
-        ++ opt.mount.extraOptions;
+        ++ (builtins.map (unit: "x-systemd.requires=${unit}") opt.mount.depends)
+        ++ (builtins.map (unit: "x-systemd.before=${unit}") opt.wantedBeforeBy)
+        ++ (builtins.map (unit: "x-systemd.wanted-by=${unit}") (opt.wantedBy ++ opt.wantedBeforeBy));
       noCheck = ifBind true;
     };
   });
 
 
   mkFsConfig = path: opt: mergeTopLevel [
-    (mkGeneratedConfig path opt.generated)
+    (mkGeneratedConfig path opt)
     (lib.mkIf (opt.mount != null) (mkMountConfig path opt))
   ];
 

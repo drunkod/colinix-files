@@ -34,7 +34,14 @@ lib.mkIf config.sane.impermanence.enable
     noCheck = true;
   };
   # let sane.fs know about our fileSystem and automatically add the appropriate dependencies
-  sane.fs."${store.device}".mount = {};
+  sane.fs."${store.device}".mount = {
+    # technically the dependency on the keyfile is extraneous because that *happens* to
+    # be needed to init the store.
+    depends = let
+      cryptfile = config.sane.fs."${store.underlying.path}/gocryptfs.conf";
+      keyfile = config.sane.fs."${store.underlying.key}";
+    in [ keyfile.unit cryptfile.unit ];
+  };
 
   # let sane.fs know how to initialize the gocryptfs store,
   # and that it MUST do so
@@ -50,8 +57,6 @@ lib.mkIf config.sane.impermanence.enable
     script.scriptArgs = [ store.underlying.path store.underlying.key ];
     # we need the key in order to initialize the store
     depends = [ config.sane.fs."${store.underlying.key}".unit ];
-    # the store must be initialized before we can mount it
-    reverseDepends = [ config.sane.fs."${store.device}".unit ];
   };
 
   # let sane.fs know how to generate the key for gocryptfs

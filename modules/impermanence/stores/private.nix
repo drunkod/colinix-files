@@ -12,14 +12,14 @@ lib.mkIf config.sane.impermanence.enable
     # /home/colin/foo/bar when stored in `private` is visible at
     # /home/colin/private/foo/bar
     prefix = "/home/colin";
-    # fstab options inherited by all members of the store
-    extraOptions = let
+    defaultOrdering = let
       private-unit = config.sane.fs."/home/colin/private".unit;
-    in [
-      "noauto"
-      # auto mount when ~/private is mounted
-      "x-systemd.wanted-by=${private-unit}"
-    ];
+    in {
+      # auto create only after ~/private is mounted
+      wantedBy = [ private-unit ];
+      # we can't create things in private before local-fs.target
+      wantedBeforeBy = [ ];
+    };
   };
 
   fileSystems."/home/colin/private" = {
@@ -27,6 +27,7 @@ lib.mkIf config.sane.impermanence.enable
     fsType = "fuse.gocryptfs";
     options = [
       "noauto"  # don't try to mount, until the user logs in!
+      "nofail"
       "allow_other"  # root ends up being the user that mounts this, so need to make it visible to `colin`.
       "nodev"
       "nosuid"
@@ -36,20 +37,9 @@ lib.mkIf config.sane.impermanence.enable
     noCheck = true;
   };
 
-  sane.fs."/home/colin/private" = {
-    # let sane.fs know that this corresponds to a fileSystems entry
-    mount = {};
-    dir.reverseDepends = [
-      # ensure the directory is created during boot, and before user logs in.
-      "multi-user.target"
-    ];
-  };
-  sane.fs."/nix/persist/home/colin/private" = {
-    dir.reverseDepends = [
-      # ensure the directory is created during boot, and before user logs in.
-      "multi-user.target"
-    ];
-  };
+  # let sane.fs know about the endpoints
+  sane.fs."/home/colin/private".mount = {};
+  sane.fs."/nix/persist/home/colin/private".dir = {};
 
   # TODO: could add this *specifically* to the .mount file for the encrypted fs?
   system.fsPackages = [ pkgs.gocryptfs ];  # fuse needs to find gocryptfs

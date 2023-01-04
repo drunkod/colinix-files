@@ -34,12 +34,19 @@ let
           /mnt/crypt/private/var/private/www/root.
         '';
       };
-      extraOptions = mkOption {
+      defaultOrdering.wantedBeforeBy = mkOption {
         type = types.listOf types.str;
-        default = [];
+        default = [ "local-fs.target" ];
         description = ''
-          extra fstab options to include in all mounts downstream of this store.
-          e.g. ["noauto" "x-systemd.wanted-by=<blah>"] to automount but only after the store is explicitly unlocked.
+          list of units or targets which would prefer that everything in this store
+          be initialized before they run, but failing to do so should not error the items in this list.
+        '';
+      };
+      defaultOrdering.wantedBy = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = ''
+          list of units or targets which, upon activation, should activate all units in this store.
         '';
       };
     };
@@ -168,7 +175,7 @@ in
           # inherit perms & make sure we don't mount until after the mount point is setup correctly.
           dir.acl = dir-acl;
           mount.bind = backing-path;
-          mount.extraOptions = store.extraOptions;
+          inherit (store.defaultOrdering) wantedBy wantedBeforeBy;
         };
         sane.fs."${backing-path}" = {
           # ensure the backing path has same perms as the mount point.
