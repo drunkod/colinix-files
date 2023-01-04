@@ -66,26 +66,11 @@ let
   ];
 
   dirsSubModule = types.submodule {
-    options = {
-      plaintext = mkOption {
-        default = [];
-        type = types.listOf contextualizedDirOrShorthand;
-        description = "directories to persist in cleartext";
-      };
-      private = mkOption {
-        default = [];
-        type = types.listOf contextualizedDirOrShorthand;
-        description = "directories to store encrypted to the user's login password and auto-decrypt on login";
-      };
-      cryptClearOnBoot = mkOption {
-        default = [];
-        type = types.listOf contextualizedDirOrShorthand;
-        description = ''
-          directories to store encrypted to an auto-generated in-memory key and
-          wiped on boot. the main use is for sensitive cache dirs too large to fit in memory.
-        '';
-      };
-    };
+    options = mapAttrs (store: store-cfg: mkOption {
+      default = [];
+      type = types.listOf contextualizedDirOrShorthand;
+      description = "directories to persist in ${store}";
+    }) cfg.stores;
   };
 
   dirsModule = types.submodule ({ config, ... }: {
