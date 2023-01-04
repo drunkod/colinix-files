@@ -28,6 +28,14 @@ let
         type = types.nullOr (symlinkEntryFor name);
         default = null;
       };
+      depends = mkOption {
+        type = types.listOf types.str;
+        description = ''
+          list of systemd units needed to be run before this directory can be made.
+          applies at the moment of dir or symlink creation.
+        '';
+        default = [];
+      };
       unit = mkOption {
         type = types.str;
         description = "name of the systemd unit which ensures this entry";
@@ -39,7 +47,7 @@ let
       dir.acl.mode = lib.mkDefault (parent-acl.mode or "0755");
       # we put this here instead of as a `default` to ensure that users who specify additional
       # dependencies still get a dep on the parent (unless they assign with `mkForce`).
-      dir.depends = if has-parent then [ parent-cfg.unit ] else [];
+      depends = if has-parent then [ parent-cfg.unit ] else [];
       # if defaulted, this module is responsible for creating the directory
       dir.unit = lib.mkDefault ((serviceNameFor name) + ".service");
 
@@ -61,11 +69,6 @@ let
     options = {
       acl = mkOption {
         type = sane-types.acl;
-      };
-      depends = mkOption {
-        type = types.listOf types.str;
-        description = "list of systemd units needed to be run before this directory can be made";
-        default = [];
       };
       reverseDepends = mkOption {
         type = types.listOf types.str;
@@ -124,8 +127,8 @@ let
       script = ensure-dir-script;
       scriptArgs = "${path} ${opt.dir.acl.user} ${opt.dir.acl.group} ${opt.dir.acl.mode}";
 
-      after = opt.dir.depends;
-      wants = opt.dir.depends;
+      after = opt.depends;
+      wants = opt.depends;
       # prevent systemd making this unit implicitly dependent on sysinit.target.
       # see: <https://www.freedesktop.org/software/systemd/man/systemd.special.html>
       unitConfig.DefaultDependencies = "no";
@@ -168,8 +171,8 @@ let
       script = ensure-symlink-script;
       scriptArgs = "${path} ${opt.target}";
 
-      after = opt.dir.depends;
-      wants = opt.dir.depends;
+      after = opt.depends;
+      wants = opt.depends;
       # prevent systemd making this unit implicitly dependent on sysinit.target.
       # see: <https://www.freedesktop.org/software/systemd/man/systemd.special.html>
       unitConfig.DefaultDependencies = "no";
