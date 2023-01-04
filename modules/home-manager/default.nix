@@ -75,18 +75,6 @@ in
         };
       };
 
-      home.file = {
-        # convenience
-        "knowledge".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/private/knowledge";
-        "nixos".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/dev/nixos";
-        "Videos/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Videos";
-        "Videos/servo-incomplete".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/incomplete";
-        "Music/servo".source = config.lib.file.mkOutOfStoreSymlink "/mnt/servo-media/Music";
-
-        # used by password managers, e.g. unix `pass`
-        ".password-store".source = config.lib.file.mkOutOfStoreSymlink "/home/colin/knowledge/secrets/accounts";
-      };
-
       # XDG defines things like ~/Desktop, ~/Downloads, etc.
       # these clutter the home, so i mostly don't use them.
       xdg.userDirs = {

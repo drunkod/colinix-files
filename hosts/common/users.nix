@@ -28,7 +28,7 @@ in
       isNormalUser = true;
       home = "/home/colin";
       createHome = true;
-      homeMode = "700";
+      homeMode = "0700";
       uid = config.sane.allocations.colin-uid;
       # i don't get exactly what this is, but nixos defaults to this non-deterministically
       # in /var/lib/nixos/auto-subuid-map and i don't want that.
@@ -101,6 +101,16 @@ in
       # ".cache"
       ".cache/mozilla"
     ];
+
+    # convenience
+    sane.fs."/home/colin/knowledge".symlink.target = "/home/colin/private/knowledge";
+    sane.fs."/home/colin/nixos".symlink.target = "/home/colin/dev/nixos";
+    sane.fs."/home/colin/Videos/servo".symlink.target = "/mnt/servo-media/Videos";
+    sane.fs."/home/colin/Videos/servo-incomplete".symlink.target = "/mnt/servo-media/incomplete";
+    sane.fs."/home/colin/Music/servo".symlink.target = "/mnt/servo-media/Music";
+
+    # used by password managers, e.g. unix `pass`
+    sane.fs."/home/colin/.password-store".symlink.target = "/home/colin/knowledge/secrets/accounts";
 
     sane.impermanence.dirs.sys.plaintext = mkIf cfg.guest.enable [
       # intentionally allow other users to write to the guest folder
