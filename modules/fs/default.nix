@@ -150,8 +150,7 @@ let
           # - <https://www.freedesktop.org/software/systemd/man/systemd.mount.html>
           # we can't mount this until after the underlying path is prepared.
           # if the underlying path disappears, this mount will be stopped.
-          # TODO: why do we use `underlying.dir.unit` instead of `underlying.unit`?
-          "x-systemd.requires=${underlying.dir.unit}"
+          "x-systemd.requires=${underlying.unit}"
           # the mount depends on its target directory being prepared
           "x-systemd.requires=${opt.dir.unit}"
         ]
