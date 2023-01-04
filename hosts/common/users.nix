@@ -103,7 +103,8 @@ in
     ];
 
     sane.impermanence.dirs.sys.plaintext = mkIf cfg.guest.enable [
-      { user = "guest"; group = "users"; directory = "/home/guest"; }
+      # intentionally allow other users to write to the guest folder
+      { directory = "/home/guest"; user = "guest"; group = "users"; mode = "0775"; }
     ];
     users.users.guest = mkIf cfg.guest.enable {
       isNormalUser = true;
