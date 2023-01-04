@@ -253,6 +253,12 @@ let
 
       # claim ownership of the new thing (DON'T traverse symlinks)
       chown --no-dereference "$acluser:$aclgroup" "$fspath"
+      # AS LONG AS IT'S NOT A SYMLINK, try to fix perms in case the entity existed before this script was called
+      if ! test -L "$fspath"
+      then
+        chmod "$aclmode" "$fspath"
+      fi
+
       exit "$_status"
     '';
     scriptArgs = [ path gen-opt.acl.user gen-opt.acl.group gen-opt.acl.mode ] ++ gen-opt.script.scriptArgs;
