@@ -165,10 +165,8 @@ in
         backing-path = path.concat [ store.mountpt store-rel-path ];
 
         # pass through the perm/mode overrides
-        dir-acl = {
-          user = lib.mkIf (opt.user != null) opt.user;
-          group = lib.mkIf (opt.group != null) opt.group;
-          mode = lib.mkIf (opt.mode != null) opt.mode;
+        dir-acl = sane-lib.filterNonNull {
+          inherit (opt) user group mode;
         };
       in {
         # create destination and backing directory, with correct perms
