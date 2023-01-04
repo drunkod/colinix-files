@@ -12,6 +12,15 @@ let
 
   storeType = types.submodule {
     options = {
+      storeDescription = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = ''
+          an optional description of the store, which is rendered like
+            {store.name}: {store.storeDescription}
+          for example, a store named "private" could have description "ecnrypted to the user's password and decrypted on login".
+        '';
+      };
       mountpt = mkOption {
         type = types.str;
       };
@@ -69,7 +78,11 @@ let
     options = mapAttrs (store: store-cfg: mkOption {
       default = [];
       type = types.listOf contextualizedDirOrShorthand;
-      description = "directories to persist in ${store}";
+      description = let
+        suffix = if store-cfg.storeDescription != null then
+          ": ${store-cfg.storeDescription}"
+        else "";
+      in "directories to persist in ${store}${suffix}";
     }) cfg.stores;
   };
 

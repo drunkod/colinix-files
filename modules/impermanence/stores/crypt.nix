@@ -33,6 +33,10 @@ in
 lib.mkIf config.sane.impermanence.enable
 {
   sane.impermanence.stores."cryptClearOnBoot" = {
+    storeDescription = ''
+      stored to disk, but encrypted to an in-memory key and cleared on every boot
+      so that it's unreadable after power-off
+    '';
     mountpt = "/mnt/impermanence/crypt/clearedonboot";
   };
 

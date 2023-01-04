@@ -5,6 +5,9 @@ let
 in lib.mkIf config.sane.impermanence.enable
 {
   sane.impermanence.stores."private" = {
+    storeDescription = ''
+      encrypted to the user's password and auto-unlocked at login
+    '';
     mountpt = "/home/colin/private";
     # files stored under here *must* have the /home/colin prefix.
     # internally, this prefix is removed so that e.g.
