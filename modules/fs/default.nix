@@ -109,7 +109,8 @@ let
       reverseDepends = mkOption {
         type = types.listOf types.str;
         description = "list of systemd units which should be made to depend on this unit (controls `wantedBy` and `before`)";
-        default = [];
+        # symlinks are assumed to be terminals, so create them on start by default
+        default = [ "multi-user.target" ];
       };
     };
   };
