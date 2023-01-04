@@ -239,14 +239,18 @@ let
       aclmode="$4"
       shift 4
 
+      # ensure any things created by the user script have the desired mode.
+      # chmod doesn't work on symlinks, so we *have* to use this umask approach.
+      umask $(( 777 - "$aclmode" ))
+
       # try to chmod/chown the result even if the user script errors
       _status=0
       trap "_status=\$?" ERR
 
       ${gen-opt.script.script}
 
-      chmod "$aclmode" "$fspath"
-      chown "$acluser:$aclgroup" "$fspath"
+      # claim ownership of the new thing (DON'T traverse symlinks)
+      chown --no-derefence "$acluser:$aclgroup" "$fspath"
       exit "$_status"
     '';
     scriptArgs = [ path gen-opt.acl.user gen-opt.acl.group gen-opt.acl.mode ] ++ gen-opt.script.scriptArgs;
