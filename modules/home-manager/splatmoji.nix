@@ -4,6 +4,7 @@
 { pkgs, sane-lib, ... }:
 
 {
+  sane.persist.home.plaintext = [ ".local/state/splatmoji" ];
   sane.fs."/home/colin/.config/splatmoji/splatmoji.config" = sane-lib.fs.wantedText ''
     history_file=/home/colin/.local/state/splatmoji/history
     history_length=5
