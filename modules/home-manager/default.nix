@@ -17,10 +17,13 @@ in
   imports = [
     ./aerc.nix
     ./firefox.nix
+    ./gfeeds.nix
     ./git.nix
+    ./gpodder.nix
     ./kitty.nix
     ./mpv.nix
     ./neovim.nix
+    ./newsflash.nix
     ./splatmoji.nix
     ./ssh.nix
     ./sublime-music.nix
@@ -135,49 +138,6 @@ in
       # <item oor:path="/org.openoffice.Setup/Product"><prop oor:name="LastTimeDonateShown" oor:op="fuse"><value>1667693880</value></prop></item>
       # <item oor:path="/org.openoffice.Setup/Product"><prop oor:name="LastTimeGetInvolvedShown" oor:op="fuse"><value>1667693880</value></prop></item>
 
-
-
-      xdg.configFile."gpodderFeeds.opml".text = with feeds;
-        feedsToOpml feeds.podcasts;
-
-      # news-flash RSS viewer
-      xdg.configFile."newsflashFeeds.opml".text = with feeds;
-        feedsToOpml (feeds.texts ++ feeds.images);
-
-      # gnome feeds RSS viewer
-      xdg.configFile."org.gabmus.gfeeds.json".text =
-      let
-        myFeeds = feeds.texts ++ feeds.images;
-      in builtins.toJSON {
-        # feed format is a map from URL to a dict,
-        #   with dict["tags"] a list of string tags.
-        feeds = builtins.foldl' (acc: feed: acc // {
-          "${feed.url}".tags = [ feed.cat feed.freq ];
-        }) {} myFeeds;
-        dark_reader = false;
-        new_first = true;
-        # windowsize = {
-        #   width = 350;
-        #   height = 650;
-        # };
-        max_article_age_days = 90;
-        enable_js = false;
-        max_refresh_threads = 3;
-        # saved_items = {};
-        # read_items = [];
-        show_read_items = true;
-        full_article_title = true;
-        # views: "webview", "reader", "rsscont"
-        default_view = "rsscont";
-        open_links_externally = true;
-        full_feed_name = false;
-        refresh_on_startup = true;
-        tags = lib.lists.unique (
-          (builtins.catAttrs "cat" myFeeds) ++ (builtins.catAttrs "freq" myFeeds)
-        );
-        open_youtube_externally = false;
-        media_player = "vlc";  # default: mpv
-      };
 
       programs = {
         home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
