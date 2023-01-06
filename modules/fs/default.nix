@@ -81,6 +81,9 @@ let
       # make the unit file which generates the underlying thing available so that `mount` can use it.
       generated.unit = (serviceNameFor name) + ".service";
 
+      # if we were asked to mount, make sure we create the dir that we mount over
+      dir = lib.mkIf (config.mount != null) {};
+
       # if defaulted, this module is responsible for finalizing the entry.
       # the user could override this if, say, they finalize some aspect of the entry
       # with a custom service.
