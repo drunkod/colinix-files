@@ -61,7 +61,10 @@ let
       directory = mkOption {
         type = types.str;
       };
-      inherit (sane-types.aclOverrideMod.options) user group mode;
+      acl = mkOption {
+        type = sane-types.aclOverride;
+        default = {};
+      };
     };
   };
   # allow "bar/baz" as shorthand for { directory = "bar/baz"; }
@@ -70,12 +73,28 @@ let
     (d: { directory = d; })
     entryInStore;
 
+  # allow the user to provide the `acl` field inline: we pop acl sub-attributes placed at the
+  # toplevel and move them into an `acl` attribute.
+  convertInlineAcl = to: types.coercedTo
+    types.attrs
+    (orig: (builtins.removeAttrs orig ["user" "group" "mode" ]) // {
+      acl = (orig.acl or {}) // (sane-lib.filterNonNull {
+        user = orig.user or null;
+        group = orig.group or null;
+        mode = orig.mode or null;
+      });
+    })
+    to;
+
   # entry where the path is specified externally
   entryAtPath = types.submodule {
     options = {
-      inherit (sane-types.aclOverrideMod.options) user group mode;
       store = mkOption {
         type = coercedToStore;
+      };
+      acl = mkOption {
+        type = sane-types.aclOverride;
+        default = {};
       };
     };
   };
@@ -86,7 +105,7 @@ let
   dirsSubModule = types.submodule ({ config, ... }: {
     options = (mapAttrs (store: store-cfg: mkOption {
       default = [];
-      type = types.listOf entryInStoreOrShorthand;
+      type = types.listOf (convertInlineAcl entryInStoreOrShorthand);
       description = let
         suffix = if store-cfg.storeDescription != null then
           ": ${store-cfg.storeDescription}"
@@ -94,7 +113,7 @@ let
       in "directories to persist in ${store}${suffix}";
     }) cfg.stores) // {
       byPath = mkOption {
-        type = types.attrsOf entryAtPath;
+        type = types.attrsOf (convertInlineAcl entryAtPath);
         default = {};
         description = ''
           map of <path> => <path config> for all paths to be persisted.
@@ -115,9 +134,7 @@ let
       annotated-dirs = lib.concatMap annotatedDirsForStore store-names;
       # convert an `entryInStore` to an `entryAtPath`
       dirToAttrs = dir: {
-        "${dir.directory}" = {
-          inherit (dir) user group mode store;
-        };
+        "${dir.directory}" = builtins.removeAttrs dir ["directory"];
       };
     in {
       byPath = lib.mkMerge (map dirToAttrs annotated-dirs);
@@ -146,7 +163,7 @@ in
       type = dirsSubModule;
     };
     sane.persist.byPath = mkOption {
-      type = types.attrsOf entryAtPath;
+      type = types.attrsOf (convertInlineAcl entryAtPath);
       description = ''
         map of <path> => <path config> for all paths to be persisted.
         this is computed from the other options, but users can also set it explicitly (useful for overriding)
@@ -173,17 +190,12 @@ in
         store = opt.store;
         fsPathToStoreRelPath = fspath: path.from store.prefix fspath;
         fsPathToBackingPath = fspath: path.concat [ store.origin (fsPathToStoreRelPath fspath) ];
-
-        # pass through the perm/mode overrides
-        dir-acl = sane-lib.filterNonNull {
-          inherit (opt) user group mode;
-        };
       in [
         {
           # create destination dir, with correct perms
           sane.fs."${fspath}" = {
             # inherit perms & make sure we don't mount until after the mount point is setup correctly.
-            dir.acl = dir-acl;
+            dir.acl = opt.acl;
             mount.bind = fsPathToBackingPath fspath;
             inherit (store.defaultOrdering) wantedBy wantedBeforeBy;
           };
