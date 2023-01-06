@@ -13,7 +13,7 @@
     pkgs.matrix-synapse
     pkgs.freshrss
   ];
-  sane.impermanence.enable = true;
+  sane.persist.enable = true;
   sane.services.dyn-dns.enable = true;
   # sane.services.duplicity.enable = true;  # TODO: re-enable after HW upgrade
 

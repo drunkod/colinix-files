@@ -10,7 +10,7 @@
   sane.services.duplicity.enable = true;
   sane.services.nixserve.enable = true;
   sane.services.nixserve.sopsFile = ../../secrets/desko.yaml;
-  sane.impermanence.enable = true;
+  sane.persist.enable = true;
 
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
@@ -52,7 +52,7 @@
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
-  sane.impermanence.dirs.home.plaintext = [
+  sane.persist.dirs.home.plaintext = [
     ".steam"
     ".local/share/Steam"
   ];

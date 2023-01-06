@@ -24,11 +24,11 @@
   };
 
   # usability compromises
-  sane.impermanence.dirs.home.private = [
+  sane.persist.dirs.home.private = [
     config.sane.web-browser.dotDir
     config.sane.web-browser.cacheDir
   ];
-  sane.impermanence.dirs.home.plaintext = [
+  sane.persist.dirs.home.plaintext = [
     ".config/pulse"  # persist pulseaudio volume
   ];
 
@@ -38,7 +38,7 @@
   ];
 
   sane.nixcache.enable = true;
-  sane.impermanence.enable = true;
+  sane.persist.enable = true;
   sane.gui.phosh.enable = true;
 
   boot.loader.efi.canTouchEfiVariables = false;

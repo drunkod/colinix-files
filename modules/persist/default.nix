@@ -8,7 +8,7 @@ with lib;
 let
   path = sane-lib.path;
   sane-types = sane-lib.types;
-  cfg = config.sane.impermanence;
+  cfg = config.sane.persist;
 
   storeType = types.submodule {
     options = {
@@ -131,20 +131,20 @@ let
 in
 {
   options = {
-    sane.impermanence.enable = mkOption {
+    sane.persist.enable = mkOption {
       default = false;
       type = types.bool;
     };
-    sane.impermanence.root-on-tmpfs = mkOption {
+    sane.persist.root-on-tmpfs = mkOption {
       default = false;
       type = types.bool;
       description = "define / fs root to be a tmpfs. make sure to mount some other device to /nix";
     };
-    sane.impermanence.dirs = mkOption {
+    sane.persist.dirs = mkOption {
       type = dirsModule;
       default = {};
     };
-    sane.impermanence.stores = mkOption {
+    sane.persist.stores = mkOption {
       type = types.attrsOf storeType;
       default = {};
       description = ''

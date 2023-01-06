@@ -1,9 +1,9 @@
 { config, lib, ... }:
 
 let
-  cfg = config.sane.impermanence;
+  cfg = config.sane.persist;
 in lib.mkIf cfg.enable {
-  sane.impermanence.stores."plaintext" = {
+  sane.persist.stores."plaintext" = {
     origin = "/nix/persist";
   };
   # TODO: needed?

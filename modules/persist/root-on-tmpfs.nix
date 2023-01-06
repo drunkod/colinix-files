@@ -1,7 +1,7 @@
 { config, lib, ... }:
 
 let
-  cfg = config.sane.impermanence;
+  cfg = config.sane.persist;
 in
 {
   fileSystems."/" = lib.mkIf (cfg.enable && cfg.root-on-tmpfs) {

@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  sane.impermanence.root-on-tmpfs = true;
+  sane.persist.root-on-tmpfs = true;
   # we need a /tmp for building large nix things.
   # a cross-compiled kernel, particularly, will easily use 30+GB of tmp
   fileSystems."/tmp" = {

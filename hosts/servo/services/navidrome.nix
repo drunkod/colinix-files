@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  sane.impermanence.dirs.sys.plaintext = [
+  sane.persist.dirs.sys.plaintext = [
     # TODO: we don't have a static user allocated for navidrome!
     # the chown would happen too early for us to set static perms
     "/var/lib/private/navidrome"

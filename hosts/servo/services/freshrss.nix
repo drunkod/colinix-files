@@ -16,7 +16,7 @@
     owner = config.users.users.freshrss.name;
     mode = "0400";
   };
-  sane.impermanence.dirs.sys.plaintext = [
+  sane.persist.dirs.sys.plaintext = [
     { user = "freshrss"; group = "freshrss"; directory = "/var/lib/freshrss"; }
   ];
 

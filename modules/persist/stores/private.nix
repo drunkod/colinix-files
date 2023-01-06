@@ -1,8 +1,8 @@
 { config, lib, pkgs, utils, ... }:
 
-lib.mkIf config.sane.impermanence.enable
+lib.mkIf config.sane.persist.enable
 {
-  sane.impermanence.stores."private" = {
+  sane.persist.stores."private" = {
     storeDescription = ''
       encrypted to the user's password and auto-unlocked at login
     '';

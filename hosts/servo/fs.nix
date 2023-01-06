@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  sane.impermanence.root-on-tmpfs = true;
+  sane.persist.root-on-tmpfs = true;
   # we need a /tmp for building large nix things
   fileSystems."/tmp" = {
     device = "none";
@@ -27,7 +27,7 @@
   };
 
   # slow, external storage (for archiving, etc)
-  fileSystems."/mnt/impermanence/ext" = {
+  fileSystems."/mnt/persist/ext" = {
     device = "/dev/disk/by-uuid/aa272cff-0fcc-498e-a4cb-0d95fb60631b";
     fsType = "btrfs";
     options = [
@@ -36,18 +36,18 @@
     ];
   };
 
-  sane.impermanence.stores."ext" = {
-    origin = "/mnt/impermanence/ext/persist";
+  sane.persist.stores."ext" = {
+    origin = "/mnt/persist/ext/persist";
     storeDescription = "external HDD storage";
   };
-  sane.fs."/mnt/impermanence/ext".mount = {};
+  sane.fs."/mnt/persist/ext".mount = {};
 
-  sane.impermanence.dirs.sys.plaintext = [
+  sane.persist.dirs.sys.plaintext = [
     # TODO: this is overly broad; only need media and share directories to be persisted
     { user = "colin"; group = "users"; directory = "/var/lib/uninsane"; }
   ];
   # make sure large media is stored to the HDD
-  sane.impermanence.dirs.sys.ext = [
+  sane.persist.dirs.sys.ext = [
     {
       user = "colin";
       group = "users";

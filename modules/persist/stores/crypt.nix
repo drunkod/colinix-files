@@ -2,17 +2,17 @@
 
 let
   store = rec {
-    device = "/mnt/impermanence/crypt/clearedonboot";
+    device = "/mnt/persist/crypt/clearedonboot";
     underlying = {
       path = "/nix/persist/crypt/clearedonboot";
       # TODO: consider moving this to /tmp, but that requires tmp be mounted first?
-      key = "/mnt/impermanence/crypt/clearedonboot.key";
+      key = "/mnt/persist/crypt/clearedonboot.key";
     };
   };
 in
-lib.mkIf config.sane.impermanence.enable
+lib.mkIf config.sane.persist.enable
 {
-  sane.impermanence.stores."cryptClearOnBoot" = {
+  sane.persist.stores."cryptClearOnBoot" = {
     storeDescription = ''
       stored to disk, but encrypted to an in-memory key and cleared on every boot
       so that it's unreadable after power-off

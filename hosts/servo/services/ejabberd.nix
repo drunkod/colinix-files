@@ -19,7 +19,7 @@
 # XXX: avatar support works in MUCs but not DMs
 # lib.mkIf false
 {
-  sane.impermanence.dirs.sys.plaintext = [
+  sane.persist.dirs.sys.plaintext = [
     { user = "ejabberd"; group = "ejabberd"; directory = "/var/lib/ejabberd"; }
   ];
   networking.firewall.allowedTCPPorts = [

@@ -8,8 +8,8 @@
     ./home-manager
     ./packages.nix
     ./image.nix
-    ./impermanence
     ./nixcache.nix
+    ./persist
     ./services
     ./sops.nix
   ];

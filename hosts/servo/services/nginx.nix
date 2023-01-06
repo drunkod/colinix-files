@@ -122,7 +122,7 @@ in
 
   users.users.acme.uid = config.sane.allocations.acme-uid;
   users.groups.acme.gid = config.sane.allocations.acme-gid;
-  sane.impermanence.dirs.sys.plaintext = [
+  sane.persist.dirs.sys.plaintext = [
     # TODO: mode?
     { user = "acme"; group = "acme"; directory = "/var/lib/acme"; }
     { user = "colin"; group = "users"; directory = "/var/www/sites"; }

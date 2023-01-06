@@ -10,7 +10,7 @@
 
 lib.mkIf false # i don't actively use ipfs anymore
 {
-  sane.impermanence.dirs.sys.plaintext = [
+  sane.persist.dirs.sys.plaintext = [
     # TODO: mode? could be more granular
     { user = "261"; group = "261"; directory = "/var/lib/ipfs"; }
   ];

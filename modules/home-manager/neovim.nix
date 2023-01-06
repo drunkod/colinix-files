@@ -3,7 +3,7 @@
 lib.mkIf config.sane.home-manager.enable
 {
   # private because there could be sensitive things in the swap
-  sane.impermanence.dirs.home.private = [ ".cache/vim-swap" ];
+  sane.persist.dirs.home.private = [ ".cache/vim-swap" ];
 
   home-manager.users.colin.programs.neovim = {
     # neovim: https://github.com/neovim/neovim

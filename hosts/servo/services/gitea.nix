@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
 {
-  sane.impermanence.dirs.sys.plaintext = [
+  sane.persist.dirs.sys.plaintext = [
     # TODO: mode? could be more granular
     { user = "git"; group = "gitea"; directory = "/var/lib/gitea"; }
   ];

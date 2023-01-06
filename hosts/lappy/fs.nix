@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  sane.impermanence.root-on-tmpfs = true;
+  sane.persist.root-on-tmpfs = true;
   # we need a /tmp of default size (half RAM) for building large nix things
   fileSystems."/tmp" = {
     device = "none";
