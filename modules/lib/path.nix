@@ -26,5 +26,14 @@ let path = rec {
     assert lib.hasPrefix s e;
     "/" +  (lib.removePrefix s e)
   );
+
+  # yield every node between start and end, including each the endpoints
+  # e.g. walk "/foo" "/foo/bar/baz" => [ "/foo" "/foo/bar" "/foo/bar/baz" ]
+  # XXX: assumes input paths are normalized
+  walk = start: end: if start == end then
+    [ start ]
+  else
+    (walk start (parent end)) ++ [ end ]
+  ;
 };
 in path

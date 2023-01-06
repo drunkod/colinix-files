@@ -302,12 +302,7 @@ let
 
   # return all ancestors of this path.
   # e.g. ancestorsOf "/foo/bar/baz" => [ "/" "/foo" "/foo/bar" ]
-  # TODO: move this to path-lib?
-  ancestorsOf = path: if path-lib.hasParent path then
-    ancestorsOf (path-lib.parent path) ++ [ (path-lib.parent path) ]
-  else
-    [ ]
-  ;
+  ancestorsOf = path: lib.init (path-lib.walk "/" path);
 
   # attrsOf fsEntry type which for every entry ensures that all ancestor entries are created.
   # we do this with a custom type to ensure that users can access `config.sane.fs."/parent/path"`

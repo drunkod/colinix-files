@@ -162,30 +162,37 @@ in
     cfgFor = opt:
       let
         store = opt.store;
-        store-rel-path = path.from store.prefix opt.directory;
-        backing-path = path.concat [ store.origin store-rel-path ];
+        fsPathToStoreRelPath = fspath: path.from store.prefix fspath;
+        fsPathToBackingPath = fspath: path.concat [ store.origin (fsPathToStoreRelPath fspath) ];
 
         # pass through the perm/mode overrides
         dir-acl = sane-lib.filterNonNull {
           inherit (opt) user group mode;
         };
-      in {
-        # create destination and backing directory, with correct perms
-        sane.fs."${opt.directory}" = {
-          # inherit perms & make sure we don't mount until after the mount point is setup correctly.
-          dir.acl = dir-acl;
-          mount.bind = backing-path;
-          inherit (store.defaultOrdering) wantedBy wantedBeforeBy;
-        };
-        sane.fs."${backing-path}" = {
-          # ensure the backing path has same perms as the mount point.
-          # TODO: maybe we want to do this, crawling all the way up to the store base?
-          # that would simplify (remove) the code in stores/default.nix
-          dir.acl = config.sane.fs."${opt.directory}".generated.acl;
-        };
-      };
+      in [
+        {
+          # create destination dir, with correct perms
+          sane.fs."${opt.directory}" = {
+            # inherit perms & make sure we don't mount until after the mount point is setup correctly.
+            dir.acl = dir-acl;
+            mount.bind = fsPathToBackingPath opt.directory;
+            inherit (store.defaultOrdering) wantedBy wantedBeforeBy;
+          };
+
+          # create the backing path as a dir
+          sane.fs."${fsPathToBackingPath opt.directory}".dir = {};
+          # sane.fs."${fsPathToBackingPath opt.directory}".dir.acl = config.sane.fs."${opt.directory}".generated.acl;
+        }
+        {
+          # default each item along the backing path to have the same acl as the location it would be mounted.
+          sane.fs = sane-lib.mapToAttrs (fspath: {
+            name = fsPathToBackingPath fspath;
+            value.generated.acl = config.sane.fs."${fspath}".generated.acl;
+          }) (path.walk store.prefix opt.directory);
+        }
+      ];
   in mkIf cfg.enable {
-    sane.fs = lib.mkMerge (map (d: (cfgFor d).sane.fs) cfg.dirs.all);
+    sane.fs = lib.mkMerge (map (c: c.sane.fs) (concatMap cfgFor cfg.dirs.all));
   };
 }
 
