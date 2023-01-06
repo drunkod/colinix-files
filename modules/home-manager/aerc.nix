@@ -1,5 +1,5 @@
 # Terminal UI mail client
-{ config, lib, ... }:
+{ config, lib, sane-lib, ... }:
 
 lib.mkIf config.sane.home-manager.enable
 {
@@ -8,9 +8,5 @@ lib.mkIf config.sane.home-manager.enable
     sopsFile = ../../secrets/universal/aerc_accounts.conf;
     format = "binary";
   };
-  home-manager.users.colin = let sysconfig = config; in { config, ... }: {
-    # aerc TUI mail client
-    xdg.configFile."aerc/accounts.conf".source =
-      config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.aerc_accounts.path;
-  };
+  sane.fs."/home/colin/.config/aerc/accounts.conf" = sane-lib.fs.wantedSymlinkTo config.sops.secrets.aerc_accounts.path;
 }

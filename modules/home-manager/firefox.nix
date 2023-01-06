@@ -6,7 +6,7 @@
 # many of the settings below won't have effect without those patches.
 # see: https://gitlab.com/librewolf-community/settings/-/blob/master/distribution/policies.json
 
-{ config, lib, pkgs, ...}:
+{ config, lib, pkgs, sane-lib, ...}:
 with lib;
 let
   cfg = config.sane.web-browser;
@@ -111,37 +111,38 @@ in
     };
   };
   config = lib.mkIf config.sane.home-manager.enable {
+
+    # uBlock filter list configuration.
+    # specifically, enable the GDPR cookie prompt blocker.
+    # data.toOverwrite.filterLists is additive (i.e. it supplements the default filters)
+    # this configuration method is documented here:
+    # - <https://github.com/gorhill/uBlock/issues/2986#issuecomment-364035002>
+    # the specific attribute path is found via scraping ublock code here:
+    # - <https://github.com/gorhill/uBlock/blob/master/src/js/storage.js>
+    # - <https://github.com/gorhill/uBlock/blob/master/assets/assets.json>
+    sane.fs."/home/colin/${cfg.dotDir}/managed-storage/uBlock0@raymondhill.net.json" = sane-lib.fs.wantedText ''
+      {
+       "name": "uBlock0@raymondhill.net",
+       "description": "ignored",
+       "type": "storage",
+       "data": {
+          "toOverwrite": "{\"filterLists\": [\"fanboy-cookiemonster\"]}"
+       }
+      }
+    '';
+    sane.fs."/home/colin/${cfg.dotDir}/${cfg.libName}.overrides.cfg" = sane-lib.fs.wantedText ''
+      // if we can't query the revocation status of a SSL cert because the issuer is offline,
+      // treat it as unrevoked.
+      // see: <https://librewolf.net/docs/faq/#im-getting-sec_error_ocsp_server_error-what-can-i-do>
+      defaultPref("security.OCSP.require", false);
+    '';
+
     # XXX: although home-manager calls this option `firefox`, we can use other browsers and it still mostly works.
     home-manager.users.colin = lib.mkIf (config.sane.gui.enable) {
       programs.firefox = {
         enable = true;
         inherit package;
       };
-
-      # uBlock filter list configuration.
-      # specifically, enable the GDPR cookie prompt blocker.
-      # data.toOverwrite.filterLists is additive (i.e. it supplements the default filters)
-      # this configuration method is documented here:
-      # - <https://github.com/gorhill/uBlock/issues/2986#issuecomment-364035002>
-      # the specific attribute path is found via scraping ublock code here:
-      # - <https://github.com/gorhill/uBlock/blob/master/src/js/storage.js>
-      # - <https://github.com/gorhill/uBlock/blob/master/assets/assets.json>
-      home.file."${cfg.dotDir}/managed-storage/uBlock0@raymondhill.net.json".text = ''
-        {
-         "name": "uBlock0@raymondhill.net",
-         "description": "ignored",
-         "type": "storage",
-         "data": {
-            "toOverwrite": "{\"filterLists\": [\"fanboy-cookiemonster\"]}"
-         }
-        }
-      '';
-      home.file."${cfg.dotDir}/${cfg.libName}.overrides.cfg".text = ''
-        // if we can't query the revocation status of a SSL cert because the issuer is offline,
-        // treat it as unrevoked.
-        // see: <https://librewolf.net/docs/faq/#im-getting-sec_error_ocsp_server_error-what-can-i-do>
-        defaultPref("security.OCSP.require", false);
-      '';
     };
   };
 }

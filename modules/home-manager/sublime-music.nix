@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, sane-lib, ... }:
 
 lib.mkIf config.sane.home-manager.enable
 {
@@ -8,9 +8,5 @@ lib.mkIf config.sane.home-manager.enable
     sopsFile = ../../secrets/universal/sublime_music_config.json.bin;
     format = "binary";
   };
-  home-manager.users.colin = let sysconfig = config; in { config, ... }: {
-    # sublime music player
-    xdg.configFile."sublime-music/config.json".source =
-      config.lib.file.mkOutOfStoreSymlink sysconfig.sops.secrets.sublime_music_config.path;
-  };
+  sane.fs."/home/colin/.config/sublime-music/config.json" = sane-lib.fs.wantedSymlinkTo config.sops.secrets.sublime_music_config.path;
 }
