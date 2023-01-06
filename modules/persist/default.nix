@@ -88,7 +88,7 @@ let
   # to place ".cache/vim" into the private store and create with the appropriate mode
   dirsSubModule = types.attrsOf (types.listOf contextualizedDirOrShorthand);
 
-  dirsModule = types.submodule ({ config, ... }: {
+  dirsModule = types.submodule {
     options = {
       home = mkOption {
         description = "directories to persist to disk, relative to a user's home ~";
@@ -100,29 +100,8 @@ let
         default = {};
         type = dirsSubModule;
       };
-      all = mkOption {
-        type = types.listOf contextFreeDir;
-        description = "all directories known to the config. auto-computed: users should not set this directly.";
-      };
     };
-    config = let
-      mapDirs = relativeTo: store: dirs: (map
-        (d: {
-          inherit (d) user group mode;
-          directory = path.concat [ relativeTo d.directory ];
-          store = cfg.stores."${store}";
-        })
-        dirs
-      );
-      mapDirSets = relativeTo: dirsSubOptions: let
-        # list where each elem is a list from calling mapDirs on one store at a time
-        contextFreeDirSets = lib.mapAttrsToList (mapDirs relativeTo) dirsSubOptions;
-      in
-        builtins.concatLists contextFreeDirSets;
-    in {
-      all = (mapDirSets "/home/colin" config.home) ++ (mapDirSets "/" config.sys);
-    };
-  });
+  };
 in
 {
   options = {
@@ -139,6 +118,10 @@ in
       type = dirsModule;
       default = {};
     };
+    sane.persist.all = mkOption {
+      type = types.listOf contextFreeDir;
+      description = "all directories known to the config. auto-computed: users should not set this directly.";
+    };
     sane.persist.stores = mkOption {
       type = types.attrsOf storeType;
       default = {};
@@ -149,6 +132,7 @@ in
   };
 
   imports = [
+    ./computed.nix
     ./root-on-tmpfs.nix
     ./stores
   ];
@@ -187,7 +171,7 @@ in
         }
       ];
   in mkIf cfg.enable {
-    sane.fs = lib.mkMerge (map (c: c.sane.fs) (concatMap cfgFor cfg.dirs.all));
+    sane.fs = lib.mkMerge (map (c: c.sane.fs) (concatMap cfgFor cfg.all));
   };
 }
 
