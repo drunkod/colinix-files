@@ -25,14 +25,13 @@ let
 
   fixed-dirs = (fixDirs "/home/colin" unfixed-home-dirs) ++ (fixDirs "/" unfixed-sys-dirs);
 
-  dirToAttr = dir: {
-    name = dir.directory;
-    value = {
+  dirToAttrs = dir: {
+    "${dir.directory}" = {
       inherit (dir) user group mode store;
     };
   };
 in
 {
   # compute the `byPath` path => entry mapping from higher-level store => entry mappings.
-  sane.persist.byPath = builtins.listToAttrs (map dirToAttr fixed-dirs);
+  sane.persist.byPath = lib.mkMerge (map dirToAttrs fixed-dirs);
 }
