@@ -4,34 +4,15 @@ let
   path = sane-lib.path;
   cfg = config.sane.persist;
 
-  # take a directory attrset and fix its directory to be absolute
-  fixDir = relativeTo: dir: dir // {
-    directory = path.concat [ relativeTo dir.directory ];
-  };
-  fixDirs = relativeTo: dirs: map (fixDir relativeTo) dirs;
-
-  # set the `store` attribute on one dir attrset
-  fixStore = store: dir: dir // {
-    inherit store;
-  };
-  # String -> [a] -> [a]
-  # usually called on an attrset to map (AttrSet [a]) -> [a]
-  fixStoreForDirs = store: dirs: map (fixStore store) dirs;
-
-  # populate the `store` attr for all the substores in home
-  unfixed-home-dirs = builtins.concatLists (lib.mapAttrsToList fixStoreForDirs cfg.home);
-  # populate the `store` attr for all the substores in sys
-  unfixed-sys-dirs = builtins.concatLists (lib.mapAttrsToList fixStoreForDirs cfg.sys);
-
-  fixed-dirs = (fixDirs "/home/colin" unfixed-home-dirs) ++ (fixDirs "/" unfixed-sys-dirs);
-
-  dirToAttrs = dir: {
-    "${dir.directory}" = {
-      inherit (dir) user group mode store;
-    };
-  };
+  withPrefix = relativeTo: entries: lib.mapAttrs' (fspath: value: {
+    name = path.concat [ relativeTo fspath ];
+    inherit value;
+  }) entries;
 in
 {
-  # compute the `byPath` path => entry mapping from higher-level store => entry mappings.
-  sane.persist.byPath = lib.mkMerge (map dirToAttrs fixed-dirs);
+  # merge the `byPath` mappings from both `home` and `sys` into one namespace
+  sane.persist.byPath = lib.mkMerge [
+    (withPrefix "/home/colin" cfg.home.byPath)
+    (withPrefix "/" cfg.sys.byPath)
+  ];
 }

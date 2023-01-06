@@ -80,12 +80,49 @@ let
     };
   };
 
-
-  # attrset from { "${storeName}" = [ dirEntry ] }
-  # the user can specify something like:
+  # this submodule creates one attr per store, so that the user can specify something like:
   #   <option>.private.".cache/vim" = { mode = "0700"; };
   # to place ".cache/vim" into the private store and create with the appropriate mode
-  dirsSubModule = types.attrsOf (types.listOf entryInStoreOrShorthand);
+  dirsSubModule = types.submodule ({ config, ... }: {
+    options = (mapAttrs (store: store-cfg: mkOption {
+      default = [];
+      type = types.listOf entryInStoreOrShorthand;
+      description = let
+        suffix = if store-cfg.storeDescription != null then
+          ": ${store-cfg.storeDescription}"
+        else "";
+      in "directories to persist in ${store}${suffix}";
+    }) cfg.stores) // {
+      byPath = mkOption {
+        type = types.attrsOf entryAtPath;
+        default = {};
+        description = ''
+          map of <path> => <path config> for all paths to be persisted.
+          this is computed from the other options, but users can also set it explicitly (useful for overriding)
+        '';
+      };
+    };
+    config = let
+      # set the `store` attribute on one dir attrset
+      annotateWithStore = store: dir: dir // {
+        inherit store;
+      };
+      # String -> [a] -> [a]
+      # usually called on an attrset to map (AttrSet [a]) -> [a]
+      annotatedDirsForStore = store: map (annotateWithStore store) config."${store}";
+      store-names = attrNames cfg.stores;
+      # flat list where each item is an entryInStore with an additional `store` attribute
+      annotated-dirs = lib.concatMap annotatedDirsForStore store-names;
+      # convert an `entryInStore` to an `entryAtPath`
+      dirToAttrs = dir: {
+        "${dir.directory}" = {
+          inherit (dir) user group mode store;
+        };
+      };
+    in {
+      byPath = lib.mkMerge (map dirToAttrs annotated-dirs);
+    };
+  });
 in
 {
   options = {
