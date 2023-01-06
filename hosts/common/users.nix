@@ -1,16 +1,13 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, sane-lib, ... }:
 
 # installer docs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/profiles/installation-device.nix
 with lib;
 let
   cfg = config.sane.users;
+  fs = sane-lib.fs;
   # see nixpkgs/nixos/modules/services/networking/dhcpcd.nix
   hasDHCP = config.networking.dhcpcd.enable &&
     (config.networking.useDHCP || any (i: i.useDHCP == true) (attrValues config.networking.interfaces));
-  mkSymlink = target: {
-    symlink.target = target;
-    wantedBeforeBy = [ "multi-user.target" ];
-  };
 in
 {
   options = {
@@ -106,14 +103,14 @@ in
     ];
 
     # convenience
-    sane.fs."/home/colin/knowledge" = mkSymlink "/home/colin/private/knowledge";
-    sane.fs."/home/colin/nixos" = mkSymlink "/home/colin/dev/nixos";
-    sane.fs."/home/colin/Videos/servo" = mkSymlink "/mnt/servo-media/Videos";
-    sane.fs."/home/colin/Videos/servo-incomplete" = mkSymlink "/mnt/servo-media/incomplete";
-    sane.fs."/home/colin/Music/servo" = mkSymlink "/mnt/servo-media/Music";
+    sane.fs."/home/colin/knowledge" = fs.wantedSymlinkTo "/home/colin/private/knowledge";
+    sane.fs."/home/colin/nixos" = fs.wantedSymlinkTo "/home/colin/dev/nixos";
+    sane.fs."/home/colin/Videos/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Videos";
+    sane.fs."/home/colin/Videos/servo-incomplete" = fs.wantedSymlinkTo "/mnt/servo-media/incomplete";
+    sane.fs."/home/colin/Music/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Music";
 
     # used by password managers, e.g. unix `pass`
-    sane.fs."/home/colin/.password-store" = mkSymlink "/home/colin/knowledge/secrets/accounts";
+    sane.fs."/home/colin/.password-store" = fs.wantedSymlinkTo "/home/colin/knowledge/secrets/accounts";
 
     sane.persist.sys.plaintext = mkIf cfg.guest.enable [
       # intentionally allow other users to write to the guest folder
