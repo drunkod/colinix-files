@@ -21,7 +21,7 @@ let
         default = null;
       };
       symlink = mkOption {
-        type = types.nullOr symlinkEntry;
+        type = types.nullOr (symlinkEntryFor name);
         default = null;
       };
       generated = mkOption {
@@ -111,15 +111,25 @@ let
   # takes no special options
   dirEntry = types.submodule propagatedGenerateMod;
 
-  symlinkEntry = types.submodule {
+  symlinkEntryFor = path: types.submodule ({ config, ...}: {
     options = {
       inherit (propagatedGenerateMod.options) acl;
       target = mkOption {
-        type = types.str;
+        type = types.coercedTo types.package toString types.str;
         description = "fs path to link to";
       };
+      text = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "create a file in the /nix/store with the provided text and use that as the target";
+      };
     };
-  };
+    config = {
+      target = lib.mkIf (config.text != null) (
+        pkgs.writeText (path-lib.leaf path) config.text
+      );
+    };
+  });
 
   generatedEntry = types.submodule {
     options = {

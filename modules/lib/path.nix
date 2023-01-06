@@ -1,6 +1,7 @@
 { lib, utils, ... }:
 
 let path = rec {
+
   # split the string path into a list of string components.
   # root directory "/" becomes the empty list [].
   # implicitly performs normalization so that:
@@ -19,6 +20,10 @@ let path = rec {
   hasParent = str: (path.parent str) != (path.norm str);
   # return the path from `from` to `to`, but keeping absolute form
   # e.g. `pathFrom "/home/colin" "/home/colin/foo/bar"` -> "/foo/bar"
+
+  # return the last path component; error on the empty path
+  leaf = str: lib.last (split str);
+
   from = start: end: let
     s = path.norm start;
     e = path.norm end;
