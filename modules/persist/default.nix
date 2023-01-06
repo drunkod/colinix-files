@@ -62,6 +62,13 @@ let
         type = sane-types.aclOverride;
         default = {};
       };
+      method = mkOption {
+        type = types.enum [ "bind" "symlink" ];
+        default = "bind";
+        description = ''
+          how to link the store entry into the fs
+        '';
+      };
     };
   };
 
@@ -202,11 +209,15 @@ in
         {
           # create destination dir, with correct perms
           sane.fs."${fspath}" = {
+            inherit (store.defaultOrdering) wantedBy wantedBeforeBy;
+          } // (lib.optionalAttrs (opt.method == "bind") {
             # inherit perms & make sure we don't mount until after the mount point is setup correctly.
             dir.acl = opt.acl;
             mount.bind = fsPathToBackingPath fspath;
-            inherit (store.defaultOrdering) wantedBy wantedBeforeBy;
-          };
+          }) // (lib.optionalAttrs (opt.method == "symlink") {
+            symlink.acl = opt.acl;
+            symlink.target = fsPathToBackingPath fspath;
+          });
 
           # create the backing path as a dir
           sane.fs."${fsPathToBackingPath fspath}".dir = {};
