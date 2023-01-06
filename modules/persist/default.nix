@@ -55,18 +55,27 @@ let
   # allows a user to specify the store either by name or as an attrset
   coercedToStore = types.coercedTo types.str (s: cfg.stores."${s}") storeType;
 
-  # options for a single mountpoint / persistence where the store is specified externally
-  entryInStore = types.submodule {
+  # options common to all entries, whether they're keyed by path or store
+  entryOpts = {
     options = {
-      directory = mkOption {
-        type = types.str;
-      };
       acl = mkOption {
         type = sane-types.aclOverride;
         default = {};
       };
     };
   };
+
+  # options for a single mountpoint / persistence where the store is specified externally
+  entryInStore = types.submodule [
+    entryOpts
+    {
+      options = {
+        directory = mkOption {
+          type = types.str;
+        };
+      };
+    }
+  ];
   # allow "bar/baz" as shorthand for { directory = "bar/baz"; }
   entryInStoreOrShorthand = types.coercedTo
     types.str
@@ -87,17 +96,16 @@ let
     to;
 
   # entry where the path is specified externally
-  entryAtPath = types.submodule {
-    options = {
-      store = mkOption {
-        type = coercedToStore;
+  entryAtPath = types.submodule [
+    entryOpts
+    {
+      options = {
+        store = mkOption {
+          type = coercedToStore;
+        };
       };
-      acl = mkOption {
-        type = sane-types.aclOverride;
-        default = {};
-      };
-    };
-  };
+    }
+  ];
 
   # this submodule creates one attr per store, so that the user can specify something like:
   #   <option>.private.".cache/vim" = { mode = "0700"; };
