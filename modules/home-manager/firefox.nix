@@ -32,11 +32,11 @@ let
   defaultSettings = firefoxSettings;
   # defaultSettings = librewolfSettings;
 
-  package = pkgs.wrapFirefox cfg.browser {
+  package = pkgs.wrapFirefox cfg.browser.browser {
     # inherit the default librewolf.cfg
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
     inherit (pkgs.librewolf-unwrapped) extraPrefsFiles;
-    inherit (cfg) libName;
+    inherit (cfg.browser) libName;
 
     extraNativeMessagingHosts = [ pkgs.browserpass ];
     # extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
@@ -105,11 +105,22 @@ let
 in
 {
   options = {
-    sane.web-browser = mkOption {
+    sane.web-browser.browser = mkOption {
       default = defaultSettings;
       type = types.attrs;
     };
+    sane.web-browser.persistData = mkOption {
+      description = "optional store name to which persist browsing data (like history)";
+      type = types.nullOr types.str;
+      default = null;
+    };
+    sane.web-browser.persistCache = mkOption {
+      description = "optional store name to which persist browser cache";
+      type = types.nullOr types.str;
+      default = "cryptClearOnBoot";
+    };
   };
+
   config = lib.mkIf config.sane.home-manager.enable {
 
     # uBlock filter list configuration.
@@ -120,7 +131,7 @@ in
     # the specific attribute path is found via scraping ublock code here:
     # - <https://github.com/gorhill/uBlock/blob/master/src/js/storage.js>
     # - <https://github.com/gorhill/uBlock/blob/master/assets/assets.json>
-    sane.fs."/home/colin/${cfg.dotDir}/managed-storage/uBlock0@raymondhill.net.json" = sane-lib.fs.wantedText ''
+    sane.fs."/home/colin/${cfg.browser.dotDir}/managed-storage/uBlock0@raymondhill.net.json" = sane-lib.fs.wantedText ''
       {
        "name": "uBlock0@raymondhill.net",
        "description": "ignored",
@@ -130,19 +141,21 @@ in
        }
       }
     '';
-    sane.fs."/home/colin/${cfg.dotDir}/${cfg.libName}.overrides.cfg" = sane-lib.fs.wantedText ''
+    sane.fs."/home/colin/${cfg.browser.dotDir}/${cfg.browser.libName}.overrides.cfg" = sane-lib.fs.wantedText ''
       // if we can't query the revocation status of a SSL cert because the issuer is offline,
       // treat it as unrevoked.
       // see: <https://librewolf.net/docs/faq/#im-getting-sec_error_ocsp_server_error-what-can-i-do>
       defaultPref("security.OCSP.require", false);
     '';
 
-    # XXX: although home-manager calls this option `firefox`, we can use other browsers and it still mostly works.
-    home-manager.users.colin = lib.mkIf (config.sane.gui.enable) {
-      programs.firefox = {
-        enable = true;
-        inherit package;
-      };
+    sane.packages.extraGuiPkgs = [ package ];
+    # flood the cache to disk to avoid it taking up too much tmp
+    sane.persist.home.byPath."${cfg.browser.cacheDir}" = lib.mkIf (cfg.persistCache != null) {
+      store = cfg.persistCache;
+    };
+
+    sane.persist.home.byPath."${cfg.browser.dotDir}" = lib.mkIf (cfg.persistData != null) {
+      store = cfg.persistData;
     };
   };
 }

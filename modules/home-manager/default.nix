@@ -94,7 +94,7 @@ in
       # - `xdg-mime query filetype path/to/thing.ext`
       xdg.mimeApps.enable = true;
       xdg.mimeApps.defaultApplications = let
-        www = sysconfig.sane.web-browser.desktop;
+        www = sysconfig.sane.web-browser.browser.desktop;
         pdf = "org.gnome.Evince.desktop";
         md = "obsidian.desktop";
         thumb = "org.gnome.gThumb.desktop";

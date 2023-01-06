@@ -96,11 +96,6 @@ in
       # TODO: move this to ~/private!
       ".local/share/keyrings"
     ];
-    sane.persist.home.cryptClearOnBoot = [
-      # cache is probably too big to fit on the tmpfs
-      # ".cache"
-      config.sane.web-browser.cacheDir
-    ];
 
     # convenience
     sane.fs."/home/colin/knowledge" = fs.wantedSymlinkTo "/home/colin/private/knowledge";

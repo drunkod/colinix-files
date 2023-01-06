@@ -264,13 +264,20 @@ let
       };
     };
   };
+
+  toPkgSpec = types.coercedTo types.package (p: { pkg = p; }) pkgSpec;
 in
 {
   options = {
     # packages to deploy to the user's home
     sane.packages.extraUserPkgs = mkOption {
       default = [ ];
-      type = types.listOf (types.either types.package pkgSpec);
+      type = types.listOf toPkgSpec;
+    };
+    sane.packages.extraGuiPkgs = mkOption {
+      default = [ ];
+      type = types.listOf toPkgSpec;
+      description = "packages to only ship if gui's enabled";
     };
     sane.packages.enableConsolePkgs = mkOption {
       default = false;
@@ -297,10 +304,10 @@ in
     sane.packages.enabledUserPkgs = mkOption {
       default = cfg.extraUserPkgs
         ++ (if cfg.enableConsolePkgs then consolePkgs else [])
-        ++ (if cfg.enableGuiPkgs then guiPkgs else [])
+        ++ (if cfg.enableGuiPkgs then guiPkgs ++ cfg.extraGuiPkgs else [])
         ++ (if cfg.enableDevPkgs then devPkgs else [])
       ;
-      type = types.listOf (types.coercedTo types.package (p: { pkg = p; }) pkgSpec);
+      type = types.listOf toPkgSpec;
       description = "generated from other config options";
     };
   };
