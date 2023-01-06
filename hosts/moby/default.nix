@@ -24,10 +24,8 @@
   };
 
   # usability compromises
-  sane.persist.home.private = [
-    config.sane.web-browser.dotDir
-    config.sane.web-browser.cacheDir
-  ];
+  sane.persist.home.byPath."${config.sane.web-browser.dotDir}".store = lib.mkForce "private";
+  sane.persist.home.byPath."${config.sane.web-browser.cacheDir}".store = lib.mkForce "private";
   sane.persist.home.plaintext = [
     ".config/pulse"  # persist pulseaudio volume
   ];
