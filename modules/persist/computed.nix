@@ -33,5 +33,6 @@ let
   };
 in
 {
+  # compute the `byPath` path => entry mapping from higher-level store => entry mappings.
   sane.persist.byPath = builtins.listToAttrs (map dirToAttr fixed-dirs);
 }

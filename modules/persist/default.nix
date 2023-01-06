@@ -52,10 +52,11 @@ let
     };
   };
 
+  # allows a user to specify the store either by name or as an attrset
   coercedToStore = types.coercedTo types.str (s: cfg.stores."${s}") storeType;
 
-  # options for a single mountpoint / persistence
-  dirEntryOptions = {
+  # options for a single mountpoint / persistence where the store is specified externally
+  entryInStoreOptions = {
     options = {
       directory = mkOption {
         type = types.str;
@@ -63,27 +64,15 @@ let
       inherit (sane-types.aclOverrideMod.options) user group mode;
     };
   };
-  contextualizedDir = types.submodule dirEntryOptions;
+  entryInStore = types.submodule entryInStoreOptions;
   # allow "bar/baz" as shorthand for { directory = "bar/baz"; }
-  contextualizedDirOrShorthand = types.coercedTo
+  entryInStoreOrShorthand = types.coercedTo
     types.str
     (d: { directory = d; })
-    contextualizedDir;
+    entryInStore;
 
-  # entry whose `directory` is always an absolute fs path
-  # and has an associated `store`
-  contextFreeDir = types.submodule [
-    dirEntryOptions
-    {
-      options = {
-        store = mkOption {
-          type = coercedToStore;
-        };
-      };
-    }
-  ];
-
-  contextFreeDirSpec = types.submodule {
+  # entry where the path is specified externally
+  entryAtPath = types.submodule {
     options = {
       inherit (sane-types.aclOverrideMod.options) user group mode;
       store = mkOption {
@@ -97,7 +86,7 @@ let
   # the user can specify something like:
   #   <option>.private.".cache/vim" = { mode = "0700"; };
   # to place ".cache/vim" into the private store and create with the appropriate mode
-  dirsSubModule = types.attrsOf (types.listOf contextualizedDirOrShorthand);
+  dirsSubModule = types.attrsOf (types.listOf entryInStoreOrShorthand);
 in
 {
   options = {
@@ -121,7 +110,7 @@ in
       type = dirsSubModule;
     };
     sane.persist.byPath = mkOption {
-      type = types.attrsOf contextFreeDirSpec;
+      type = types.attrsOf entryAtPath;
       description = ''
         map of <path> => <path config> for all paths to be persisted.
         this is computed from the other options, but users can also set it explicitly (useful for overriding)
