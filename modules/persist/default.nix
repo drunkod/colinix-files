@@ -56,7 +56,7 @@ let
   coercedToStore = types.coercedTo types.str (s: cfg.stores."${s}") storeType;
 
   # options for a single mountpoint / persistence where the store is specified externally
-  entryInStoreOptions = {
+  entryInStore = types.submodule {
     options = {
       directory = mkOption {
         type = types.str;
@@ -64,7 +64,6 @@ let
       inherit (sane-types.aclOverrideMod.options) user group mode;
     };
   };
-  entryInStore = types.submodule entryInStoreOptions;
   # allow "bar/baz" as shorthand for { directory = "bar/baz"; }
   entryInStoreOrShorthand = types.coercedTo
     types.str
