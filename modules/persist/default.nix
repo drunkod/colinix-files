@@ -138,21 +138,23 @@ let
     };
     config = let
       # set the `store` attribute on one dir attrset
-      annotateWithStore = store: dir: dir // {
-        inherit store;
+      annotateWithStore = store: dir: {
+        "${dir.directory}".store = store;
       };
-      # String -> [a] -> [a]
-      # usually called on an attrset to map (AttrSet [a]) -> [a]
-      annotatedDirsForStore = store: map (annotateWithStore store) config."${store}";
-      store-names = attrNames cfg.stores;
-      # flat list where each item is an entryInStore with an additional `store` attribute
-      annotated-dirs = lib.concatMap annotatedDirsForStore store-names;
-      # convert an `entryInStore` to an `entryAtPath`
+      # convert an `entryInStore` to an `entryAtPath` (less the `store` item)
       dirToAttrs = dir: {
         "${dir.directory}" = builtins.removeAttrs dir ["directory"];
       };
+      store-names = attrNames cfg.stores;
+      # :: (store -> entry -> AttrSet) -> [AttrSet]
+      applyToAllStores = f: lib.concatMap
+        (store: map (f store) config."${store}")
+        store-names;
     in {
-      byPath = lib.mkMerge (map dirToAttrs annotated-dirs);
+      byPath = lib.mkMerge (concatLists [
+        (applyToAllStores (store: dirToAttrs))
+        (applyToAllStores annotateWithStore)
+      ]);
     };
   });
 in
