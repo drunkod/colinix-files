@@ -81,6 +81,9 @@ let
     }
   ];
 
+  # this submodule creates one attr per store, so that the user can specify something like:
+  #   <option>.private.".cache/vim" = { mode = "0700"; };
+  # to place ".cache/vim" into the private store and create with the appropriate mode
   dirsSubModule = types.submodule {
     options = mapAttrs (store: store-cfg: mkOption {
       default = [];
