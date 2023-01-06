@@ -120,9 +120,12 @@ in
       default = {};
       type = dirsSubModule;
     };
-    sane.persist.all = mkOption {
+    sane.persist.byPath = mkOption {
       type = types.attrsOf contextFreeDirSpec;
-      description = "all directories known to the config. auto-computed: users should not set this directly.";
+      description = ''
+        map of <path> => <path config> for all paths to be persisted.
+        this is computed from the other options, but users can also set it explicitly (useful for overriding)
+      '';
     };
     sane.persist.stores = mkOption {
       type = types.attrsOf storeType;
@@ -171,7 +174,7 @@ in
           }) (path.walk store.prefix fspath);
         }
       ];
-      configsPerPath = lib.mapAttrsToList cfgFor cfg.all;
+      configsPerPath = lib.mapAttrsToList cfgFor cfg.byPath;
       allConfigs = builtins.concatLists configsPerPath;
   in mkIf cfg.enable {
     sane.fs = lib.mkMerge (map (c: c.sane.fs) allConfigs);

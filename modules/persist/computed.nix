@@ -33,5 +33,5 @@ let
   };
 in
 {
-  sane.persist.all = builtins.listToAttrs (map dirToAttr fixed-dirs);
+  sane.persist.byPath = builtins.listToAttrs (map dirToAttr fixed-dirs);
 }
