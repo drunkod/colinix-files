@@ -34,6 +34,13 @@ let
           /mnt/crypt/private/var/private/www/root.
         '';
       };
+      defaultMethod = mkOption {
+        type = types.enum [ "bind" "symlink" ];
+        default = "bind";
+        description = ''
+          preferred way to link items from the store into the fs
+        '';
+      };
       defaultOrdering.wantedBeforeBy = mkOption {
         type = types.listOf types.str;
         default = [ "local-fs.target" ];
@@ -63,8 +70,8 @@ let
         default = {};
       };
       method = mkOption {
-        type = types.enum [ "bind" "symlink" ];
-        default = "bind";
+        type = types.nullOr (types.enum [ "bind" "symlink" ]);
+        default = null;
         description = ''
           how to link the store entry into the fs
         '';
@@ -205,6 +212,7 @@ in
     cfgFor = fspath: opt:
       let
         store = opt.store;
+        method = (sane-lib.withDefault store.defaultMethod) opt.method;
         fsPathToStoreRelPath = fspath: path.from store.prefix fspath;
         fsPathToBackingPath = fspath: path.concat [ store.origin (fsPathToStoreRelPath fspath) ];
       in [
@@ -212,11 +220,11 @@ in
           # create destination dir, with correct perms
           sane.fs."${fspath}" = {
             inherit (store.defaultOrdering) wantedBy wantedBeforeBy;
-          } // (lib.optionalAttrs (opt.method == "bind") {
+          } // (lib.optionalAttrs (method == "bind") {
             # inherit perms & make sure we don't mount until after the mount point is setup correctly.
             dir.acl = opt.acl;
             mount.bind = fsPathToBackingPath fspath;
-          }) // (lib.optionalAttrs (opt.method == "symlink") {
+          }) // (lib.optionalAttrs (method == "symlink") {
             symlink.acl = opt.acl;
             symlink.target = fsPathToBackingPath fspath;
           });

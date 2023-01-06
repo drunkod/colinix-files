@@ -20,6 +20,7 @@ lib.mkIf config.sane.persist.enable
       # we can't create things in private before local-fs.target
       wantedBeforeBy = [ ];
     };
+    defaultMethod = "symlink";
   };
 
   fileSystems."/home/colin/private" = {
