@@ -20,7 +20,6 @@ in
     ./git.nix
     ./kitty.nix
     ./mpv.nix
-    ./nb.nix
     ./neovim.nix
     ./splatmoji.nix
     ./ssh.nix
