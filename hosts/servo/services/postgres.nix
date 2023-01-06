@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  sane.persist.dirs.sys.plaintext = [
+  sane.persist.sys.plaintext = [
     # TODO: mode?
     { user = "postgres"; group = "postgres"; directory = "/var/lib/postgresql"; }
   ];

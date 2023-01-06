@@ -9,7 +9,7 @@
 # nixnet runs ejabberd, so revisiting that.
 lib.mkIf false
 {
-  sane.persist.dirs.sys.plaintext = [
+  sane.persist.sys.plaintext = [
     { user = "prosody"; group = "prosody"; directory = "/var/lib/prosody"; }
   ];
   networking.firewall.allowedTCPPorts = [

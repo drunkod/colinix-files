@@ -82,7 +82,7 @@ in
       mode = config.users.users.colin.homeMode;
     };
 
-    sane.persist.dirs.home.plaintext = [
+    sane.persist.home.plaintext = [
       "archive"
       "dev"
       # TODO: records should be private
@@ -100,7 +100,7 @@ in
       ".local/share/keyrings"
     ];
     # TODO: fix this ugly solution that allows moby to have firefox cache not erased every boot.
-    sane.persist.dirs.home.cryptClearOnBoot = lib.mkIf (config.networking.hostName != "moby") [
+    sane.persist.home.cryptClearOnBoot = lib.mkIf (config.networking.hostName != "moby") [
       # cache is probably too big to fit on the tmpfs
       # ".cache"
       config.sane.web-browser.cacheDir
@@ -116,7 +116,7 @@ in
     # used by password managers, e.g. unix `pass`
     sane.fs."/home/colin/.password-store" = mkSymlink "/home/colin/knowledge/secrets/accounts";
 
-    sane.persist.dirs.sys.plaintext = mkIf cfg.guest.enable [
+    sane.persist.sys.plaintext = mkIf cfg.guest.enable [
       # intentionally allow other users to write to the guest folder
       { directory = "/home/guest"; user = "guest"; group = "users"; mode = "0775"; }
     ];

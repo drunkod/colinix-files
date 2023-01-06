@@ -18,7 +18,7 @@
   sane.packages.enableConsolePkgs = true;
   sane.packages.enableSystemPkgs = true;
 
-  sane.persist.dirs.sys.plaintext = [
+  sane.persist.sys.plaintext = [
     "/var/log"
     "/var/backup"  # for e.g. postgres dumps
     # TODO: move elsewhere

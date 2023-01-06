@@ -18,5 +18,5 @@ let
     builtins.concatLists contextFreeDirSets;
 in
 {
-  sane.persist.all = (mapDirSets "/home/colin" cfg.dirs.home) ++ (mapDirSets "/" cfg.dirs.sys);
+  sane.persist.all = (mapDirSets "/home/colin" cfg.home) ++ (mapDirSets "/" cfg.sys);
 }

@@ -87,21 +87,6 @@ let
   #   <option>.private.".cache/vim" = { mode = "0700"; };
   # to place ".cache/vim" into the private store and create with the appropriate mode
   dirsSubModule = types.attrsOf (types.listOf contextualizedDirOrShorthand);
-
-  dirsModule = types.submodule {
-    options = {
-      home = mkOption {
-        description = "directories to persist to disk, relative to a user's home ~";
-        default = {};
-        type = dirsSubModule;
-      };
-      sys = mkOption {
-        description = "directories to persist to disk, relative to the fs root /";
-        default = {};
-        type = dirsSubModule;
-      };
-    };
-  };
 in
 {
   options = {
@@ -114,9 +99,15 @@ in
       type = types.bool;
       description = "define / fs root to be a tmpfs. make sure to mount some other device to /nix";
     };
-    sane.persist.dirs = mkOption {
-      type = dirsModule;
+    sane.persist.home = mkOption {
+      description = "directories to persist to disk, relative to a user's home ~";
       default = {};
+      type = dirsSubModule;
+    };
+    sane.persist.sys = mkOption {
+      description = "directories to persist to disk, relative to the fs root /";
+      default = {};
+      type = dirsSubModule;
     };
     sane.persist.all = mkOption {
       type = types.listOf contextFreeDir;

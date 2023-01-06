@@ -16,7 +16,7 @@ let
   };
 in
 {
-  sane.persist.dirs.sys.plaintext = [
+  sane.persist.sys.plaintext = [
     # TODO: mode? could be more granular
     { user = "opendkim"; group = "opendkim"; directory = "/var/lib/opendkim"; }
     { user = "root"; group = "root"; directory = "/var/lib/postfix"; }

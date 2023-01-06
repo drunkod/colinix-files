@@ -2,7 +2,7 @@
 
 lib.mkIf config.sane.home-manager.enable
 {
-  sane.persist.dirs.home.plaintext = [
+  sane.persist.home.plaintext = [
     # we don't need to full zsh dir -- just the history file --
     # but zsh will sometimes backup the history file and we get fewer errors if we do proper mounts instead of symlinks.
     # TODO: should be private?
