@@ -52,6 +52,8 @@ let
     };
   };
 
+  coercedToStore = types.coercedTo types.str (s: cfg.stores."${s}") storeType;
+
   # options for a single mountpoint / persistence
   dirEntryOptions = {
     options = {
@@ -75,7 +77,7 @@ let
     {
       options = {
         store = mkOption {
-          type = storeType;
+          type = coercedToStore;
         };
       };
     }
@@ -85,7 +87,7 @@ let
     options = {
       inherit (sane-types.aclOverrideMod.options) user group mode;
       store = mkOption {
-        type = storeType;
+        type = coercedToStore;
       };
     };
   };

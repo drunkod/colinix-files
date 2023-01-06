@@ -12,7 +12,7 @@ let
 
   # set the `store` attribute on one dir attrset
   fixStore = store: dir: dir // {
-    store = cfg.stores."${store}";
+    inherit store;
   };
   # String -> [a] -> [a]
   # usually called on an attrset to map (AttrSet [a]) -> [a]
