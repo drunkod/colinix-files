@@ -295,7 +295,7 @@ let
       lnfrom="$1"
       lnto="$2"
 
-      ln -sf "$lnto" "$lnfrom"
+      ln -sf --no-dereference "$lnto" "$lnfrom"
     '';
     scriptArgs = [ path link-cfg.target ];
   };
