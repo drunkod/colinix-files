@@ -22,14 +22,19 @@ in
   };
   config = mkIf cfg.enable {
     sane.gui.enable = true;
+
+    # greetd
     users.users.greeter.uid = config.sane.allocations.greeter-uid;
     users.groups.greeter.gid = config.sane.allocations.greeter-gid;
+
     programs.sway = {
       # we configure sway with home-manager, but this enable gets us e.g. opengl and fonts
       enable = true;
     };
 
-    # alternatively, could use SDDM
+    # instead of using `services.greetd`, can instead use SDDM by swapping in these lines.
+    # services.xserver.displayManager.sddm.enable = true;
+    # services.xserver.enable = true;
     services.greetd = let
       swayConfig-greeter = pkgs.writeText "greetd-sway-config" ''
         # `-l` activates layer-shell mode.
@@ -71,12 +76,20 @@ in
       pulse.enable = true;
     };
 
-    hardware.bluetooth.enable = true;
-    services.blueman.enable = true;
-
     networking.useDHCP = false;
     networking.networkmanager.enable = true;
     networking.wireless.enable = lib.mkForce false;
+
+    hardware.bluetooth.enable = true;
+    services.blueman.enable = true;
+    # gsd provides Rfkill, which is required for the bluetooth pane in gnome-control-center to work
+    services.gnome.gnome-settings-daemon.enable = true;
+    # start the components of gsd we need at login
+    systemd.user.targets."org.gnome.SettingsDaemon.Rfkill".wantedBy = [ "graphical-session.target" ];
+    # go ahead and `systemctl --user cat gnome-session-initialized.target`. i dare you.
+    # the only way i can figure out how to get Rfkill to actually load is to just disable all the shit it depends on.
+    # it doesn't actually seem to need ANY of them in the first place T_T
+    systemd.user.targets."gnome-session-initialized".enable = false;
 
     sane.home-manager.windowManager.sway = {
       enable = true;
