@@ -1,8 +1,8 @@
 { lib, pkgs, ... }:
 
 {
-  # optionally: persist handshakes. can be useful when debugging, but might disrupt other keys
-  # sane.persist.sys.plaintext = [ "/var/lib/bluetooth" ];
+  # persist external pairings by default
+  sane.persist.sys.plaintext = [ "/var/lib/bluetooth" ];
 
   sane.fs."/var/lib/bluetooth".generated.acl.mode = "0700";
   sane.fs."/var/lib/bluetooth/.secrets.stamp" = {

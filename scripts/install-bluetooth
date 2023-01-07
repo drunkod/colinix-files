@@ -7,6 +7,7 @@
 # bluetooth connection structure is /var/lib/bluetooth/<HOST_MAC>/<DEVICE_MAX>/{attributes,info}
 # bluetoothd/main.conf options can be found here:
 # - <https://pythonhosted.org/BT-Manager/config.html>
+# can be set via nixos' `hardware.bluetooth.settings`
 
 srcdir="$1"
 destdir="$2"
@@ -23,9 +24,14 @@ for f in $(ls "$srcdir")
 do
   mac=$(sed -rn 's/# MAC=(.*)/\1/p' "$srcdir/$f")
   condir="$destdir/$mac"
-  test -d "$condir" || mkdir "$condir" || test -d "$condir"
-  # bluetoothd just converts my symlinks into plain files anyway, so may as well cp directly
-  cp "$srcdir/$f" "$condir/info"
-  # ln -sf --no-dereference "$srcdir/$f" "$condir/info"
-  touch "$condir/attributes"
+  if ! test -f "$condir/info"
+  then
+    # don't *overwrite* pairings. instead, only copy the device data if the host doesn't yet know about it.
+    # unfortunately, it seems that for most BT devices i can't share link keys across hosts.
+    # perhaps i could using `bdaddr` to force a shared host MAC across all hosts, but that doesn't work for all manufacturers.
+    # instead, my bluetooth "secrets" are mostly just a list of MACs i want a host to trust.
+    mkdir "$condir"
+    cp "$srcdir/$f" "$condir/info"
+    touch "$condir/attributes"
+  fi
 done
