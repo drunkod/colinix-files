@@ -90,6 +90,9 @@ in
     # the only way i can figure out how to get Rfkill to actually load is to just disable all the shit it depends on.
     # it doesn't actually seem to need ANY of them in the first place T_T
     systemd.user.targets."gnome-session-initialized".enable = false;
+    # bluez can't connect to audio devices unless pipewire is running.
+    # a system service can't depend on a user service, so just launch it at graphical-session
+    systemd.user.services."pipewire".wantedBy = [ "graphical-session.target" ];
 
     sane.home-manager.windowManager.sway = {
       enable = true;
