@@ -20,6 +20,7 @@ in
     ./gfeeds.nix
     ./git.nix
     ./gpodder.nix
+    ./keyring.nix
     ./kitty.nix
     ./mpv.nix
     ./neovim.nix
@@ -68,14 +69,6 @@ in
       home.stateVersion = "21.11";
       home.username = "colin";
       home.homeDirectory = "/home/colin";
-
-      home.activation = {
-        initKeyring = {
-          after = ["writeBoundary"];
-          before = [];
-          data = "${../../scripts/init-keyring}";
-        };
-      };
 
       # XDG defines things like ~/Desktop, ~/Downloads, etc.
       # these clutter the home, so i mostly don't use them.
