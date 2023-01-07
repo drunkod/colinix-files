@@ -25,5 +25,9 @@ in
     sane.packages.enableGuiPkgs = lib.mkDefault true;
     # all GUIs use network manager?
     users.users.nm-iodine.uid = config.sane.allocations.nm-iodine-uid;
+
+    # preserve backlight brightness across power cycles
+    # see `man systemd-backlight`
+    sane.persist.sys.plaintext = [ "/var/lib/systemd/backlight" ];
   };
 }
