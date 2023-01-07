@@ -93,8 +93,6 @@ in
 
       ".cargo"
       ".rustup"
-      # TODO: move this to ~/private!
-      ".local/share/keyrings"
     ];
 
     # convenience

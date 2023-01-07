@@ -2,7 +2,10 @@
 
 lib.mkIf config.sane.home-manager.enable
 {
-  sane.fs."/home/colin/.local/share/keyrings/default" = sane-lib.fs.wanted {
+  sane.persist.home.private = [ ".local/share/keyrings" ];
+
+  sane.fs."/home/colin/private/.local/share/keyrings/default" = {
     generated.script.script = builtins.readFile ../../scripts/init-keyring;
+    wantedBy = [ config.sane.fs."/home/colin/private".unit ];
   };
 }
