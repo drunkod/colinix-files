@@ -23,7 +23,6 @@
     "/var/backup"  # for e.g. postgres dumps
     # TODO: move elsewhere
     "/var/lib/alsa"                # preserve output levels, default devices
-    "/var/lib/bluetooth"           # preserve bluetooth handshakes
     "/var/lib/colord"              # preserve color calibrations (?)
     "/var/lib/machines"            # maybe not needed, but would be painful to add a VM and forget.
   ];

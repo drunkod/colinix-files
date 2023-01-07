@@ -25,4 +25,5 @@ do
   condir="$destdir/$mac"
   test -d "$condir" || mkdir "$condir" || test -d "$condir"
   ln -sf --no-dereference "$srcdir/$f" "$condir/info"
+  touch "$condir/attributes"
 done
