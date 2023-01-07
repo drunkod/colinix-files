@@ -31,19 +31,19 @@
     General.RoamThreshold5G = "-52";  # default -76
   };
 
-  # TODO: don't need to depend on binsh if we were to use a nix-style shebang
-  system.activationScripts.linkIwdKeys = let
+  sane.fs."/var/lib/iwd/.secrets.psk.stamp" = let
     unwrapped = ../../scripts/install-iwd;
     install-iwd = pkgs.writeShellApplication {
       name = "install-iwd";
       runtimeInputs = with pkgs; [ coreutils gnused ];
       text = ''${unwrapped} "$@"'';
     };
-  in (lib.stringAfter
-    [ "setupSecrets" "binsh" ]
-    ''
-    mkdir -p /var/lib/iwd
-    ${install-iwd}/bin/install-iwd /run/secrets/iwd /var/lib/iwd
-    ''
-  );
+  in {
+    wantedBeforeBy = [ "iwd.service" ];
+    generated.acl.mode = "0600";
+    generated.script.script = ''
+      ${install-iwd}/bin/install-iwd "$@" && touch "/var/lib/iwd/.secrets.psk.stamp"
+    '';
+    generated.script.scriptArgs = [ "/run/secrets/iwd" "/var/lib/iwd" ];
+  };
 }
