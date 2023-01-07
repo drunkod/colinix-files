@@ -31,18 +31,12 @@
     General.RoamThreshold5G = "-52";  # default -76
   };
 
-  sane.fs."/var/lib/iwd/.secrets.psk.stamp" = let
-    unwrapped = ../../scripts/install-iwd;
-    install-iwd = pkgs.writeShellApplication {
-      name = "install-iwd";
-      runtimeInputs = with pkgs; [ coreutils gnused ];
-      text = ''${unwrapped} "$@"'';
-    };
-  in {
+  sane.fs."/var/lib/iwd/.secrets.psk.stamp" = {
     wantedBeforeBy = [ "iwd.service" ];
     generated.acl.mode = "0600";
-    generated.script.script = ''
-      ${install-iwd}/bin/install-iwd "$@" && touch "/var/lib/iwd/.secrets.psk.stamp"
+    # XXX: install-iwd uses sed, but that's part of the default systemd unit path, it seems
+    generated.script.script = builtins.readFile ../../scripts/install-iwd + ''
+      touch "/var/lib/iwd/.secrets.psk.stamp"
     '';
     generated.script.scriptArgs = [ "/run/secrets/iwd" "/var/lib/iwd" ];
   };
