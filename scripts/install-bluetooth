@@ -1,25 +1,29 @@
 #!/bin/sh
-# usage: install-bluetooth <source_dir> <dest_dir>
+# usage: install-bluetooth <source_dir> <destdir>
 # source_dir contains plain-text files of any filename.
-# for each file, this extracts the MAC and creates a symlink in dest_dir which
+# for each file, this extracts the MAC and creates a symlink in destdir which
 # points to the original file, using the MAC name as file path
 #
 # bluetooth connection structure is /var/lib/bluetooth/<HOST_MAC>/<DEVICE_MAX>/{attributes,info}
-#
+# bluetoothd/main.conf options can be found here:
+# - <https://pythonhosted.org/BT-Manager/config.html>
 set -ex
 
-src_dir="$1"
-dest_dir="$2"
+srcdir="$1"
+destdir="$2"
 
-if [ "x$dest_dir" = "x" ]
+if [ "x$destdir" = "x" ]
 then
+  devmac=$(cat /sys/kernel/debug/bluetooth/hci0/identity | cut -f 1 -d' ' | tr "a-z" "A-Z")
   # default to the first MAC address on the host
-  dest_dir="/var/lib/bluetooth/$(ls /var/lib/bluetooth)"
+  destdir="/var/lib/bluetooth/$devmac"
+  test -d "$destdir" || mkdir "$destdir" || test -d "$destdir"
 fi
 
-for f in $(ls "$src_dir")
+for f in $(ls "$srcdir")
 do
-  mac=$(sed -rn 's/# MAC=(.*)/\1/p' "$src_dir/$f")
-  mkdir -p "$dest_dir/$mac"
-  ln -sf "$src_dir/$f" "$dest_dir/$mac/info"
+  mac=$(sed -rn 's/# MAC=(.*)/\1/p' "$srcdir/$f")
+  condir="$destdir/$mac"
+  test -d "$condir" || mkdir "$condir" || test -d "$condir"
+  ln -sf --no-dereference "$srcdir/$f" "$condir/info"
 done
