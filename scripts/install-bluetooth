@@ -7,7 +7,6 @@
 # bluetooth connection structure is /var/lib/bluetooth/<HOST_MAC>/<DEVICE_MAX>/{attributes,info}
 # bluetoothd/main.conf options can be found here:
 # - <https://pythonhosted.org/BT-Manager/config.html>
-set -ex
 
 srcdir="$1"
 destdir="$2"
