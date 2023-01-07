@@ -24,6 +24,8 @@ do
   mac=$(sed -rn 's/# MAC=(.*)/\1/p' "$srcdir/$f")
   condir="$destdir/$mac"
   test -d "$condir" || mkdir "$condir" || test -d "$condir"
-  ln -sf --no-dereference "$srcdir/$f" "$condir/info"
+  # bluetoothd just converts my symlinks into plain files anyway, so may as well cp directly
+  cp "$srcdir/$f" "$condir/info"
+  # ln -sf --no-dereference "$srcdir/$f" "$condir/info"
   touch "$condir/attributes"
 done
