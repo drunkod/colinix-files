@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 with lib;
 let
@@ -76,5 +76,12 @@ in
       { type = "rsa"; bits = 4096; path = "/etc/ssh/host_keys/ssh_host_rsa_key"; }
       { type = "ed25519"; path = "/etc/ssh/host_keys/ssh_host_ed25519_key"; }
     ];
+
+    services.openssh.knownHosts =
+    let
+      host-keys = filter (k: k.user == "root") (attrValues config.sane.ssh.pubkeys);
+    in lib.mkMerge (builtins.map (key: {
+      "${key.host}".publicKey = key.typedPubkey;
+    }) host-keys);
   };
 }
