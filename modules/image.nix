@@ -79,7 +79,9 @@ in
       "ext4" = pkgs.imageBuilder.fileSystem.makeExt4;
       "btrfs" = pkgs.imageBuilder.fileSystem.makeBtrfs;
     };
-  in {
+  in
+  lib.mkIf cfg.enable
+  {
     system.build.img-without-firmware = with pkgs; imageBuilder.diskImage.makeGPT {
       name = "nixos";
       diskID = vfatUuidFromFs bootFs;
