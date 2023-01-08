@@ -12,6 +12,7 @@
     ./persist
     ./services
     ./sops.nix
+    ./ssh.nix
   ];
 
   _module.args =  {
