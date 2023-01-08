@@ -43,7 +43,12 @@ in
     sane.ids = mkOption {
       type = types.attrsOf id;
       default = {};
+      description = ''
+        mapping from user/group name to gids/uids you expect that entity to have.
+        for users/groups created elsewhere *without* an id, this is used to provide them a fixed/stable id.
+      '';
     };
+    # these get merged with the nixpkgs options.
     users.users = mkOption {
       type = types.attrsOf (types.submodule userOpts);
     };
