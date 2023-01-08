@@ -1,5 +1,4 @@
-{ lib }:
-
+{ ... }:
 let
   hourly = { freq = "hourly"; };
   daily = { freq = "daily"; };
@@ -13,24 +12,15 @@ let
   tech = { cat = "tech"; };
   uncat = { cat = "uncat"; };
 
-  text = { format = "text"; };
-  image = { format = "image"; };
-  podcast = { format = "podcast"; };
-
   mkRss = format: url: { inherit url format; } // uncat // infrequent;
   # format-specific helpers
-  mkText = mkRss text;
-  mkImg = mkRss image;
-  mkPod = mkRss podcast;
+  mkText = mkRss "text";
+  mkImg = mkRss "image";
+  mkPod = mkRss "podcast";
 
   # host-specific helpers
-  mkSubstack = subdomain: mkText "https://${subdomain}.substack.com/feed";
+  mkSubstack = subdomain: { substack = subdomain; };
 
-  # merge the attrs `new` into each value of the attrs `addTo`
-  addAttrs = new: addTo: builtins.mapAttrs (k: v: v // new) addTo;
-  # for each value in `attrs`, add a value to the child attrs which holds its key within the parent attrs.
-  withInverseMapping = key: attrs: builtins.mapAttrs (k: v: v // { "${key}" = k; }) attrs;
-in rec {
   podcasts = [
     (mkPod "https://lexfridman.com/feed/podcast/" // rat // weekly)
     ## Astral Codex Ten
@@ -154,41 +144,7 @@ in rec {
     # ART
     (mkImg "https://miniature-calendar.com/feed" // art // daily)
   ];
-
-  all = texts ++ images ++ podcasts;
-
-  # return only the feed items which match this category (e.g. "tech")
-  filterCat = cat: feeds: builtins.filter (item: item.cat == cat) feeds;
-  # return only the feed items which match this format (e.g. "podcast")
-  filterFormat = format: feeds: builtins.filter (item: item.format == format) feeds;
-
-  # transform a list of feeds into an attrs mapping cat => [ feed0 feed1 ... ]
-  partitionByCat = feeds: builtins.groupBy (f: f.cat) feeds;
-
-  # represents a single RSS feed.
-  opmlTerminal = feed: ''<outline xmlUrl="${feed.url}" type="rss"/>'';
-  # a list of RSS feeds.
-  opmlTerminals = feeds: lib.strings.concatStringsSep "\n" (builtins.map opmlTerminal feeds);
-  # one node which packages some flat grouping of terminals.
-  opmlGroup = title: feeds: ''
-    <outline text="${title}" title="${title}">
-      ${opmlTerminals feeds}
-    </outline>
-  '';
-  # a list of groups (`groupMap` is an attrs mapping groupName => [ feed0 feed1 ... ]).
-  opmlGroups = groupMap: lib.strings.concatStringsSep "\n" (
-    builtins.attrValues (builtins.mapAttrs opmlGroup groupMap)
-  );
-  # top-level OPML file which could be consumed by something else.
-  opmlTopLevel = body: ''
-    <?xml version="1.0" encoding="utf-8"?>
-    <opml version="2.0">
-      <body>
-        ${body}
-      </body>
-    </opml>
-  '';
-
-  # **primary API**: generate a OPML file from the provided feeds
-  feedsToOpml = feeds: opmlTopLevel (opmlGroups (partitionByCat feeds));
+in
+{
+  sane.feeds = texts ++ images ++ podcasts;
 }

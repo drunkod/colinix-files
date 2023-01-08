@@ -1,6 +1,7 @@
 { lib, ... }@moduleArgs:
 
 {
+  feeds = import ./feeds.nix moduleArgs;
   fs = import ./fs.nix moduleArgs;
   path = import ./path.nix moduleArgs;
   types = import ./types.nix moduleArgs;

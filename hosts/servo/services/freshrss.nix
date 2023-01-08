@@ -9,7 +9,7 @@
 # $ sudo -u freshrss -g freshrss FRESHRSS_DATA_PATH=/var/lib/freshrss ./result/cli/export-opml-for-user.php --user admin
 # ```
 
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, sane-lib, ... }:
 {
   sops.secrets.freshrss_passwd = {
     sopsFile = ../../../secrets/servo.yaml;
@@ -30,8 +30,8 @@
   systemd.services.freshrss-import-feeds =
   let
     fresh = config.systemd.services.freshrss-config;
-    feeds = import ../../../modules/home-manager/feeds.nix { inherit lib; };
-    opml = pkgs.writeText "sane-freshrss.opml" (feeds.feedsToOpml feeds.all);
+    feeds = config.sane.feeds;
+    opml = pkgs.writeText "sane-freshrss.opml" (sane-lib.feeds.feedsToOpml feeds);
   in {
     inherit (fresh) wantedBy environment;
     serviceConfig = {

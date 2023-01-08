@@ -1,10 +1,12 @@
 # news-flash RSS viewer
-{ lib, sane-lib, ... }:
+{ config, sane-lib, ... }:
 
 let
-  feeds = import ./feeds.nix { inherit lib; };
+  feeds = sane-lib.feeds;
+  all-feeds = config.sane.feeds;
+  wanted-feeds = feeds.filterByFormat ["text" "image"] all-feeds;
 in {
   sane.fs."/home/colin/.config/newsflashFeeds.opml" = sane-lib.fs.wantedText (
-    feeds.feedsToOpml (feeds.texts ++ feeds.images)
+    feeds.feedsToOpml wanted-feeds
   );
 }

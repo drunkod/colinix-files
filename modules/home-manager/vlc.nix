@@ -1,16 +1,18 @@
 { config, lib, sane-lib, ... }:
 
+let
+  feeds = sane-lib.feeds;
+  all-feeds = config.sane.feeds;
+  wanted-feeds = feeds.filterByFormat ["podcast"] all-feeds;
+  podcast-urls = lib.concatStringsSep "|" (
+    builtins.map (feed: feed.url) wanted-feeds
+  );
+in
 lib.mkIf config.sane.home-manager.enable
 {
-  sane.fs."/home/colin/.config/vlc/vlcrc" =
-  let
-    feeds = import ./feeds.nix { inherit lib; };
-    podcastUrls = lib.strings.concatStringsSep "|" (
-      builtins.map (feed: feed.url) feeds.podcasts
-    );
-  in sane-lib.fs.wantedText ''
+  sane.fs."/home/colin/.config/vlc/vlcrc" = sane-lib.fs.wantedText ''
     [podcast]
-    podcast-urls=${podcastUrls}
+    podcast-urls=${podcast-urls}
     [core]
     metadata-network-access=0
     [qt]

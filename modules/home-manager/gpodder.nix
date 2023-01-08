@@ -1,10 +1,12 @@
 # gnome feeds RSS viewer
-{ lib, sane-lib, ... }:
+{ config, sane-lib, ... }:
 
 let
-  feeds = import ./feeds.nix { inherit lib; };
+  feeds = sane-lib.feeds;
+  all-feeds = config.sane.feeds;
+  wanted-feeds = feeds.filterByFormat ["podcast"] all-feeds;
 in {
   sane.fs."/home/colin/.config/gpodderFeeds.opml" = sane-lib.fs.wantedText (
-    feeds.feedsToOpml feeds.podcasts
+    feeds.feedsToOpml wanted-feeds
   );
 }

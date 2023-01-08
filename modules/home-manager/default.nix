@@ -11,7 +11,6 @@ let
   cfg = config.sane.home-manager;
   # extract `pkg` from `sane.packages.enabledUserPkgs`
   pkg-list = pkgspec: builtins.map (e: e.pkg) pkgspec;
-  feeds = import ./feeds.nix { inherit lib; };
 in
 {
   imports = [

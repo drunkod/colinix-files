@@ -3,6 +3,7 @@
 {
   imports = [
     ./allocations.nix
+    ./feeds.nix
     ./fs
     ./gui
     ./home-manager

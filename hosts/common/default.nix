@@ -2,6 +2,7 @@
 {
   imports = [
     ./bluetooth.nix
+    ./feeds.nix
     ./fs.nix
     ./hardware
     ./i2p.nix
