@@ -1,17 +1,5 @@
 { config, lib, ... }:
 {
-  # persist the host key
-  # prefer specifying it via environment.etc since although it is generated per-host,
-  # it's made to be immutable after generation. hence, a `persist`-style mount wouldn't be as great.
-  environment.etc."ssh/host_keys".source = "/nix/persist/etc/ssh/host_keys";
-  # sane.persist.sys.plaintext = [ "/etc/ssh/host_keys" ];
-
-  # let openssh find our host keys
-  services.openssh.hostKeys = [
-    { type = "rsa"; bits = 4096; path = "/etc/ssh/host_keys/ssh_host_rsa_key"; }
-    { type = "ed25519"; path = "/etc/ssh/host_keys/ssh_host_ed25519_key"; }
-  ];
-
   sane.ssh = rec {
     pubkeys."colin@lappy" = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDpmFdNSVPRol5hkbbCivRhyeENzb9HVyf9KutGLP2Zu";
     pubkeys."root@lappy" = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSJnqmVl9/SYQ0btvGb0REwwWY8wkdkGXQZfn/1geEc";
