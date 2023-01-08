@@ -5,7 +5,6 @@
     # TODO: mode? could be more granular
     { user = "git"; group = "gitea"; directory = "/var/lib/gitea"; }
   ];
-  users.groups.gitea.gid = config.sane.allocations.gitea-gid;
   services.gitea.enable = true;
   services.gitea.user = "git";  # default is 'gitea'
   services.gitea.database.type = "postgres";

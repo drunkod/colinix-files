@@ -11,8 +11,6 @@ lib.mkIf false
     sopsFile = ../../../secrets/servo.yaml;
   };
 
-  users.users.mediawiki.uid = config.sane.allocations.mediawiki-uid;
-
   services.mediawiki.enable = true;
   services.mediawiki.name = "Uninsane Wiki";
   services.mediawiki.passwordFile = config.sops.secrets.mediawiki_pw.path;

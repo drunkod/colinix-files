@@ -2,11 +2,11 @@
 
 {
   imports = [
-    ./allocations.nix
     ./feeds.nix
     ./fs
     ./gui
     ./home-manager
+    ./ids.nix
     ./packages.nix
     ./image.nix
     ./nixcache.nix

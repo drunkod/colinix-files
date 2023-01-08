@@ -12,7 +12,6 @@
     home = "/var/lib/gitea";
     useDefaultShell = true;
     group = "gitea";
-    uid = config.sane.allocations.git-uid;
     isSystemUser = true;
     # sendmail access (not 100% sure if this is necessary)
     extraGroups = [ "postdrop" ];

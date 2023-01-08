@@ -23,10 +23,6 @@ in
   config = mkIf cfg.enable {
     sane.gui.enable = true;
 
-    # greetd
-    users.users.greeter.uid = config.sane.allocations.greeter-uid;
-    users.groups.greeter.gid = config.sane.allocations.greeter-gid;
-
     programs.sway = {
       # we configure sway with home-manager, but this enable gets us e.g. opengl and fonts
       enable = true;

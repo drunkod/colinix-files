@@ -120,8 +120,6 @@ in
   security.acme.acceptTerms = true;
   security.acme.defaults.email = "admin.acme@uninsane.org";
 
-  users.users.acme.uid = config.sane.allocations.acme-uid;
-  users.groups.acme.gid = config.sane.allocations.acme-gid;
   sane.persist.sys.plaintext = [
     # TODO: mode?
     { user = "acme"; group = "acme"; directory = "/var/lib/acme"; }

@@ -15,15 +15,6 @@ in
   config = mkIf cfg.enable {
     sane.gui.enable = true;
 
-    users.users.avahi.uid = config.sane.allocations.avahi-uid;
-    users.groups.avahi.gid = config.sane.allocations.avahi-gid;
-    users.users.colord.uid = config.sane.allocations.colord-uid;
-    users.groups.colord.gid = config.sane.allocations.colord-gid;
-    users.users.geoclue.uid = config.sane.allocations.geoclue-uid;
-    users.groups.geoclue.gid = config.sane.allocations.geoclue-gid;
-    users.users.rtkit.uid = config.sane.allocations.rtkit-uid;
-    users.groups.rtkit.gid = config.sane.allocations.rtkit-gid;
-
     # start gnome/gdm on boot
     services.xserver.enable = true;
     services.xserver.desktopManager.gnome.enable = true;

@@ -20,8 +20,6 @@
     { user = "freshrss"; group = "freshrss"; directory = "/var/lib/freshrss"; }
   ];
 
-  users.users.freshrss.uid = config.sane.allocations.freshrss-uid;
-  users.groups.freshrss.gid = config.sane.allocations.freshrss-gid;
   services.freshrss.enable = true;
   services.freshrss.baseUrl = "https://rss.uninsane.org";
   services.freshrss.virtualHost = "rss.uninsane.org";

@@ -5,9 +5,6 @@ with lib;
 let
   cfg = config.sane.users;
   fs = sane-lib.fs;
-  # see nixpkgs/nixos/modules/services/networking/dhcpcd.nix
-  hasDHCP = config.networking.dhcpcd.enable &&
-    (config.networking.useDHCP || any (i: i.useDHCP == true) (attrValues config.networking.interfaces));
 in
 {
   options = {
@@ -29,7 +26,6 @@ in
       home = "/home/colin";
       createHome = true;
       homeMode = "0700";
-      uid = config.sane.allocations.colin-uid;
       # i don't get exactly what this is, but nixos defaults to this non-deterministically
       # in /var/lib/nixos/auto-subuid-map and i don't want that.
       subUidRanges = [
@@ -111,7 +107,6 @@ in
     users.users.guest = mkIf cfg.guest.enable {
       isNormalUser = true;
       home = "/home/guest";
-      uid = config.sane.allocations.guest-uid;
       subUidRanges = [
         { startUid=200000; count=1; }
       ];
@@ -121,13 +116,6 @@ in
       openssh.authorizedKeys.keys = [
         # TODO: insert pubkeys that should be allowed in
       ];
-    };
-
-    users.users.dhcpcd = mkIf hasDHCP {
-      uid = config.sane.allocations.dhcpcd-uid;
-    };
-    users.groups.dhcpcd = mkIf hasDHCP {
-      gid = config.sane.allocations.dhcpcd-gid;
     };
 
     security.sudo = {
@@ -140,31 +128,5 @@ in
       permitRootLogin = "no";
       passwordAuthentication = false;
     };
-
-    # affix some UIDs which were historically auto-generated
-    users.users.sshd.uid = config.sane.allocations.sshd-uid;
-    users.groups.polkituser.gid = config.sane.allocations.polkituser-gid;
-    users.groups.sshd.gid = config.sane.allocations.sshd-gid;
-    users.groups.systemd-coredump.gid = config.sane.allocations.systemd-coredump-gid;
-    users.users.nscd.uid = config.sane.allocations.nscd-uid;
-    users.groups.nscd.gid = config.sane.allocations.nscd-gid;
-    users.users.systemd-oom.uid = config.sane.allocations.systemd-oom-uid;
-    users.groups.systemd-oom.gid = config.sane.allocations.systemd-oom-gid;
-
-    # guarantee determinism in uid/gid generation for users:
-    assertions = let
-      uidAssertions = builtins.attrValues (builtins.mapAttrs (name: user: {
-        assertion = user.uid != null;
-        message = "non-deterministic uid detected for: ${name}";
-      }) config.users.users);
-      gidAssertions = builtins.attrValues (builtins.mapAttrs (name: group: {
-        assertion = group.gid != null;
-        message = "non-deterministic gid detected for: ${name}";
-      }) config.users.groups);
-      autoSubAssertions = builtins.attrValues (builtins.mapAttrs (name: user: {
-        assertion = !user.autoSubUidGidRange;
-        message = "non-deterministic subUids/Guids detected for: ${name}";
-      }) config.users.users);
-    in uidAssertions ++ gidAssertions ++ autoSubAssertions;
   };
 }

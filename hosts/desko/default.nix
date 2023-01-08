@@ -17,8 +17,6 @@
 
   # needed to use libimobiledevice/ifuse, for iphone sync
   services.usbmuxd.enable = true;
-  users.users.usbmux.uid = config.sane.allocations.usbmux-uid;
-  users.groups.usbmux.gid = config.sane.allocations.usbmux-gid;
 
   sops.secrets.colin-passwd = {
     sopsFile = ../../secrets/desko.yaml;

@@ -10,8 +10,6 @@
     # TODO: mode? could be more granular
     { user = "pleroma"; group = "pleroma"; directory = "/var/lib/pleroma"; }
   ];
-  users.users.pleroma.uid = config.sane.allocations.pleroma-uid;
-  users.groups.pleroma.gid = config.sane.allocations.pleroma-gid;
   services.pleroma.enable = true;
   services.pleroma.secretConfigFile = config.sops.secrets.pleroma_secrets.path;
   services.pleroma.configs = [
