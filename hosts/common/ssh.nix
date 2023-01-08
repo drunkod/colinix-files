@@ -1,7 +1,10 @@
 { config, lib, ... }:
 {
   # persist the host key
+  # prefer specifying it via environment.etc since although it is generated per-host,
+  # it's made to be immutable after generation. hence, a `persist`-style mount wouldn't be as great.
   environment.etc."ssh/host_keys".source = "/nix/persist/etc/ssh/host_keys";
+  # sane.persist.sys.plaintext = [ "/etc/ssh/host_keys" ];
 
   # let openssh find our host keys
   services.openssh.hostKeys = [
