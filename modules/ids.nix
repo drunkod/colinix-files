@@ -54,19 +54,31 @@ in
 
   config = {
     # guarantee determinism in uid/gid generation for users:
-    assertions = let
-      uidAssertions = builtins.attrValues (builtins.mapAttrs (name: user: {
-        assertion = user.uid != null;
-        message = "non-deterministic uid detected for: ${name}";
-      }) config.users.users);
-      gidAssertions = builtins.attrValues (builtins.mapAttrs (name: group: {
-        assertion = group.gid != null;
-        message = "non-deterministic gid detected for: ${name}";
-      }) config.users.groups);
-      autoSubAssertions = builtins.attrValues (builtins.mapAttrs (name: user: {
-        assertion = !user.autoSubUidGidRange;
-        message = "non-deterministic subUids/Guids detected for: ${name}";
-      }) config.users.users);
-    in uidAssertions ++ gidAssertions ++ autoSubAssertions;
+    assertions = lib.mkMerge [
+      (
+        lib.mapAttrsToList
+          (name: user: {
+            assertion = user.uid != null;
+            message = "non-deterministic uid detected for: ${name}";
+          })
+          config.users.users
+      )
+      (
+        lib.mapAttrsToList
+          (name: group: {
+            assertion = group.gid != null;
+            message = "non-deterministic gid detected for: ${name}";
+          })
+          config.users.groups
+      )
+      (
+        lib.mapAttrsToList
+          (name: user: {
+            assertion = !user.autoSubUidGidRange;
+            message = "non-deterministic subUids/Guids detected for: ${name}";
+          })
+          config.users.users
+      )
+    ];
   };
 }
