@@ -139,6 +139,7 @@ let
   images = [
     (mkImg "https://www.smbc-comics.com/comic/rss" // humor // daily)
     (mkImg "https://xkcd.com/atom.xml" // humor // daily)
+    (mkImg "https://pbfcomics.com/feed" // humor // infrequent)
     # (mkImg "http://dilbert.com/feed" // humor // daily)
 
     # ART
