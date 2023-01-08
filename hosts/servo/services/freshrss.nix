@@ -29,9 +29,11 @@
 
   systemd.services.freshrss-import-feeds =
   let
+    feeds = sane-lib.feeds;
     fresh = config.systemd.services.freshrss-config;
-    feeds = config.sane.feeds;
-    opml = pkgs.writeText "sane-freshrss.opml" (sane-lib.feeds.feedsToOpml feeds);
+    all-feeds = config.sane.feeds;
+    wanted-feeds = feeds.filterByFormat ["text" "image"] all-feeds;
+    opml = pkgs.writeText "sane-freshrss.opml" (feeds.feedsToOpml wanted-feeds);
   in {
     inherit (fresh) wantedBy environment;
     serviceConfig = {
