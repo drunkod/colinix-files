@@ -52,11 +52,6 @@ in
       passwordFile = lib.mkIf (config.sops.secrets ? "colin-passwd") config.sops.secrets.colin-passwd.path;
 
       shell = pkgs.zsh;
-      openssh.authorizedKeys.keys =
-      let
-        user-keys = filter (k: k.user == "colin") (attrValues config.sane.ssh.pubkeys);
-      in
-        map (k: k.asUserKey) user-keys;
 
       # mount encrypted stuff at login
       # some other nix pam users:
