@@ -235,24 +235,10 @@ let
   });
 
 
-  mkFsConfig = path: opt: mergeTopLevel [
+  mkFsConfig = path: opt: sane-lib.mergeTopLevel [
     (mkGeneratedConfig path opt)
-    (lib.mkIf (opt.mount != null) (mkMountConfig path opt))
+    (lib.optionalAttrs (opt.mount != null) (mkMountConfig path opt))
   ];
-
-  # act as `config = lib.mkMerge [ a b ]` but in a way which avoids infinite recursion,
-  # by extracting only specific options which are known to not be options in this module.
-  mergeTopLevel = items: let
-    # if one of the items is `lib.mkIf cond attrs`, we won't be able to index it until
-    # after we "push down" the mkIf to each attr.
-    indexable = lib.pushDownProperties (lib.mkMerge items);
-    # transform (listOf attrs) to (attrsOf list) by grouping each toplevel attr across lists.
-    top = lib.zipAttrsWith (name: lib.mkMerge) indexable;
-    # extract known-good top-level items in a way which errors if a module tries to define something extra.
-    extract = { fileSystems ? {}, systemd ? {} }@attrs: attrs;
-  in {
-    inherit (extract top) fileSystems systemd;
-  };
 
   generateWrapperScript = path: gen-opt: {
     script = ''
@@ -360,5 +346,12 @@ in {
     };
   };
 
-  config = mergeTopLevel (lib.mapAttrsToList mkFsConfig cfg);
+  config =
+    let
+      configs = lib.mapAttrsToList mkFsConfig cfg;
+      take = f: {
+        systemd.services = f.systemd.services;
+        fileSystems = f.fileSystems;
+      };
+    in take (sane-lib.mkTypedMerge take configs);
 }

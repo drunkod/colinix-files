@@ -216,7 +216,7 @@ in
         method = (sane-lib.withDefault store.defaultMethod) opt.method;
         fsPathToStoreRelPath = fspath: path.from store.prefix fspath;
         fsPathToBackingPath = fspath: path.concat [ store.origin (fsPathToStoreRelPath fspath) ];
-      in [
+      in sane-lib.mergeTopLevel [
         {
           # create destination dir, with correct perms
           sane.fs."${fspath}" = {
@@ -245,10 +245,10 @@ in
           );
         }
       ];
-      configsPerPath = lib.mapAttrsToList cfgFor cfg.byPath;
-      allConfigs = builtins.concatLists configsPerPath;
-  in mkIf cfg.enable {
-    sane.fs = lib.mkMerge (map (c: c.sane.fs) allConfigs);
-  };
+    configs = lib.mapAttrsToList cfgFor cfg.byPath;
+    take = f: { sane.fs = f.sane.fs; };
+  in mkIf cfg.enable (
+    take (sane-lib.mkTypedMerge take configs)
+  );
 }
 
