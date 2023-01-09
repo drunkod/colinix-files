@@ -18,5 +18,6 @@
 
   _module.args =  {
     sane-lib = import ./lib { inherit lib utils; };
+    sane-data = import ./data;
   };
 }
