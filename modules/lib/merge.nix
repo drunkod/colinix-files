@@ -1,23 +1,6 @@
 { lib, sane-lib, ... }:
 
 rec {
-  # like `mkMerge`, but tries to do normal attribute merging by default and only creates `mkMerge`
-  # entries at the highest point where paths overlap between items.
-  mergeTopLevel = l:
-    if builtins.length l == 0 then
-      lib.mkMerge []
-    else if builtins.length l == 1 then
-      lib.head l
-    else if builtins.all isAttrsNotMerge l then
-      # merge each toplevel attribute
-      lib.zipAttrsWith (_name: mergeTopLevel) l
-    else
-      lib.mkMerge l;
-
-  # tests that `i` is a normal attrs, and not something make with `lib.mkMerge`.
-  isAttrsNotMerge = i: builtins.isAttrs i && i._type or "" != "merge";
-
-
   # type-checked `lib.mkMerge`, intended to be usable at the top of a file.
   # `take` is a function which defines a spec enforced against every item to be merged.
   # for example:
@@ -30,9 +13,10 @@ rec {
   mkTypedMerge = take: l:
     let
       pathsToMerge = findTerminalPaths take [];
-      merged = builtins.map (p: lib.setAttrByPath p (mergeAtPath p l)) pathsToMerge;
+      discharged = dischargeAll l pathsToMerge;
+      merged = builtins.map (p: lib.setAttrByPath p (mergeAtPath p discharged)) pathsToMerge;
     in
-      assert builtins.all (i: assertTakesEveryAttr take i []) l;
+      assert builtins.all (assertNoExtraPaths pathsToMerge) discharged;
       sane-lib.joinAttrsets merged;
 
   # `take` is as in mkTypedMerge. this function queries which items `take` is interested in.
@@ -70,6 +54,38 @@ rec {
       in
         lib.concatLists terminalsPerChild;
 
+  # ensures that all nodes in the attrset from the root to and including the given path
+  # are ordinary attrs -- if they exist.
+  # this has to return a list of Attrs, in case any portion of the path was previously merged.
+  # by extension, each returned item is a subset of the original item, and might not have *all* the paths that the original has.
+  # Type: dischargeToPath :: [String] -> Attrs -> [Attrs]
+  dischargeToPath = path: i:
+    let
+      items = lib.pushDownProperties i;
+      # now items is a list where every element is undecorated at the toplevel.
+      # e.g. each item is an ordinary attrset or primitive.
+    in
+      if path == [] then
+        items
+      else
+        let
+          name = lib.head path;
+          downstream = lib.tail path;
+          dischargeItem = it: if it ? name then
+            builtins.map (v: it // { "${name}" = v; }) (dischargeToPath downstream it."${name}")
+          else
+            [ it ];
+        in
+          lib.concatMap dischargeItem items;
+
+  # discharge many items but only over one path.
+  # Type: dischargeItemsToPaths :: [Attrs] -> String -> [Attrs]
+  dischargeItemsToPath = l: path: builtins.concatMap (dischargeToPath path) l;
+
+  # Type: dischargeAll :: [Attrs] -> [String] -> [Attrs]
+  dischargeAll = l: paths:
+    builtins.foldl' dischargeItemsToPath l paths;
+
   # merges all present values for the provided path
   # Type: mergeAtPath :: [String] -> [Attrs] -> (lib.mkMerge)
   mergeAtPath = path: l:
@@ -77,23 +93,12 @@ rec {
       itemsToMerge = builtins.filter (lib.hasAttrByPath path) l;
     in lib.mkMerge (builtins.map (lib.getAttrFromPath path) itemsToMerge);
 
-  # throw if `item` includes any data not wanted by `take`.
-  # this is recursive: `path` tracks the current location being checked.
-  assertTakesEveryAttr = take: item: path:
+  # check that attrset `i` contains no terminals other than those specified in (or direct ancestors of) paths
+  assertNoExtraPaths = paths: i:
     let
-      takesSubNames = findSubNames take path;
-      itemSubNames = findSubNames (_: item) path;
-      unexpectedNames = lib.subtractLists takesSubNames itemSubNames;
-      takesEverySubAttr = builtins.all (name: assertTakesEveryAttr take item (path ++ [name])) itemSubNames;
+      clearPath = acc: path: lib.recursiveUpdate acc (lib.setAttrByPath path null);
+      remainder = builtins.foldl' clearPath i paths;
+      expected-remainder = builtins.foldl' clearPath {} paths;
     in
-      if takesSubNames == [] then
-        # this happens when the user takes this whole subtree: i.e. *all* subnames are accepted.
-        true
-      else if unexpectedNames != [] then
-        let
-          p = lib.concatStringsSep "." (path ++ lib.sublist 0 1 unexpectedNames);
-        in
-          throw ''unexpected entry: ${p}''
-      else
-        takesEverySubAttr;
+      assert remainder == expected-remainder; true;
 }

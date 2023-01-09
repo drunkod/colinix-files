@@ -216,7 +216,7 @@ in
         method = (sane-lib.withDefault store.defaultMethod) opt.method;
         fsPathToStoreRelPath = fspath: path.from store.prefix fspath;
         fsPathToBackingPath = fspath: path.concat [ store.origin (fsPathToStoreRelPath fspath) ];
-      in sane-lib.mergeTopLevel [
+      in lib.mkMerge [
         {
           # create destination dir, with correct perms
           sane.fs."${fspath}" = {

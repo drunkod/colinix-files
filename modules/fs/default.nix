@@ -235,9 +235,9 @@ let
   });
 
 
-  mkFsConfig = path: opt: sane-lib.mergeTopLevel [
+  mkFsConfig = path: opt: lib.mkMerge [
     (mkGeneratedConfig path opt)
-    (lib.optionalAttrs (opt.mount != null) (mkMountConfig path opt))
+    (lib.mkIf (opt.mount != null) (mkMountConfig path opt))
   ];
 
   generateWrapperScript = path: gen-opt: {

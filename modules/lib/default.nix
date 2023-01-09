@@ -9,7 +9,7 @@ sane-lib = rec {
   types = import ./types.nix moduleArgs;
 
   # re-exports
-  inherit (merge) mergeTopLevel mkTypedMerge;
+  inherit (merge) mkTypedMerge;
 
   # like `builtins.listToAttrs` but any duplicated `name` throws error on access.
   # Type: listToDisjointAttrs :: [{ name :: String, value :: Any }] -> AttrSet
