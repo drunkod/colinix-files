@@ -1,5 +1,5 @@
 # docs: https://nixos.wiki/wiki/Nginx
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   # make the logs for this host "public" so that they show up in e.g. metrics
