@@ -12,16 +12,13 @@
       in
       "${name}@${host}";
 
-    # given a DNS-style recursive AttrSet, return a flat AttrSet that maps ssh id => pubkey.
-    keysFor = attrs:
-      let
-        by-path = sane-lib.flattenAttrs attrs;
-      in
-        sane-lib.mapToAttrs ({ path, value }: {
-          name = keyNameForPath path;
-          inherit value;
-        }) by-path;
-    globalKeys = keysFor sane-data.keys;
-    localKeys = keysFor sane-data.keys.org.uninsane.local;
-  in lib.mkMerge [ globalKeys localKeys ];
+    # [{ path :: [String], value :: String }] for the keys we want to install
+    globalKeys = sane-lib.flattenAttrs sane-data.keys;
+    localKeys = sane-lib.flattenAttrs sane-data.keys.org.uninsane.local;
+  in lib.mkMerge (builtins.map
+    ({ path, value }: {
+      "${keyNameForPath path}" = value;
+    })
+    (globalKeys ++ localKeys)
+  );
 }

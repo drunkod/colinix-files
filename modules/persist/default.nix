@@ -235,10 +235,14 @@ in
         }
         {
           # default each item along the backing path to have the same acl as the location it would be mounted.
-          sane.fs = sane-lib.mapToAttrs (fsSubpath: {
-            name = fsPathToBackingPath fsSubpath;
-            value.generated.acl = config.sane.fs."${fsSubpath}".generated.acl;
-          }) (path.walk store.prefix fspath);
+          sane.fs = lib.mkMerge (builtins.map
+            (fsSubpath: {
+              "${fsPathToBackingPath fsSubpath}" = {
+                generated.acl = config.sane.fs."${fsSubpath}".generated.acl;
+              };
+            })
+            (path.walk store.prefix fspath)
+          );
         }
       ];
       configsPerPath = lib.mapAttrsToList cfgFor cfg.byPath;
