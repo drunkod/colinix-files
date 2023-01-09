@@ -31,11 +31,11 @@ rec {
     let
       # define the current path, but nothing more.
       curLevel = lib.setAttrByPath path {};
-      # `take` will either set:
-      # - { $path = path }  => { $path = {} };
-      # - { $path.next = path.next }  => { $path = { next = ?; } }
+      # `take curLevel` will act one of two ways here:
+      # - { $path = f.$path; }  => { $path = {}; };
+      # - { $path.subAttr = f.$path.subAttr; }  => { $path = { subAttr = ?; }; }
       # so, index $path into the output of `take`,
-      # and if it has any attrs that means we're interested in those too.
+      # and if it has any attrs (like `subAttr`) that means we're interested in those too.
       nextLevel = lib.getAttrFromPath path (take curLevel);
     in
       builtins.attrNames nextLevel;
@@ -49,10 +49,7 @@ rec {
     in if subNames == [] then
       [ path ]
     else
-      let
-        terminalsPerChild = builtins.map (name: findTerminalPaths take (path ++ [name])) subNames;
-      in
-        lib.concatLists terminalsPerChild;
+      lib.concatMap (name: findTerminalPaths take (path ++ [name])) subNames;
 
   # ensures that all nodes in the attrset from the root to and including the given path
   # are ordinary attrs -- if they exist.
@@ -64,19 +61,15 @@ rec {
       items = lib.pushDownProperties i;
       # now items is a list where every element is undecorated at the toplevel.
       # e.g. each item is an ordinary attrset or primitive.
-    in
-      if path == [] then
-        items
+      # we still need to discharge the *rest* of the path though, for every item.
+      name = lib.head path;
+      downstream = lib.tail path;
+      dischargeDownstream = it: if path != [] && it ? name then
+        builtins.map (v: it // { "${name}" = v; }) (dischargeToPath downstream it."${name}")
       else
-        let
-          name = lib.head path;
-          downstream = lib.tail path;
-          dischargeItem = it: if it ? name then
-            builtins.map (v: it // { "${name}" = v; }) (dischargeToPath downstream it."${name}")
-          else
-            [ it ];
-        in
-          lib.concatMap dischargeItem items;
+        [ it ];
+    in
+      lib.concatMap dischargeDownstream items;
 
   # discharge many items but only over one path.
   # Type: dischargeItemsToPaths :: [Attrs] -> String -> [Attrs]
@@ -96,9 +89,12 @@ rec {
   # check that attrset `i` contains no terminals other than those specified in (or direct ancestors of) paths
   assertNoExtraPaths = paths: i:
     let
-      clearPath = acc: path: lib.recursiveUpdate acc (lib.setAttrByPath path null);
-      remainder = builtins.foldl' clearPath i paths;
-      expected-remainder = builtins.foldl' clearPath {} paths;
+      # since the act of discharging should have forced all the relevant data out to the leaves,
+      # we just set each expected terminal to null (initializing the parents when necessary)
+      # and that gives a standard value for any fully-consumed items that we can do equality comparisons with.
+      wipePath = acc: path: lib.recursiveUpdate acc (lib.setAttrByPath path null);
+      remainder = builtins.foldl' wipePath i paths;
+      expected-remainder = builtins.foldl' wipePath {} paths;
     in
       assert remainder == expected-remainder; true;
 }
