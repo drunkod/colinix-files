@@ -13,7 +13,7 @@ sane-lib = rec {
 
   # like `builtins.listToAttrs` but any duplicated `name` throws error on access.
   # Type: listToDisjointAttrs :: [{ name :: String, value :: Any }] -> AttrSet
-  listToDisjointAttrs = l: flattenAttrsets (builtins.map nameValueToAttrs l);
+  listToDisjointAttrs = l: joinAttrsets (builtins.map nameValueToAttrs l);
 
   # true if p is a prefix of l (even if p == l)
   # Type: isPrefixOfList :: [Any] -> [Any] -> bool
@@ -21,7 +21,7 @@ sane-lib = rec {
 
   # merges N attrsets
   # Type: flattenAttrsList :: [AttrSet] -> AttrSet
-  flattenAttrsets = l: lib.foldl' lib.attrsets.unionOfDisjoint {} l;
+  joinAttrsets = l: lib.foldl' lib.attrsets.unionOfDisjoint {} l;
 
   # evaluate a `{ name, value }` pair in the same way that `listToAttrs` does.
   # Type: nameValueToAttrs :: { name :: String, value :: Any } -> Any
