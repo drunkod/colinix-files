@@ -16,12 +16,18 @@ rec {
   # Type: filterNonNull :: AttrSet -> AttrSet
   filterNonNull = attrs: lib.filterAttrsRecursive (n: v: v != null) attrs;
 
+  # return only the subset of `attrs` whose name is in the provided set.
+  # Type: filterByName :: [String] -> AttrSet
+  filterByName = names: attrs: lib.filterAttrs
+    (name: value: builtins.elem name names)
+    attrs;
+
   # transform a list into an AttrSet via a function which maps an element to a name + value
-  # Type: mapToAttrs :: (a -> { name, value }) -> [a] -> AttrSet
+  # Type: mapToAttrs :: (a -> { name :: String, value :: Any }) -> [a] -> AttrSet
   mapToAttrs = f: list: builtins.listToAttrs (builtins.map f list);
 
-  # flatten a nested AttrSet into a list of { path = [str]; value } items.
-  # Type: flattenAttrs :: AttrSet[item|AttrSet] -> [{ path; value; }]
+  # flatten a nested AttrSet into a list of { path = [String]; value } items.
+  # Type: flattenAttrs :: AttrSet[AttrSet|Any] -> [{ path :: String, value :: Any }]
   flattenAttrs = flattenAttrs' [];
   flattenAttrs' = path: value: if builtins.isAttrs value then (
     builtins.concatLists (

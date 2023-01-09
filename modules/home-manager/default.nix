@@ -131,11 +131,14 @@ in
       # <item oor:path="/org.openoffice.Setup/Product"><prop oor:name="LastTimeGetInvolvedShown" oor:op="fuse"><value>1667693880</value></prop></item>
 
 
-      programs = {
-        home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
-        # "command not found" will cause the command to be searched in nixpkgs
-        nix-index.enable = true;
-      } // cfg.programs;
+      programs = lib.mkMerge [
+        {
+          home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
+          # "command not found" will cause the command to be searched in nixpkgs
+          nix-index.enable = true;
+        }
+        cfg.programs
+      ];
     };
   };
 }

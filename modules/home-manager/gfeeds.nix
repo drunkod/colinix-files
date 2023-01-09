@@ -10,9 +10,10 @@ in {
     builtins.toJSON {
       # feed format is a map from URL to a dict,
       #   with dict["tags"] a list of string tags.
-      feeds = builtins.foldl' (acc: feed: acc // {
-        "${feed.url}".tags = [ feed.cat feed.freq ];
-      }) {} wanted-feeds;
+      feeds = sane-lib.mapToAttrs (feed: {
+        name = feed.url;
+        value.tags = [ feed.cat feed.freq ];
+      }) wanted-feeds;
       dark_reader = false;
       new_first = true;
       # windowsize = {

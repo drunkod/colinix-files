@@ -100,13 +100,12 @@ let
   # toplevel and move them into an `acl` attribute.
   convertInlineAcl = to: types.coercedTo
     types.attrs
-    (orig: (builtins.removeAttrs orig ["user" "group" "mode" ]) // {
-      acl = (orig.acl or {}) // (sane-lib.filterNonNull {
-        user = orig.user or null;
-        group = orig.group or null;
-        mode = orig.mode or null;
-      });
-    })
+    (orig: lib.recursiveUpdate
+      (builtins.removeAttrs orig ["user" "group" "mode" ])
+      {
+        acl = sane-lib.filterByName ["user" "group" "mode"] (orig.acl or {});
+      }
+    )
     to;
 
   # entry where the path is specified externally
@@ -125,24 +124,26 @@ let
   #   <option>.private.".cache/vim" = { mode = "0700"; };
   # to place ".cache/vim" into the private store and create with the appropriate mode
   dirsSubModule = types.submodule ({ config, ... }: {
-    options = (mapAttrs (store: store-cfg: mkOption {
-      default = [];
-      type = types.listOf (convertInlineAcl entryInStoreOrShorthand);
-      description = let
-        suffix = if store-cfg.storeDescription != null then
-          ": ${store-cfg.storeDescription}"
-        else "";
-      in "directories to persist in ${store}${suffix}";
-    }) cfg.stores) // {
-      byPath = mkOption {
-        type = types.attrsOf (convertInlineAcl entryAtPath);
-        default = {};
-        description = ''
-          map of <path> => <path config> for all paths to be persisted.
-          this is computed from the other options, but users can also set it explicitly (useful for overriding)
-        '';
+    options = lib.attrsets.unionOfDisjoint
+      (mapAttrs (store: store-cfg: mkOption {
+        default = [];
+        type = types.listOf (convertInlineAcl entryInStoreOrShorthand);
+        description = let
+          suffix = if store-cfg.storeDescription != null then
+            ": ${store-cfg.storeDescription}"
+          else "";
+        in "directories to persist in ${store}${suffix}";
+      }) cfg.stores)
+      {
+        byPath = mkOption {
+          type = types.attrsOf (convertInlineAcl entryAtPath);
+          default = {};
+          description = ''
+            map of <path> => <path config> for all paths to be persisted.
+            this is computed from the other options, but users can also set it explicitly (useful for overriding)
+          '';
+        };
       };
-    };
     config = let
       # set the `store` attribute on one dir attrset
       annotateWithStore = store: dir: {
