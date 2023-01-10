@@ -7,7 +7,7 @@
     nixpkgs-stable.url = "nixpkgs/nixos-22.11";
     nixpkgs-unpatched.url = "nixpkgs/nixos-unstable";
     nixpkgs = {
-      url = "./nixpatches";
+      url = "path:nixpatches";
       inputs.nixpkgs.follows = "nixpkgs-unpatched";
     };
     mobile-nixos = {
