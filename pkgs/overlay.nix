@@ -1,6 +1,7 @@
 (next: prev: rec {
   #### my own, non-upstreamable packages:
   sane-scripts = prev.callPackage ./sane-scripts { };
+  feeds = prev.callPackage ./feeds { };
   tow-boot-pinephone = prev.callPackage ./tow-boot-pinephone { };
   tow-boot-rpi4 = prev.callPackage ./tow-boot-rpi4 { };
   bootpart-uefi-x86_64 = prev.callPackage ./bootpart-uefi-x86_64 { };
