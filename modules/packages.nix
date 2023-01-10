@@ -212,6 +212,7 @@ let
     jq
     killall
     lsof
+    nano
     netcat
     nethogs
     nmap
