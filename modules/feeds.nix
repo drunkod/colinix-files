@@ -14,6 +14,7 @@ let
       };
       format = mkOption {
         type = types.enum [ "text" "image" "podcast" ];
+        default = "text";
       };
       url = mkOption {
         type = types.str;

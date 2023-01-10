@@ -4,6 +4,9 @@
 # don't put things like fully-specific ~/.config files in here,
 # even if they're "relatively unopinionated".
 
+moduleArgs:
+
 {
+  feeds = import ./feeds moduleArgs;
   keys = import ./keys.nix;
 }
