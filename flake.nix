@@ -52,6 +52,9 @@
       in import ./pkgs/overlay.nix pkgs pkgs;
     decl-host = { name, local, target }:
     let
+      # XXX: we'd prefer to use `nixosSystem = (nixpkgsCompiledBy local).nixos`
+      # but it doesn't propagate config to the underlying pkgs, meaning it doesn't let you use
+      # non-free packages even after setting nixpkgs.allowUnfree.
       nixosSystem = import ((nixpkgsCompiledBy local).path + "/nixos/lib/eval-config.nix");
     in (nixosSystem {
       # we use pkgs built for and *by* the target, i.e. emulation, by default.
