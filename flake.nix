@@ -5,7 +5,11 @@
 {
   inputs = {
     nixpkgs-stable.url = "nixpkgs/nixos-22.11";
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs-unpatched.url = "nixpkgs/nixos-unstable";
+    nixpkgs = {
+      url = "./nixpatches";
+      inputs.nixpkgs.follows = "nixpkgs-unpatched";
+    };
     mobile-nixos = {
       url = "github:nixos/mobile-nixos";
       flake = false;
@@ -28,29 +32,30 @@
     self,
     nixpkgs,
     nixpkgs-stable,
+    nixpkgs-unpatched,
     mobile-nixos,
     home-manager,
     sops-nix,
     uninsane
   }: let
-    patchedPkgs = system: nixpkgs.legacyPackages.${system}.applyPatches {
-      name = "nixpkgs-patched-uninsane";
-      src = nixpkgs;
-      patches = import ./nixpatches/list.nix {
-        inherit (nixpkgs.legacyPackages.${system}) fetchpatch;
-        inherit (nixpkgs.lib) fakeHash;
-      };
-    };
+    nixpkgsCompiledBy = local: nixpkgs.legacyPackages."${local}";
     # return something which behaves like `pkgs`, for the provided system
     # `local` = architecture of builder. `target` = architecture of the system beying deployed to
-    nixpkgsFor = local: target: import (patchedPkgs target) { crossSystem = target; localSystem = local; };
+    nixpkgsFor = local: target:
+      import ((nixpkgsCompiledBy local).path) {
+        crossSystem = target;
+        localSystem = local;
+      };
     # evaluate ONLY our overlay, for the provided system
-    customPackagesFor = local: target: import ./pkgs/overlay.nix (nixpkgsFor local target) (nixpkgsFor local target);
+    customPackagesFor = local: target:
+      let pkgs = nixpkgsFor local target;
+      in import ./pkgs/overlay.nix pkgs pkgs;
     decl-host = { name, local, target }:
     let
-      nixosSystem = import ((patchedPkgs target) + "/nixos/lib/eval-config.nix");
+      nixosSystem = import ((nixpkgsCompiledBy local).path + "/nixos/lib/eval-config.nix");
     in (nixosSystem {
-      # by default the local system is the same as the target, employing emulation when they differ
+      # we use pkgs built for and *by* the target, i.e. emulation, by default.
+      # cross compilation only happens on explicit access to `pkgs.cross`
       system = target;
       modules = [
         ./modules
@@ -67,7 +72,7 @@
               # for large packages like the linux kernel which are expensive to build under emulation,
               # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
               cross = (nixpkgsFor local target) // (customPackagesFor local target);
-              stable = import nixpkgs-stable { system = target; };
+              stable = nixpkgs-stable.legacyPackages."${target}";
 
               # cross-compatible packages
               # gocryptfs = cross.gocryptfs;
@@ -107,11 +112,12 @@
     hosts.moby-cross = decl-bootable-host { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
     hosts.rescue = decl-bootable-host { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
   in {
+    # TODO: use catAttrs?
     nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) hosts;
     imgs = builtins.mapAttrs (name: value: value.img) hosts;
     packages = let
       allPkgsFor = sys: (customPackagesFor sys sys) // {
-        nixpkgs = nixpkgsFor sys sys;
+        nixpkgs = nixpkgsCompiledBy sys;
         uninsane = uninsane.packages."${sys}";
       };
     in {
