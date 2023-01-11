@@ -40,17 +40,6 @@
   }:
     let
       nixpkgsCompiledBy = local: nixpkgs.legacyPackages."${local}";
-      # return something which behaves like `pkgs`, for the provided system
-      # `local` = architecture of builder. `target` = architecture of the system beying deployed to
-      nixpkgsFor = local: target:
-        import ((nixpkgsCompiledBy local).path) {
-          crossSystem = target;
-          localSystem = local;
-        };
-      # evaluate ONLY our overlay, for the provided system
-      customPackagesFor = local: target:
-        let pkgs = nixpkgsFor local target;
-        in import ./pkgs/overlay.nix pkgs pkgs;
 
       decl-host = { name, local, target }:
         let
@@ -126,23 +115,18 @@
           # non-emulated packages build *from* local *for* target.
           # for large packages like the linux kernel which are expensive to build under emulation,
           # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
-          # crossFrom."x86_64-linux" = (nixpkgsFor "x86_64-linux" prev.stdenv.buildPlatform) // (customPackagesFor local target);
           crossFrom."x86_64-linux" = (prev.forceSystem "x86_64-linux" null).appendOverlays next.overlays;
           crossFrom."aarch64-linux" = (prev.forceSystem "x86_64-linux" null).appendOverlays next.overlays;
-
-          # cross-compatible packages
-          # gocryptfs = cross.gocryptfs;
-
-          # pinned packages:
         });
       };
 
       packages =
         let
-          allPkgsFor = sys: (customPackagesFor sys sys) // {
-            nixpkgs = nixpkgsCompiledBy sys;
-            uninsane = uninsane.packages."${sys}";
-          };
+          allPkgsFor = sys:
+            let pkgs = nixpkgsCompiledBy sys; in {
+              nixpkgs = pkgs;
+              uninsane = uninsane.packages."${sys}";
+            } // (self.overlays.pkgs pkgs pkgs);
         in {
           x86_64-linux = allPkgsFor "x86_64-linux";
           aarch64-linux = allPkgsFor "aarch64-linux";
