@@ -55,7 +55,7 @@ let
     (mkPod "https://anchor.fm/s/34c7232c/podcast/rss" // tech // infrequent)
     (fromDb "feeds.feedburner.com/80000HoursPodcast" // rat)
     (fromDb "allinchamathjason.libsyn.com" // pol)
-    (mkPod "https://acquired.libsyn.com/rss" // tech // infrequent)
+    (fromDb "acquired.libsyn.com" // tech)
     # The Intercept - Deconstructed; also available: <rss.acast.com/deconstructed>
     (fromDb "rss.prod.firstlook.media/deconstructed/podcast.rss" // pol)
     ## The Daily
@@ -72,7 +72,7 @@ let
     (fromDb "wakingup.libsyn.com" // pol)
     ## 99% Invisible -- also available here: <https://feeds.simplecast.com/BqbsxVfO>
     (fromDb "feeds.99percentinvisible.org/99percentinvisible" // pol)
-    (mkPod "https://rss.acast.com/ft-tech-tonic" // tech // infrequent)
+    (fromDb "rss.acast.com/ft-tech-tonic" // tech)
     (fromDb "feeds.feedburner.com/dancarlin/history" // rat)
     ## 60 minutes (NB: this features more than *just* audio?)
     (mkPod "https://www.cbsnews.com/latest/rss/60-minutes" // pol // infrequent)
