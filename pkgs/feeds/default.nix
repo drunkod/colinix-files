@@ -22,5 +22,16 @@
       passthru.updateScript = pkgs.writeShellScript
         "feeds-update"
         (builtins.concatStringsSep "\n" update-scripts);
+
+      passthru.initFeedScript = pkgs.writeShellScript
+        "init-feed"
+        ''
+          #!/usr/bin/env nix-shell
+          #!nix-shell -i bash -p git
+          name="$1"
+          mkdir modules/data/feeds/sources/"$name"
+          touch modules/data/feeds/sources/"$name"/default.json
+          git add modules/data/feeds/sources/"$name"/default.json
+        '';
     }
 ))

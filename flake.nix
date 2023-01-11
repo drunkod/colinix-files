@@ -136,16 +136,20 @@
         (_: full: full.sane // { inherit (full) sane uninsane-dot-org; })
         self.legacyPackages;
 
-      apps."x86_64-linux" = {
-        update-feeds = {
-          type = "app";
-          program =
-            let
-              pkgs = self.legacyPackages."x86_64-linux";
-              script = pkgs.feeds.passthru.updateScript;
-            in "${script}";
+      apps."x86_64-linux" =
+        let
+          pkgs = self.legacyPackages."x86_64-linux";
+        in {
+          update-feeds = {
+            type = "app";
+            program = "${pkgs.feeds.passthru.updateScript}";
+          };
+
+          init-feed = {
+            type = "app";
+            program = "${pkgs.feeds.passthru.initFeedScript}";
+          };
         };
-      };
 
       templates = {
         python-data = {
