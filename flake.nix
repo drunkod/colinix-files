@@ -126,21 +126,26 @@
         };
       };
 
-      packages =
+      # this includes both our native packages and all the nixpkgs packages.
+      legacyPackages =
         let
-          allPkgsFor = sys:
-            let
-              pkgsBase = nixpkgsCompiledBy sys;
-              pkgsFull = pkgsBase.appendOverlays [
-                self.overlays.passthru self.overlays.pkgs
-              ];
-            in pkgsFull.sane // {
-              inherit (pkgsFull) sane uninsane-dot-org;
-              nixpkgs = pkgsBase;
-            };
+          allPkgsFor = sys: (nixpkgsCompiledBy sys).appendOverlays [
+            self.overlays.passthru self.overlays.pkgs
+          ];
         in {
           x86_64-linux = allPkgsFor "x86_64-linux";
           aarch64-linux = allPkgsFor "aarch64-linux";
+        };
+
+      packages =
+        let
+          myPkgsFor = sys:
+            let full = self.legacyPackages."${sys}"; in full.sane // {
+              inherit (full) sane uninsane-dot-org;
+            };
+        in {
+          x86_64-linux = myPkgsFor "x86_64-linux";
+          aarch64-linux = myPkgsFor "aarch64-linux";
         };
 
       templates = {
