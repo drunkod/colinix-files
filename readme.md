@@ -1,7 +1,7 @@
 to deploy:
 
 ```sh
-nixos-rebuild --flake "./#servo" {build,switch}
+nixos-rebuild --flake ".#servo" {build,switch}
 ```
 
 if the target is the same as the host, nix will grab the hostname automatically:
@@ -20,7 +20,7 @@ nix flake show
 ## secrets
 
 i use [sops](https://github.com/Mic92/sops-nix) for secrets.
-see `modules/universal/secrets.nix` for some tips.
+see `hosts/common/secrets.nix` for some tips.
 
 ## building images
 
@@ -34,31 +34,34 @@ refer to flake.nix for more details.
 
 ## building packages
 
-to build one of the custom sane packages, just name it:
-
-```sh
-nix build ./#fluffychat-moby
+build anything with
+```
+nix build .#<pkgname>
 ```
 
-to build a nixpkg:
+specifically, i pass the full package closure to the `legacyPackages` flake output. that includes both my own packages and upstream packages.
 
-```sh
-nix build ./#nixpkgs.curl
+on the other hand the `packages` output contains only my own packages.
+
+in addition, my packages are placed into both the global scope and a `sane` scope.
+so use the scoped path when you want to be explicit.
+
 ```
-
-to build a package for another platform:
-
-```sh
-nix build ./#packages.aarch64-linux.nixpkgs.ubootRaspberryPi4_64bit
+nix build sane.linux-megous
 ```
 
 ## using this repo in your own config
 
-i try to ensure everything in the `modules/` directory is hidden behind some enable flag or other.
-it should be possible to copy that whole directory into your own config, and then selectively
-populate what you want (like the impermenance paths, etc).
-more practically, a lot of things in there still assume a user named `colin`, so you'll probably
-want to patch it for your name -- or just use it as a reference.
+this should be a pretty "standard" flake. just reference it, and import either
+- `nixosModules.sane` (for the modules)
+- `overlays.pkgs` (for the packages)
+
+`nixosModules.sane` corresponds to everything in the `modules/` directory.
+it's a mix of broad and narrow scope options.
+e.g. `sane.fs` is a completely standalone thing,
+whereas `sane.web-browser` is highly personalized and doesn't *really* make sense to export.
+regardless of scope, i do try to ensure that everything in `modules/` is hidden behind some enable flag
+so that the disorganization isn't that critical.
 
 ## contact
 
