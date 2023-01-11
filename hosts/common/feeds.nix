@@ -68,7 +68,8 @@ let
     (fromDb "darknetdiaries.com" // tech)
     ## Radiolab -- also available here, but ONLY OVER HTTP: <http://feeds.wnyc.org/radiolab>
     (fromDb "feeds.feedburner.com/radiolab" // pol)
-    (mkPod "https://wakingup.libsyn.com/rss" // pol // infrequent)
+    ## Sam Harris
+    (fromDb "wakingup.libsyn.com" // pol)
     ## 99% Invisible
     (mkPod "https://feeds.simplecast.com/BqbsxVfO" // pol // infrequent)
     (mkPod "https://rss.acast.com/ft-tech-tonic" // tech // infrequent)
