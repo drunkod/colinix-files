@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, sane-data, ... }:
 
 with lib;
 let

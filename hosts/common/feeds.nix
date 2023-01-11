@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, sane-data, ... }:
 let
   hourly = { freq = "hourly"; };
   daily = { freq = "daily"; };
@@ -21,19 +21,39 @@ let
   # host-specific helpers
   mkSubstack = subdomain: { substack = subdomain; };
 
+  fromDb = name:
+    let
+      raw = sane-data.feeds."${name}";
+    in {
+      url = raw.url;
+      format = lib.mkIf (raw.is_podcast or false) "podcast";
+      # not sure the exact mapping with velocity here: entries per day?
+      freq = lib.mkDefault (
+        if raw.velocity or 0 > 2 then
+          "hourly"
+        else if raw.velocity or 0 > 0.5 then
+          "daily"
+        else if raw.velocity or 0 > 0.1 then
+          "weekly"
+        else
+          "infrequent"
+      );
+    };
+
   podcasts = [
-    (mkPod "https://lexfridman.com/feed/podcast/" // rat // weekly)
+    (fromDb "lexfridman.com/podcast" // rat)
+    # (mkPod "https://lexfridman.com/feed/podcast/" // rat // weekly)
     ## Astral Codex Ten
-    (mkPod "https://sscpodcast.libsyn.com/rss" // rat // daily)
+    (fromDb "sscpodcast.libsyn.com" // rat)
     ## Econ Talk
-    (mkPod "https://feeds.simplecast.com/wgl4xEgL" // rat // daily)
+    (fromDb "econtalk.org" // rat)
     ## Cory Doctorow
-    (mkPod "https://feeds.feedburner.com/doctorow_podcast" // pol // infrequent)
+    (fromDb "feeds.feedburner.com/doctorow_podcast" // pol)
     (mkPod "https://congressionaldish.libsyn.com/rss" // pol // infrequent)
     ## Civboot
     (mkPod "https://anchor.fm/s/34c7232c/podcast/rss" // tech // infrequent)
     (mkPod "https://feeds.feedburner.com/80000HoursPodcast" // rat // weekly)
-    (mkPod "https://allinchamathjason.libsyn.com/rss" // pol // weekly)
+    (fromDb "allinchamathjason.libsyn.com" // pol)
     (mkPod "https://acquired.libsyn.com/rss" // tech // infrequent)
     (mkPod "https://rss.acast.com/deconstructed" // pol // infrequent)
     ## The Daily
@@ -61,8 +81,8 @@ let
 
   texts = [
     # AGGREGATORS (> 1 post/day)
-    (mkText "https://www.lesswrong.com/feed.xml" // rat // hourly)
-    (mkText "http://www.econlib.org/index.xml" // pol // hourly)
+    (fromDb "lesswrong.com" // rat)
+    (fromDb "econlib.org" // pol)
 
     # AGGREGATORS (< 1 post/day)
     (mkText "https://palladiummag.com/feed" // uncat // weekly)
@@ -75,10 +95,10 @@ let
     (mkText "https://www.rifters.com/crawl/?feed=rss2" // uncat // weekly)
 
     # DEVELOPERS
-    (mkText "https://uninsane.org/atom.xml" // infrequent // tech)
-    (mkText "https://mg.lol/blog/rss/" // infrequent // tech)
+    (fromDb "uninsane.org" // tech)
+    (fromDb "mg.lol" // tech)
     ## Ken Shirriff
-    (mkText "https://www.righto.com/feeds/posts/default" // tech // infrequent)
+    (fromDb "righto.com" // tech)
     ## Vitalik Buterin
     (mkText "https://vitalik.ca/feed.xml" // tech // infrequent)
     ## ian (Sanctuary)
@@ -94,7 +114,7 @@ let
     (mkText "https://pomeroyb.com/feed.xml" // tech // infrequent)
 
     # (TECH; POL) COMMENTATORS
-    (mkSubstack "edwardsnowden" // pol // infrequent)
+    (fromDb "edwardsnowden.substack.com" // pol)
     (mkText "http://benjaminrosshoffman.com/feed" // pol // weekly)
     ## Ben Thompson
     (mkText "https://www.stratechery.com/rss" // pol // weekly)

@@ -7,4 +7,4 @@ url="$1"
 jsonPath="$2"
 
 apiQuery="https://feedsearch.dev/api/v1/search?url=$url"
-curl -X GET "$apiQuery" | jq '.[-1]' > "$jsonPath"
+curl -X GET "$apiQuery" | jq '.[0]' > "$jsonPath"

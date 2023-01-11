@@ -26,12 +26,17 @@
       passthru.initFeedScript = pkgs.writeShellScript
         "init-feed"
         ''
+          sources_dir=modules/data/feeds/sources
           name="$1"
           url="https://$name"
-          dir="modules/data/feeds/sources/$name"
-          json_path="$dir/default.json"
-          mkdir "$dir"
+          json_path="$sources_dir/$name/default.json"
+
+          # the name could have slashes in it, so we want to mkdir -p that
+          # but in a way where the least could go wrong.
+          pushd "$sources_dir"; mkdir -p "$name"; popd
+
           ${./update.sh} "$url" "$json_path"
+          cat "$json_path"
         '';
     }
 ))
