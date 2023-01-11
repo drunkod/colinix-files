@@ -72,7 +72,7 @@ let
     ## 99% Invisible
     (mkPod "https://feeds.simplecast.com/BqbsxVfO" // pol // infrequent)
     (mkPod "https://rss.acast.com/ft-tech-tonic" // tech // infrequent)
-    (mkPod "https://feeds.feedburner.com/dancarlin/history?format=xml" // rat // infrequent)
+    (fromDb "feeds.feedburner.com/dancarlin/history" // rat)
     ## 60 minutes (NB: this features more than *just* audio?)
     (mkPod "https://www.cbsnews.com/latest/rss/60-minutes" // pol // infrequent)
     ## The Verge - Decoder
