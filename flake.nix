@@ -142,8 +142,7 @@
           program =
             let
               pkgs = self.legacyPackages."x86_64-linux";
-              args = pkgs.feeds."xkcd.com".passthru.updateScript;
-              script = pkgs.writeShellScript "update-feeds" (builtins.concatStringsSep " " args);
+              script = pkgs.feeds.passthru.updateScript;
             in "${script}";
         };
       };
