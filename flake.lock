@@ -123,7 +123,7 @@
         "nixpkgs-stable": "nixpkgs-stable",
         "nixpkgs-unpatched": "nixpkgs-unpatched",
         "sops-nix": "sops-nix",
-        "uninsane": "uninsane"
+        "uninsane-dot-org": "uninsane-dot-org"
       }
     },
     "sops-nix": {
@@ -147,7 +147,7 @@
         "type": "github"
       }
     },
-    "uninsane": {
+    "uninsane-dot-org": {
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs": [

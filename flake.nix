@@ -22,7 +22,7 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    uninsane = {
+    uninsane-dot-org = {
       url = "git+https://git.uninsane.org/colin/uninsane";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -36,7 +36,7 @@
     mobile-nixos,
     home-manager,
     sops-nix,
-    uninsane
+    uninsane-dot-org
   }:
     let
       nixpkgsCompiledBy = local: nixpkgs.legacyPackages."${local}";
@@ -53,14 +53,13 @@
             # cross compilation only happens on explicit access to `pkgs.cross`
             system = target;
             modules = [
-              ./modules
+              self.nixosModules.default
+              self.nixosModules.passthru
               (import ./hosts/instantiate.nix name)
-              home-manager.nixosModule
-              sops-nix.nixosModules.sops
               {
                 nixpkgs.overlays = [
-                  (import "${mobile-nixos}/overlay/overlay.nix")
-                  uninsane.overlay
+                  self.overlays.default
+                  self.overlays.passthru
                   (next: prev: {
                     # for local != target we by default just emulate the target while building.
                     # provide a `pkgs.cross.<pkg>` alias that consumers can use instead of `pkgs.<foo>`
@@ -68,7 +67,7 @@
                     # this is most beneficial for large packages with few pre-requisites -- like Linux.
                     cross = next.crossFrom."${local}";
                   })
-                ] ++ (builtins.attrValues self.overlays);
+                ];
               }
             ];
           });
@@ -107,26 +106,47 @@
       imgs = builtins.mapAttrs (name: value: value.img) hosts;
 
       overlays = rec {
-        pkgs = (import ./pkgs/overlay.nix);
-        stable = (next: prev: {
-          stable = nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform}";
-        });
-        cross = (next: prev: {
-          # non-emulated packages build *from* local *for* target.
-          # for large packages like the linux kernel which are expensive to build under emulation,
-          # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
-          crossFrom."x86_64-linux" = (prev.forceSystem "x86_64-linux" null).appendOverlays next.overlays;
-          crossFrom."aarch64-linux" = (prev.forceSystem "aarch64-linux" null).appendOverlays next.overlays;
-        });
+        default = pkgs;
+        pkgs = import ./pkgs/overlay.nix;
+        passthru = next: prev:
+          let
+            stable = nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform}";
+            cross = (next: prev: {
+              # non-emulated packages build *from* local *for* target.
+              # for large packages like the linux kernel which are expensive to build under emulation,
+              # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
+              crossFrom."x86_64-linux" = (prev.forceSystem "x86_64-linux" null).appendOverlays next.overlays;
+              crossFrom."aarch64-linux" = (prev.forceSystem "aarch64-linux" null).appendOverlays next.overlays;
+            });
+            mobile = (import "${mobile-nixos}/overlay/overlay.nix");
+            uninsane = uninsane-dot-org.overlay;
+          in
+            uninsane next (mobile next (cross next (stable next prev)));
+      };
+
+      nixosModules = rec {
+        default = sane;
+        sane = import ./modules;
+        passthru = { ... }: {
+          imports = [
+            home-manager.nixosModule
+            sops-nix.nixosModules.sops
+          ];
+        };
       };
 
       packages =
         let
           allPkgsFor = sys:
-            let pkgs = nixpkgsCompiledBy sys; in {
-              nixpkgs = pkgs;
-              uninsane = uninsane.packages."${sys}";
-            } // (self.overlays.pkgs pkgs pkgs);
+            let
+              pkgsBase = nixpkgsCompiledBy sys;
+              pkgsFull = pkgsBase.appendOverlays [
+                self.overlays.passthru self.overlays.pkgs
+              ];
+            in pkgsFull.sane // {
+              inherit (pkgsFull) sane uninsane-dot-org;
+              nixpkgs = pkgsBase;
+            };
         in {
           x86_64-linux = allPkgsFor "x86_64-linux";
           aarch64-linux = allPkgsFor "aarch64-linux";
