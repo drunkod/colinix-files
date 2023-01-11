@@ -92,7 +92,7 @@
       #   - if fs wasn't resized automatically, then `sudo btrfs filesystem resize max /`
       #   - checkout this flake into /etc/nixos AND UPDATE THE FS UUIDS.
       #   - `nixos-rebuild --flake './#<host>' switch`
-      imgs = builtins.mapAttrs (name: value: value.config.system.build.img) self.nixosConfigurations;
+      imgs = builtins.mapAttrs (_: host-dfn: host-dfn.config.system.build.img) self.nixosConfigurations;
 
       overlays = rec {
         default = pkgs;
@@ -131,16 +131,10 @@
           aarch64-linux = allPkgsFor "aarch64-linux";
         };
 
-      packages =
-        let
-          myPkgsFor = sys:
-            let full = self.legacyPackages."${sys}"; in full.sane // {
-              inherit (full) sane uninsane-dot-org;
-            };
-        in {
-          x86_64-linux = myPkgsFor "x86_64-linux";
-          aarch64-linux = myPkgsFor "aarch64-linux";
-        };
+      # extract only our own packages from the full set
+      packages = builtins.mapAttrs
+        (_: full: full.sane // { inherit (full) sane uninsane-dot-org; })
+        self.legacyPackages;
 
       templates = {
         python-data = {
