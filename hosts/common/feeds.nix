@@ -12,6 +12,8 @@ let
   tech = { cat = "tech"; };
   uncat = { cat = "uncat"; };
 
+  text = { format = "text"; };
+
   mkRss = format: url: { inherit url format; } // uncat // infrequent;
   # format-specific helpers
   mkText = mkRss "text";
@@ -118,7 +120,7 @@ let
     (mkText "https://pomeroyb.com/feed.xml" // tech // infrequent)
 
     # (TECH; POL) COMMENTATORS
-    (fromDb "edwardsnowden.substack.com" // pol)
+    (fromDb "edwardsnowden.substack.com" // pol // text)
     (mkText "http://benjaminrosshoffman.com/feed" // pol // weekly)
     ## Ben Thompson
     (mkText "https://www.stratechery.com/rss" // pol // weekly)
