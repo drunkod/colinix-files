@@ -26,15 +26,11 @@
       passthru.initFeedScript = pkgs.writeShellScript
         "init-feed"
         ''
-          #!/usr/bin/env nix-shell
-          #!nix-shell -i bash -p git
           name="$1"
           url="https://$name"
           dir="modules/data/feeds/sources/$name"
           json_path="$dir/default.json"
           mkdir "$dir"
-          touch "$json_path"
-          git add "$json_path"
           ${./update.sh} "$url" "$json_path"
         '';
     }
