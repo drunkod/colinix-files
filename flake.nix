@@ -64,41 +64,35 @@
               }
             ];
           });
-
-      decl-bootable-host = { name, local, target }: rec {
-        nixosConfiguration = decl-host { inherit name local target; };
-        # this produces a EFI-bootable .img file (GPT with a /boot partition and a system (/ or /nix) partition).
-        # after building this:
-        #   - flash it to a bootable medium (SD card, flash drive, HDD)
-        #   - resize the root partition (use cfdisk)
-        #   - mount the part
-        #      - chown root:nixbld <part>/nix/store
-        #      - chown root:root -R <part>/nix/store/*
-        #      - chown root:root -R <part>/persist  # if using impermanence
-        #      - populate any important things (persist/, home/colin/.ssh, etc)
-        #   - boot
-        #   - if fs wasn't resized automatically, then `sudo btrfs filesystem resize max /`
-        #   - checkout this flake into /etc/nixos AND UPDATE THE FS UUIDS.
-        #   - `nixos-rebuild --flake './#<host>' switch`
-        img = nixosConfiguration.config.system.build.img;
-      };
-      hosts = {
-        servo = decl-bootable-host { name = "servo"; local = "x86_64-linux"; target = "x86_64-linux"; };
-        desko = decl-bootable-host { name = "desko"; local = "x86_64-linux"; target = "x86_64-linux"; };
-        lappy = decl-bootable-host { name = "lappy"; local = "x86_64-linux"; target = "x86_64-linux"; };
-        moby = decl-bootable-host { name = "moby"; local = "aarch64-linux"; target = "aarch64-linux"; };
+    in {
+      nixosConfigurations = {
+        servo = decl-host { name = "servo"; local = "x86_64-linux"; target = "x86_64-linux"; };
+        desko = decl-host { name = "desko"; local = "x86_64-linux"; target = "x86_64-linux"; };
+        lappy = decl-host { name = "lappy"; local = "x86_64-linux"; target = "x86_64-linux"; };
+        moby = decl-host { name = "moby"; local = "aarch64-linux"; target = "aarch64-linux"; };
         # special cross-compiled variant, to speed up deploys from an x86 box to the arm target
         # note that these *do* produce different store paths, because the closure for the tools used to cross compile
         # v.s. emulate differ.
         # so deploying foo-cross and then foo incurs some rebuilding.
-        moby-cross = decl-bootable-host { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
-        rescue = decl-bootable-host { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
+        moby-cross = decl-host { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
+        rescue = decl-host { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
       };
-    in {
-      nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) hosts;
 
       # unofficial output
-      imgs = builtins.mapAttrs (name: value: value.img) hosts;
+      # this produces a EFI-bootable .img file (GPT with a /boot partition and a system (/ or /nix) partition).
+      # after building this:
+      #   - flash it to a bootable medium (SD card, flash drive, HDD)
+      #   - resize the root partition (use cfdisk)
+      #   - mount the part
+      #      - chown root:nixbld <part>/nix/store
+      #      - chown root:root -R <part>/nix/store/*
+      #      - chown root:root -R <part>/persist  # if using impermanence
+      #      - populate any important things (persist/, home/colin/.ssh, etc)
+      #   - boot
+      #   - if fs wasn't resized automatically, then `sudo btrfs filesystem resize max /`
+      #   - checkout this flake into /etc/nixos AND UPDATE THE FS UUIDS.
+      #   - `nixos-rebuild --flake './#<host>' switch`
+      imgs = builtins.mapAttrs (name: value: value.config.system.build.img) self.nixosConfigurations;
 
       overlays = rec {
         default = pkgs;
