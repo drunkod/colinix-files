@@ -78,9 +78,9 @@ let
     ## The Verge - Decoder
     (fromDb "feeds.megaphone.fm/recodedecode" // tech)
     ## Matrix (chat) Live
-    (mkPod "https://feed.podbean.com/matrixlive/feed.xml" // tech // weekly)
+    (fromDb "feed.podbean.com/matrixlive/feed.xml" // tech)
     ## Michael Malice - Your Welcome
-    (mkPod "https://www.podcastone.com/podcast?categoryID2=2232" // pol // weekly)
+    (mkPod "https://origin.podcastone.com/podcast?categoryID2=2232" // pol // weekly)
   ];
 
   texts = [
