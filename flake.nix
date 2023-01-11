@@ -41,7 +41,7 @@
     let
       nixpkgsCompiledBy = local: nixpkgs.legacyPackages."${local}";
 
-      decl-host = { name, local, target }:
+      evalHost = { name, local, target }:
         let
           # XXX: we'd prefer to use `nixosSystem = (nixpkgsCompiledBy local).nixos`
           # but it doesn't propagate config to the underlying pkgs, meaning it doesn't let you use
@@ -66,16 +66,16 @@
           });
     in {
       nixosConfigurations = {
-        servo = decl-host { name = "servo"; local = "x86_64-linux"; target = "x86_64-linux"; };
-        desko = decl-host { name = "desko"; local = "x86_64-linux"; target = "x86_64-linux"; };
-        lappy = decl-host { name = "lappy"; local = "x86_64-linux"; target = "x86_64-linux"; };
-        moby = decl-host { name = "moby"; local = "aarch64-linux"; target = "aarch64-linux"; };
+        servo = evalHost { name = "servo"; local = "x86_64-linux"; target = "x86_64-linux"; };
+        desko = evalHost { name = "desko"; local = "x86_64-linux"; target = "x86_64-linux"; };
+        lappy = evalHost { name = "lappy"; local = "x86_64-linux"; target = "x86_64-linux"; };
+        moby = evalHost { name = "moby"; local = "aarch64-linux"; target = "aarch64-linux"; };
         # special cross-compiled variant, to speed up deploys from an x86 box to the arm target
         # note that these *do* produce different store paths, because the closure for the tools used to cross compile
         # v.s. emulate differ.
         # so deploying foo-cross and then foo incurs some rebuilding.
-        moby-cross = decl-host { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
-        rescue = decl-host { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
+        moby-cross = evalHost { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
+        rescue = evalHost { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
       };
 
       # unofficial output
