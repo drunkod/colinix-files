@@ -24,7 +24,7 @@ let
   podcasts = [
     (mkPod "https://lexfridman.com/feed/podcast/" // rat // weekly)
     ## Astral Codex Ten
-    (mkPod "http://feeds.libsyn.com/108018/rss" // rat // daily)
+    (mkPod "https://sscpodcast.libsyn.com/rss" // rat // daily)
     ## Econ Talk
     (mkPod "https://feeds.simplecast.com/wgl4xEgL" // rat // daily)
     ## Cory Doctorow
