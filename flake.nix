@@ -103,13 +103,16 @@
       overlays = rec {
         default = pkgs;
         pkgs = import ./pkgs/overlay.nix;
-        passthru = next: prev:
+        passthru =
           let
-            stable = nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform}";
+            stable = next: prev: {
+              stable = nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform}";
+            };
             mobile = (import "${mobile-nixos}/overlay/overlay.nix");
             uninsane = uninsane-dot-org.overlay;
           in
-            uninsane next (mobile next (stable next prev));
+          next: prev:
+            (stable next prev) // (mobile next prev) // (uninsane next prev);
       };
 
       nixosModules = rec {

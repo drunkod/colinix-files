@@ -82,7 +82,7 @@ in
   in
   lib.mkIf cfg.enable
   {
-    system.build.img-without-firmware = with pkgs; imageBuilder.diskImage.makeGPT {
+    system.build.img-without-firmware = with pkgs; pkgs.imageBuilder.diskImage.makeGPT {
       name = "nixos";
       diskID = vfatUuidFromFs bootFs;
       # leave some space for firmware
