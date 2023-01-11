@@ -76,7 +76,7 @@ let
     (fromDb "feeds.feedburner.com/dancarlin/history" // rat)
     (fromDb "rss.art19.com/60-minutes" // pol)
     ## The Verge - Decoder
-    (mkPod "https://feeds.megaphone.fm/recodedecode" // tech // weekly)
+    (fromDb "feeds.megaphone.fm/recodedecode" // tech)
     ## Matrix (chat) Live
     (mkPod "https://feed.podbean.com/matrixlive/feed.xml" // tech // weekly)
     ## Michael Malice - Your Welcome
