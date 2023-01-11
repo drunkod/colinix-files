@@ -26,7 +26,6 @@ let
       raw = sane-data.feeds."${name}";
     in {
       url = raw.url;
-      format = lib.mkIf (raw.is_podcast or false) "podcast";
       # not sure the exact mapping with velocity here: entries per day?
       freq = lib.mkDefault (
         if raw.velocity or 0 > 2 then
@@ -38,6 +37,8 @@ let
         else
           "infrequent"
       );
+    } // lib.optionalAttrs (raw.is_podcast or false) {
+      format = "podcast";
     };
 
   podcasts = [
@@ -46,22 +47,24 @@ let
     ## Astral Codex Ten
     (fromDb "sscpodcast.libsyn.com" // rat)
     ## Econ Talk
-    (fromDb "econtalk.org" // rat)
-    ## Cory Doctorow
-    (fromDb "feeds.feedburner.com/doctorow_podcast" // pol)
+    (fromDb "feeds.simplecast.com/wgl4xEgL" // rat)
+    ## Cory Doctorow -- both podcast & text entries
+    (fromDb "craphound.com" // pol)
     (mkPod "https://congressionaldish.libsyn.com/rss" // pol // infrequent)
     ## Civboot
     (mkPod "https://anchor.fm/s/34c7232c/podcast/rss" // tech // infrequent)
-    (mkPod "https://feeds.feedburner.com/80000HoursPodcast" // rat // weekly)
+    (fromDb "feeds.feedburner.com/80000HoursPodcast" // rat)
     (fromDb "allinchamathjason.libsyn.com" // pol)
     (mkPod "https://acquired.libsyn.com/rss" // tech // infrequent)
-    (mkPod "https://rss.acast.com/deconstructed" // pol // infrequent)
+    # The Intercept - Deconstructed; also available: <rss.acast.com/deconstructed>
+    (fromDb "rss.prod.firstlook.media/deconstructed/podcast.rss" // pol)
     ## The Daily
     (mkPod "https://feeds.simplecast.com/54nAGcIl" // pol // daily)
-    (mkPod "https://rss.acast.com/intercepted-with-jeremy-scahill" // pol // weekly)
-    (mkPod "https://podcast.posttv.com/itunes/post-reports.xml" // pol // weekly)
+    # The Intercept - Intercepted; also available: <https://rss.acast.com/intercepted-with-jeremy-scahill>
+    (fromDb "rss.prod.firstlook.media/intercepted/podcast.rss" // pol)
+    (fromDb "podcast.posttv.com/itunes/post-reports.xml" // pol)
     ## Eric Weinstein
-    (mkPod "https://rss.art19.com/the-portal" // rat // infrequent)
+    (fromDb "rss.art19.com/the-portal" // rat)
     (mkPod "https://feeds.megaphone.fm/darknetdiaries" // tech // infrequent)
     (mkPod "http://feeds.wnyc.org/radiolab" // pol // infrequent)
     (mkPod "https://wakingup.libsyn.com/rss" // pol // infrequent)
@@ -168,4 +171,11 @@ let
 in
 {
   sane.feeds = texts ++ images ++ podcasts;
+
+  assertions = builtins.map
+    (p: {
+      assertion = p.format or "unknown" == "podcast";
+      message = ''${p.url} is not a podcast: ${p.format or "unknown"}'';
+    })
+    podcasts;
 }
