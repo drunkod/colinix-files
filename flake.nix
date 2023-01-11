@@ -105,8 +105,8 @@
             mobile = (import "${mobile-nixos}/overlay/overlay.nix");
             uninsane = uninsane-dot-org.overlay;
           in
-          next: prev:
-            (stable next prev) // (mobile next prev) // (uninsane next prev);
+            next: prev:
+              (stable next prev) // (mobile next prev) // (uninsane next prev);
       };
 
       nixosModules = rec {
