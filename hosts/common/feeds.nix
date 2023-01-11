@@ -74,8 +74,7 @@ let
     (fromDb "feeds.99percentinvisible.org/99percentinvisible" // pol)
     (fromDb "rss.acast.com/ft-tech-tonic" // tech)
     (fromDb "feeds.feedburner.com/dancarlin/history" // rat)
-    ## 60 minutes (NB: this feed is just links back to the cbsnews site: not playable)
-    # (mkPod "https://www.cbsnews.com/latest/rss/60-minutes" // pol // infrequent)
+    (fromDb "rss.art19.com/60-minutes" // pol)
     ## The Verge - Decoder
     (mkPod "https://feeds.megaphone.fm/recodedecode" // tech // weekly)
     ## Matrix (chat) Live
