@@ -72,18 +72,10 @@
                 nixpkgs.overlays = [
                   (import "${mobile-nixos}/overlay/overlay.nix")
                   uninsane.overlay
-                  (import ./pkgs/overlay.nix)
-                  (next: prev: rec {
-                    # non-emulated packages build *from* local *for* target.
-                    # for large packages like the linux kernel which are expensive to build under emulation,
-                    # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
-                    cross = (nixpkgsFor local target) // (customPackagesFor local target);
-                    stable = nixpkgs-stable.legacyPackages."${target}";
-
-                    # cross-compatible packages
-                    # gocryptfs = cross.gocryptfs;
-
-                    # pinned packages:
+                ] ++ (builtins.attrValues self.overlays)
+                ++ [
+                  (next: prev: {
+                    cross = next.crossFrom."${local}";
                   })
                 ];
               }
@@ -120,9 +112,28 @@
         rescue = decl-bootable-host { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
       };
     in {
-      # TODO: use catAttrs?
       nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) hosts;
       imgs = builtins.mapAttrs (name: value: value.img) hosts;
+
+      overlays = rec {
+        pkgs = (import ./pkgs/overlay.nix);
+        stable = (next: prev: {
+          stable = nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform}";
+        });
+        cross = (next: prev: {
+          # non-emulated packages build *from* local *for* target.
+          # for large packages like the linux kernel which are expensive to build under emulation,
+          # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
+          # crossFrom."x86_64-linux" = (nixpkgsFor "x86_64-linux" prev.stdenv.buildPlatform) // (customPackagesFor local target);
+          crossFrom."x86_64-linux" = (prev.forceSystem "x86_64-linux" null).appendOverlays next.overlays;
+          crossFrom."aarch64-linux" = (prev.forceSystem "x86_64-linux" null).appendOverlays next.overlays;
+
+          # cross-compatible packages
+          # gocryptfs = cross.gocryptfs;
+
+          # pinned packages:
+        });
+      };
 
       packages =
         let
