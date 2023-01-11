@@ -70,8 +70,8 @@ let
     (fromDb "feeds.feedburner.com/radiolab" // pol)
     ## Sam Harris
     (fromDb "wakingup.libsyn.com" // pol)
-    ## 99% Invisible
-    (mkPod "https://feeds.simplecast.com/BqbsxVfO" // pol // infrequent)
+    ## 99% Invisible -- also available here: <https://feeds.simplecast.com/BqbsxVfO>
+    (fromDb "feeds.99percentinvisible.org/99percentinvisible" // pol)
     (mkPod "https://rss.acast.com/ft-tech-tonic" // tech // infrequent)
     (fromDb "feeds.feedburner.com/dancarlin/history" // rat)
     ## 60 minutes (NB: this features more than *just* audio?)
