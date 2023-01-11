@@ -65,8 +65,9 @@ let
     (fromDb "podcast.posttv.com/itunes/post-reports.xml" // pol)
     ## Eric Weinstein
     (fromDb "rss.art19.com/the-portal" // rat)
-    (mkPod "https://feeds.megaphone.fm/darknetdiaries" // tech // infrequent)
-    (mkPod "http://feeds.wnyc.org/radiolab" // pol // infrequent)
+    (fromDb "darknetdiaries.com" // tech)
+    ## Radiolab -- also available here, but ONLY OVER HTTP: <http://feeds.wnyc.org/radiolab>
+    (fromDb "feeds.feedburner.com/radiolab" // pol)
     (mkPod "https://wakingup.libsyn.com/rss" // pol // infrequent)
     ## 99% Invisible
     (mkPod "https://feeds.simplecast.com/BqbsxVfO" // pol // infrequent)
