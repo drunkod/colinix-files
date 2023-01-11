@@ -79,8 +79,8 @@ let
     (fromDb "feeds.megaphone.fm/recodedecode" // tech)
     ## Matrix (chat) Live
     (fromDb "feed.podbean.com/matrixlive/feed.xml" // tech)
-    ## Michael Malice - Your Welcome
-    (mkPod "https://origin.podcastone.com/podcast?categoryID2=2232" // pol // weekly)
+    ## Michael Malice - Your Welcome -- also available here: <https://origin.podcastone.com/podcast?categoryID2=2232>
+    (fromDb "rss.art19.com/your-welcome" // pol)
   ];
 
   texts = [
