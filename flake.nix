@@ -53,20 +53,13 @@
             # cross compilation only happens on explicit access to `pkgs.cross`
             system = target;
             modules = [
+              (import ./hosts/instantiate.nix { localSystem = local; hostName = name; })
               self.nixosModules.default
               self.nixosModules.passthru
-              (import ./hosts/instantiate.nix name)
               {
                 nixpkgs.overlays = [
                   self.overlays.default
                   self.overlays.passthru
-                  (next: prev: {
-                    # for local != target we by default just emulate the target while building.
-                    # provide a `pkgs.cross.<pkg>` alias that consumers can use instead of `pkgs.<foo>`
-                    # to explicitly opt into non-emulated cross compilation for any specific package.
-                    # this is most beneficial for large packages with few pre-requisites -- like Linux.
-                    cross = next.crossFrom."${local}";
-                  })
                 ];
               }
             ];
@@ -103,6 +96,8 @@
       };
     in {
       nixosConfigurations = builtins.mapAttrs (name: value: value.nixosConfiguration) hosts;
+
+      # unofficial output
       imgs = builtins.mapAttrs (name: value: value.img) hosts;
 
       overlays = rec {
@@ -111,17 +106,10 @@
         passthru = next: prev:
           let
             stable = nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform}";
-            cross = (next: prev: {
-              # non-emulated packages build *from* local *for* target.
-              # for large packages like the linux kernel which are expensive to build under emulation,
-              # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
-              crossFrom."x86_64-linux" = (prev.forceSystem "x86_64-linux" null).appendOverlays next.overlays;
-              crossFrom."aarch64-linux" = (prev.forceSystem "aarch64-linux" null).appendOverlays next.overlays;
-            });
             mobile = (import "${mobile-nixos}/overlay/overlay.nix");
             uninsane = uninsane-dot-org.overlay;
           in
-            uninsane next (mobile next (cross next (stable next prev)));
+            uninsane next (mobile next (stable next prev));
       };
 
       nixosModules = rec {
