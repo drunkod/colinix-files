@@ -16,7 +16,7 @@
   # kiwix-tools: init at 3.4.0
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/206254.diff";
-    sha256 = "sha256-Z4V9mOv4HYg3kDnWoYcxz3ch03I/1USrLjzlq4X9YqI=";
+    sha256 = "sha256-Cendm7a23qj/YRBj5qVM8jhl9oTpztaDEkXcSG4dJys=";
   })
 
   ./2022-12-19-i2p-aarch64.patch
