@@ -16,6 +16,10 @@ let
         type = types.enum [ "text" "image" "podcast" ];
         default = "text";
       };
+      title = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+      };
       url = mkOption {
         type = types.str;
         description = ''

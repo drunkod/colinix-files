@@ -41,6 +41,8 @@ let
       );
     } // lib.optionalAttrs (raw.is_podcast or false) {
       format = "podcast";
+    } // lib.optionalAttrs (raw.title or "" != "") {
+      title = lib.mkDefault raw.title;
     };
 
   podcasts = [

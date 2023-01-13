@@ -12,8 +12,24 @@ rec {
   # transform a list of feeds into an attrs mapping cat => [ feed0 feed1 ... ]
   partitionByCat = feeds: builtins.groupBy (f: f.cat) feeds;
 
+  xmlTag = tag: close: attrs:
+    let
+      fmt-attrs = builtins.concatStringsSep
+        " "
+        (lib.mapAttrsToList (name: value: ''${lib.escapeXML name}="${lib.escapeXML value}"'') attrs);
+      fmt-close = if close then "/" else "";
+    in
+      ''<${tag} ${fmt-attrs} ${fmt-close}>'';
+
   # represents a single RSS feed.
-  opmlTerminal = feed: ''<outline xmlUrl="${feed.url}" type="rss"/>'';
+  opmlTerminal = feed: xmlTag "outline" true (
+    {
+      xmlUrl = feed.url;
+      type = "rss";
+    } // lib.optionalAttrs (feed.title != null) {
+      title = feed.title;
+    }
+  );
   # a list of RSS feeds.
   opmlTerminals = feeds: lib.concatStringsSep "\n" (builtins.map opmlTerminal feeds);
   # one node which packages some flat grouping of terminals.
