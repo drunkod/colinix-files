@@ -46,6 +46,7 @@
 
       #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
       kaiteki = prev.callPackage ./kaiteki { };
+      feedsearch-crawler = prev.callPackage ./feedsearch-crawler { };
       lightdm-mobile-greeter = prev.callPackage ./lightdm-mobile-greeter { };
       browserpass-extension = prev.callPackage ./browserpass-extension { };
       gopass-native-messaging-host = prev.callPackage ./gopass-native-messaging-host { };
