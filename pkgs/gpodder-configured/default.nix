@@ -5,6 +5,7 @@
 , config
 }:
 
+# we use a symlinkJoin so that we can inherit the .desktop and icon files from the original gPodder
 (symlinkJoin {
   name = "gpodder-configured";
   paths = [ gpodder ];
@@ -13,7 +14,7 @@
   # gpodder keeps all its feeds in a sqlite3 database.
   # we can configure the feeds externally by wrapping gpodder and just instructing it to import
   # a feedlist every time we run it.
-  # repeat imports are deduplicated -- assuming network access (not sure how it behaves when disconnected).
+  # repeat imports are deduplicated by url, even when offline.
   postBuild = ''
     makeWrapper $out/bin/gpodder $out/bin/gpodder-configured \
       --run "$out/bin/gpo import ~/.config/gpodderFeeds.opml"
