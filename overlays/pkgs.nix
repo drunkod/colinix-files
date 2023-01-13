@@ -45,8 +45,14 @@
       fractal-latest = prev.callPackage ../pkgs/fractal-latest { };
 
       #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
+
+      pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+        (py-final: py-prev: {
+          feedsearch-crawler = py-final.callPackage ../pkgs/feedsearch-crawler { };
+        })
+      ];
+
       kaiteki = prev.callPackage ../pkgs/kaiteki { };
-      feedsearch-crawler = prev.callPackage ../pkgs/feedsearch-crawler { };
       lightdm-mobile-greeter = prev.callPackage ../pkgs/lightdm-mobile-greeter { };
       browserpass-extension = prev.callPackage ../pkgs/browserpass-extension { };
       gopass-native-messaging-host = prev.callPackage ../pkgs/gopass-native-messaging-host { };

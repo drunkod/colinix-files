@@ -1,9 +1,22 @@
 { lib
+, buildPythonPackage
 , fetchFromGitHub
-, python3
+# nativeBuildInputs python packages
+, poetry-core
+# propagatedBuildInputs python packages
+, aiodns
+, aiohttp
+, beautifulsoup4
+, brotlipy
+, cchardet
+, feedparser
+, python-dateutil
+, uvloop
+, w3lib
+, yarl
 }:
 
-python3.pkgs.buildPythonApplication rec {
+buildPythonPackage rec {
   pname = "feedsearch-crawler";
   version = "2022-05-28";
   format = "pyproject";
@@ -15,7 +28,7 @@ python3.pkgs.buildPythonApplication rec {
     hash = "sha256-pzvyeXzqdi8pRjk2+QjKhJfgtxbgVT6C08K9fhVFVmY=";
   };
 
-  nativeBuildInputs = with python3.pkgs; [
+  nativeBuildInputs = [
     poetry-core
   ];
 
@@ -26,7 +39,7 @@ python3.pkgs.buildPythonApplication rec {
       --replace 'uvloop = "^0.15.2"' 'uvloop = "*"'
   '';
 
-  propagatedBuildInputs = with python3.pkgs; [
+  propagatedBuildInputs = [
     aiodns
     aiohttp
     beautifulsoup4
@@ -37,6 +50,10 @@ python3.pkgs.buildPythonApplication rec {
     uvloop
     w3lib
     yarl
+  ];
+
+  pythonImportsCheck = [
+    "feedsearch_crawler"
   ];
 
   meta = with lib; {
