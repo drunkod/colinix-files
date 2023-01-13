@@ -98,7 +98,7 @@
 
       overlays = rec {
         default = pkgs;
-        pkgs = import ./pkgs/overlay.nix;
+        pkgs = import ./overlays/pkgs.nix;
         passthru =
           let
             stable = next: prev: {

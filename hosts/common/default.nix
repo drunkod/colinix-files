@@ -39,6 +39,11 @@
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';
+  # allow `nix-shell` (and probably nix-index?) to locate our patched and custom packages
+  nix.nixPath = [
+    "nixpkgs=${pkgs.path}"
+    "nixpkgs-overlays=${../..}/overlays"
+  ];
 
   # TODO: move this into home-manager?
   fonts = {
