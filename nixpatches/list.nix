@@ -19,6 +19,13 @@
     sha256 = "sha256-Cendm7a23qj/YRBj5qVM8jhl9oTpztaDEkXcSG4dJys=";
   })
 
+  # whalebird: 4.6.5 -> 4.7.4
+  (fetchpatch {
+    # url = "https://git.uninsane.org/colin/nixpkgs/compare/master...pr.whalebird-4.7.4.diff";
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/e0938284055f4ee40c8abe38d0fff0b5ea694782.diff";
+    sha256 = "sha256-hQJQExOuzTP0aj14Vc8kcjxf+ErTXXZBZji/pglvGA0=";
+  })
+
   ./2022-12-19-i2p-aarch64.patch
 
   # # kaiteki: init at 2022-09-03

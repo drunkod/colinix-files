@@ -151,7 +151,9 @@ let
     # vlc remembers play position in ~/.config/vlc/vlc-qt-interface.conf
     { pkg = vlc; dir = [ ".config/vlc" ]; }
 
-    whalebird # pleroma client. input is broken on phosh
+    # pleroma client (Electron). input is broken on phosh.
+    { pkg = whalebird; private = [ ".config/Whalebird" ]; }
+
     xdg-utils  # for xdg-open
     xterm  # broken on phosh
   ]
