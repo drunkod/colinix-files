@@ -14,7 +14,7 @@ stdenv.mkDerivation {
   src = fetchurl {
     inherit url;
   };
-  passthru.updateScript = [ ./update.sh url jsonPath ];
+  passthru.updateScript = [ ./update.py url jsonPath ];
   # passthru.updateScript = callPackage ./update.nix {
   #   inherit url jsonPath;
   # };

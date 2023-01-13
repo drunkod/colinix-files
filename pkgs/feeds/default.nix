@@ -35,7 +35,7 @@
           # but in a way where the least could go wrong.
           pushd "$sources_dir"; mkdir -p "$name"; popd
 
-          ${./update.sh} "$url" "$json_path"
+          ${./update.py} "$url" "$json_path"
           cat "$json_path"
         '';
     }
