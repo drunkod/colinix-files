@@ -125,6 +125,9 @@ in
         # aarch64-unknown-linux-gnu-gcc: error: unrecognized command line option '-mfpu=neon'
         # make[3]: *** [../scripts/Makefile.build:289: drivers/video/fbdev/sun5i-eink-neon.o] Error 1
         FB_SUN5I_EINK = no;
+        # used by the pinephone pro, but fails to compile with:
+        # ../drivers/media/i2c/ov8858.c:1834:27: error: implicit declaration of function 'compat_ptr'
+        VIDEO_OV8858 = no;
       })
     ))
   ];
