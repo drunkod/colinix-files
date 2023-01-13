@@ -103,7 +103,7 @@ let
     (orig: lib.recursiveUpdate
       (builtins.removeAttrs orig ["user" "group" "mode" ])
       {
-        acl = sane-lib.filterByName ["user" "group" "mode"] (orig.acl or {});
+        acl = sane-lib.filterByName ["user" "group" "mode"] orig;
       }
     )
     to;
