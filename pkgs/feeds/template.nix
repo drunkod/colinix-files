@@ -15,9 +15,6 @@ stdenv.mkDerivation {
     inherit url;
   };
   passthru.updateScript = [ ./update.py url jsonPath ];
-  # passthru.updateScript = callPackage ./update.nix {
-  #   inherit url jsonPath;
-  # };
   meta = {
     description = "metadata about any feeds available at ${feedName}";
     homepage = feedName;
