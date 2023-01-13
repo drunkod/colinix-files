@@ -60,7 +60,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-p1wrbL/kn2RGGQaPms2hqK9QrPu9vTQwGT2ZT7Gh+Tc=",
+        "narHash": "sha256-mfOS6RXOh/m8AWx3bobjo/Gs7cop0hXJgfCotzRUjFk=",
         "path": "nixpatches",
         "type": "path"
       },
