@@ -43,10 +43,12 @@
 
       evalHost = { name, local, target }:
         let
-          # XXX: we'd prefer to use `nixosSystem = (nixpkgsCompiledBy local).nixos`
+          # XXX: we'd prefer to use `nixosSystem = (nixpkgsCompiledBy target).nixos`
           # but it doesn't propagate config to the underlying pkgs, meaning it doesn't let you use
           # non-free packages even after setting nixpkgs.allowUnfree.
-          nixosSystem = import ((nixpkgsCompiledBy local).path + "/nixos/lib/eval-config.nix");
+          # XXX: patch using the target -- not local -- otherwise the target will
+          # need to emulate the host in order to rebuild!
+          nixosSystem = import ((nixpkgsCompiledBy target).path + "/nixos/lib/eval-config.nix");
         in
           (nixosSystem {
             # we use pkgs built for and *by* the target, i.e. emulation, by default.
