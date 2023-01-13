@@ -22,8 +22,8 @@
   # whalebird: 4.6.5 -> 4.7.4
   (fetchpatch {
     # url = "https://git.uninsane.org/colin/nixpkgs/compare/master...pr.whalebird-4.7.4.diff";
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/bdfc62d453b1e7dd84af5351bf34a1e39f91eb25.diff";
-    sha256 = "sha256-9oByaFpBSXKRvTBgh7+X6FDS/yK07/QOF/nq8KAlaRU=";
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/f5c7c70dde720e990fa7e0748d1dc4764d6e4406.diff";
+    sha256 = "sha256-L9Ie80loaP6yl5ZFnJ1b5WMDpvO1QFE8tbrW5HBauko=";
   })
 
   ./2022-12-19-i2p-aarch64.patch
