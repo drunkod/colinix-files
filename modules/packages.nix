@@ -102,7 +102,9 @@ let
     gnome.gnome-terminal  # works on phosh
     gnome.gnome-weather
 
-    { pkg = gpodder-configured; dir = [ "gPodder/Downloads" ]; }
+    # XXX: we preserve the whole thing because if we only preserve gPodder/Downloads
+    #   then startup is SLOW during feed import, and we might end up with zombie eps in the dl dir.
+    { pkg = gpodder-configured; dir = [ "gPodder" ]; }
 
     gthumb
     handbrake
