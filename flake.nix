@@ -13,22 +13,22 @@
 
 {
   inputs = {
-    nixpkgs-stable.url = "nixpkgs/nixos-22.11";
-    nixpkgs-unpatched.url = "nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "git+https://github.com/nixos/nixpkgs?ref=nixos-22.11";
+    nixpkgs-unpatched.url = "git+https://github.com/nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs = {
       url = "path:nixpatches";
       inputs.nixpkgs.follows = "nixpkgs-unpatched";
     };
     mobile-nixos = {
-      url = "github:nixos/mobile-nixos";
+      url = "git+https://github.com/nixos/mobile-nixos";
       flake = false;
     };
     home-manager = {
-      url = "github:nix-community/home-manager/release-22.05";
+      url = "git+https://github.com/nix-community/home-manager?ref=release-22.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {
-      url = "github:Mic92/sops-nix";
+      url = "git+https://github.com/Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     uninsane-dot-org = {
