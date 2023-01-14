@@ -1,4 +1,13 @@
-# docs:
+# FLAKE FEEDBACK:
+# - flake input url schemes (like `github:nixos/nixpkgs`, or `nixpkgs/nixos-22.11`) are confusing and opaque.
+#   - use established URI formats like https://github.com/<owner>/<repo>.
+#   - or reuse `fetchGit*` idioms from nixpkgs.
+#   - but please don't just invent something new.
+# - need a way to apply local patches to inputs.
+#   - this could be part of the `inputs` proper, or something like `builtins.applyPatches`.
+#
+#
+# DEVELOPMENT DOCS:
 # - <https://nixos.wiki/wiki/Flakes>
 # - <https://serokell.io/blog/practical-nix-flakes>
 
