@@ -26,10 +26,6 @@
       url = "git+https://git.uninsane.org/colin/uninsane";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-script = {
-      url = "git+https://github.com/BrianHicks/nix-script";
-      inputs.nixpkgs.follows = "nixpkgs-unpatched";
-    };
   };
 
   outputs = {
@@ -37,7 +33,6 @@
     nixpkgs,
     nixpkgs-stable,
     nixpkgs-unpatched,
-    nix-script,
     mobile-nixos,
     home-manager,
     sops-nix,
@@ -110,11 +105,10 @@
               stable = nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform}";
             };
             mobile = (import "${mobile-nixos}/overlay/overlay.nix");
-            nixscript = nix-script.overlay;
             uninsane = uninsane-dot-org.overlay;
           in
             next: prev:
-              (stable next prev) // (mobile next prev) // (nixscript next prev) // (uninsane next prev);
+              (stable next prev) // (mobile next prev) // (uninsane next prev);
       };
 
       nixosModules = rec {

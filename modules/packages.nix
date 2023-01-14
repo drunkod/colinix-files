@@ -33,8 +33,6 @@ let
     memtester
     networkmanager
     nixpkgs-review
-    nix-script
-    nix-script-bash
     # nixos-generators
     # nettools
     nmon
