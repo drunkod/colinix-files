@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env nix-shell
+#!nix-shell -i python3 -p "python3.withPackages (ps: [ ps.natsort ps.requests ])"
 """
 usage: sane-bt-search <query_string>
 
@@ -67,5 +68,6 @@ q = " ".join(sys.argv[1:])
 
 client = Client()
 res = client.query(q)
+print(f"found {len(res)} result(s)")
 for r in res[:5]:
     print(r)
