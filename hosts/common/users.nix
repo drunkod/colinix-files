@@ -86,6 +86,7 @@ in
       "Pictures"
       "Videos"
 
+      ".cache/nix"
       ".cargo"
       ".rustup"
     ];
