@@ -13,12 +13,6 @@
     sha256 = "sha256-t4sG+xLDaxbJ/mV5G18N4ag8EC3IXPgtN5FJGANh1Dc=";
   })
 
-  # kiwix-tools: init at 3.4.0
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/206254.diff";
-    sha256 = "sha256-Cendm7a23qj/YRBj5qVM8jhl9oTpztaDEkXcSG4dJys=";
-  })
-
   # whalebird: 4.6.5 -> 4.7.4
   (fetchpatch {
     # url = "https://git.uninsane.org/colin/nixpkgs/compare/master...pr.whalebird-4.7.4.diff";

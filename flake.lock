@@ -56,11 +56,12 @@
       "inputs": {
         "nixpkgs": [
           "nixpkgs-unpatched"
-        ]
+        ],
+        "patches": []
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-FaeqnQPm3MIXkQsNsGTB4A9lN82YKpLkmVHgdJyJNGg=",
+        "narHash": "sha256-9froWbTkSKX7cYSb0wh58TsftbHL0bNHay1yAW0Wiws=",
         "path": "nixpatches",
         "type": "path"
       },

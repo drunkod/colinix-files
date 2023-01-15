@@ -1,13 +1,14 @@
 {
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-22.11";
+    nixpkgs = {};
+    patches = {};
   };
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, patches }@inputs:
     let
       patchedPkgsFor = system: nixpkgs.legacyPackages.${system}.applyPatches {
         name = "nixpkgs-patched-uninsane";
         src = nixpkgs;
-        patches = import ./list.nix {
+        patches = inputs.patches.nixpatches {
           inherit (nixpkgs.legacyPackages.${system}) fetchpatch;
           inherit (nixpkgs.lib) fakeHash;
         };

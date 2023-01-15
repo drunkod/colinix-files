@@ -26,6 +26,9 @@
     nixpkgs = {
       url = "path:nixpatches";
       inputs.nixpkgs.follows = "nixpkgs-unpatched";
+      # XXX: `path:` urls have poor UX in that they still get "locked" and require manual updates as if they were remote.
+      # by linking back to ourselves here, we can update `nixpatches/list.nix` *without* having to run `nix flake update` afterward.
+      inputs.patches.follows = "";
     };
     mobile-nixos = {
       # <https://github.com/nixos/mobile-nixos>
@@ -183,6 +186,9 @@
           description = "python environment for data processing";
         };
       };
+
+      # unofficial output; used by inputs.nixpatches
+      nixpatches = import ./nixpatches/list.nix;
     };
 }
 
