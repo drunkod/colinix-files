@@ -24,16 +24,16 @@
       "locked": {
         "lastModified": 1667907331,
         "narHash": "sha256-bHkAwkYlBjkupPUFcQjimNS8gxWSWjOTevEuwdnp5m0=",
-        "ref": "release-22.05",
+        "owner": "nix-community",
+        "repo": "home-manager",
         "rev": "6639e3a837fc5deb6f99554072789724997bc8e5",
-        "revCount": 2151,
-        "type": "git",
-        "url": "https://github.com/nix-community/home-manager"
+        "type": "github"
       },
       "original": {
+        "owner": "nix-community",
         "ref": "release-22.05",
-        "type": "git",
-        "url": "https://github.com/nix-community/home-manager"
+        "repo": "home-manager",
+        "type": "github"
       }
     },
     "mobile-nixos": {
@@ -41,15 +41,15 @@
       "locked": {
         "lastModified": 1670131242,
         "narHash": "sha256-T/o1/3gffr010fsqgNshs1NJJjsnUYvQnUZgm6hilsY=",
-        "ref": "refs/heads/master",
+        "owner": "nixos",
+        "repo": "mobile-nixos",
         "rev": "5ee45cc1f8e43f4af14ee17ccef9156b0db8cd77",
-        "revCount": 2454,
-        "type": "git",
-        "url": "https://github.com/nixos/mobile-nixos"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "https://github.com/nixos/mobile-nixos"
+        "owner": "nixos",
+        "repo": "mobile-nixos",
+        "type": "github"
       }
     },
     "nixpkgs": {
@@ -73,25 +73,25 @@
       "locked": {
         "lastModified": 1673612960,
         "narHash": "sha256-DWR7hrbecJKmUJCswk9MXZta710mq+3jZwTvHU/UfyY=",
-        "ref": "nixos-22.11",
+        "owner": "nixos",
+        "repo": "nixpkgs",
         "rev": "e285dd0ca97c264003867c7329f0d1f4f028739c",
-        "revCount": 430213,
-        "type": "git",
-        "url": "https://github.com/nixos/nixpkgs"
+        "type": "github"
       },
       "original": {
+        "owner": "nixos",
         "ref": "nixos-22.11",
-        "type": "git",
-        "url": "https://github.com/nixos/nixpkgs"
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "nixpkgs-stable_2": {
       "locked": {
-        "lastModified": 1673100377,
-        "narHash": "sha256-mT76pTd0YFxT6CwtPhDgHJhuIgLY+ZLSMiQpBufwMG4=",
+        "lastModified": 1673740915,
+        "narHash": "sha256-MMH8zONfqahgHly3K8/A++X34800rajA/XgZ2DzNL/M=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9f11a2df77cb945c115ae2a65f53f38121597d73",
+        "rev": "7c65528c3f8462b902e09d1ccca23bb9034665c2",
         "type": "github"
       },
       "original": {
@@ -103,18 +103,18 @@
     },
     "nixpkgs-unpatched": {
       "locked": {
-        "lastModified": 1673540789,
-        "narHash": "sha256-xqnxBOK3qctIeUVxecydrEDbEXjsvHCPGPbvsl63M/U=",
-        "ref": "nixos-unstable",
-        "rev": "0f213d0fee84280d8c3a97f7469b988d6fe5fcdf",
-        "revCount": 441903,
-        "type": "git",
-        "url": "https://github.com/nixos/nixpkgs"
+        "lastModified": 1673631141,
+        "narHash": "sha256-AprpYQ5JvLS4wQG/ghm2UriZ9QZXvAwh1HlgA/6ZEVQ=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "befc83905c965adfd33e5cae49acb0351f6e0404",
+        "type": "github"
       },
       "original": {
+        "owner": "nixos",
         "ref": "nixos-unstable",
-        "type": "git",
-        "url": "https://github.com/nixos/nixpkgs"
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "root": {
@@ -136,17 +136,17 @@
         "nixpkgs-stable": "nixpkgs-stable_2"
       },
       "locked": {
-        "lastModified": 1673481602,
-        "narHash": "sha256-P80X38fOM2MtoYdgkyuksGOQPDhIhNJW2W2jMeMIZzE=",
-        "ref": "refs/heads/master",
-        "rev": "32187b33ac6ec9b628dcd08dd941a715e6241dda",
-        "revCount": 452,
-        "type": "git",
-        "url": "https://github.com/Mic92/sops-nix"
+        "lastModified": 1673752321,
+        "narHash": "sha256-EFfXY1ZHJq4FNaNQA9x0djtu/jiOhBbT0Xi+BT06cJw=",
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "rev": "e18eefd2b133a58309475298052c341c08470717",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "https://github.com/Mic92/sops-nix"
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "type": "github"
       }
     },
     "uninsane-dot-org": {

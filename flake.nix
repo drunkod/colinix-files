@@ -1,34 +1,45 @@
 # FLAKE FEEDBACK:
-# - flake input url schemes (like `github:nixos/nixpkgs`, or `nixpkgs/nixos-22.11`) are confusing and opaque.
-#   - use established URI formats like https://github.com/<owner>/<repo>.
-#   - or reuse `fetchGit*` idioms from nixpkgs.
-#   - but please don't just invent something new.
-# - need a way to apply local patches to inputs.
-#   - this could be part of the `inputs` proper, or something like `builtins.applyPatches`.
+# - if flake inputs are meant to be human-readable, a human should be able to easily track them down given the URL.
+#   - this is not the case with registry URLs, like `nixpkgs/nixos-22.11`.
+#   - this is marginally the case with schemes like `github:nixos/nixpkgs`.
+#   - given the *existing* `git+https://` scheme, i propose expressing github URLs similarly:
+#     - `github+https://github.com/nixos/nixpkgs/tree/nixos-22.11`
+# - need some way to apply local patches to inputs.
 #
 #
 # DEVELOPMENT DOCS:
-# - <https://nixos.wiki/wiki/Flakes>
+# - Flake docs: <https://nixos.wiki/wiki/Flakes>
+# - Flake RFC: <https://github.com/tweag/rfcs/blob/flakes/rfcs/0049-flakes.md>
+#   - Discussion: <https://github.com/NixOS/rfcs/pull/49>
 # - <https://serokell.io/blog/practical-nix-flakes>
 
 {
+  # XXX: use the `github:` scheme instead of the more readable git+https: because it's *way* more efficient
+  # preferably, i would rewrite the human-readable https URLs to nix-specific github: URLs with a helper,
+  # but `inputs` is required to be a strict attrset: not an expression.
   inputs = {
-    nixpkgs-stable.url = "git+https://github.com/nixos/nixpkgs?ref=nixos-22.11";
-    nixpkgs-unpatched.url = "git+https://github.com/nixos/nixpkgs?ref=nixos-unstable";
+    # <https://github.com/nixos/nixpkgs/tree/nixos-22.11>
+    nixpkgs-stable.url = "github:nixos/nixpkgs?ref=nixos-22.11";
+
+    # <https://github.com/nixos/nixpkgs/tree/nixos-unstable>
+    nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs = {
       url = "path:nixpatches";
       inputs.nixpkgs.follows = "nixpkgs-unpatched";
     };
     mobile-nixos = {
-      url = "git+https://github.com/nixos/mobile-nixos";
+      # <https://github.com/nixos/mobile-nixos>
+      url = "github:nixos/mobile-nixos";
       flake = false;
     };
     home-manager = {
-      url = "git+https://github.com/nix-community/home-manager?ref=release-22.05";
+      # <https://github.com/nix-community/home-manager/tree/release-22.05>
+      url = "github:nix-community/home-manager?ref=release-22.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {
-      url = "git+https://github.com/Mic92/sops-nix";
+      # <https://github.com/Mic92/sops-nix>
+      url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     uninsane-dot-org = {
