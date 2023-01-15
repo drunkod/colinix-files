@@ -24,10 +24,9 @@
     # <https://github.com/nixos/nixpkgs/tree/nixos-unstable>
     nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs = {
-      url = "path:nixpatches";
+      url = "./nixpatches";
       inputs.nixpkgs.follows = "nixpkgs-unpatched";
-      # XXX: `path:` urls have poor UX in that they still get "locked" and require manual updates as if they were remote.
-      # by linking back to ourselves here, we can update `nixpatches/list.nix` *without* having to run `nix flake update` afterward.
+      # TODO: remove this dependency injection: it's from when we used url = path:...
       inputs.patches.follows = "";
     };
     mobile-nixos = {

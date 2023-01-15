@@ -61,22 +61,22 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-9froWbTkSKX7cYSb0wh58TsftbHL0bNHay1yAW0Wiws=",
-        "path": "nixpatches",
+        "narHash": "sha256-d3XSehPFkNwvwlOYy7gch0NLxOgdXuV7j5r/Qsn7kHc=",
+        "path": "/nix/store/wq6rmmnd7yhw9w44k54w4x5v63ah1psr-source/nixpatches",
         "type": "path"
       },
       "original": {
-        "path": "nixpatches",
+        "path": "/nix/store/wq6rmmnd7yhw9w44k54w4x5v63ah1psr-source/nixpatches",
         "type": "path"
       }
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1673612960,
-        "narHash": "sha256-DWR7hrbecJKmUJCswk9MXZta710mq+3jZwTvHU/UfyY=",
+        "lastModified": 1673704454,
+        "narHash": "sha256-5Wdj1MgdOgn3+dMFIBtg+IAYZApjF8JzwLWDPieg0C4=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "e285dd0ca97c264003867c7329f0d1f4f028739c",
+        "rev": "a83ed85c14fcf242653df6f4b0974b7e1c73c6c6",
         "type": "github"
       },
       "original": {
