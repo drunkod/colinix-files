@@ -84,6 +84,7 @@
                 nixpkgs.overlays = [
                   self.overlays.default
                   self.overlays.passthru
+                  self.overlays.pins
                 ];
               }
             ];
@@ -121,10 +122,11 @@
       overlays = rec {
         default = pkgs;
         pkgs = import ./overlays/pkgs.nix;
+        pins = import ./overlays/pins.nix;  # TODO: move to `nixpatches/` input
         passthru =
           let
             stable = next: prev: {
-              stable = nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform}";
+              stable = nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform.system}";
             };
             mobile = (import "${mobile-nixos}/overlay/overlay.nix");
             uninsane = uninsane-dot-org.overlay;
