@@ -18,6 +18,10 @@
     ReadWritePaths = [ "/run/signald" ];
   };
 
+  sane.persist.sys.plaintext = [
+    { user = "mautrix-signal"; group = "mautrix-signal"; directory = "/var/lib/mautrix-signal"; }
+  ];
+
   sops.secrets.mautrix_signal_env = {
     sopsFile = ../../../../secrets/servo/mautrix_signal_env.bin;
     format = "binary";
