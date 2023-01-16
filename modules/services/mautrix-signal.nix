@@ -23,6 +23,7 @@ in
           homeserver = {
             address = "http://localhost:8008";
             software = "standard";
+            # domain = "SETME";
           };
 
           appservice = rec {
@@ -45,16 +46,17 @@ in
           logging = {
             version = 1;
 
-            formatters.journal_fmt.format = "%(name)s: %(message)s";
-            handlers.journal = {
-              class = "systemd.journal.JournalHandler";
-              formatter = "journal_fmt";
-              SYSLOG_IDENTIFIER = "mautrix-signal";
+            formatters.precise.format = "[%(levelname)s@%(name)s] %(message)s";
+
+            handlers.console = {
+              class = "logging.StreamHandler";
+              formatter = "precise";
             };
-            # log to systemd instead of file/console
+
+            # log to console/systemd instead of file
             root = {
               level = "INFO";
-              handlers = ["journal"];
+              handlers = ["console"];
             };
           };
         };
@@ -92,6 +94,13 @@ in
   };
 
   config = mkIf cfg.enable {
+    users.groups.mautrix-signal = {};
+
+    users.users.mautrix-signal = {
+      group = "mautrix-signal";
+      isSystemUser = true;
+    };
+
     systemd.services.mautrix-signal = {
       description = "Mautrix-Signal, a Matrix-Signal puppeting bridge.";
 
@@ -99,6 +108,8 @@ in
       wants = [ "network-online.target" ] ++ cfg.serviceDependencies;
       after = [ "network-online.target" ] ++ cfg.serviceDependencies;
       path = [ pkgs.ffmpeg ];  # voice messages need `ffmpeg`
+
+      # environment.HOME = dataDir;
 
       preStart = ''
         # generate the appservice's registration file if absent
@@ -115,20 +126,23 @@ in
         Type = "simple";
         Restart = "always";
 
+        User = "mautrix-signal";
+
         ProtectSystem = "strict";
         ProtectHome = true;
         ProtectKernelTunables = true;
         ProtectKernelModules = true;
         ProtectControlGroups = true;
 
-        DynamicUser = true;
         PrivateTmp = true;
-        StateDirectory = baseNameOf dataDir;
+        # WorkingDirectory = pkgs.mautrix-signal;
+        # StateDirectory = baseNameOf dataDir;
         UMask = "0027";
 
         ExecStart = ''
           ${pkgs.mautrix-signal}/bin/mautrix-signal \
-            --config='${settingsFile}'
+            --config='${settingsFile}' \
+            --no-update
         '';
       };
     };
