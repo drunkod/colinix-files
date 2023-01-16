@@ -1,14 +1,13 @@
 {
   inputs = {
     nixpkgs = {};
-    patches = {};
   };
-  outputs = { self, nixpkgs, patches }@inputs:
+  outputs = { self, nixpkgs }@inputs:
     let
       patchedPkgsFor = system: nixpkgs.legacyPackages.${system}.applyPatches {
         name = "nixpkgs-patched-uninsane";
         src = nixpkgs;
-        patches = inputs.patches.nixpatches {
+        patches = import ./list.nix {
           inherit (nixpkgs.legacyPackages.${system}) fetchpatch;
           inherit (nixpkgs.lib) fakeHash;
         };

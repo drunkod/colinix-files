@@ -26,8 +26,6 @@
     nixpkgs = {
       url = "./nixpatches";
       inputs.nixpkgs.follows = "nixpkgs-unpatched";
-      # TODO: remove this dependency injection: it's from when we used url = path:...
-      inputs.patches.follows = "";
     };
     mobile-nixos = {
       # <https://github.com/nixos/mobile-nixos>
@@ -187,9 +185,6 @@
           description = "python environment for data processing";
         };
       };
-
-      # unofficial output; used by inputs.nixpatches
-      nixpatches = import ./nixpatches/list.nix;
     };
 }
 

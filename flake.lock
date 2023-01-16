@@ -56,17 +56,16 @@
       "inputs": {
         "nixpkgs": [
           "nixpkgs-unpatched"
-        ],
-        "patches": []
+        ]
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-d3XSehPFkNwvwlOYy7gch0NLxOgdXuV7j5r/Qsn7kHc=",
-        "path": "/nix/store/wq6rmmnd7yhw9w44k54w4x5v63ah1psr-source/nixpatches",
+        "narHash": "sha256-ERkw+xJQ2mZMztI8hzWjilnvHQtKHslNyuG9TXM/lCI=",
+        "path": "/nix/store/zy5rd2m4ww1wwllfq8sgwvdslganf1ks-source/nixpatches",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/wq6rmmnd7yhw9w44k54w4x5v63ah1psr-source/nixpatches",
+        "path": "/nix/store/zy5rd2m4ww1wwllfq8sgwvdslganf1ks-source/nixpatches",
         "type": "path"
       }
     },
