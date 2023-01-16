@@ -9,7 +9,6 @@
         src = nixpkgs;
         patches = import ./list.nix {
           inherit (nixpkgs.legacyPackages.${system}) fetchpatch;
-          inherit (nixpkgs.lib) fakeHash;
         };
       };
       patchedFlakeFor = system: import "${patchedPkgsFor system}/flake.nix";

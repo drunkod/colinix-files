@@ -1,4 +1,4 @@
-{ fakeHash, fetchpatch }: [
+{ fetchpatch }: [
   # librewolf: build with `MOZ_REQUIRE_SIGNING=false`
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/199134.diff";
