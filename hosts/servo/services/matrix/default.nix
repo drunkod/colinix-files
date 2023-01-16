@@ -6,7 +6,15 @@
   imports = [
     ./discord-puppet.nix
     # ./irc.nix
+    ./signal.nix
   ];
+
+  services.matrix-appservices = {
+    # configure defaults. used by e.g. ./signal.nix
+    homeserverUrl = "http://127.0.0.1:8008";
+    homeserverDomain = "uninsane.org";
+    addRegistrationFiles = true;
+  };
 
   sane.persist.sys.plaintext = [
     { user = "matrix-synapse"; group = "matrix-synapse"; directory = "/var/lib/matrix-synapse"; }
