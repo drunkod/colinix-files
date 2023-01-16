@@ -1,4 +1,4 @@
-{ fetchpatch }: [
+{ fetchpatch, fetchurl }: [
   # librewolf: build with `MOZ_REQUIRE_SIGNING=false`
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/199134.diff";
@@ -18,6 +18,12 @@
     # url = "https://git.uninsane.org/colin/nixpkgs/compare/master...pr.whalebird-4.7.4.diff";
     url = "https://git.uninsane.org/colin/nixpkgs/commit/f5c7c70dde720e990fa7e0748d1dc4764d6e4406.diff";
     sha256 = "sha256-L9Ie80loaP6yl5ZFnJ1b5WMDpvO1QFE8tbrW5HBauko=";
+  })
+
+  # nixos/mx-puppet-discord: move to matrix category
+  (fetchurl {
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/87c877fff84717478a96d1b0c65bd2febd350dea.diff";
+    sha256 = "sha256-E5TonCj3f8j7kxApBq/suNT5mB7z8uD00NzI34Qh2SE=";
   })
 
   ./2022-12-19-i2p-aarch64.patch
