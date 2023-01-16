@@ -30,6 +30,9 @@
     "/var/lib/machines"            # maybe not needed, but would be painful to add a VM and forget.
   ];
 
+  # some services which use private directories error if the parent (/var/lib/private) isn't 700.
+  sane.fs."/var/lib/private".dir.acl.mode = "0700";
+
   nixpkgs.config.allowUnfree = true;
 
   # time.timeZone = "America/Los_Angeles";
