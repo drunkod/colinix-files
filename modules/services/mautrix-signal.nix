@@ -80,6 +80,28 @@ in
         '';
       };
 
+      environmentFile = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = lib.mdDoc ''
+          File containing environment variables to be passed to the mautrix-signal service,
+          in which secret tokens can be specified securely by defining values for e.g.
+          `MAUTRIX_SIGNAL_APPSERVICE_AS_TOKEN`,
+          `MAUTRIX_SIGNAL_APPSERVICE_HS_TOKEN`
+
+          These environment variables can also be used to set other options by
+          replacing hierarchy levels by `.`, converting the name to uppercase
+          and prepending `MAUTRIX_SIGNAL_`.
+          For example, the first value above maps to
+          {option}`settings.appservice.as_token`.
+
+          The environment variable values can be prefixed with `json::` to have
+          them be parsed as JSON. For example, `login_shared_secret_map` can be
+          set as follows:
+          `MAUTRIX_SIGNAL_BRIDGE_LOGIN_SHARED_SECRET_MAP=json::{"example.com":"secret"}`.
+        '';
+      };
+
       serviceDependencies = mkOption {
         type = with types; listOf str;
         default = optional config.services.matrix-synapse.enable "matrix-synapse.service";
@@ -116,6 +138,7 @@ in
         if [ ! -f '${registrationFile}' ]; then
           ${pkgs.mautrix-signal}/bin/mautrix-signal \
             --generate-registration \
+            --no-update \
             --base-config='${pkgs.mautrix-signal}/${pkgs.mautrix-signal.pythonModule.sitePackages}/mautrix_signal/example-config.yaml' \
             --config='${settingsFile}' \
             --registration='${registrationFile}'
@@ -135,9 +158,10 @@ in
         ProtectControlGroups = true;
 
         PrivateTmp = true;
-        # WorkingDirectory = pkgs.mautrix-signal;
-        # StateDirectory = baseNameOf dataDir;
+        WorkingDirectory = pkgs.mautrix-signal;
+        StateDirectory = baseNameOf dataDir;
         UMask = "0027";
+        EnvironmentFile = cfg.environmentFile;
 
         ExecStart = ''
           ${pkgs.mautrix-signal}/bin/mautrix-signal \
