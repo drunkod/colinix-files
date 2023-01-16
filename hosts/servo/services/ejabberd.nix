@@ -46,6 +46,8 @@
   }];
 
   # provide access to certs
+  # TODO: this should just be `acme`. then we also add nginx to the `acme` group.
+  #   why is /var/lib/acme/* owned by `nginx` group??
   users.users.ejabberd.extraGroups = [ "nginx" ];
 
   security.acme.certs."uninsane.org".extraDomainNames = [
