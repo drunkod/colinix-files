@@ -4,11 +4,10 @@ stdenv.mkDerivation rec {
   pname = "bootpart-tow-boot-rpi-aarch64";
   version = "1";
 
-  buildInputs = with [ 
+  buildInputs = [
     tow-boot-rpi4  # for Tow-Boot.*.bin
     raspberrypifw  # for bootcode.bin, *.dat, *.elf, *.dtb
     raspberrypi-armstubs  # for armstub*
-
   ];
 
   src = ./config.txt;
