@@ -1,3 +1,5 @@
+# config options:
+# - <https://github.com/mautrix/signal/blob/master/mautrix_signal/example-config.yaml>
 { config, pkgs, ... }:
 {
   services.signald.enable = true;
@@ -7,6 +9,7 @@
 
   services.mautrix-signal.settings.signal.socket_path = "/run/signald/signald.sock";
   services.mautrix-signal.settings.homeserver.domain = "uninsane.org";
+  services.mautrix-signal.settings.bridge.permissions."@colin:uninsane.org" = "admin";
   services.matrix-synapse.settings.app_service_config_files = [
     # auto-created by mautrix-signal service
     "/var/lib/mautrix-signal/signal-registration.yaml"
