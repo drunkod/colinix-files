@@ -8,10 +8,11 @@
     ./services
   ];
 
-  sane.packages.extraUserPkgs = [
+  sane.packages.extraUserPkgs = with pkgs; [
     # for administering services
-    pkgs.matrix-synapse
-    pkgs.freshrss
+    freshrss
+    matrix-synapse
+    signaldctl
   ];
   sane.persist.enable = true;
   sane.services.dyn-dns.enable = true;
