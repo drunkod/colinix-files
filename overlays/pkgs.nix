@@ -61,7 +61,6 @@
 
       # provided by nixpkgs patch or upstream preview
       # signaldctl = prev.callPackage ../pkgs/signaldctl { };
-      # trust-dns = prev.callPackage ../pkgs/trust-dns { };
     };
   in sane // { inherit sane; }
 )
