@@ -26,6 +26,12 @@
     sha256 = "sha256-E5TonCj3f8j7kxApBq/suNT5mB7z8uD00NzI34Qh2SE=";
   })
 
+  # signaldctl: init at 0.6.1
+  (fetchurl {
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/f3c4303231537422267ca32eb97b37f0a9a11d19.diff";
+    hash = "sha256-9fIAie0x2VxbHDg9iC8/dxaXIrWi8LzHSoDk9cwAZG0=";
+  })
+
   ./2022-12-19-i2p-aarch64.patch
 
   # # kaiteki: init at 2022-09-03
