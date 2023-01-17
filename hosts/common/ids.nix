@@ -21,6 +21,10 @@
   sane.ids.freshrss.uid = 2401;
   sane.ids.freshrss.gid = 2401;
   sane.ids.mediawiki.uid = 2402;
+  sane.ids.signald.uid = 2403;
+  sane.ids.signald.gid = 2403;
+  sane.ids.mautrix-signal.uid = 2404;
+  sane.ids.mautrix-signal.gid = 2404;
 
   sane.ids.colin.uid = 1000;
   sane.ids.guest.uid = 1100;

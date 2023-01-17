@@ -6,6 +6,7 @@
   imports = [
     ./discord-puppet.nix
     # ./irc.nix
+    ./signal.nix
   ];
 
   sane.persist.sys.plaintext = [
