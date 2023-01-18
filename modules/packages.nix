@@ -115,7 +115,6 @@ let
     krita
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     lollypop
-    mesa-demos
 
     { pkg = mpv; dir = [ ".config/mpv/watch_later" ]; }
 
