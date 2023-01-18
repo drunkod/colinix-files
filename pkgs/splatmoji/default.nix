@@ -43,7 +43,7 @@ stdenv.mkDerivation rec {
     patchShebangs $out/bin/splatmoji
     # splatmoji refers to its lib and data by absolute path
     sed -i "s:/usr/lib/splatmoji:$out/lib/splatmoji:g" $out/bin/splatmoji
-    sed -i "s:/usr/share/splatmoji:$out/share/splatmoji:g" $out/lib/splatmoji/functions
+    sed -i -r "s:/usr/share/+splatmoji:$out/share/splatmoji:g" $out/lib/splatmoji/functions
   '';
 
   meta = with lib; {
