@@ -1,6 +1,11 @@
 { lib
-, stdenv
+, bash
 , fetchFromGitHub
+, fpm
+, jq
+, pandoc
+, shunit2
+, stdenv
 }:
 
 stdenv.mkDerivation rec {
@@ -14,17 +19,31 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-fsZ8FhLP3vAalRJWUEi/0fe0DlwAz5zZeRZqAuwgv/U=";
   };
 
-  dontBuild = true;
+  nativeBuildInputs = [
+    bash
+    fpm
+    jq
+    pandoc
+    shunit2
+  ];
 
-  # TODO: generate a wrapper so that bin/lib, bin/data aren't linked into the environment?
+  postPatch = ''
+    patchShebangs ./build.sh
+    patchShebangs ./test/unit_tests
+  '';
+
+  buildPhase = ''
+    ./build.sh ${version} dir
+  '';
+
   installPhase = ''
-    mkdir -p $out/bin
-    cp splatmoji $out/bin
-    cp -R lib $out/bin/lib
-    cp -R data $out/bin/data
-    cp splatmoji.config $out/bin
+    mkdir -p $out
+    cp -R build/usr/* $out
 
     patchShebangs $out/bin/splatmoji
+    # splatmoji refers to its lib and data by absolute path
+    sed -i "s:/usr/lib/splatmoji:$out/lib/splatmoji:g" $out/bin/splatmoji
+    sed -i "s:/usr/share/splatmoji:$out/share/splatmoji:g" $out/lib/splatmoji/functions
   '';
 
   meta = with lib; {
@@ -32,6 +51,6 @@ stdenv.mkDerivation rec {
     homepage = "https://github.com/cspeterson/splatmoji";
     license = licenses.mit;
     maintainers = with maintainers; [ colinsane ];
-    platforms = with platforms; linux;
+    platforms = platforms.linux;
   };
-  }
+}
