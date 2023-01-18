@@ -9,6 +9,9 @@
     ./signal.nix
   ];
 
+  # allow synapse to read the registration files of its appservices
+  users.users.matrix-synapse.extraGroups = [ "mautrix-signal" ];
+
   sane.persist.sys.plaintext = [
     { user = "matrix-synapse"; group = "matrix-synapse"; directory = "/var/lib/matrix-synapse"; }
   ];

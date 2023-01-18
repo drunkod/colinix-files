@@ -43,6 +43,7 @@
     };
   };
 
+  # TODO: should use a dedicated user
   systemd.services.mx-puppet-discord.serviceConfig = {
     # fix up to not use /var/lib/private, but just /var/lib
     DynamicUser = lib.mkForce false;
