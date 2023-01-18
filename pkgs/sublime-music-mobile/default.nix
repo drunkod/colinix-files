@@ -127,10 +127,10 @@ python3Packages.buildPythonApplication rec {
     dataclasses-json
     deepdiff
     fuzzywuzzy
+    levenshtein
     mpv
     peewee
     pygobject3
-    python-Levenshtein
     python-dateutil
     requests
     semver
@@ -144,7 +144,8 @@ python3Packages.buildPythonApplication rec {
     sed -i "/--cov/d" setup.cfg
     sed -i "/--no-cov-on-fail/d" setup.cfg
     substituteInPlace pyproject.toml \
-      --replace 'deepdiff = "^5.8.1"' 'deepdiff = ">=5.8.1"'
+      --replace 'deepdiff = "^5.8.1"' 'deepdiff = ">=5.8.1"' \
+      --replace 'python-Levenshtein = "^0.12.0"' 'levenshtein = ">=0.12.0"'
   '';
 
   # hook for gobject-introspection doesn't like strictDeps

@@ -1,3 +1,9 @@
+# when a `nixos-rebuild` fails after a nixpkgs update:
+# - take the failed package
+# - search it here: <https://hydra.nixos.org/search?query=pkgname>
+# - if it's broken by that upstream builder, then pin it: somebody will come along and fix the package.
+# - otherwise, search github issues/PRs for knowledge of it before pinning.
+# - if nobody's said anything about it yet, probably want to root cause it or hold off on updating.
 (next: prev: {
   inherit (next.stable)
     # TODO(unpin): broken on 2023/01/14 via mtxclient dep, aarch64-only:
@@ -20,5 +26,12 @@
     #   error: 1 dependencies of derivation '/nix/store/5qjxzhsw1jvh2d7jypbcam9409ivb472-user-environment.drv' failed to build
     #   error: 1 dependencies of derivation '/nix/store/hrb3qpdbisqh0lzlyz1g9g4164khmqwn-etc.drv' failed to build
     #   error: 1 dependencies of derivation '/nix/store/ny21xyicbgim5wy7ksg2hibd9gn7i01b-nixos-system-moby-23.05pre-git.drv' failed to build
-    nheko;
+    nheko
+
+    # TODO(unpin): broken build on 2023/01/16, all platforms: <https://github.com/NixOS/nixpkgs/pull/208251>
+    # fix in PR: <https://github.com/NixOS/nixpkgs/pull/211135>
+    kitty
+    # TODO(unpin): broken build on 2023/01/16. <https://hydra.nixos.org/build/205551450>
+    handbrake
+  ;
 })
