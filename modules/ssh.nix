@@ -57,7 +57,7 @@ in
   options = {
     sane.ssh.pubkeys = mkOption {
       type = types.attrsOf coercedToKey;
-      default = [];
+      default = {};
       description = ''
         mapping from "user@host" to pubkey.
       '';

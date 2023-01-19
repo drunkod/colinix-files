@@ -9,7 +9,7 @@
   sane.gui.sway.enable = true;
   sane.services.duplicity.enable = true;
   sane.services.nixserve.enable = true;
-  sane.services.nixserve.sopsFile = ../../secrets/desko.yaml;
+  sane.services.nixserve.sopsFile = ../../../secrets/desko.yaml;
   sane.persist.enable = true;
 
   boot.loader.efi.canTouchEfiVariables = false;
@@ -19,7 +19,7 @@
   services.usbmuxd.enable = true;
 
   sops.secrets.colin-passwd = {
-    sopsFile = ../../secrets/desko.yaml;
+    sopsFile = ../../../secrets/desko.yaml;
     neededForUsers = true;
   };
 
@@ -41,7 +41,7 @@
   };
 
   sops.secrets.duplicity_passphrase = {
-    sopsFile = ../../secrets/desko.yaml;
+    sopsFile = ../../../secrets/desko.yaml;
   };
 
   programs.steam = {

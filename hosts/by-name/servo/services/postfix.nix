@@ -197,8 +197,7 @@ in
     # }
   ];
 
-  sops.secrets.dovecot_passwd = {
-    sopsFile = ../../../secrets/servo.yaml;
+  sops.secrets."dovecot_passwd" = {
     owner = config.users.users.dovecot2.name;
     # TODO: debug why mail can't be sent without this being world-readable
     mode = "0444";

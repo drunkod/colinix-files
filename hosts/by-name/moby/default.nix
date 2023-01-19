@@ -19,7 +19,7 @@
   services.getty.autologinUser = "root";  # allows for emergency maintenance?
 
   sops.secrets.colin-passwd = {
-    sopsFile = ../../secrets/moby.yaml;
+    sopsFile = ../../../secrets/moby.yaml;
     neededForUsers = true;
   };
 

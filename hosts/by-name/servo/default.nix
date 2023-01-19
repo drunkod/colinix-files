@@ -5,6 +5,7 @@
     ./fs.nix
     ./net.nix
     ./users.nix
+    ./secrets.nix
     ./services
   ];
 
@@ -20,10 +21,6 @@
 
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
-
-  sops.secrets.duplicity_passphrase = {
-    sopsFile = ../../secrets/servo.yaml;
-  };
 
   # both transmission and ipfs try to set different net defaults.
   # we just use the most aggressive of the two here:

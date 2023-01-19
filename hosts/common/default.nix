@@ -5,7 +5,7 @@
     ./cross.nix
     ./feeds.nix
     ./fs.nix
-    ./hardware
+    ./hardware.nix
     ./i2p.nix
     ./ids.nix
     ./machine-id.nix

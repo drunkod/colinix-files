@@ -27,8 +27,4 @@ lib.mkIf false
       OnUnitActiveSec = "10min";
     };
   };
-
-  sops.secrets."ddns_he" = {
-    sopsFile = ../../../secrets/servo.yaml;
-  };
 }

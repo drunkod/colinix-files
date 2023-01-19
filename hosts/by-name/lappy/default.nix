@@ -14,7 +14,7 @@
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
   sops.secrets.colin-passwd = {
-    sopsFile = ../../secrets/lappy.yaml;
+    sopsFile = ../../../secrets/lappy.yaml;
     neededForUsers = true;
   };
 

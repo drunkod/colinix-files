@@ -25,8 +25,7 @@
     { user = "mautrix-signal"; group = "mautrix-signal"; directory = "/var/lib/mautrix-signal"; }
   ];
 
-  sops.secrets.mautrix_signal_env = {
-    sopsFile = ../../../../secrets/servo/mautrix_signal_env.bin;
+  sops.secrets."mautrix_signal_env" = {
     format = "binary";
     mode = "0440";
     owner = config.users.users.mautrix-signal.name;

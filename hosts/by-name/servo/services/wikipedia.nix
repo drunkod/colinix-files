@@ -8,7 +8,6 @@ lib.mkIf false
 {
   sops.secrets."mediawiki_pw" = {
     owner = config.users.users.mediawiki.name;
-    sopsFile = ../../../secrets/servo.yaml;
   };
 
   services.mediawiki.enable = true;
