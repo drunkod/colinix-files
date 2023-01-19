@@ -181,6 +181,8 @@
         # peers and host all use the same key
         publicKey = "pWtnKW7f7sNIZQ2M83uJ7cHg3IL1tebE3IoVkCgjkXM=";
         allowedIPs = [ "10.0.10.0/24" ];
+        # allowedIPs = [ "10.0.10.0/24" "192.168.0.0/24" ];
+        # allowedIPs = [ "0.0.0.0/0" ];
       }
       # {
       #   # lappy
