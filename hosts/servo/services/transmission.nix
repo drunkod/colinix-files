@@ -40,8 +40,8 @@
   # transmission will by default not allow the world to read its files.
   services.transmission.downloadDirPermissions = "775";
 
-  systemd.services.transmission.after = [ "wireguard-wg0.service" ];
-  systemd.services.transmission.partOf = [ "wireguard-wg0.service" ];
+  systemd.services.transmission.after = [ "wireguard-wg-ovpns.service" ];
+  systemd.services.transmission.partOf = [ "wireguard-wg-ovpns.service" ];
   systemd.services.transmission.serviceConfig = {
     # run this behind the OVPN static VPN
     NetworkNamespacePath = "/run/netns/ovpns";

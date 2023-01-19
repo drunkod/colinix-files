@@ -52,18 +52,18 @@
 
   # services.resolved.extraConfig = ''
   #   # docs: `man resolved.conf`
-  #   # DNS servers to use via the `wg0` interface.
+  #   # DNS servers to use via the `wg-ovpns` interface.
   #   #   i hope that from the root ns, these aren't visible.
-  #   DNS=46.227.67.134%wg0 192.165.9.158%wg0
+  #   DNS=46.227.67.134%wg-ovpns 192.165.9.158%wg-ovpns
   #   FallbackDNS=1.1.1.1 9.9.9.9
   # '';
 
   # OVPN CONFIG (https://www.ovpn.com):
   # DOCS: https://nixos.wiki/wiki/WireGuard
-  # if you `systemctl restart wireguard-wg0`, make sure to also restart any other services in `NetworkNamespacePath = .../ovpns`.
+  # if you `systemctl restart wireguard-wg-ovpns`, make sure to also restart any other services in `NetworkNamespacePath = .../ovpns`.
   # TODO: why not create the namespace as a seperate operation (nix config for that?)
   networking.wireguard.enable = true;
-  networking.wireguard.interfaces.wg0 = let
+  networking.wireguard.interfaces.wg-ovpns = let
     ip = "${pkgs.iproute2}/bin/ip";
     in-ns = "${ip} netns exec ovpns";
     iptables = "${pkgs.iptables}/bin/iptables";
