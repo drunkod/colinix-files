@@ -163,10 +163,6 @@
   '';
   networking.iproute2.enable = true;
 
-  sops.secrets."wg_ovpns_privkey" = {
-    sopsFile = ../../secrets/servo.yaml;
-  };
-
 
   # HURRICANE ELECTRIC CONFIG:
   # networking.sits = {
