@@ -22,7 +22,7 @@ in
       mapAttrs (host: cfg: {
         colin = cfg.ssh.user_pubkey;
         root = cfg.ssh.host_pubkey;
-      }) config.sane.hosts
+      }) config.sane.hosts.by-name
     );
   in mkMerge (map
     ({ path, value }: {

@@ -40,28 +40,4 @@
     '';
     generated.script.scriptArgs = [ "/run/secrets/iwd" "/var/lib/iwd" ];
   };
-
-  networking.firewall.allowedUDPPorts = [ 51820 ];
-  # TODO: remove this hacky `if` block
-  networking.wireguard.interfaces.wg-home = lib.mkIf (config.networking.hostName != "servo") {
-    privateKeyFile = config.sops.secrets.wg_home_privkey.path;
-    # client IP (TODO: make host-specific)
-    ips = [ "10.100.0.20/32" ];
-    listenPort = 51820; # to match firewall allowedUDPPorts (without this wg uses random port numbers)
-
-    peers = [
-      {
-        # server pubkey
-        publicKey = "pWtnKW7f7sNIZQ2M83uJ7cHg3IL1tebE3IoVkCgjkXM=";
-
-        # accept traffic from any IP addr on the other side of the tunnel
-        allowedIPs = [ "0.0.0.0/0" ];
-
-        endpoint = "uninsane.org:51820";
-
-        # send keepalives every 25 seconds to keep NAT routes live
-        persistentKeepalive = 25;
-      }
-    ];
-  };
 }

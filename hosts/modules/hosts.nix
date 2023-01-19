@@ -1,16 +1,16 @@
 { config, lib, ... }:
 
 let
-  inherit (lib) types mkOption;
+  inherit (lib) attrValues filterAttrs mkMerge mkOption types;
   cfg = config.sane.hosts;
 
   host = types.submodule ({ config, ... }: {
     options = {
       is-target = mkOption {
         type = types.bool;
+        default = false;
         description = ''
-          true if the config is being built for deployment to this host.
-          set internally.
+          set to true if the config is being built for deployment to this host.
         '';
       };
 
@@ -44,16 +44,11 @@ let
         '';
       };
     };
-
-    config = {
-      # user should set `sane.hosts.target = config.sane.hosts."${host}"` to build for it.
-      is-target = cfg ? "target" && cfg.target == config;
-    };
   });
 in
 {
   options = {
-    sane.hosts = mkOption {
+    sane.hosts.by-name = mkOption {
       type = types.attrsOf host;
       default = {};
       description = ''
@@ -61,32 +56,44 @@ in
         like its ssh pubkey, etc.
       '';
     };
+    # TODO: questionable. the target should specifically output config rather than other bits peeking at this.
+    sane.hosts.target = mkOption {
+      type = host;
+      description = ''
+        host to which the config being built applies to.
+      '';
+    };
   };
 
   config = {
-    sane.hosts."desko" = {
+    # TODO: this should be populated per-host
+    sane.hosts.by-name."desko" = {
       ssh.user_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPU5GlsSfbaarMvDA20bxpSZGWviEzXGD8gtrIowc1pX";
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFw9NoRaYrM6LbDd3aFBc4yyBlxGQn8HjeHd/dZ3CfHk";
       roles.client = true;
     };
-    sane.hosts."lappy" = {
+    sane.hosts.by-name."lappy" = {
       ssh.user_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDpmFdNSVPRol5hkbbCivRhyeENzb9HVyf9KutGLP2Zu";
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSJnqmVl9/SYQ0btvGb0REwwWY8wkdkGXQZfn/1geEc";
       roles.client = true;
     };
-    sane.hosts."moby" = {
+    sane.hosts.by-name."moby" = {
       ssh.user_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICrR+gePnl0nV/vy7I5BzrGeyVL+9eOuXHU1yNE3uCwU";
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1N/IT3nQYUD+dBlU1sTEEVMxfOyMkrrDeyHcYgnJvw";
       roles.client = true;
     };
-    sane.hosts."servo" = {
+    sane.hosts.by-name."servo" = {
       ssh.user_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPS1qFzKurAdB9blkWomq8gI1g0T3sTs9LsmFOj5VtqX";
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOfdSmFkrVT6DhpgvFeQKm3Fh9VKZ9DbLYOPOJWYQ0E8";
       roles.server = true;
     };
-    sane.hosts."rescue" = {
+    sane.hosts.by-name."rescue" = {
       ssh.user_pubkey = null;
       ssh.host_pubkey = null;
     };
+
+    sane.hosts."target" = mkMerge (attrValues
+      (filterAttrs (host: c: c.is-target) cfg.by-name)
+    );
   };
 }

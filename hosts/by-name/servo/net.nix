@@ -168,41 +168,6 @@
   };
 
 
-  # host a wireguard VPN which allows access to other wg clients and forwards to internet
-  networking.firewall.allowedUDPPorts = [ 51820 ];
-  networking.wireguard.interfaces.wg-home = {
-    privateKeyFile = config.sops.secrets.wg_home_privkey.path;
-    listenPort = 51820;
-    ips = [
-      "10.0.10.5/24"
-    ];
-    peers = [
-      {
-        # peers and host all use the same key
-        publicKey = "pWtnKW7f7sNIZQ2M83uJ7cHg3IL1tebE3IoVkCgjkXM=";
-        allowedIPs = [ "10.0.10.0/24" ];
-        # allowedIPs = [ "10.0.10.0/24" "192.168.0.0/24" ];
-        # allowedIPs = [ "0.0.0.0/0" ];
-      }
-      # {
-      #   # lappy
-      #   publicKey = "TODO";
-      #   allowedIPs = [ "10.0.10.20/32" ];
-      # }
-      # {
-      #   # desko
-      #   publicKey = "TODO";
-      #   allowedIPs = [ "10.0.10.22/32" ];
-      # }
-      # {
-      #   # moby
-      #   publicKey = "TODO";
-      #   allowedIPs = [ "10.0.10.48/32" ];
-      # }
-    ];
-  };
-
-
   # HURRICANE ELECTRIC CONFIG:
   # networking.sits = {
   #   hurricane = {
