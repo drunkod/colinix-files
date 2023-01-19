@@ -67,6 +67,9 @@
   sops.secrets."wg_ovpnd_ukr_privkey" = {
     sopsFile = ../../secrets/universal.yaml;
   };
+  sops.secrets."wg_home_privkey" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
 
   sops.secrets."snippets" = {
     sopsFile = ../../secrets/universal/snippets.bin;

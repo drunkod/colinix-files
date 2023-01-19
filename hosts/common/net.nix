@@ -64,9 +64,4 @@
       }
     ];
   };
-
-  sops.secrets."wg_home_privkey" = {
-    sopsFile = ../../secrets/universal/wg_home_privkey.bin;
-    format = "binary";
-  };
 }
