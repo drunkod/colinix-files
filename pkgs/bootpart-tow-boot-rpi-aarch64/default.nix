@@ -1,4 +1,4 @@
-{ stdenv, tow-boot-rp4, raspberrypifw, raspberrypi-armstubs }:
+{ stdenv, tow-boot-rpi4, raspberrypifw, raspberrypi-armstubs }:
 
 stdenv.mkDerivation rec {
   pname = "bootpart-tow-boot-rpi-aarch64";
