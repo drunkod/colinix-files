@@ -91,8 +91,7 @@ in
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOfdSmFkrVT6DhpgvFeQKm3Fh9VKZ9DbLYOPOJWYQ0E8";
       wg-home.pubkey = "roAw+IUFVtdpCcqa4khB385Qcv9l5JAB//730tyK4Wk=";
       wg-home.ip = "10.0.10.5";
-      # wg-home.endpoint = "uninsane.org:51820";
-      wg-home.endpoint = "97.126.41.123:51820";
+      wg-home.endpoint = "uninsane.org:51820";
       lan-ip = "192.168.0.5";
     };
   };
