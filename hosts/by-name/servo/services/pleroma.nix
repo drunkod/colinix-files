@@ -111,7 +111,7 @@
     ''
   ];
 
-  systemd.services.pleroma.path = [ 
+  systemd.services.pleroma.path = [
     # something inside pleroma invokes `sh` w/o specifying it by path, so this is needed to allow pleroma to start
     pkgs.bash
     # used by Pleroma to strip geo tags from uploads
@@ -134,6 +134,11 @@
   #   PrivateTmp = lib.mkForce false;
   #   CapabilityBoundingSet = lib.mkForce "~";
   # };
+
+  # this is required to allow pleroma to send email.
+  # raw `sendmail` works, but i think pleroma's passing it some funny flags or something, idk.
+  # hack to fix that.
+  users.users.pleroma.extraGroups = [ "postdrop" ];
 
   # Pleroma server and web interface
   # TODO: enable publog?
