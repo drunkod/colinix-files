@@ -35,6 +35,9 @@
     sopsFile = ../../../secrets/servo.yaml;
   };
 
+  sops.secrets."wg_home_server_privkey" = {
+    sopsFile = ../../../secrets/servo.yaml;
+  };
   sops.secrets."wg_ovpns_privkey" = {
     sopsFile = ../../../secrets/servo.yaml;
   };
