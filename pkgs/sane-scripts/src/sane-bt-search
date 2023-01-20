@@ -72,10 +72,35 @@ class Client:
 
         return sorted(torrents, reverse=True)
 
-q = " ".join(sys.argv[1:])
+def parse_args(args: list) -> dict:
+    options = dict(
+        full=False,
+        query="",
+    )
+    while args:
+        arg = args[0]
+        del args[0]
+        if arg.startswith('--'):
+            opt = arg[2:]
+            if "=" in opt:
+                name, val = opt.split('=')
+            else:
+                name, val = opt, True
+            options[name] = val
+        else:
+            options["query"] = options["query"] + " " + arg if options["query"] else arg
 
-client = Client()
-res = client.query(q)
-print(f"found {len(res)} result(s)")
-for r in res[:5]:
-    print(r)
+    return options
+
+def main(args: list):
+    options = parse_args(args)
+    query = options["query"]
+    num_listings = 100 if options["full"] else 5
+    client = Client()
+    res = client.query(query)
+    print(f"found {len(res)} result(s)")
+    for r in res[:num_listings]:
+        print(r)
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
