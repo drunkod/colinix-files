@@ -17,6 +17,8 @@
   ];
   sane.persist.enable = true;
   sane.services.dyn-dns.enable = true;
+  sane.services.wg-home.enable = true;
+  sane.services.wg-home.role = "server";
   # sane.services.duplicity.enable = true;  # TODO: re-enable after HW upgrade
 
   boot.loader.efi.canTouchEfiVariables = false;

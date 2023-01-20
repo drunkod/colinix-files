@@ -4,6 +4,8 @@
     ./fs.nix
   ];
 
+  sane.roles.client = true;
+
   # sane.packages.enableDevPkgs = true;
 
   # sane.users.guest.enable = true;

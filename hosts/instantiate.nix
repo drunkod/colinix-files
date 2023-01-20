@@ -13,7 +13,6 @@
     ./modules
   ];
 
-  sane.hosts.by-name."${hostName}".is-target = true;
   networking.hostName = hostName;
 
   nixpkgs.overlays = [
