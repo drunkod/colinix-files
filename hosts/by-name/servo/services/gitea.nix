@@ -15,6 +15,17 @@
   services.gitea.settings.session.COOKIE_SECURE = true;
   # services.gitea.disableRegistration = true;
 
+  # gitea doesn't create the git user
+  users.users.git = {
+    description = "Gitea Service";
+    home = "/var/lib/gitea";
+    useDefaultShell = true;
+    group = "gitea";
+    isSystemUser = true;
+    # sendmail access (not 100% sure if this is necessary)
+    extraGroups = [ "postdrop" ];
+  };
+
   services.gitea.settings = {
     server = {
       # options: "home", "explore", "organizations", "login" or URL fragment (or full URL)
