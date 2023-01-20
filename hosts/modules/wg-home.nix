@@ -32,7 +32,7 @@ in
       networking.wireguard.interfaces.wg-home = lib.mkIf (cfg.role == "client") {
         privateKeyFile = config.sops.secrets.wg_home_privkey.path;
         # client IP (TODO: make host-specific)
-        ips = [ "10.0.10.20/32" ];
+        ips = [ "10.0.10.20/24" ];
 
         peers = [
           {
@@ -40,9 +40,11 @@ in
             publicKey = "cy9tvnwGMqWhLxRZlvxDtHmknzqmedAaJz+g3Z0ILG0=";
 
             # accept traffic from any IP addr on the other side of the tunnel
-            allowedIPs = [ "0.0.0.0/0" ];
+            # allowedIPs = [ "0.0.0.0/0" ];
+            allowedIPs = [ "10.0.10.5/32" ];
 
-            endpoint = "uninsane.org:51820";
+            # endpoint = "uninsane.org:51820";
+            endpoint = "97.126.41.123:51820";
 
             # send keepalives every 25 seconds to keep NAT routes live
             persistentKeepalive = 25;
@@ -58,9 +60,9 @@ in
         ];
         peers = [
           {
-            # peers all use the same key
+            # lappy
             publicKey = "pWtnKW7f7sNIZQ2M83uJ7cHg3IL1tebE3IoVkCgjkXM=";
-            allowedIPs = [ "10.0.10.0/24" ];
+            allowedIPs = [ "10.0.10.20/32" ];
             # allowedIPs = [ "10.0.10.0/24" "192.168.0.0/24" ];
             # allowedIPs = [ "0.0.0.0/0" ];
           }
