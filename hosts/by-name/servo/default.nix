@@ -8,9 +8,6 @@
     ./secrets.nix
     ./services
   ];
-  o
-  sane.services.wg-home.enable = true;
-  sane.services.wg-home.ip = config.sane.hosts.by-name."servo".wg-home.ip;
 
   sane.packages.extraUserPkgs = with pkgs; [
     # for administering services
@@ -21,7 +18,7 @@
   sane.persist.enable = true;
   sane.services.dyn-dns.enable = true;
   sane.services.wg-home.enable = true;
-  sane.services.wg-home.role = "server";
+  sane.services.wg-home.ip = config.sane.hosts.by-name."servo".wg-home.ip;
   # sane.services.duplicity.enable = true;  # TODO: re-enable after HW upgrade
 
   boot.loader.efi.canTouchEfiVariables = false;
