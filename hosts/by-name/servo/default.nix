@@ -4,7 +4,6 @@
   imports = [
     ./fs.nix
     ./net.nix
-    ./users.nix
     ./secrets.nix
     ./services
   ];
@@ -20,6 +19,10 @@
   sane.services.wg-home.enable = true;
   sane.services.wg-home.ip = config.sane.hosts.by-name."servo".wg-home.ip;
   # sane.services.duplicity.enable = true;  # TODO: re-enable after HW upgrade
+
+  # automatically log in at the virtual consoles.
+  # using root here makes sure we always have an escape hatch
+  services.getty.autologinUser = "root";
 
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
