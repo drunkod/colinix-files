@@ -1,12 +1,16 @@
 # trampoline from flake.nix into the specific host definition, while doing a tiny bit of common setup
 
+# args from flake-level `import`
 { hostName, localSystem }:
-{ ... }:
+
+# module args
+{ config, ... }:
 
 {
   imports = [
-    ./${hostName}
+    ./by-name/${hostName}
     ./common
+    ./modules
   ];
 
   networking.hostName = hostName;

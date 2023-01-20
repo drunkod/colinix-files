@@ -6,6 +6,11 @@
     ./kernel.nix
   ];
 
+  sane.roles.client = true;
+  # TODO
+  # sane.services.wg-home.enable = true;
+  # sane.services.wg-home.ip = config.sane.hosts.by-name."moby".wg-home.ip;
+
   # cross-compiled documentation is *slow*.
   # no obvious way to natively compile docs (2022/09/29).
   # entrypoint is nixos/modules/misc/documentation.nix
@@ -19,7 +24,7 @@
   services.getty.autologinUser = "root";  # allows for emergency maintenance?
 
   sops.secrets.colin-passwd = {
-    sopsFile = ../../secrets/moby.yaml;
+    sopsFile = ../../../secrets/moby.yaml;
     neededForUsers = true;
   };
 

@@ -179,8 +179,7 @@
 
   sane.services.trust-dns.zones."uninsane.org".inet.CNAME."fed" = "native";
 
-  sops.secrets.pleroma_secrets = {
-    sopsFile = ../../../secrets/servo.yaml;
+  sops.secrets."pleroma_secrets" = {
     owner = config.users.users.pleroma.name;
   };
 }

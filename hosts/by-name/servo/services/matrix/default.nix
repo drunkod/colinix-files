@@ -131,8 +131,7 @@
   };
 
 
-  sops.secrets.matrix_synapse_secrets = {
-    sopsFile = ../../../../secrets/servo.yaml;
+  sops.secrets."matrix_synapse_secrets" = {
     owner = config.users.users.matrix-synapse.name;
   };
 }
