@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -8,6 +8,9 @@
     ./secrets.nix
     ./services
   ];
+  o
+  sane.services.wg-home.enable = true;
+  sane.services.wg-home.ip = config.sane.hosts.by-name."servo".wg-home.ip;
 
   sane.packages.extraUserPkgs = with pkgs; [
     # for administering services

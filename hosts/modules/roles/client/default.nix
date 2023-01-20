@@ -9,13 +9,9 @@ in
     ./wifi-pairings.nix
   ];
 
+  # option is consumed by the other imports in this dir
   options.sane.roles.client = mkOption {
     type = types.bool;
     default = false;
-  };
-
-  config = mkIf config.sane.roles.client {
-    sane.services.wg-home.enable = true;
-    sane.services.wg-home.role = "client";
   };
 }

@@ -1,10 +1,12 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   imports = [
     ./fs.nix
   ];
 
   sane.roles.client = true;
+  sane.services.wg-home.enable = true;
+  sane.services.wg-home.ip = config.sane.hosts.by-name."lappy".wg-home.ip;
 
   # sane.packages.enableDevPkgs = true;
 

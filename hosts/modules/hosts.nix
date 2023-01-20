@@ -22,6 +22,7 @@ let
       };
       wg-home.pubkey = mkOption {
         type = types.nullOr types.str;
+        default = null;
         description = ''
           wireguard public key for the wg-home VPN.
           e.g. "pWtnKW7f7sNIZQ2M83uJ7cHg3IL1tebE3IoVkCgjkXM=".
@@ -29,10 +30,15 @@ let
       };
       wg-home.ip = mkOption {
         type = types.nullOr types.str;
+        default = null;
         description = ''
           IP address to use on the wg-home VPN.
           e.g. "10.0.10.5";
         '';
+      };
+      wg-home.endpoint = mkOption {
+        type = types.nullOr types.str;
+        default = null;
       };
       lan-ip = mkOption {
         type = types.str;
@@ -83,6 +89,8 @@ in
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOfdSmFkrVT6DhpgvFeQKm3Fh9VKZ9DbLYOPOJWYQ0E8";
       wg-home.pubkey = "roAw+IUFVtdpCcqa4khB385Qcv9l5JAB//730tyK4Wk=";
       wg-home.ip = "10.0.10.5";
+      # wg-home.endpoint = "uninsane.org:51820";
+      wg-home.endpoint = "97.126.41.123:51820";
       lan-ip = "192.168.0.5";
     };
   };
