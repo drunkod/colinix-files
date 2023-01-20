@@ -67,6 +67,8 @@ in
     sane.hosts.by-name."desko" = {
       ssh.user_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPU5GlsSfbaarMvDA20bxpSZGWviEzXGD8gtrIowc1pX";
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFw9NoRaYrM6LbDd3aFBc4yyBlxGQn8HjeHd/dZ3CfHk";
+      wg-home.pubkey = "17PMZssYi0D4t2d0vbmhjBKe1sGsE8kT8/dod0Q2CXc=";
+      wg-home.ip = "10.0.10.22";
       lan-ip = "192.168.0.22";
     };
 

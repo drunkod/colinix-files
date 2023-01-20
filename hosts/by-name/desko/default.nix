@@ -6,11 +6,15 @@
 
   # sane.packages.enableDevPkgs = true;
 
-  sane.gui.sway.enable = true;
+  sane.roles.client = true;
+  sane.services.wg-home.enable = true;
+  sane.services.wg-home.ip = config.sane.hosts.by-name."desko".wg-home.ip;
   sane.services.duplicity.enable = true;
   sane.services.nixserve.enable = true;
   sane.services.nixserve.sopsFile = ../../../secrets/desko.yaml;
   sane.persist.enable = true;
+
+  sane.gui.sway.enable = true;
 
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
