@@ -1,9 +1,28 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) mapAttrsToList mkIf mkMerge mkOption optionalAttrs types;
+  inherit (builtins) filter map;
+  inherit (lib) concatMap mapAttrsToList mkIf mkMerge mkOption optionalAttrs types;
   cfg = config.sane.services.wg-home;
   server-cfg = config.sane.hosts.by-name."servo".wg-home;
+  mkPeer = { ips, pubkey, endpoint }: {
+    publicKey = pubkey;
+    allowedIPs = map (k: "${k}/32") ips;
+    endpoint = mkIf (endpoint != null) endpoint;
+    # send keepalives every 25 seconds to keep NAT routes live.
+    # only need to do this from client -> server though, i think.
+    persistentKeepalive = mkIf (endpoint != null) 25;
+  };
+  # make separate peers to route each given host
+  mkClientPeers = hosts: map (p: mkPeer {
+    inherit (p) pubkey endpoint;
+    ips = [ p.ip ];
+  }) hosts;
+  # make a single peer which routes all the given hosts
+  mkServerPeer = hosts: mkPeer {
+    inherit (server-cfg) pubkey endpoint;
+    ips = map (h: h.ip) hosts;
+  };
 in
 {
   options = {
@@ -42,24 +61,17 @@ in
         "${cfg.ip}/24"
       ];
 
-      # include all peers -- except for ourself
-      peers = mapAttrsToList
-        (name: hostcfg:
-          mkIf (hostcfg.wg-home.ip != null && hostcfg.wg-home.ip != cfg.ip) {
-            publicKey = hostcfg.wg-home.pubkey;
-            allowedIPs = [ "${hostcfg.wg-home.ip}/32" ];
-            endpoint = lib.mkIf
-              (hostcfg.wg-home.endpoint != null)
-              hostcfg.wg-home.endpoint;
-
-            # send keepalives every 25 seconds to keep NAT routes live.
-            # only need to do this from client -> server though, i think.
-            persistentKeepalive = lib.mkIf
-              (hostcfg.wg-home.endpoint != null)
-              25;
-          }
-        )
-        config.sane.hosts.by-name;
+      peers =
+        let
+          all-peers = mapAttrsToList (_: hostcfg: hostcfg.wg-home) config.sane.hosts.by-name;
+          peer-list = filter (p: p.ip != null && p.ip != cfg.ip && p.pubkey != null) all-peers;
+        in
+          if cfg.ip == server-cfg.ip then
+            # if we're the server, then we maintain the entire client list
+            mkClientPeers peer-list
+          else
+            # but if we're a client, we maintain a single peer -- the server -- which does the actual routing
+            [ (mkServerPeer peer-list) ];
     };
   };
 }
