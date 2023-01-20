@@ -27,6 +27,13 @@ let
           e.g. "pWtnKW7f7sNIZQ2M83uJ7cHg3IL1tebE3IoVkCgjkXM=".
         '';
       };
+      wg-home.ip = mkOption {
+        type = types.nullOr types.str;
+        description = ''
+          IP address to use on the wg-home VPN.
+          e.g. "10.0.10.5";
+        '';
+      };
       lan-ip = mkOption {
         type = types.str;
         description = ''
@@ -61,6 +68,7 @@ in
       ssh.user_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDpmFdNSVPRol5hkbbCivRhyeENzb9HVyf9KutGLP2Zu";
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSJnqmVl9/SYQ0btvGb0REwwWY8wkdkGXQZfn/1geEc";
       wg-home.pubkey = "FTUWGw2p4/cEcrrIE86PWVnqctbv8OYpw8Gt3+dC/lk=";
+      wg-home.ip = "10.0.10.20";
       lan-ip = "192.168.0.20";
     };
 
@@ -74,6 +82,7 @@ in
       ssh.user_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPS1qFzKurAdB9blkWomq8gI1g0T3sTs9LsmFOj5VtqX";
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOfdSmFkrVT6DhpgvFeQKm3Fh9VKZ9DbLYOPOJWYQ0E8";
       wg-home.pubkey = "roAw+IUFVtdpCcqa4khB385Qcv9l5JAB//730tyK4Wk=";
+      wg-home.ip = "10.0.10.5";
       lan-ip = "192.168.0.5";
     };
   };

@@ -1,8 +1,10 @@
 { config, lib, pkgs, ... }:
 
 let
+  inherit (builtins) mapAttrsToList;
   inherit (lib) mkIf mkMerge mkOption optionalAttrs types;
   cfg = config.sane.services.wg-home;
+  server-cfg = config.sane.hosts.by-name."servo".wg-home;
 in
 {
   options = {
@@ -48,7 +50,7 @@ in
         peers = [
           {
             # server pubkey
-            publicKey = config.sane.hosts.by-name."servo".wg-home.pubkey;
+            publicKey = server-cfg.pubkey;
 
             # accept traffic from any IP addr on the other side of the tunnel
             # allowedIPs = [ "0.0.0.0/0" ];
@@ -68,30 +70,14 @@ in
         ips = [
           "10.0.10.5/24"
         ];
-        peers = [
-          {
-            # lappy
-            publicKey = config.sane.hosts.by-name."lappy".wg-home.pubkey;
-            allowedIPs = [ "10.0.10.20/32" ];
-            # allowedIPs = [ "10.0.10.0/24" "192.168.0.0/24" ];
-            # allowedIPs = [ "0.0.0.0/0" ];
-          }
-          # {
-          #   # lappy
-          #   publicKey = "TODO";
-          #   allowedIPs = [ "10.0.10.20/32" ];
-          # }
-          # {
-          #   # desko
-          #   publicKey = "TODO";
-          #   allowedIPs = [ "10.0.10.22/32" ];
-          # }
-          # {
-          #   # moby
-          #   publicKey = "TODO";
-          #   allowedIPs = [ "10.0.10.48/32" ];
-          # }
-        ];
+        peers = mapAttrsToList
+          (name: hostcfg:
+            lib.mkIf (hostcfg.wg-home.ip or server-cfg.ip != server-cfg.ip) {
+              publicKey = hostcfg.wg-home.pubkey;
+              allowedIPs = [ "${hostcfg.wg-home.ip}/32" ];
+            }
+          )
+          config.sane.hosts.by-name;
       };
     }
   ]);
