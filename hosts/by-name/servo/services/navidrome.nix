@@ -1,11 +1,8 @@
-{ ... }:
+{ lib, ... }:
 
 {
   sane.persist.sys.plaintext = [
-    # TODO: we don't have a static user allocated for navidrome!
-    # the chown would happen too early for us to set static perms
-    "/var/lib/private/navidrome"
-    # { user = "navidrome"; group = "navidrome"; directory = "/var/lib/private/navidrome"; }
+    { user = "navidrome"; group = "navidrome"; directory = "/var/lib/navidrome"; }
   ];
   services.navidrome.enable = true;
   services.navidrome.settings = {
@@ -16,6 +13,20 @@
     CovertArtPriority = "*.jpg, *.JPG, *.png, *.PNG, embedded";
     AutoImportPlaylists = false;
     ScanSchedule = "@every 1h";
+  };
+
+  systemd.services.navidrome.serviceConfig = {
+    # fix to use a normal user so we can configure perms correctly
+    DynamicUser = lib.mkForce false;
+    User = "navidrome";
+    Group = "navidrome";
+  };
+
+  users.groups.navidrome = {};
+
+  users.users.navidrome = {
+    group = "navidrome";
+    isSystemUser = true;
   };
 
   services.nginx.virtualHosts."music.uninsane.org" = {
