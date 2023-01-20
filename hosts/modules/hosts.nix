@@ -52,7 +52,7 @@ in
     sane.hosts.by-name."lappy" = {
       ssh.user_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDpmFdNSVPRol5hkbbCivRhyeENzb9HVyf9KutGLP2Zu";
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSJnqmVl9/SYQ0btvGb0REwwWY8wkdkGXQZfn/1geEc";
-      wg-home.pubkey = "pWtnKW7f7sNIZQ2M83uJ7cHg3IL1tebE3IoVkCgjkXM=";
+      wg-home.pubkey = "FTUWGw2p4/cEcrrIE86PWVnqctbv8OYpw8Gt3+dC/lk=";
     };
 
     sane.hosts.by-name."moby" = {

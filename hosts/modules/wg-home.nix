@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   inherit (lib) mkIf mkMerge mkOption optionalAttrs types;
@@ -17,6 +17,12 @@ in
 
   config = mkIf cfg.enable (mkMerge [
     {
+      # generate a (deterministic) wireguard private key
+      sane.derived-secrets."/run/wg-home.priv" = {
+        len = 32;
+        encoding = "base64";
+      };
+
       # wireguard VPN which allows everything on my domain to speak to each other even when
       # not behind a shared LAN.
       # this config defines both the endpoint (server) and client configs
@@ -25,12 +31,17 @@ in
       networking.firewall.allowedUDPPorts = [ 51820 ];
       networking.wireguard.interfaces.wg-home = {
         listenPort = 51820;
+        privateKeyFile = "/run/wg-home.priv";
+        preSetup =
+          let
+            gen-key = config.sane.fs."/run/wg-home.priv".unit;
+          in
+            "${pkgs.systemd}/bin/systemctl start '${gen-key}'";
       };
     }
 
     {
       networking.wireguard.interfaces.wg-home = lib.mkIf (cfg.role == "client") {
-        privateKeyFile = config.sops.secrets.wg_home_privkey.path;
         # client IP (TODO: make host-specific)
         ips = [ "10.0.10.20/24" ];
 
@@ -54,7 +65,6 @@ in
     }
     {
       networking.wireguard.interfaces.wg-home = lib.mkIf (cfg.role == "server") {
-        privateKeyFile = config.sops.secrets.wg_home_server_privkey.path;
         ips = [
           "10.0.10.5/24"
         ];
