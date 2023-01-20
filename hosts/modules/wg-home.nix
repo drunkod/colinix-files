@@ -37,7 +37,7 @@ in
         peers = [
           {
             # server pubkey
-            publicKey = "cy9tvnwGMqWhLxRZlvxDtHmknzqmedAaJz+g3Z0ILG0=";
+            publicKey = config.sane.hosts.by-name."servo".wg-home.pubkey;
 
             # accept traffic from any IP addr on the other side of the tunnel
             # allowedIPs = [ "0.0.0.0/0" ];
@@ -61,7 +61,7 @@ in
         peers = [
           {
             # lappy
-            publicKey = "pWtnKW7f7sNIZQ2M83uJ7cHg3IL1tebE3IoVkCgjkXM=";
+            publicKey = config.sane.hosts.by-name."lappy".wg-home.pubkey;
             allowedIPs = [ "10.0.10.20/32" ];
             # allowedIPs = [ "10.0.10.0/24" "192.168.0.0/24" ];
             # allowedIPs = [ "0.0.0.0/0" ];
