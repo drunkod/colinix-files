@@ -8,11 +8,14 @@ let
   mkPeer = { ips, pubkey, endpoint }: {
     publicKey = pubkey;
     allowedIPs = map (k: "${k}/32") ips;
-    endpoint = mkIf (endpoint != null) endpoint;
+  } // (optionalAttrs (endpoint != null) {
+    inherit endpoint;
     # send keepalives every 25 seconds to keep NAT routes live.
     # only need to do this from client -> server though, i think.
-    persistentKeepalive = mkIf (endpoint != null) 25;
-  };
+    persistentKeepalive = 25;
+    # allows wireguard to notice DNS/hostname changes, with this much effective TTL.
+    dynamicEndpointRefreshSeconds = 600;
+  });
   # make separate peers to route each given host
   mkClientPeers = hosts: map (p: mkPeer {
     inherit (p) pubkey endpoint;
