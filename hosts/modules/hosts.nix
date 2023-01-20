@@ -73,7 +73,7 @@ in
     sane.hosts.by-name."servo" = {
       ssh.user_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPS1qFzKurAdB9blkWomq8gI1g0T3sTs9LsmFOj5VtqX";
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOfdSmFkrVT6DhpgvFeQKm3Fh9VKZ9DbLYOPOJWYQ0E8";
-      wg-home.pubkey = "cy9tvnwGMqWhLxRZlvxDtHmknzqmedAaJz+g3Z0ILG0=";
+      wg-home.pubkey = "roAw+IUFVtdpCcqa4khB385Qcv9l5JAB//730tyK4Wk=";
       lan-ip = "192.168.0.5";
     };
   };
