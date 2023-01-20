@@ -1,7 +1,6 @@
 { pkgs, ... }:
 {
   imports = [
-    ./bluetooth.nix
     ./cross.nix
     ./feeds.nix
     ./fs.nix

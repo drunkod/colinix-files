@@ -61,11 +61,11 @@
       "locked": {
         "lastModified": 1,
         "narHash": "sha256-m+zWb62u+aq/x6VX82khojR2GNhWRIAo+csqaN1ixGA=",
-        "path": "/nix/store/l3d7c7jglbgslp60cwpp3sikwd9vlr1q-source/nixpatches",
+        "path": "/nix/store/2zybrs7rz5h2mxhfnkffvdjs9apyzx5z-source/nixpatches",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/l3d7c7jglbgslp60cwpp3sikwd9vlr1q-source/nixpatches",
+        "path": "/nix/store/2zybrs7rz5h2mxhfnkffvdjs9apyzx5z-source/nixpatches",
         "type": "path"
       }
     },

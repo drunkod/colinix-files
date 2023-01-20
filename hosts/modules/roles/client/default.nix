@@ -4,6 +4,11 @@ let
   inherit (lib) mkIf mkOption types;
 in
 {
+  imports = [
+    ./bluetooth-pairings.nix
+    ./wifi-pairings.nix
+  ];
+
   options.sane.roles.client = mkOption {
     type = types.bool;
     default = false;
