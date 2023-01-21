@@ -32,6 +32,12 @@
     hash = "sha256-9fIAie0x2VxbHDg9iC8/dxaXIrWi8LzHSoDk9cwAZG0=";
   })
 
+  # phosh-mobile-settings 0.21.1 -> 0.23.1
+  (fetchpatch {
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/352e09d0413ff25139390a6077c7831271d09b8f.diff";
+    hash = "sha256-yGsSquIRXapTiWQlLORFTyFEHE5XJfLcM3W/1AJIeL8=";
+  })
+
   ./2022-12-19-i2p-aarch64.patch
 
   # # kaiteki: init at 2022-09-03
