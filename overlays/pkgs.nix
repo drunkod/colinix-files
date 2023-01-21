@@ -33,7 +33,7 @@
       # jackett doesn't allow customization of the bind address: this will probably always be here.
       jackett = prev.callPackage ../pkgs/jackett { inherit (prev) jackett; };
       # mozilla keeps nerfing itself and removing configuration options
-      firefox-unwrapped = prev.callPackage ../pkgs/firefox-unwrapped { };
+      firefox-unwrapped = next.callPackage ../pkgs/firefox-unwrapped { inherit (prev) firefox-unwrapped; };
 
       # patch rpi uboot with something that fixes USB HDD boot
       ubootRaspberryPi4_64bit = prev.callPackage ../pkgs/ubootRaspberryPi4_64bit { };
