@@ -30,9 +30,6 @@
     #   error: 1 dependencies of derivation '/nix/store/ny21xyicbgim5wy7ksg2hibd9gn7i01b-nixos-system-moby-23.05pre-git.drv' failed to build
     nheko
 
-    # TODO(unpin): broken build on 2023/01/16, all platforms: <https://github.com/NixOS/nixpkgs/pull/208251>
-    # fix in PR: <https://github.com/NixOS/nixpkgs/pull/211135>
-    kitty
     # TODO(unpin): broken build on 2023/01/16. <https://hydra.nixos.org/build/205551450>
     handbrake
   ;

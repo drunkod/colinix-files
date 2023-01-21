@@ -20,18 +20,6 @@
     sha256 = "sha256-L9Ie80loaP6yl5ZFnJ1b5WMDpvO1QFE8tbrW5HBauko=";
   })
 
-  # nixos/mx-puppet-discord: move to matrix category
-  (fetchurl {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/87c877fff84717478a96d1b0c65bd2febd350dea.diff";
-    sha256 = "sha256-E5TonCj3f8j7kxApBq/suNT5mB7z8uD00NzI34Qh2SE=";
-  })
-
-  # signaldctl: init at 0.6.1
-  (fetchurl {
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/f3c4303231537422267ca32eb97b37f0a9a11d19.diff";
-    hash = "sha256-9fIAie0x2VxbHDg9iC8/dxaXIrWi8LzHSoDk9cwAZG0=";
-  })
-
   # phosh-mobile-settings 0.21.1 -> 0.23.1
   (fetchpatch {
     # https://github.com/NixOS/nixpkgs/pull/211877
