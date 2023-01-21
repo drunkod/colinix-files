@@ -34,8 +34,16 @@
 
   # phosh-mobile-settings 0.21.1 -> 0.23.1
   (fetchpatch {
+    # https://github.com/NixOS/nixpkgs/pull/211877
     url = "https://git.uninsane.org/colin/nixpkgs/commit/352e09d0413ff25139390a6077c7831271d09b8f.diff";
     hash = "sha256-yGsSquIRXapTiWQlLORFTyFEHE5XJfLcM3W/1AJIeL8=";
+  })
+
+  # splatmoji: init at 1.2.0
+  (fetchpatch {
+    # https://github.com/NixOS/nixpkgs/pull/211874
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/75149039b6eaf57d8a92164e90aab20eb5d89196.diff";
+    hash = "sha256-IvsIcd2wPdz4b/7FMrDrcVlIZjFecCQ9uiL0Umprbx0=";
   })
 
   ./2022-12-19-i2p-aarch64.patch

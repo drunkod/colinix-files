@@ -57,9 +57,9 @@
       browserpass-extension = prev.callPackage ../pkgs/browserpass-extension { };
       gopass-native-messaging-host = prev.callPackage ../pkgs/gopass-native-messaging-host { };
       tokodon = prev.libsForQt5.callPackage ../pkgs/tokodon { };
-      splatmoji = prev.callPackage ../pkgs/splatmoji { };
 
       # provided by nixpkgs patch or upstream preview
+      # splatmoji = prev.callPackage ../pkgs/splatmoji { };
       # signaldctl = prev.callPackage ../pkgs/signaldctl { };
     };
   in sane // { inherit sane; }
