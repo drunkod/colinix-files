@@ -41,7 +41,10 @@
     description = "import sane RSS feed list";
     after = [ "freshrss-config.service" ];
     script = ''
-      ${pkgs.freshrss}/cli/import-for-user.php --user admin --filename ${opml}
+      # easiest way to preserve feeds: delete the user, recreate it, import feeds
+      ${pkgs.freshrss}/cli/delete-user.php --user colin || true
+      ${pkgs.freshrss}/cli/create-user.php --user colin --password "$(cat ${config.services.freshrss.passwordFile})" || true
+      ${pkgs.freshrss}/cli/import-for-user.php --user colin --filename ${opml}
     '';
   };
 
