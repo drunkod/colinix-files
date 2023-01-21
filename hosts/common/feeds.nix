@@ -105,6 +105,7 @@ let
     # DEVELOPERS
     (fromDb "uninsane.org" // tech)
     (fromDb "mg.lol" // tech)
+    (fromDb "drewdevault.com" // tech)
     ## Ken Shirriff
     (fromDb "righto.com" // tech)
     ## Vitalik Buterin
