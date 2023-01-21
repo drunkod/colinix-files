@@ -170,6 +170,7 @@
           };
 
           init-feed = {
+            # use like `nix run '.#init-feed' uninsane.org`
             type = "app";
             program = "${pkgs.feeds.passthru.initFeedScript}";
           };
