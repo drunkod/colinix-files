@@ -5,7 +5,9 @@
 # - otherwise, search github issues/PRs for knowledge of it before pinning.
 # - if nobody's said anything about it yet, probably want to root cause it or hold off on updating.
 (next: prev: {
-  inherit (next.stable)
+  # XXX: when invoked outside our flake (e.g. via NIX_PATH) there is no `next.stable`,
+  # so just forward the unstable packages.
+  inherit (next.stable or prev)
     # TODO(unpin): broken on 2023/01/14 via mtxclient dep, aarch64-only:
     #   error: builder for '/nix/store/gwidl0c9ksxjgx0dgwnjssix4ikq73v5-mtxclient-0.9.0.drv' failed with exit code 2;
     #      last 10 log lines:
