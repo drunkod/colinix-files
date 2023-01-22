@@ -91,6 +91,7 @@ let
 
   texts = [
     # AGGREGATORS (> 1 post/day)
+    (fromDb "lwn.net" // tech)
     (fromDb "lesswrong.com" // rat)
     (fromDb "econlib.org" // pol)
 
