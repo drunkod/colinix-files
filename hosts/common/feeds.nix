@@ -109,6 +109,8 @@ let
     (fromDb "drewdevault.com" // tech)
     ## Ken Shirriff
     (fromDb "righto.com" // tech)
+    ## shared blog by a few NixOS devs, notably onny
+    (fromDb "project-insanity.org" // tech)
     ## Vitalik Buterin
     (mkText "https://vitalik.ca/feed.xml" // tech // infrequent)
     ## ian (Sanctuary)
