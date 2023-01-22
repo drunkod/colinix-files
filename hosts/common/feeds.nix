@@ -47,7 +47,6 @@ let
 
   podcasts = [
     (fromDb "lexfridman.com/podcast" // rat)
-    # (mkPod "https://lexfridman.com/feed/podcast/" // rat // weekly)
     ## Astral Codex Ten
     (fromDb "sscpodcast.libsyn.com" // rat)
     ## Econ Talk
