@@ -58,9 +58,10 @@
 
   # without this some GUI apps fail: `DRM_IOCTL_MODE_CREATE_DUMB failed: Cannot allocate memory`
   # this is because they can't allocate enough video ram.
-  # the default CMA seems to be 32M. we could probably get by with as little as 64M, and safely with 128M.
+  # the default CMA seems to be 32M.
+  # i was running fine with 256MB from 2022/07-ish through 2022/12-ish, but then the phone quit reliably coming back from sleep: maybe a memory leak?
   # `cat /proc/meminfo` to see CmaTotal/CmaFree if interested in tuning this.
-  boot.kernelParams = [ "cma=256M" ];
+  boot.kernelParams = [ "cma=384M" ];
 
   # mobile-nixos' /lib/firmware includes:
   #   rtl_bt          (bluetooth)
