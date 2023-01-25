@@ -5,11 +5,16 @@ from feedsearch_crawler import search, sort_urls
 from feedsearch_crawler.crawler import coerce_url
 
 import json
+import logging
 import sys
 url, jsonPath = sys.argv[1:]
 
+logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+logging.getLogger(__name__).debug("logging enabled")
+
 url = coerce_url(url, default_scheme="https")
-items = search(url)
+items = search(url, total_timeout=180, request_timeout=90, max_content_length=100*1024*1024)
 items = sort_urls(items)
 
 # print all results

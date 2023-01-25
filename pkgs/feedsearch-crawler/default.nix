@@ -28,6 +28,12 @@ buildPythonPackage rec {
     hash = "sha256-pzvyeXzqdi8pRjk2+QjKhJfgtxbgVT6C08K9fhVFVmY=";
   };
 
+  patches = [
+    # fix for <https://github.com/aio-libs/aiohttp/issues/4581>
+    #   where large feeds would timeout in an unrecoverable way
+    ./0001-response-chunk-size.patch
+  ];
+
   nativeBuildInputs = [
     poetry-core
   ];
