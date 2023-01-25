@@ -163,7 +163,7 @@ let
     (fromDb "richardcarrier.info" // rat)
     (fromDb "gwern.net" // rat)
     ## Jason Crawford
-    (mkText "https://rootsofprogress.org/feed.xml" // rat // weekly)
+    (fromDb "rootsofprogress.org" // rat)
     ## Robin Hanson
     (mkText "https://www.overcomingbias.com/feed" // rat // daily)
     ## Scott Alexander
