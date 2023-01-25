@@ -151,7 +151,7 @@ let
     (fromDb "blog.dshr.org" // pol)
     ## Matt Levine
     (mkText "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" // pol // weekly)
-    (mkText "https://stpeter.im/atom.xml" // pol // weekly)
+    (fromDb "stpeter.im/atom.xml" // pol)
     ## Peter Saint-Andre -- side project of stpeter.im
     (fromDb "philosopher.coach" // rat)
 
