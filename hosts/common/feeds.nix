@@ -132,6 +132,8 @@ let
     (mkText "https://pomeroyb.com/feed.xml" // tech // infrequent)
 
     # (TECH; POL) COMMENTATORS
+    ## Matt Webb -- engineering-ish, but dreamy
+    (fromDb "interconnected.org/home/feed" // rat)
     (fromDb "edwardsnowden.substack.com" // pol // text)
     (mkText "http://benjaminrosshoffman.com/feed" // pol // weekly)
     ## Ben Thompson
