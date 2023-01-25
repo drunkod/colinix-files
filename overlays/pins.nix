@@ -8,7 +8,8 @@
   # XXX: when invoked outside our flake (e.g. via NIX_PATH) there is no `next.stable`,
   # so just forward the unstable packages.
   inherit (next.stable or prev)
-    # TODO(unpin): broken on 2023/01/14 via mtxclient dep, aarch64-only:
+    # broken on 2023/01/14 via mtxclient dep, aarch64-only:
+    # fixed on 2023/01/24?
     #   error: builder for '/nix/store/gwidl0c9ksxjgx0dgwnjssix4ikq73v5-mtxclient-0.9.0.drv' failed with exit code 2;
     #      last 10 log lines:
     #      > make[2]: *** [CMakeFiles/matrix_client.dir/build.make:370: CMakeFiles/matrix_client.dir/lib/structs/events/encrypted.cpp.o] Error 1
@@ -28,7 +29,7 @@
     #   error: 1 dependencies of derivation '/nix/store/5qjxzhsw1jvh2d7jypbcam9409ivb472-user-environment.drv' failed to build
     #   error: 1 dependencies of derivation '/nix/store/hrb3qpdbisqh0lzlyz1g9g4164khmqwn-etc.drv' failed to build
     #   error: 1 dependencies of derivation '/nix/store/ny21xyicbgim5wy7ksg2hibd9gn7i01b-nixos-system-moby-23.05pre-git.drv' failed to build
-    nheko
+    # nheko
 
     # TODO(unpin): broken build on 2023/01/16. <https://hydra.nixos.org/build/205551450>
     handbrake
