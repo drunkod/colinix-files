@@ -174,7 +174,7 @@ let
     (mkText "https://www.preposterousuniverse.com/rss" // rat // infrequent)
 
     ## mostly dating topics. not advice, or humor, but looking through a social lens
-    (mkText "https://putanumonit.com/feed" // rat // infrequent)
+    (fromDb "putanumonit.com" // rat)
 
     # CODE
     # (mkText "https://github.com/Kaiteki-Fedi/Kaiteki/commits/master.atom" // tech // infrequent)
