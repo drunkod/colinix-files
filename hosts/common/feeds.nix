@@ -152,6 +152,8 @@ let
     ## Matt Levine
     (mkText "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" // pol // weekly)
     (mkText "https://stpeter.im/atom.xml" // pol // weekly)
+    ## Peter Saint-Andre -- side project of stpeter.im
+    (fromDb "philosopher.coach" // rat)
 
     # RATIONALITY/PHILOSOPHY/ETC
     (mkSubstack "samkriss" // humor // infrequent)
