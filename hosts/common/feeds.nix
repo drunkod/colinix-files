@@ -158,7 +158,7 @@ let
     # RATIONALITY/PHILOSOPHY/ETC
     (mkSubstack "samkriss" // humor // infrequent)
     (fromDb "unintendedconsequenc.es" // rat)
-    (mkText "https://applieddivinitystudies.com/atom.xml" // rat // weekly)
+    (fromDb "applieddivinitystudies.com" // rat)
     (mkText "https://slimemoldtimemold.com/feed.xml" // rat // weekly)
     (mkText "https://www.richardcarrier.info/feed" // rat // weekly)
     (mkText "https://www.gwern.net/feed.xml" // uncat // infrequent)
