@@ -169,7 +169,7 @@ let
     ## Scott Alexander
     (mkSubstack "astralcodexten" // rat // daily)
     ## Paul Christiano
-    (mkText "https://sideways-view.com/feed" // rat // infrequent)
+    (fromDb "sideways-view.com" // rat)
     ## Sean Carroll
     (mkText "https://www.preposterousuniverse.com/rss" // rat // infrequent)
 
