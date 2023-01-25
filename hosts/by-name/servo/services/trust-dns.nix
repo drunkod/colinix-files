@@ -9,6 +9,7 @@
     "192.168.0.5"
     "10.0.1.5"
   ];
+  sane.services.trust-dns.quiet = true;
 
   sane.services.trust-dns.zones."uninsane.org".TTL = 900;
 

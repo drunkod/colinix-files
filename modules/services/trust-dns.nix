@@ -72,6 +72,10 @@ in
         default = [];
         description = "array of ipv4 addresses on which to listen for DNS queries";
       };
+      quiet = mkOption {
+        type = types.bool;
+        default = false;
+      };
       # reference <nixpkgs:nixos/modules/services/web-servers/nginx/vhost-options.nix>
       zones = mkOption {
         type = types.attrsOf (types.submodule {
@@ -160,11 +164,14 @@ in
     systemd.services.trust-dns = {
       description = "trust-dns DNS server";
       serviceConfig = {
-        ExecStart = ''
-          ${pkgs.trust-dns}/bin/named \
-            --config ${configFile} \
-            --zonedir /
-        '';
+        ExecStart =
+          let
+            flags = lib.optionalString cfg.quiet "-q";
+          in ''
+            ${pkgs.trust-dns}/bin/named \
+              --config ${configFile} \
+              --zonedir / ${flags}
+          '';
         Type = "simple";
         Restart = "on-failure";
         RestartSec = "10s";
