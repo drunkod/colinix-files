@@ -135,6 +135,8 @@ let
     ## Matt Webb -- engineering-ish, but dreamy
     (fromDb "interconnected.org/home/feed" // rat)
     (fromDb "edwardsnowden.substack.com" // pol // text)
+    ## Julia Evans
+    (mkText "https://jvns.ca/atom.xml" // tech // weekly)
     (mkText "http://benjaminrosshoffman.com/feed" // pol // weekly)
     ## Ben Thompson
     (mkText "https://www.stratechery.com/rss" // pol // weekly)
