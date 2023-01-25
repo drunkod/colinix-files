@@ -160,7 +160,7 @@ let
     (fromDb "unintendedconsequenc.es" // rat)
     (fromDb "applieddivinitystudies.com" // rat)
     (fromDb "slimemoldtimemold.com" // rat)
-    (mkText "https://www.richardcarrier.info/feed" // rat // weekly)
+    (fromDb "richardcarrier.info" // rat)
     (mkText "https://www.gwern.net/feed.xml" // uncat // infrequent)
     ## Jason Crawford
     (mkText "https://rootsofprogress.org/feed.xml" // rat // weekly)
