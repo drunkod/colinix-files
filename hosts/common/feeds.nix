@@ -165,7 +165,7 @@ let
     ## Jason Crawford
     (fromDb "rootsofprogress.org" // rat)
     ## Robin Hanson
-    (mkText "https://www.overcomingbias.com/feed" // rat // daily)
+    (fromDb "overcomingbias.com" // rat)
     ## Scott Alexander
     (mkSubstack "astralcodexten" // rat // daily)
     ## Paul Christiano
