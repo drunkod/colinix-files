@@ -144,7 +144,7 @@ let
     (fromDb "balajis.com" // pol)
     (fromDb "ben-evans.com/benedictevans" // pol)
     (fromDb "lynalden.com" // pol)
-    (mkText "https://austinvernon.site/rss.xml" // tech // infrequent)
+    (fromDb "austinvernon.site" // tech)
     (mkSubstack "oversharing" // pol // daily)
     (mkSubstack "doomberg" // tech // weekly)
     ## David Rosenthal
