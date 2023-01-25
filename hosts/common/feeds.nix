@@ -13,6 +13,7 @@ let
   uncat = { cat = "uncat"; };
 
   text = { format = "text"; };
+  img = { format = "image"; };
 
   mkRss = format: url: { inherit url format; } // uncat // infrequent;
   # format-specific helpers
@@ -182,7 +183,7 @@ let
 
   images = [
     (mkImg "https://www.smbc-comics.com/comic/rss" // humor // daily)
-    (mkImg "https://xkcd.com/atom.xml" // humor // daily)
+    (fromDb "xkcd.com" // img // humor)
     (mkImg "https://pbfcomics.com/feed" // humor // infrequent)
     # (mkImg "http://dilbert.com/feed" // humor // daily)
 
