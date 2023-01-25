@@ -30,16 +30,16 @@ let
     in {
       url = raw.url;
       # not sure the exact mapping with velocity here: entries per day?
-      freq = lib.mkDefault (
-        if raw.velocity or 0 > 2 then
+      freq = lib.mkIf (raw.velocity or 0 != 0) (lib.mkDefault (
+        if raw.velocity > 2 then
           "hourly"
-        else if raw.velocity or 0 > 0.5 then
+        else if raw.velocity > 0.5 then
           "daily"
-        else if raw.velocity or 0 > 0.1 then
+        else if raw.velocity > 0.1 then
           "weekly"
         else
           "infrequent"
-      );
+      ));
     } // lib.optionalAttrs (raw.is_podcast or false) {
       format = "podcast";
     } // lib.optionalAttrs (raw.title or "" != "") {
@@ -188,7 +188,7 @@ let
     # (mkImg "http://dilbert.com/feed" // humor // daily)
 
     # ART
-    (mkImg "https://miniature-calendar.com/feed" // art // daily)
+    (fromDb "miniature-calendar.com" // img // art // daily)
   ];
 in
 {
