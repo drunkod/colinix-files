@@ -53,7 +53,7 @@ let
     (fromDb "feeds.simplecast.com/wgl4xEgL" // rat)
     ## Cory Doctorow -- both podcast & text entries
     (fromDb "craphound.com" // pol)
-    (mkPod "https://congressionaldish.libsyn.com/rss" // pol // infrequent)
+    (fromDb "congressionaldish.libsyn.com" // pol)
     ## Civboot -- https://anchor.fm/civboot
     (fromDb "anchor.fm/s/34c7232c/podcast/rss" // tech)
     (fromDb "feeds.feedburner.com/80000HoursPodcast" // rat)
