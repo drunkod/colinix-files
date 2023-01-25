@@ -142,7 +142,7 @@ let
     (mkText "https://www.stratechery.com/rss" // pol // weekly)
     ## Balaji
     (fromDb "balajis.com" // pol)
-    (mkText "https://www.ben-evans.com/benedictevans/rss.xml" // pol // weekly)
+    (fromDb "ben-evans.com/benedictevans" // pol)
     (mkText "https://www.lynalden.com/feed" // pol // infrequent)
     (mkText "https://austinvernon.site/rss.xml" // tech // infrequent)
     (mkSubstack "oversharing" // pol // daily)
