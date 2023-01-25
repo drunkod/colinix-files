@@ -159,7 +159,7 @@ let
     (mkSubstack "samkriss" // humor // infrequent)
     (fromDb "unintendedconsequenc.es" // rat)
     (fromDb "applieddivinitystudies.com" // rat)
-    (mkText "https://slimemoldtimemold.com/feed.xml" // rat // weekly)
+    (fromDb "slimemoldtimemold.com" // rat)
     (mkText "https://www.richardcarrier.info/feed" // rat // weekly)
     (mkText "https://www.gwern.net/feed.xml" // uncat // infrequent)
     ## Jason Crawford
