@@ -182,7 +182,7 @@ let
   ];
 
   images = [
-    (mkImg "https://www.smbc-comics.com/comic/rss" // humor // daily)
+    (fromDb "smbc-comics.com" // img // humor)
     (fromDb "xkcd.com" // img // humor)
     (fromDb "pbfcomics.com" // img // humor)
     # (mkImg "http://dilbert.com/feed" // humor // daily)
