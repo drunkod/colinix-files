@@ -141,7 +141,7 @@ let
     ## Ben Thompson
     (mkText "https://www.stratechery.com/rss" // pol // weekly)
     ## Balaji
-    (mkText "https://balajis.com/rss" // pol // weekly)
+    (fromDb "balajis.com" // pol)
     (mkText "https://www.ben-evans.com/benedictevans/rss.xml" // pol // weekly)
     (mkText "https://www.lynalden.com/feed" // pol // infrequent)
     (mkText "https://austinvernon.site/rss.xml" // tech // infrequent)
