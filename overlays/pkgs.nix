@@ -29,7 +29,7 @@
       fluffychat-moby = prev.callPackage ../pkgs/fluffychat-moby { };
       gpodder-configured = prev.callPackage ../pkgs/gpodder-configured { };
       # nixos-unstable pleroma is too far out-of-date for our db
-      pleroma = prev.callPackage ../pkgs/pleroma { };
+      # pleroma = prev.callPackage ../pkgs/pleroma { };
       # jackett doesn't allow customization of the bind address: this will probably always be here.
       jackett = prev.callPackage ../pkgs/jackett { inherit (prev) jackett; };
       # mozilla keeps nerfing itself and removing configuration options
