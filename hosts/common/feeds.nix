@@ -171,7 +171,7 @@ let
     ## Paul Christiano
     (fromDb "sideways-view.com" // rat)
     ## Sean Carroll
-    (mkText "https://www.preposterousuniverse.com/rss" // rat // infrequent)
+    (fromDb "preposterousuniverse.com" // rat)
 
     ## mostly dating topics. not advice, or humor, but looking through a social lens
     (fromDb "putanumonit.com" // rat)
