@@ -148,7 +148,7 @@ let
     (mkSubstack "oversharing" // pol // daily)
     (mkSubstack "doomberg" // tech // weekly)
     ## David Rosenthal
-    (mkText "https://blog.dshr.org/rss.xml" // pol // weekly)
+    (fromDb "blog.dshr.org" // pol)
     ## Matt Levine
     (mkText "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss" // pol // weekly)
     (mkText "https://stpeter.im/atom.xml" // pol // weekly)
