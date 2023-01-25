@@ -161,7 +161,7 @@ let
     (fromDb "applieddivinitystudies.com" // rat)
     (fromDb "slimemoldtimemold.com" // rat)
     (fromDb "richardcarrier.info" // rat)
-    (mkText "https://www.gwern.net/feed.xml" // uncat // infrequent)
+    (fromDb "gwern.net" // rat)
     ## Jason Crawford
     (mkText "https://rootsofprogress.org/feed.xml" // rat // weekly)
     ## Robin Hanson
