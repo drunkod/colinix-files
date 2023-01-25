@@ -2,6 +2,11 @@
 # - <https://github.com/mautrix/signal/blob/master/mautrix_signal/example-config.yaml>
 { config, pkgs, ... }:
 {
+  sane.persist.sys.plaintext = [
+    { user = "mautrix-signal"; group = "mautrix-signal"; directory = "/var/lib/mautrix-signal"; }
+    { user = "signald"; group = "signald"; directory = "/var/lib/signald"; }
+  ];
+
   services.signald.enable = true;
   services.mautrix-signal.enable = true;
   services.mautrix-signal.environmentFile =
@@ -20,10 +25,6 @@
     SupplementaryGroups = [ "signald" ];
     ReadWritePaths = [ "/run/signald" ];
   };
-
-  sane.persist.sys.plaintext = [
-    { user = "mautrix-signal"; group = "mautrix-signal"; directory = "/var/lib/mautrix-signal"; }
-  ];
 
   sops.secrets."mautrix_signal_env" = {
     format = "binary";
