@@ -125,7 +125,7 @@ let
     ## Bunnie Juang
     (mkText "https://www.bunniestudios.com/blog/?feed=rss2" // tech // infrequent)
     (mkText "https://blog.danieljanus.pl/atom.xml" // tech // infrequent)
-    (mkText "https://ianthehenry.com/feed.xml" // tech // infrequent)
+    (fromDb "ianthehenry.com" // tech)
     (fromDb "bitbashing.io" // tech)
     (fromDb "idiomdrottning.org" // uncat)
     (mkText "https://anish.lakhwara.com/home.html" // tech // weekly)
