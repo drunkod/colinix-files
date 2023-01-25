@@ -103,6 +103,8 @@ let
     (mkText "https://semiaccurate.com/feed" // tech // weekly)
     (mkText "https://linuxphoneapps.org/blog/atom.xml" // tech // infrequent)
     (mkText "https://spectrum.ieee.org/rss" // tech // weekly)
+    ## n.b.: quality RSS list here: <https://forum.merveilles.town/thread/57/share-your-rss-feeds%21-6/>
+    (mkText "https://forum.merveilles.town/rss.xml" // pol // infrequent)
 
     ## No Moods, Ads or Cutesy Fucking Icons
     (mkText "https://www.rifters.com/crawl/?feed=rss2" // uncat // weekly)
