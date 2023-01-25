@@ -184,7 +184,7 @@ let
   images = [
     (mkImg "https://www.smbc-comics.com/comic/rss" // humor // daily)
     (fromDb "xkcd.com" // img // humor)
-    (mkImg "https://pbfcomics.com/feed" // humor // infrequent)
+    (fromDb "pbfcomics.com" // img // humor)
     # (mkImg "http://dilbert.com/feed" // humor // daily)
 
     # ART
