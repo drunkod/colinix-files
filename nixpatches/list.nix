@@ -20,6 +20,13 @@
     hash = "sha256-IvsIcd2wPdz4b/7FMrDrcVlIZjFecCQ9uiL0Umprbx0=";
   })
 
+  # matrix-synapse,mautrix-facebook: fix runtime inclusion of python3 systemd #212391
+  # merged 2023/01/24
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/212391.diff";
+    hash = "sha256-N9lzQLi8NN9cbd+d04yx2v5mI9tVnlSKVbl0+QGE1YQ=";
+  })
+
   ./2022-12-19-i2p-aarch64.patch
 
   # # kaiteki: init at 2022-09-03

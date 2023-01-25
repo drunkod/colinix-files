@@ -16,6 +16,8 @@
     { user = "matrix-synapse"; group = "matrix-synapse"; directory = "/var/lib/matrix-synapse"; }
   ];
   services.matrix-synapse.enable = true;
+  # this changes the default log level from INFO to WARN.
+  # maybe there's an easier way?
   services.matrix-synapse.settings.log_config = ./synapse-log_level.yaml;
   services.matrix-synapse.settings.server_name = "uninsane.org";
 
