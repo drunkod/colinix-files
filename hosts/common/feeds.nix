@@ -130,7 +130,7 @@ let
     (mkText "https://idiomdrottning.org/feed.xml" // uncat // daily)
     (mkText "https://anish.lakhwara.com/home.html" // tech // weekly)
     (mkText "https://www.jefftk.com/news.rss" // tech // daily)
-    (mkText "https://pomeroyb.com/feed.xml" // tech // infrequent)
+    (fromDb "pomeroyb.com" // tech)
 
     # (TECH; POL) COMMENTATORS
     ## Matt Webb -- engineering-ish, but dreamy
