@@ -13,20 +13,6 @@
     sha256 = "sha256-t4sG+xLDaxbJ/mV5G18N4ag8EC3IXPgtN5FJGANh1Dc=";
   })
 
-  # whalebird: 4.6.5 -> 4.7.4
-  (fetchpatch {
-    # url = "https://git.uninsane.org/colin/nixpkgs/compare/master...pr.whalebird-4.7.4.diff";
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/f5c7c70dde720e990fa7e0748d1dc4764d6e4406.diff";
-    sha256 = "sha256-L9Ie80loaP6yl5ZFnJ1b5WMDpvO1QFE8tbrW5HBauko=";
-  })
-
-  # phosh-mobile-settings 0.21.1 -> 0.23.1
-  (fetchpatch {
-    # https://github.com/NixOS/nixpkgs/pull/211877
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/352e09d0413ff25139390a6077c7831271d09b8f.diff";
-    hash = "sha256-yGsSquIRXapTiWQlLORFTyFEHE5XJfLcM3W/1AJIeL8=";
-  })
-
   # splatmoji: init at 1.2.0
   (fetchpatch {
     # https://github.com/NixOS/nixpkgs/pull/211874
