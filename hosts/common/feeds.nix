@@ -123,7 +123,7 @@ let
     ## ian (Sanctuary)
     (mkText "https://sagacioussuricata.com/feed.xml" // tech // infrequent)
     ## Bunnie Juang
-    (mkText "https://www.bunniestudios.com/blog/?feed=rss2" // tech // infrequent)
+    (fromDb "bunniestudios.com" // tech)
     (fromDb "blog.danieljanus.pl" // tech)
     (fromDb "ianthehenry.com" // tech)
     (fromDb "bitbashing.io" // tech)
