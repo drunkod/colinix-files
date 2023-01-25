@@ -121,7 +121,7 @@ let
     ## Vitalik Buterin
     (mkText "https://vitalik.ca/feed.xml" // tech // infrequent)
     ## ian (Sanctuary)
-    (mkText "https://sagacioussuricata.com/feed.xml" // tech // infrequent)
+    (fromDb "sagacioussuricata.com" // tech)
     ## Bunnie Juang
     (fromDb "bunniestudios.com" // tech)
     (fromDb "blog.danieljanus.pl" // tech)
