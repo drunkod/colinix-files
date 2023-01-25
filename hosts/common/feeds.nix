@@ -56,6 +56,8 @@ let
     (fromDb "congressionaldish.libsyn.com" // pol)
     ## Civboot -- https://anchor.fm/civboot
     (fromDb "anchor.fm/s/34c7232c/podcast/rss" // tech)
+    ## Emerge: making sense of what's next -- <https://www.whatisemerging.com/emergepodcast>
+    (mkPod "https://anchor.fm/s/21bc734/podcast/rss" // pol // infrequent)
     (fromDb "feeds.feedburner.com/80000HoursPodcast" // rat)
     (fromDb "allinchamathjason.libsyn.com" // pol)
     (fromDb "acquired.libsyn.com" // tech)
