@@ -108,7 +108,7 @@ let
     (mkText "https://forum.merveilles.town/rss.xml" // pol // infrequent)
 
     ## No Moods, Ads or Cutesy Fucking Icons
-    (mkText "https://www.rifters.com/crawl/?feed=rss2" // uncat // weekly)
+    (fromDb "rifters.com/crawl" // uncat)
 
     # DEVELOPERS
     (fromDb "uninsane.org" // tech)
