@@ -123,25 +123,25 @@ in
         # get names from:
         # - ~/ref/nix-community/nur-combined/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
         # `wget ...xpi`; `unar ...xpi`; `cat */manifest.json | jq '.browser_specific_settings.gecko.id'`
-        ublock-origin.package = addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-a/ivUmY1P6teq9x0dt4CbgHt+3kBsEMMXlOfZ5Hx7cg=";
-        sponsorblock.package = addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-d2K3ufvurWnYVzqLbyR//MgejybkY9exitAf9RdLNRo=";
-        bypass-paywalls-clean.package = addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-JOj5P7c2JTTReHCRZXm4BscaGr3i+9Y4Ey/y621x8PI=";
-        sidebery.package = addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=";
-        ether-metamask.package = addon "ether-metamask" "webextension@metamask.io" "sha256-G+MwJDOcsaxYSUXjahHJmkWnjLeQ0Wven8DU/lGeMzA=";
-        ublacklist.package = addon "ublacklist" "@ublacklist" "sha256-RqY5iHzbL2qizth7aguyOKWPyINXmrwOlf/OsfqAS48=";
-        i2p-in-private-browsing.package = addon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io" "sha256-dJcJ3jxeAeAkRvhODeIVrCflvX+S4E0wT/PyYzQBQWs=";
         # browserpass-ce.package = addon "browserpass-ce" "browserpass@maximbaz.com" "sha256-sXgUBbRvMnRpeIW1MTkmTcoqtW/8RDXAkxAq1evFkpc=";
         browserpass-extension.package = localAddon pkgs.browserpass-extension;
+        bypass-paywalls-clean.package = addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-JOj5P7c2JTTReHCRZXm4BscaGr3i+9Y4Ey/y621x8PI=";
+        ether-metamask.package = addon "ether-metamask" "webextension@metamask.io" "sha256-G+MwJDOcsaxYSUXjahHJmkWnjLeQ0Wven8DU/lGeMzA=";
+        i2p-in-private-browsing.package = addon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io" "sha256-dJcJ3jxeAeAkRvhODeIVrCflvX+S4E0wT/PyYzQBQWs=";
+        sidebery.package = addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=";
+        sponsorblock.package = addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-d2K3ufvurWnYVzqLbyR//MgejybkY9exitAf9RdLNRo=";
+        ublacklist.package = addon "ublacklist" "@ublacklist" "sha256-RqY5iHzbL2qizth7aguyOKWPyINXmrwOlf/OsfqAS48=";
+        ublock-origin.package = addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-a/ivUmY1P6teq9x0dt4CbgHt+3kBsEMMXlOfZ5Hx7cg=";
 
-        ublock-origin.enable = lib.mkDefault true;
-        sponsorblock.enable = lib.mkDefault true;
+        browserpass-extension.enable = lib.mkDefault true;
         bypass-paywalls-clean.enable = lib.mkDefault true;
+        ether-metamask.enable = lib.mkDefault true;
+        i2p-in-private-browsing.enable = lib.mkDefault config.services.i2p.enable;
         # TODO: disable on moby
         sidebery.enable = lib.mkDefault true;
-        ether-metamask.enable = lib.mkDefault true;
+        sponsorblock.enable = lib.mkDefault true;
         ublacklist.enable = lib.mkDefault true;
-        i2p-in-private-browsing.enable = lib.mkDefault config.services.i2p.enable;
-        browserpass-extension.enable = lib.mkDefault true;
+        ublock-origin.enable = lib.mkDefault true;
       };
     };
   };
