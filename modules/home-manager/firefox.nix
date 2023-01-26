@@ -44,21 +44,6 @@ let
     fixedExtid = pkg.extid;
   };
 
-  addons = {
-    # get names from:
-    # - ~/ref/nix-community/nur-combined/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
-    # `wget ...xpi`; `unar ...xpi`; `cat */manifest.json | jq '.browser_specific_settings.gecko.id'`
-    ublock-origin = addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-a/ivUmY1P6teq9x0dt4CbgHt+3kBsEMMXlOfZ5Hx7cg=";
-    sponsorblock = addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-d2K3ufvurWnYVzqLbyR//MgejybkY9exitAf9RdLNRo=";
-    bypass-paywalls-clean = addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-JOj5P7c2JTTReHCRZXm4BscaGr3i+9Y4Ey/y621x8PI=";
-    sidebery = addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=";
-    ether-metamask = addon "ether-metamask" "webextension@metamask.io" "sha256-G+MwJDOcsaxYSUXjahHJmkWnjLeQ0Wven8DU/lGeMzA=";
-    ublacklist = addon "ublacklist" "@ublacklist" "sha256-RqY5iHzbL2qizth7aguyOKWPyINXmrwOlf/OsfqAS48=";
-    i2p-in-private-browsing = addon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io" "sha256-dJcJ3jxeAeAkRvhODeIVrCflvX+S4E0wT/PyYzQBQWs=";
-    # browserpass-ce = addon "browserpass-ce" "browserpass@maximbaz.com" "sha256-sXgUBbRvMnRpeIW1MTkmTcoqtW/8RDXAkxAq1evFkpc=";
-    browserpass-extension = localAddon pkgs.browserpass-extension;
-  };
-
   package = pkgs.wrapFirefox cfg.browser.browser {
     # inherit the default librewolf.cfg
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
@@ -68,7 +53,7 @@ let
     extraNativeMessagingHosts = [ pkgs.browserpass ];
     # extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
 
-    nixExtensions = attrValues addons;
+    nixExtensions = concatMap (ext: optional ext.enable ext.package) (attrValues cfg.addons);
 
     extraPolicies = {
       NoDefaultBookmarks = true;
@@ -104,6 +89,17 @@ let
       # NewTabPage = true;
     };
   };
+
+  addonOpts = types.submodule {
+    options = {
+      package = mkOption {
+        type = types.package;
+      };
+      enable = mkOption {
+        type = types.bool;
+      };
+    };
+  };
 in
 {
   options = {
@@ -120,6 +116,33 @@ in
       description = "optional store name to which persist browser cache";
       type = types.nullOr types.str;
       default = "cryptClearOnBoot";
+    };
+    sane.web-browser.addons = mkOption {
+      type = types.attrsOf addonOpts;
+      default = {
+        # get names from:
+        # - ~/ref/nix-community/nur-combined/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
+        # `wget ...xpi`; `unar ...xpi`; `cat */manifest.json | jq '.browser_specific_settings.gecko.id'`
+        ublock-origin.package = addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-a/ivUmY1P6teq9x0dt4CbgHt+3kBsEMMXlOfZ5Hx7cg=";
+        sponsorblock.package = addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-d2K3ufvurWnYVzqLbyR//MgejybkY9exitAf9RdLNRo=";
+        bypass-paywalls-clean.package = addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-JOj5P7c2JTTReHCRZXm4BscaGr3i+9Y4Ey/y621x8PI=";
+        sidebery.package = addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=";
+        ether-metamask.package = addon "ether-metamask" "webextension@metamask.io" "sha256-G+MwJDOcsaxYSUXjahHJmkWnjLeQ0Wven8DU/lGeMzA=";
+        ublacklist.package = addon "ublacklist" "@ublacklist" "sha256-RqY5iHzbL2qizth7aguyOKWPyINXmrwOlf/OsfqAS48=";
+        i2p-in-private-browsing.package = addon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io" "sha256-dJcJ3jxeAeAkRvhODeIVrCflvX+S4E0wT/PyYzQBQWs=";
+        # browserpass-ce.package = addon "browserpass-ce" "browserpass@maximbaz.com" "sha256-sXgUBbRvMnRpeIW1MTkmTcoqtW/8RDXAkxAq1evFkpc=";
+        browserpass-extension.package = localAddon pkgs.browserpass-extension;
+
+        ublock-origin.enable = lib.mkDefault true;
+        sponsorblock.enable = lib.mkDefault true;
+        bypass-paywalls-clean.enable = lib.mkDefault true;
+        # TODO: disable on moby
+        sidebery.enable = lib.mkDefault true;
+        ether-metamask.enable = lib.mkDefault true;
+        ublacklist.enable = lib.mkDefault true;
+        i2p-in-private-browsing.enable = lib.mkDefault config.services.i2p.enable;
+        browserpass-extension.enable = lib.mkDefault true;
+      };
     };
   };
 
