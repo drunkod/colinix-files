@@ -68,7 +68,7 @@
   # the default CMA seems to be 32M.
   # i was running fine with 256MB from 2022/07-ish through 2022/12-ish, but then the phone quit reliably coming back from sleep: maybe a memory leak?
   # `cat /proc/meminfo` to see CmaTotal/CmaFree if interested in tuning this.
-  boot.kernelParams = [ "cma=384M" ];
+  boot.kernelParams = [ "cma=512M" ];
 
   # mobile-nixos' /lib/firmware includes:
   #   rtl_bt          (bluetooth)
