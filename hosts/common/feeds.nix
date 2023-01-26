@@ -119,7 +119,7 @@ let
     ## shared blog by a few NixOS devs, notably onny
     (fromDb "project-insanity.org" // tech)
     ## Vitalik Buterin
-    (mkText "https://vitalik.ca/feed.xml" // tech // infrequent)
+    (fromDb "vitalik.ca" // tech)
     ## ian (Sanctuary)
     (fromDb "sagacioussuricata.com" // tech)
     ## Bunnie Juang
