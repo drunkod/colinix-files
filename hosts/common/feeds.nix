@@ -99,7 +99,7 @@ let
     (fromDb "econlib.org" // pol)
 
     # AGGREGATORS (< 1 post/day)
-    (mkText "https://palladiummag.com/feed" // uncat // weekly)
+    (fromDb "palladiummag.com" // uncat)
     (fromDb "profectusmag.com" // uncat)
     (fromDb "semiaccurate.com" // tech)
     (mkText "https://linuxphoneapps.org/blog/atom.xml" // tech // infrequent)
