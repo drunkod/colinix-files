@@ -103,7 +103,7 @@ let
     (fromDb "profectusmag.com" // uncat)
     (fromDb "semiaccurate.com" // tech)
     (mkText "https://linuxphoneapps.org/blog/atom.xml" // tech // infrequent)
-    (mkText "https://spectrum.ieee.org/rss" // tech // weekly)
+    (fromDb "spectrum.ieee.org" // tech)
     ## n.b.: quality RSS list here: <https://forum.merveilles.town/thread/57/share-your-rss-feeds%21-6/>
     (mkText "https://forum.merveilles.town/rss.xml" // pol // infrequent)
 
