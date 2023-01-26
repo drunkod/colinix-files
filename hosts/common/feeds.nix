@@ -100,7 +100,7 @@ let
 
     # AGGREGATORS (< 1 post/day)
     (mkText "https://palladiummag.com/feed" // uncat // weekly)
-    (mkText "https://profectusmag.com/feed" // uncat // weekly)
+    (fromDb "profectusmag.com" // uncat)
     (fromDb "semiaccurate.com" // tech)
     (mkText "https://linuxphoneapps.org/blog/atom.xml" // tech // infrequent)
     (mkText "https://spectrum.ieee.org/rss" // tech // weekly)
