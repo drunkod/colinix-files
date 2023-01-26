@@ -32,6 +32,33 @@ let
   defaultSettings = firefoxSettings;
   # defaultSettings = librewolfSettings;
 
+  addon = name: extid: hash: pkgs.fetchFirefoxAddon {
+    inherit name hash;
+    url = "https://addons.mozilla.org/firefox/downloads/latest/${name}/latest.xpi";
+    # extid can be found by unar'ing the above xpi, and copying browser_specific_settings.gecko.id field
+    fixedExtid = extid;
+  };
+  localAddon = pkg: pkgs.fetchFirefoxAddon {
+    inherit (pkg) name;
+    src = "${pkg}/share/mozilla/extensions/\\{ec8030f7-c20a-464f-9b0e-13a3a9e97384\\}/${pkg.extid}.xpi";
+    fixedExtid = pkg.extid;
+  };
+
+  addons = {
+    # get names from:
+    # - ~/ref/nix-community/nur-combined/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
+    # `wget ...xpi`; `unar ...xpi`; `cat */manifest.json | jq '.browser_specific_settings.gecko.id'`
+    ublock-origin = addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-a/ivUmY1P6teq9x0dt4CbgHt+3kBsEMMXlOfZ5Hx7cg=";
+    sponsorblock = addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-d2K3ufvurWnYVzqLbyR//MgejybkY9exitAf9RdLNRo=";
+    bypass-paywalls-clean = addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-JOj5P7c2JTTReHCRZXm4BscaGr3i+9Y4Ey/y621x8PI=";
+    sidebery = addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=";
+    ether-metamask = addon "ether-metamask" "webextension@metamask.io" "sha256-G+MwJDOcsaxYSUXjahHJmkWnjLeQ0Wven8DU/lGeMzA=";
+    ublacklist = addon "ublacklist" "@ublacklist" "sha256-RqY5iHzbL2qizth7aguyOKWPyINXmrwOlf/OsfqAS48=";
+    i2p-in-private-browsing = addon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io" "sha256-dJcJ3jxeAeAkRvhODeIVrCflvX+S4E0wT/PyYzQBQWs=";
+    # browserpass-ce = addon "browserpass-ce" "browserpass@maximbaz.com" "sha256-sXgUBbRvMnRpeIW1MTkmTcoqtW/8RDXAkxAq1evFkpc=";
+    browserpass-extension = localAddon pkgs.browserpass-extension;
+  };
+
   package = pkgs.wrapFirefox cfg.browser.browser {
     # inherit the default librewolf.cfg
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
@@ -41,32 +68,7 @@ let
     extraNativeMessagingHosts = [ pkgs.browserpass ];
     # extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
 
-    nixExtensions = let
-      addon = name: extid: hash: pkgs.fetchFirefoxAddon {
-        inherit name hash;
-        url = "https://addons.mozilla.org/firefox/downloads/latest/${name}/latest.xpi";
-        # extid can be found by unar'ing the above xpi, and copying browser_specific_settings.gecko.id field
-        fixedExtid = extid;
-      };
-      localAddon = pkg: pkgs.fetchFirefoxAddon {
-        inherit (pkg) name;
-        src = "${pkg}/share/mozilla/extensions/\\{ec8030f7-c20a-464f-9b0e-13a3a9e97384\\}/${pkg.extid}.xpi";
-        fixedExtid = pkg.extid;
-      };
-    in [
-      # get names from:
-      # - ~/ref/nix-community/nur-combined/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
-      # `wget ...xpi`; `unar ...xpi`; `cat */manifest.json | jq '.browser_specific_settings.gecko.id'`
-      (addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-a/ivUmY1P6teq9x0dt4CbgHt+3kBsEMMXlOfZ5Hx7cg=")
-      (addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-d2K3ufvurWnYVzqLbyR//MgejybkY9exitAf9RdLNRo=")
-      (addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-JOj5P7c2JTTReHCRZXm4BscaGr3i+9Y4Ey/y621x8PI=")
-      (addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=")
-      (addon "ether-metamask" "webextension@metamask.io" "sha256-G+MwJDOcsaxYSUXjahHJmkWnjLeQ0Wven8DU/lGeMzA=")
-      (addon "ublacklist" "@ublacklist" "sha256-RqY5iHzbL2qizth7aguyOKWPyINXmrwOlf/OsfqAS48=")
-      (addon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io" "sha256-dJcJ3jxeAeAkRvhODeIVrCflvX+S4E0wT/PyYzQBQWs=")
-      # (addon "browserpass-ce" "browserpass@maximbaz.com" "sha256-sXgUBbRvMnRpeIW1MTkmTcoqtW/8RDXAkxAq1evFkpc=")
-      (localAddon pkgs.browserpass-extension)
-    ];
+    nixExtensions = attrValues addons;
 
     extraPolicies = {
       NoDefaultBookmarks = true;
