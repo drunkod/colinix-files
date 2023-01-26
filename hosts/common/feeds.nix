@@ -101,7 +101,7 @@ let
     # AGGREGATORS (< 1 post/day)
     (mkText "https://palladiummag.com/feed" // uncat // weekly)
     (mkText "https://profectusmag.com/feed" // uncat // weekly)
-    (mkText "https://semiaccurate.com/feed" // tech // weekly)
+    (fromDb "semiaccurate.com" // tech)
     (mkText "https://linuxphoneapps.org/blog/atom.xml" // tech // infrequent)
     (mkText "https://spectrum.ieee.org/rss" // tech // weekly)
     ## n.b.: quality RSS list here: <https://forum.merveilles.town/thread/57/share-your-rss-feeds%21-6/>
