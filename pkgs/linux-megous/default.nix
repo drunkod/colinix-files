@@ -3,9 +3,9 @@
 with lib;
 
 let
-  base = "6.1.0";
+  base = "6.2.0";
   # set to empty if not a release candidate
-  rc = "-rc8";
+  rc = "-rc5";
 in buildLinux (args // rec {
   version = base + rc;
 
@@ -24,7 +24,7 @@ in buildLinux (args // rec {
     #   - specific branches like `pp` (pinephone) are dev branches, and probably less stable.
     owner = "megous";
     repo = "linux";
-    rev = "orange-pi-6.1-20221211-1046";
-    hash = "sha256-TgFXH8bHWHs26rlf7a/zNO9zubFazC8Ie6J1gj4gLgw=";
+    rev = "orange-pi-6.2-20230122-1624";
+    hash = "sha256-Yma9LwlMEnP0QkUZpEl+UkTGvOWOMANBoDsmcTrPb1s=";
   };
 } // (args.argsOverride or { }))
