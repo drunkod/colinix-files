@@ -137,7 +137,6 @@ in
         bypass-paywalls-clean.enable = lib.mkDefault true;
         ether-metamask.enable = lib.mkDefault true;
         i2p-in-private-browsing.enable = lib.mkDefault config.services.i2p.enable;
-        # TODO: disable on moby
         sidebery.enable = lib.mkDefault true;
         sponsorblock.enable = lib.mkDefault true;
         ublacklist.enable = lib.mkDefault true;

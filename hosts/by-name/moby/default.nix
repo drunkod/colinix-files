@@ -27,9 +27,16 @@
     neededForUsers = true;
   };
 
-  # usability compromises
-  sane.web-browser.persistCache = "private";
-  sane.web-browser.persistData = "private";
+  sane.web-browser = {
+    # compromise impermanence for the sake of usability
+    persistCache = "private";
+    persistData = "private";
+
+    # i don't do crypto stuff on moby
+    addons.ether-metamask.enable = false;
+    # addons.sideberry.enable = false;
+  };
+
   sane.persist.home.plaintext = [
     ".config/pulse"  # persist pulseaudio volume
   ];
