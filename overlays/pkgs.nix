@@ -58,7 +58,6 @@
 
       # provided by nixpkgs patch or upstream preview
       # splatmoji = prev.callPackage ../pkgs/splatmoji { };
-      # signaldctl = prev.callPackage ../pkgs/signaldctl { };
     };
   in sane // { inherit sane; }
 )
