@@ -6,13 +6,6 @@
     sha256 = "sha256-Ne4hyHQDwBHUlWo8Z3QyRdmEv1rYGOjFGxSfOAcLUvQ=";
   })
 
-  # trust-dns: init at 0.22.0
-  (fetchpatch {
-    # https://git.uninsane.org/colin/nixpkgs/compare/master...pr-trust-dns.diff
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/feee7e0357a74ab0510b2d113a3bdede1d509759.diff";
-    sha256 = "sha256-t4sG+xLDaxbJ/mV5G18N4ag8EC3IXPgtN5FJGANh1Dc=";
-  })
-
   # splatmoji: init at 1.2.0
   (fetchpatch {
     # https://github.com/NixOS/nixpkgs/pull/211874
@@ -20,11 +13,11 @@
     hash = "sha256-IvsIcd2wPdz4b/7FMrDrcVlIZjFecCQ9uiL0Umprbx0=";
   })
 
-  # matrix-synapse,mautrix-facebook: fix runtime inclusion of python3 systemd #212391
-  # merged 2023/01/24
+  # fix libreoffice build by: Revert "mdds: 2.0.3 -> 2.1.0"
+  # merged 2023/01/25
   (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/212391.diff";
-    hash = "sha256-N9lzQLi8NN9cbd+d04yx2v5mI9tVnlSKVbl0+QGE1YQ=";
+    url = "https://github.com/NixOS/nixpkgs/pull/212583.diff";
+    hash = "sha256-nkXgwQUtxYkJT2OzG6Jc72snizW5wHvR1nmh2KDnaPc=";
   })
 
   ./2022-12-19-i2p-aarch64.patch
