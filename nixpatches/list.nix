@@ -20,6 +20,14 @@
     hash = "sha256-nkXgwQUtxYkJT2OzG6Jc72snizW5wHvR1nmh2KDnaPc=";
   })
 
+  # fix handbrake build by: handbrake: 1.5.1 -> 1.6.1
+  # PR opened 2023/01/23
+  (fetchpatch {
+    # see alternate fix: <https://github.com/NixOS/nixpkgs/pull/211834>
+    url = "https://github.com/NixOS/nixpkgs/pull/212306.diff";
+    hash = "sha256-iQX2NaZaCzZVRlCM0pgXt0gecNwhXGeh3kXEiY38ZIM=";
+  })
+
   ./2022-12-19-i2p-aarch64.patch
 
   # fix for <https://gitlab.com/signald/signald/-/issues/345>

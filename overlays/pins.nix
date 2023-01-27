@@ -30,8 +30,5 @@
     #   error: 1 dependencies of derivation '/nix/store/hrb3qpdbisqh0lzlyz1g9g4164khmqwn-etc.drv' failed to build
     #   error: 1 dependencies of derivation '/nix/store/ny21xyicbgim5wy7ksg2hibd9gn7i01b-nixos-system-moby-23.05pre-git.drv' failed to build
     # nheko
-
-    # TODO(unpin): broken build on 2023/01/16. <https://hydra.nixos.org/build/205551450>
-    handbrake
   ;
 })
