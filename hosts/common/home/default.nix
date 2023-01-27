@@ -7,5 +7,6 @@
     ./gpodder.nix
     ./keyring.nix
     ./newsflash.nix
+    ./splatmoji.nix
   ];
 }
