@@ -18,7 +18,6 @@ in
     ./kitty.nix
     ./mpv.nix
     ./neovim.nix
-    ./newsflash.nix
     ./splatmoji.nix
     ./ssh.nix
     ./sublime-music.nix
