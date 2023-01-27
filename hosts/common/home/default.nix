@@ -10,5 +10,6 @@
     ./splatmoji.nix
     ./ssh.nix
     ./sublime-music.nix
+    ./vlc.nix
   ];
 }
