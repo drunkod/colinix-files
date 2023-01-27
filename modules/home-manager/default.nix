@@ -14,7 +14,6 @@ let
 in
 {
   imports = [
-    ./mpv.nix
     ./neovim.nix
     ./zsh
   ];

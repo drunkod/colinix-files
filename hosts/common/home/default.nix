@@ -8,6 +8,7 @@
     ./gpodder.nix
     ./keyring.nix
     ./kitty.nix
+    ./mpv.nix
     ./newsflash.nix
     ./splatmoji.nix
     ./ssh.nix
