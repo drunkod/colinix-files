@@ -205,6 +205,7 @@ let
     fd
     file
     gawk
+    git
     gptfdisk
     hdparm
     htop

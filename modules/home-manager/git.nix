@@ -1,20 +1,19 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, sane-lib, ... }:
 
+let
+  mkCfg = lib.generators.toINI { };
+in
 lib.mkIf config.sane.home-manager.enable
 {
-  home-manager.users.colin.programs.git = {
-    enable = true;
-    userName = "colin";
-    userEmail = "colin@uninsane.org";
-
-    aliases = { co = "checkout"; };
-    extraConfig = {
-      # difftastic docs:
-      # - <https://difftastic.wilfred.me.uk/git.html>
-      diff.tool = "difftastic";
-      difftool.prompt = false;
-      "difftool \"difftastic\"".cmd = ''${pkgs.difftastic}/bin/difft "$LOCAL" "$REMOTE"'';
-      # now run `git difftool` to use difftastic git
-    };
-  };
+  sane.fs."/home/colin/.config/git/config" = sane-lib.fs.wantedText (mkCfg {
+    user.name = "Colin";
+    user.email = "colin@uninsane.org";
+    alias.co = "checkout";
+    # difftastic docs:
+    # - <https://difftastic.wilfred.me.uk/git.html>
+    diff.tool = "difftastic";
+    difftool.prompt = false;
+    "difftool \"difftastic\"".cmd = ''${pkgs.difftastic}/bin/difft "$LOCAL" "$REMOTE"'';
+    # now run `git difftool` to use difftastic git
+  });
 }
