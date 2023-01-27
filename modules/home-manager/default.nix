@@ -14,7 +14,6 @@ let
 in
 {
   imports = [
-    ./firefox.nix
     ./gfeeds.nix
     ./git.nix
     ./gpodder.nix
