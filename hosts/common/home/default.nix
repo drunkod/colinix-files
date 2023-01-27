@@ -9,5 +9,6 @@
     ./newsflash.nix
     ./splatmoji.nix
     ./ssh.nix
+    ./sublime-music.nix
   ];
 }
