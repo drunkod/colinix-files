@@ -15,7 +15,6 @@ in
 {
   imports = [
     ./git.nix
-    ./keyring.nix
     ./kitty.nix
     ./mpv.nix
     ./neovim.nix
