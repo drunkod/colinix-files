@@ -14,7 +14,6 @@ let
 in
 {
   imports = [
-    ./aerc.nix
     ./firefox.nix
     ./gfeeds.nix
     ./git.nix

@@ -5,6 +5,7 @@
     ./feeds.nix
     ./fs.nix
     ./hardware.nix
+    ./home
     ./i2p.nix
     ./ids.nix
     ./machine-id.nix
@@ -47,7 +48,6 @@
     "nixpkgs-overlays=${../..}/overlays"
   ];
 
-  # TODO: move this into home-manager?
   fonts = {
     enableDefaultFonts = true;
     fonts = with pkgs; [ font-awesome twitter-color-emoji hack-font ];
