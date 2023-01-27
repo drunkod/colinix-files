@@ -8,5 +8,6 @@
     ./keyring.nix
     ./newsflash.nix
     ./splatmoji.nix
+    ./ssh.nix
   ];
 }

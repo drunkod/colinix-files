@@ -18,7 +18,6 @@ in
     ./kitty.nix
     ./mpv.nix
     ./neovim.nix
-    ./ssh.nix
     ./sublime-music.nix
     ./vlc.nix
     ./zsh
