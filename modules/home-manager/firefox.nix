@@ -173,7 +173,7 @@ in
     '';
 
     sane.packages.extraGuiPkgs = [ package ];
-    # flood the cache to disk to avoid it taking up too much tmp
+    # flush the cache to disk to avoid it taking up too much tmp
     sane.persist.home.byPath."${cfg.browser.cacheDir}" = lib.mkIf (cfg.persistCache != null) {
       store = cfg.persistCache;
     };

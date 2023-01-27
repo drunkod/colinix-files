@@ -160,7 +160,9 @@ let
         store-names;
     in {
       byPath = lib.mkMerge (concatLists [
+        # convert the list-style per-store entries into attrsOf entries
         (applyToAllStores (store: dirToAttrs))
+        # add the `store` attr to everything we ingested
         (applyToAllStores annotateWithStore)
       ]);
     };
