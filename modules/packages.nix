@@ -112,6 +112,7 @@ let
 
     kdenlive
     kid3  # audio tagging
+    kitty
     krita
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     lollypop
