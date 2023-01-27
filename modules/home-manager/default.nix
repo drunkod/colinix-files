@@ -14,7 +14,6 @@ let
 in
 {
   imports = [
-    ./kitty.nix
     ./mpv.nix
     ./neovim.nix
     ./zsh
