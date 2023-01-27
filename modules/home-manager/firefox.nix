@@ -178,8 +178,22 @@ in
       store = cfg.persistCache;
     };
 
-    sane.persist.home.byPath."${cfg.browser.dotDir}" = lib.mkIf (cfg.persistData != null) {
+    sane.persist.home.byPath."${cfg.browser.dotDir}/default" = lib.mkIf (cfg.persistData != null) {
       store = cfg.persistData;
     };
+    sane.fs."/home/colin/${cfg.browser.dotDir}/default" = sane-lib.fs.wantedDir;
+    # instruct Firefox to put the profile in a predictable directory (so we can do things like persist just it).
+    # XXX: the directory *must* exist, even if empty; Firefox will not create the directory itself.
+    sane.fs."/home/colin/${cfg.browser.dotDir}/profiles.ini" = sane-lib.fs.wantedText ''
+      [Profile0]
+      Name=default
+      IsRelative=1
+      Path=default
+      Default=1
+
+      [General]
+      StartWithLastProfile=1
+    '';
+
   };
 }
