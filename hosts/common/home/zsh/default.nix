@@ -24,9 +24,6 @@ let
     source ${pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
     source ${pkgs.zsh-prezto}/share/zsh-prezto/init.zsh
   '';
-  vte-init = ''
-    source ${pkgs.vte}/etc/profile.d/vte.sh
-  '';
 in
 lib.mkIf config.sane.home-manager.enable
 {
@@ -38,6 +35,7 @@ lib.mkIf config.sane.home-manager.enable
     # cache gitstatus otherwise p10k fetched it from the net EVERY BOOT
     ".cache/gitstatus"
   ];
+
 
   programs.zsh = {
     enable = true;
@@ -67,7 +65,6 @@ lib.mkIf config.sane.home-manager.enable
       (builtins.readFile ./p10k.zsh)
     + p10k-overrides
     + prezto-init
-    + vte-init
     + ''
       # zmv is a way to do rich moves/renames, with pattern matching/substitution.
       # see for an example: <https://filipe.kiss.ink/zmv-zsh-rename/>
@@ -96,6 +93,7 @@ lib.mkIf config.sane.home-manager.enable
     '';
 
     syntaxHighlighting.enable = true;
+    vteIntegration = true;
   };
 
   # prezto = oh-my-zsh fork; controls prompt, auto-completion, etc.
