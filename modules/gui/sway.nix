@@ -1,9 +1,76 @@
-{ pkgs, lib, config, ... }:
+{ config, lib, pkgs, sane-lib, ... }:
  
 # docs: https://nixos.wiki/wiki/Sway
 with lib;
 let
   cfg = config.sane.gui.sway;
+  # docs: https://github.com/Alexays/Waybar/wiki/Configuration
+  # format specifiers: https://fmt.dev/latest/syntax.html#syntax
+  waybar-config = {
+    mainBar = {
+      layer = "top";
+      height = 40;
+      modules-left = ["sway/workspaces" "sway/mode"];
+      modules-center = ["sway/window"];
+      modules-right = ["custom/mediaplayer" "clock" "battery" "cpu" "network"];
+      "sway/window" = {
+        max-length = 50;
+      };
+      # include song artist/title. source: https://www.reddit.com/r/swaywm/comments/ni0vso/waybar_spotify_tracktitle/
+      "custom/mediaplayer" = {
+        exec = pkgs.writeShellScript "waybar-mediaplayer" ''
+          player_status=$(${pkgs.playerctl}/bin/playerctl status 2> /dev/null)
+          if [ "$player_status" = "Playing" ]; then
+            echo "$(${pkgs.playerctl}/bin/playerctl metadata artist) - $(${pkgs.playerctl}/bin/playerctl metadata title)"
+          elif [ "$player_status" = "Paused" ]; then
+            echo " $(${pkgs.playerctl}/bin/playerctl metadata artist) - $(${pkgs.playerctl}/bin/playerctl metadata title)"
+          fi
+        '';
+        interval = 2;
+        format = "{}  ";
+        # return-type = "json";
+        on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
+        on-scroll-up = "${pkgs.playerctl}/bin/playerctl next";
+        on-scroll-down = "${pkgs.playerctl}/bin/playerctl previous";
+      };
+      network = {
+        # docs: https://github.com/Alexays/Waybar/blob/master/man/waybar-network.5.scd
+        interval = 2;
+        max-length = 40;
+        # custom :> format specifier explained here: https://github.com/Alexays/Waybar/pull/472
+        format-ethernet = "  {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
+        tooltip-format-ethernet = "{ifname} {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
+
+        format-wifi = "{ifname} ({signalStrength}%) {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
+        tooltip-format-wifi = "{essid} ({signalStrength}%) {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
+
+        format-disconnected = "";
+      };
+      cpu = {
+        format = " {usage:2}%";
+        tooltip = false;
+      };
+      battery = {
+        states = {
+          good = 95;
+          warning = 30;
+          critical = 10;
+        };
+        format = "{icon} {capacity}%";
+        format-icons = [
+          ""
+          ""
+          ""
+          ""
+          ""
+        ];
+      };
+      clock = {
+        format-alt = "{:%a, %d. %b  %H:%M}";
+      };
+    };
+  };
+  waybar-config-text = lib.generators.toJSON {} waybar-config;
 in
 {
   options = {
@@ -288,351 +355,285 @@ in
       };
     };
 
-    sane.home-manager.programs.waybar = {
-      enable = true;
-      # docs: https://github.com/Alexays/Waybar/wiki/Configuration
-      # format specifiers: https://fmt.dev/latest/syntax.html#syntax
-      settings = {
-        mainBar = {
-          layer = "top";
-          height = 40;
-          modules-left = ["sway/workspaces" "sway/mode"];
-          modules-center = ["sway/window"];
-          modules-right = ["custom/mediaplayer" "clock" "battery" "cpu" "network"];
-          "sway/window" = {
-            max-length = 50;
-          };
-          # include song artist/title. source: https://www.reddit.com/r/swaywm/comments/ni0vso/waybar_spotify_tracktitle/
-          "custom/mediaplayer" = {
-            exec = pkgs.writeShellScript "waybar-mediaplayer" ''
-              player_status=$(${pkgs.playerctl}/bin/playerctl status 2> /dev/null)
-              if [ "$player_status" = "Playing" ]; then
-                echo "$(${pkgs.playerctl}/bin/playerctl metadata artist) - $(${pkgs.playerctl}/bin/playerctl metadata title)"
-              elif [ "$player_status" = "Paused" ]; then
-                echo " $(${pkgs.playerctl}/bin/playerctl metadata artist) - $(${pkgs.playerctl}/bin/playerctl metadata title)"
-              fi
-            '';
-            interval = 2;
-            format = "{}  ";
-            # return-type = "json";
-            on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
-            on-scroll-up = "${pkgs.playerctl}/bin/playerctl next";
-            on-scroll-down = "${pkgs.playerctl}/bin/playerctl previous";
-          };
-          network = {
-            # docs: https://github.com/Alexays/Waybar/blob/master/man/waybar-network.5.scd
-            interval = 2;
-            max-length = 40;
-            # custom :> format specifier explained here: https://github.com/Alexays/Waybar/pull/472
-            format-ethernet = "  {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
-            tooltip-format-ethernet = "{ifname} {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
+    sane.fs."/home/colin/.config/waybar/config" = sane-lib.fs.wantedText waybar-config-text;
 
-            format-wifi = "{ifname} ({signalStrength}%) {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
-            tooltip-format-wifi = "{essid} ({signalStrength}%) {bandwidthUpBits:>}▲ {bandwidthDownBits:>}▼";
+    # style docs: https://github.com/Alexays/Waybar/wiki/Styling
+    sane.fs."/home/colin/.config/waybar/style.css" = sane-lib.fs.wantedText ''
+      * {
+        font-family: monospace;
+      }
 
-            format-disconnected = "";
-          };
-          cpu = {
-            format = " {usage:2}%";
-            tooltip = false;
-          };
-          battery = {
-            states = {
-              good = 95;
-              warning = 30;
-              critical = 10;
-            };
-            format = "{icon} {capacity}%";
-            format-icons = [
-              ""
-              ""
-              ""
-              ""
-              ""
-            ];
-          };
-          clock = {
-            format-alt = "{:%a, %d. %b  %H:%M}";
-          };
-        };
-      };
-      # style docs: https://github.com/Alexays/Waybar/wiki/Styling
-      style = ''
-        * {
-          font-family: monospace;
-        }
+      /* defaults below: https://github.com/Alexays/Waybar/blob/master/resources/style.css */
+      window#waybar {
+        background-color: rgba(43, 48, 59, 0.5);
+        border-bottom: 3px solid rgba(100, 114, 125, 0.5);
+        color: #ffffff;
+        transition-property: background-color;
+        transition-duration: .5s;
+      }
 
-        /* defaults below: https://github.com/Alexays/Waybar/blob/master/resources/style.css */
-        window#waybar {
-          background-color: rgba(43, 48, 59, 0.5);
-          border-bottom: 3px solid rgba(100, 114, 125, 0.5);
-          color: #ffffff;
-          transition-property: background-color;
-          transition-duration: .5s;
-        }
+      window#waybar.hidden {
+        opacity: 0.2;
+      }
 
-        window#waybar.hidden {
-          opacity: 0.2;
-        }
+      /*
+      window#waybar.empty {
+        background-color: transparent;
+      }
+      window#waybar.solo {
+        background-color: #FFFFFF;
+      }
+      */
 
-        /*
-        window#waybar.empty {
-          background-color: transparent;
-        }
-        window#waybar.solo {
-          background-color: #FFFFFF;
-        }
-        */
+      window#waybar.termite {
+        background-color: #3F3F3F;
+      }
 
-        window#waybar.termite {
-          background-color: #3F3F3F;
-        }
+      window#waybar.chromium {
+        background-color: #000000;
+        border: none;
+      }
 
-        window#waybar.chromium {
-          background-color: #000000;
-          border: none;
-        }
+      #workspaces button {
+        padding: 0 5px;
+        background-color: transparent;
+        color: #ffffff;
+        /* Use box-shadow instead of border so the text isn't offset */
+        box-shadow: inset 0 -3px transparent;
+        /* Avoid rounded borders under each workspace name */
+        border: none;
+        border-radius: 0;
+      }
 
-        #workspaces button {
-          padding: 0 5px;
-          background-color: transparent;
-          color: #ffffff;
-          /* Use box-shadow instead of border so the text isn't offset */
-          box-shadow: inset 0 -3px transparent;
-          /* Avoid rounded borders under each workspace name */
-          border: none;
-          border-radius: 0;
-        }
+      /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+      #workspaces button:hover {
+        background: rgba(0, 0, 0, 0.2);
+        box-shadow: inset 0 -3px #ffffff;
+      }
 
-        /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
-        #workspaces button:hover {
-          background: rgba(0, 0, 0, 0.2);
-          box-shadow: inset 0 -3px #ffffff;
-        }
+      #workspaces button.focused {
+        background-color: #64727D;
+        box-shadow: inset 0 -3px #ffffff;
+      }
 
-        #workspaces button.focused {
-          background-color: #64727D;
-          box-shadow: inset 0 -3px #ffffff;
-        }
+      #workspaces button.urgent {
+        background-color: #eb4d4b;
+      }
 
-        #workspaces button.urgent {
-          background-color: #eb4d4b;
-        }
+      #mode {
+        background-color: #64727D;
+        border-bottom: 3px solid #ffffff;
+      }
 
-        #mode {
-          background-color: #64727D;
-          border-bottom: 3px solid #ffffff;
-        }
+      #clock,
+      #battery,
+      #cpu,
+      #memory,
+      #disk,
+      #temperature,
+      #backlight,
+      #network,
+      #pulseaudio,
+      #custom-media,
+      #tray,
+      #mode,
+      #idle_inhibitor,
+      #mpd {
+        padding: 0 10px;
+        color: #ffffff;
+      }
 
-        #clock,
-        #battery,
-        #cpu,
-        #memory,
-        #disk,
-        #temperature,
-        #backlight,
-        #network,
-        #pulseaudio,
-        #custom-media,
-        #tray,
-        #mode,
-        #idle_inhibitor,
-        #mpd {
-          padding: 0 10px;
-          color: #ffffff;
-        }
+      #window,
+      #workspaces {
+        margin: 0 4px;
+      }
 
-        #window,
-        #workspaces {
-          margin: 0 4px;
-        }
+      /* If workspaces is the leftmost module, omit left margin */
+      .modules-left > widget:first-child > #workspaces {
+        margin-left: 0;
+      }
 
-        /* If workspaces is the leftmost module, omit left margin */
-        .modules-left > widget:first-child > #workspaces {
-          margin-left: 0;
-        }
+      /* If workspaces is the rightmost module, omit right margin */
+      .modules-right > widget:last-child > #workspaces {
+        margin-right: 0;
+      }
 
-        /* If workspaces is the rightmost module, omit right margin */
-        .modules-right > widget:last-child > #workspaces {
-          margin-right: 0;
-        }
+      #clock {
+        background-color: #64727D;
+      }
 
-        #clock {
-          background-color: #64727D;
-        }
+      #battery {
+        background-color: #ffffff;
+        color: #000000;
+      }
 
-        #battery {
+      #battery.charging, #battery.plugged {
+        color: #ffffff;
+        background-color: #26A65B;
+      }
+
+      @keyframes blink {
+        to {
           background-color: #ffffff;
           color: #000000;
         }
+      }
 
-        #battery.charging, #battery.plugged {
-          color: #ffffff;
-          background-color: #26A65B;
-        }
+      #battery.critical:not(.charging) {
+        background-color: #f53c3c;
+        color: #ffffff;
+        animation-name: blink;
+        animation-duration: 0.5s;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+      }
 
-        @keyframes blink {
-          to {
-            background-color: #ffffff;
-            color: #000000;
-          }
-        }
+      label:focus {
+        background-color: #000000;
+      }
 
-        #battery.critical:not(.charging) {
-          background-color: #f53c3c;
-          color: #ffffff;
-          animation-name: blink;
-          animation-duration: 0.5s;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-          animation-direction: alternate;
-        }
+      #cpu {
+        background-color: #2ecc71;
+        color: #000000;
+      }
 
-        label:focus {
-          background-color: #000000;
-        }
+      #memory {
+        background-color: #9b59b6;
+      }
 
-        #cpu {
-          background-color: #2ecc71;
-          color: #000000;
-        }
+      #disk {
+        background-color: #964B00;
+      }
 
-        #memory {
-          background-color: #9b59b6;
-        }
+      #backlight {
+        background-color: #90b1b1;
+      }
 
-        #disk {
-          background-color: #964B00;
-        }
+      #network {
+        background-color: #2980b9;
+      }
 
-        #backlight {
-          background-color: #90b1b1;
-        }
+      #network.disconnected {
+        background-color: #f53c3c;
+      }
 
-        #network {
-          background-color: #2980b9;
-        }
+      #pulseaudio {
+        background-color: #f1c40f;
+        color: #000000;
+      }
 
-        #network.disconnected {
-          background-color: #f53c3c;
-        }
+      #pulseaudio.muted {
+        background-color: #90b1b1;
+        color: #2a5c45;
+      }
 
-        #pulseaudio {
-          background-color: #f1c40f;
-          color: #000000;
-        }
+      #custom-media {
+        background-color: #66cc99;
+        color: #2a5c45;
+        min-width: 100px;
+      }
 
-        #pulseaudio.muted {
-          background-color: #90b1b1;
-          color: #2a5c45;
-        }
+      #custom-media.custom-spotify {
+        background-color: #66cc99;
+      }
 
-        #custom-media {
-          background-color: #66cc99;
-          color: #2a5c45;
-          min-width: 100px;
-        }
+      #custom-media.custom-vlc {
+        background-color: #ffa000;
+      }
 
-        #custom-media.custom-spotify {
-          background-color: #66cc99;
-        }
+      #temperature {
+        background-color: #f0932b;
+      }
 
-        #custom-media.custom-vlc {
-          background-color: #ffa000;
-        }
+      #temperature.critical {
+        background-color: #eb4d4b;
+      }
 
-        #temperature {
-          background-color: #f0932b;
-        }
+      #tray {
+        background-color: #2980b9;
+      }
 
-        #temperature.critical {
-          background-color: #eb4d4b;
-        }
+      #tray > .passive {
+        -gtk-icon-effect: dim;
+      }
 
-        #tray {
-          background-color: #2980b9;
-        }
+      #tray > .needs-attention {
+        -gtk-icon-effect: highlight;
+        background-color: #eb4d4b;
+      }
 
-        #tray > .passive {
-          -gtk-icon-effect: dim;
-        }
+      #idle_inhibitor {
+        background-color: #2d3436;
+      }
 
-        #tray > .needs-attention {
-          -gtk-icon-effect: highlight;
-          background-color: #eb4d4b;
-        }
+      #idle_inhibitor.activated {
+        background-color: #ecf0f1;
+        color: #2d3436;
+      }
 
-        #idle_inhibitor {
-          background-color: #2d3436;
-        }
+      #mpd {
+        background-color: #66cc99;
+        color: #2a5c45;
+      }
 
-        #idle_inhibitor.activated {
-          background-color: #ecf0f1;
-          color: #2d3436;
-        }
+      #mpd.disconnected {
+        background-color: #f53c3c;
+      }
 
-        #mpd {
-          background-color: #66cc99;
-          color: #2a5c45;
-        }
+      #mpd.stopped {
+        background-color: #90b1b1;
+      }
 
-        #mpd.disconnected {
-          background-color: #f53c3c;
-        }
+      #mpd.paused {
+        background-color: #51a37a;
+      }
 
-        #mpd.stopped {
-          background-color: #90b1b1;
-        }
+      #language {
+        background: #00b093;
+        color: #740864;
+        padding: 0 5px;
+        margin: 0 5px;
+        min-width: 16px;
+      }
 
-        #mpd.paused {
-          background-color: #51a37a;
-        }
+      #keyboard-state {
+        background: #97e1ad;
+        color: #000000;
+        padding: 0 0px;
+        margin: 0 5px;
+        min-width: 16px;
+      }
 
-        #language {
-          background: #00b093;
-          color: #740864;
-          padding: 0 5px;
-          margin: 0 5px;
-          min-width: 16px;
-        }
+      #keyboard-state > label {
+        padding: 0 5px;
+      }
 
-        #keyboard-state {
-          background: #97e1ad;
-          color: #000000;
-          padding: 0 0px;
-          margin: 0 5px;
-          min-width: 16px;
-        }
+      #keyboard-state > label.locked {
+        background: rgba(0, 0, 0, 0.2);
+      }
+    '';
+    # style = ''
+    #   * {
+    #     border: none;
+    #     border-radius: 0;
+    #     font-family: Source Code Pro;
+    #   }
+    #   window#waybar {
+    #     background: #16191C;
+    #     color: #AAB2BF;
+    #   }
+    #   #workspaces button {
+    #     padding: 0 5px;
+    #   }
+    #   .custom-spotify {
+    #     padding: 0 10px;
+    #     margin: 0 4px;
+    #     background-color: #1DB954;
+    #     color: black;
+    #   }
+    # '';
 
-        #keyboard-state > label {
-          padding: 0 5px;
-        }
-
-        #keyboard-state > label.locked {
-          background: rgba(0, 0, 0, 0.2);
-        }
-      '';
-      # style = ''
-      #   * {
-      #     border: none;
-      #     border-radius: 0;
-      #     font-family: Source Code Pro;
-      #   }
-      #   window#waybar {
-      #     background: #16191C;
-      #     color: #AAB2BF;
-      #   }
-      #   #workspaces button {
-      #     padding: 0 5px;
-      #   }
-      #   .custom-spotify {
-      #     padding: 0 10px;
-      #     margin: 0 4px;
-      #     background-color: #1DB954;
-      #     color: black;
-      #   }
-      # '';
-    };
     sane.packages.extraUserPkgs = with pkgs; [
       swaylock
       swayidle  # (unused)
