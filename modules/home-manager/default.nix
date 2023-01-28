@@ -110,7 +110,5 @@ in
         cfg.programs
       ];
     };
-
-    sane.persist.home.plaintext = [ ".cache/nix-index" ];
   };
 }

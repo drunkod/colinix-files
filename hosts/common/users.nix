@@ -87,6 +87,7 @@ in
       "Videos"
 
       ".cache/nix"
+      ".cache/nix-index"
       ".cargo"
       ".rustup"
     ];
