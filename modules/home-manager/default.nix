@@ -13,10 +13,6 @@ let
   pkg-list = pkgspec: builtins.map (e: e.pkg) pkgspec;
 in
 {
-  imports = [
-    ./zsh
-  ];
-
   options = {
     sane.home-manager.enable = mkOption {
       default = false;
