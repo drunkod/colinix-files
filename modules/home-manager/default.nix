@@ -51,9 +51,8 @@ in
 
       programs = lib.mkMerge [
         {
-          home-manager.enable = true;  # this lets home-manager manage dot-files in user dirs, i think
-          # "command not found" will cause the command to be searched in nixpkgs
-          nix-index.enable = true;
+          # XXX: unsure what this does?
+          home-manager.enable = true;
         }
         cfg.programs
       ];

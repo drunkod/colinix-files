@@ -96,6 +96,10 @@ lib.mkIf config.sane.home-manager.enable
     vteIntegration = true;
   };
 
+  # enable a command-not-found hook to show nix packages that might provide the binary typed.
+  programs.nix-index.enable = true;
+  programs.command-not-found.enable = false;  #< mutually exclusive with nix-index
+
   # prezto = oh-my-zsh fork; controls prompt, auto-completion, etc.
   # see: https://github.com/sorin-ionescu/prezto
   # i believe this file is auto-sourced by the prezto init.zsh script.
