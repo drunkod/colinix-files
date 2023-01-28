@@ -9,6 +9,7 @@
     ./keyring.nix
     ./kitty.nix
     ./libreoffice.nix
+    ./mime.nix
     ./mpv.nix
     ./neovim.nix
     ./newsflash.nix
