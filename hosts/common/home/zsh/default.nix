@@ -36,6 +36,8 @@ lib.mkIf config.sane.home-manager.enable
     ".cache/gitstatus"
   ];
 
+  # zsh/prezto complains if zshrc doesn't exist; but it does allow an "empty" file.
+  sane.fs."/home/colin/.config/zsh/.zshrc" = sane-lib.fs.wantedText "# ";
 
   programs.zsh = {
     enable = true;
