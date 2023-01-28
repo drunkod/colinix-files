@@ -70,7 +70,8 @@ let
       };
     };
   };
-  waybar-config-text = lib.generators.toJSON {} waybar-config;
+  # waybar-config-text = lib.generators.toJSON {} waybar-config;
+  waybar-config-text = (pkgs.formats.json {}).generate "waybar-config.json" waybar-config;
 in
 {
   options = {
@@ -83,7 +84,7 @@ in
         launch sway via a greeter (like greetd's gtkgreet).
         sway is usable without a greeter, but skipping the greeter means no PAM session.
       '';
-      default = true;
+      default = false;
       type = types.bool;
     };
   };
@@ -98,6 +99,9 @@ in
         # `-l` activates layer-shell mode.
         exec "${pkgs.greetd.gtkgreet}/bin/gtkgreet -l -c sway"
       '';
+      sway-launcher = pkgs.writeShellScript "sway-launcher" ''
+        ${pkgs.sway}/bin/sway --debug > /home/colin/.sway.log 2>&1
+      '';
       default_session = {
         "01" = {
           # greeter session config
@@ -109,7 +113,7 @@ in
         };
         "0" = {
           # no greeter
-          command = "${pkgs.sway}/bin/sway";
+          command = sway-launcher;
           user = "colin";
         };
       };
@@ -290,7 +294,7 @@ in
           hidden_state hide
           position top
           status_command ${pkgs.i3status}/bin/i3status
-          swaybar_command ${pkgs.sway}/bin/swaybar
+          swaybar_command ${pkgs.waybar}/bin/waybar
           workspace_buttons yes
           strip_workspace_numbers no
           tray_output primary
@@ -329,11 +333,9 @@ in
         pos 1920,0
         res 1920x1080
         }
-
-        exec "systemctl --user import-environment; systemctl --user start sway-session.target"
       '';
 
-    sane.fs."/home/colin/.config/waybar/config" = sane-lib.fs.wantedText waybar-config-text;
+    sane.fs."/home/colin/.config/waybar/config" = sane-lib.fs.wantedSymlinkTo waybar-config-text;
 
     # style docs: https://github.com/Alexays/Waybar/wiki/Styling
     sane.fs."/home/colin/.config/waybar/style.css" = sane-lib.fs.wantedText ''
