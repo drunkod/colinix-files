@@ -90,11 +90,6 @@ in
   config = mkIf cfg.enable {
     sane.gui.enable = true;
 
-    programs.sway = {
-      # we configure sway with home-manager, but this enable gets us e.g. opengl and fonts
-      enable = true;
-    };
-
     # instead of using `services.greetd`, can instead use SDDM by swapping in these lines.
     # services.xserver.displayManager.sddm.enable = true;
     # services.xserver.enable = true;
@@ -157,14 +152,18 @@ in
     # a system service can't depend on a user service, so just launch it at graphical-session
     systemd.user.services."pipewire".wantedBy = [ "graphical-session.target" ];
 
-    sane.home-manager.windowManager.sway = {
+    programs.sway = {
       enable = true;
       wrapperFeatures.gtk = true;
-      config = let
+    };
+    sane.fs."/home/colin/.config/sway/config" =
+      let
         fuzzel = "${pkgs.fuzzel}/bin/fuzzel";
         sed = "${pkgs.gnused}/bin/sed";
         wtype = "${pkgs.wtype}/bin/wtype";
         kitty = "${pkgs.kitty}/bin/kitty";
+        launcher-cmd = fuzzel;
+        terminal-cmd = kitty;
         lock-cmd = "${pkgs.swaylock}/bin/swaylock --indicator-idle-visible --indicator-radius 100 --indicator-thickness 30";
         vol-up-cmd = "${pkgs.pulsemixer}/bin/pulsemixer --change-volume +5";
         vol-down-cmd = "${pkgs.pulsemixer}/bin/pulsemixer --change-volume -5";
@@ -181,179 +180,158 @@ in
         snip-cmd = "${wtype} $(${list-snips} | ${fuzzel} -d -i -w 60 | ${strip-comments})";
         # TODO: next splatmoji release should allow `-s none` to disable skin tones
         emoji-cmd = "${pkgs.splatmoji}/bin/splatmoji -s medium-light type";
-      in rec {
-        terminal = kitty;
-        window = {
-          border = 3; # pixel boundary between windows
-          hideEdgeBorders = "smart"; # don't show border if only window on workspace
-        };
-        output = {
-          ### DESKTOP
-          "Samsung Electric Company S22C300 0x00007F35" = { pos = "0,0"; res = "1920x1080"; };
-          "Goldstar Company Ltd LG ULTRAWIDE 0x00004E94" = { pos = "1920,0"; res = "3440x1440"; };
+      in sane-lib.fs.wantedText ''
+        ### default font
+        font pango:monospace 8
 
-          ### LAPTOP
-          # shen TV
-          "Pioneer Electronic Corporation VSX-524 0x00000101" = { pos = "0,0"; res = "1920x1080"; };
-          # internal display
-          "Unknown 0x0637 0x00000000" = { pos = "1920,0"; res = "1920x1080"; };
-        };
+        ### pixel boundary between windows
+        default_border pixel 3
+        default_floating_border pixel 2
+        hide_edge_borders smart
 
-        # defaults; required for keybindings decl.
-        modifier = "Mod1";
-        # list of launchers: https://www.reddit.com/r/swaywm/comments/v39hxa/your_favorite_launcher/
-        # menu = "${pkgs.dmenu}/bin/dmenu_path";
-        menu = fuzzel;
-        # menu = "${pkgs.albert}/bin/albert";
-        left = "h";
-        down = "j";
-        up = "k";
-        right = "l";
-        # XKB key names: https://wiki.linuxquestions.org/wiki/List_of_Keysyms_Recognised_by_Xmodmap
-        keybindings = {
-          "${modifier}+Return" = "exec ${terminal}";
-          "${modifier}+Shift+q" = "kill";
-          "${modifier}+d" = "exec ${menu}";
-          "${modifier}+s" = "exec ${snip-cmd}";
-          "${modifier}+l" = "exec ${lock-cmd}";
-          "${modifier}+slash" = "exec ${emoji-cmd}";
+        ### defaults
+        focus_wrapping no
+        focus_follows_mouse yes
+        focus_on_window_activation smart
+        mouse_warping output
+        workspace_layout default
+        workspace_auto_back_and_forth no
 
-          # "${modifier}+${left}" = "focus left";
-          # "${modifier}+${down}" = "focus down";
-          # "${modifier}+${up}" = "focus up";
-          # "${modifier}+${right}" = "focus right";
+        ### default colors (#border #background #text #indicator #childBorder)
+        client.focused #4c7899 #285577 #ffffff #2e9ef4 #285577
+        client.focused_inactive #333333 #5f676a #ffffff #484e50 #5f676a
+        client.unfocused #333333 #222222 #888888 #292d2e #222222
+        client.urgent #2f343a #900000 #ffffff #900000 #900000
+        client.placeholder #000000 #0c0c0c #ffffff #000000 #0c0c0c
+        client.background #ffffff
 
-          "${modifier}+Left" = "focus left";
-          "${modifier}+Down" = "focus down";
-          "${modifier}+Up" = "focus up";
-          "${modifier}+Right" = "focus right";
+        ### key bindings
+        floating_modifier Mod1
+        ## media keys
+        bindsym XF86AudioRaiseVolume exec ${vol-up-cmd}
+        bindsym XF86AudioLowerVolume exec ${vol-down-cmd}
+        bindsym Mod1+Page_Up exec ${vol-up-cmd}
+        bindsym Mod1+Page_Down exec ${vol-down-cmd}
+        bindsym XF86AudioMute exec ${mute-cmd}
+        bindsym XF86MonBrightnessUp exec ${brightness-up-cmd}
+        bindsym XF86MonBrightnessDown exec ${brightness-down-cmd}
+        ## special functions
+        bindsym Mod1+Print exec ${screenshot-cmd}
+        bindsym Mod1+l exec ${lock-cmd}
+        bindsym Mod1+s exec ${snip-cmd}
+        bindsym Mod1+slash exec ${emoji-cmd}
+        bindsym Mod1+d exec ${launcher-cmd}
+        bindsym Mod1+Return exec ${terminal-cmd}
+        bindsym Mod1+Shift+q kill
+        bindsym Mod1+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+        bindsym Mod1+Shift+c reload
+        ## layout
+        bindsym Mod1+b splith
+        bindsym Mod1+v splitv
+        bindsym Mod1+f fullscreen toggle
+        bindsym Mod1+a focus parent
+        bindsym Mod1+w layout tabbed
+        bindsym Mod1+e layout toggle split
+        bindsym Mod1+Shift+space floating toggle
+        bindsym Mod1+space focus mode_toggle
+        bindsym Mod1+r mode resize
+        ## movement
+        bindsym Mod1+Up focus up
+        bindsym Mod1+Down focus down
+        bindsym Mod1+Left focus left
+        bindsym Mod1+Right focus right
+        bindsym Mod1+Shift+Up move up
+        bindsym Mod1+Shift+Down move down
+        bindsym Mod1+Shift+Left move left
+        bindsym Mod1+Shift+Right move right
+        ## workspaces
+        bindsym Mod1+1 workspace number 1
+        bindsym Mod1+2 workspace number 2
+        bindsym Mod1+3 workspace number 3
+        bindsym Mod1+4 workspace number 4
+        bindsym Mod1+5 workspace number 5
+        bindsym Mod1+6 workspace number 6
+        bindsym Mod1+7 workspace number 7
+        bindsym Mod1+8 workspace number 8
+        bindsym Mod1+9 workspace number 9
+        bindsym Mod1+Shift+1 move container to workspace number 1
+        bindsym Mod1+Shift+2 move container to workspace number 2
+        bindsym Mod1+Shift+3 move container to workspace number 3
+        bindsym Mod1+Shift+4 move container to workspace number 4
+        bindsym Mod1+Shift+5 move container to workspace number 5
+        bindsym Mod1+Shift+6 move container to workspace number 6
+        bindsym Mod1+Shift+7 move container to workspace number 7
+        bindsym Mod1+Shift+8 move container to workspace number 8
+        bindsym Mod1+Shift+9 move container to workspace number 9
+        ## "scratchpad" = ??
+        bindsym Mod1+Shift+minus move scratchpad
+        bindsym Mod1+minus scratchpad show
 
-          # "${modifier}+Shift+${left}" = "move left";
-          # "${modifier}+Shift+${down}" = "move down";
-          # "${modifier}+Shift+${up}" = "move up";
-          # "${modifier}+Shift+${right}" = "move right";
+        ### defaults
+        mode "resize" {
+          bindsym Down resize grow height 10 px
+          bindsym Escape mode default
+          bindsym Left resize shrink width 10 px
+          bindsym Return mode default
+          bindsym Right resize grow width 10 px
+          bindsym Up resize shrink height 10 px
+          bindsym h resize shrink width 10 px
+          bindsym j resize grow height 10 px
+          bindsym k resize shrink height 10 px
+          bindsym l resize grow width 10 px
+        }
 
-          "${modifier}+Shift+Left" = "move left";
-          "${modifier}+Shift+Down" = "move down";
-          "${modifier}+Shift+Up" = "move up";
-          "${modifier}+Shift+Right" = "move right";
+        ### lightly modified bars
+        bar {
+          # TODO: fonts was:
+          #   config.fonts.fontconfig.defaultFonts; (monospace ++ emoji)
+          font pango:Hack, Font Awesome 6 Free, Twitter Color Emoji 24.000000
+          mode dock
+          hidden_state hide
+          position top
+          status_command ${pkgs.i3status}/bin/i3status
+          swaybar_command ${pkgs.sway}/bin/swaybar
+          workspace_buttons yes
+          strip_workspace_numbers no
+          tray_output primary
+          colors {
+            background #000000
+            statusline #ffffff
+            separator #666666
+            #  #border #background #text
+            focused_workspace #4c7899 #285577 #ffffff
+            active_workspace #333333 #5f676a #ffffff
+            inactive_workspace #333333 #222222 #888888
+            urgent_workspace #2f343a #900000 #ffffff
+            binding_mode #2f343a #900000 #ffffff
+        }
+        }
 
-          "${modifier}+b" = "splith";
-          "${modifier}+v" = "splitv";
-          "${modifier}+f" = "fullscreen toggle";
-          "${modifier}+a" = "focus parent";
+        ### displays
+        ## DESKTOP
+        output "Samsung Electric Company S22C300 0x00007F35" {
+        pos 0,0
+        res 1920x1080
+        }
+        output "Goldstar Company Ltd LG ULTRAWIDE 0x00004E94" {
+        pos 1920,0
+        res 3440x1440
+        }
 
-          # "${modifier}+s" = "layout stacking";
-          "${modifier}+w" = "layout tabbed";
-          "${modifier}+e" = "layout toggle split";
+        ## LAPTOP
+        # sh/en TV
+        output "Pioneer Electronic Corporation VSX-524 0x00000101" {
+        pos 0,0
+        res 1920x1080
+        }
+        # internal display
+        output "Unknown 0x0637 0x00000000" {
+        pos 1920,0
+        res 1920x1080
+        }
 
-          "${modifier}+Shift+space" = "floating toggle";
-          "${modifier}+space" = "focus mode_toggle";
-
-          "${modifier}+1" = "workspace number 1";
-          "${modifier}+2" = "workspace number 2";
-          "${modifier}+3" = "workspace number 3";
-          "${modifier}+4" = "workspace number 4";
-          "${modifier}+5" = "workspace number 5";
-          "${modifier}+6" = "workspace number 6";
-          "${modifier}+7" = "workspace number 7";
-          "${modifier}+8" = "workspace number 8";
-          "${modifier}+9" = "workspace number 9";
-
-          "${modifier}+Shift+1" =
-            "move container to workspace number 1";
-          "${modifier}+Shift+2" =
-            "move container to workspace number 2";
-          "${modifier}+Shift+3" =
-            "move container to workspace number 3";
-          "${modifier}+Shift+4" =
-            "move container to workspace number 4";
-          "${modifier}+Shift+5" =
-            "move container to workspace number 5";
-          "${modifier}+Shift+6" =
-            "move container to workspace number 6";
-          "${modifier}+Shift+7" =
-            "move container to workspace number 7";
-          "${modifier}+Shift+8" =
-            "move container to workspace number 8";
-          "${modifier}+Shift+9" =
-            "move container to workspace number 9";
-
-          "${modifier}+Shift+minus" = "move scratchpad";
-          "${modifier}+minus" = "scratchpad show";
-
-          "${modifier}+Shift+c" = "reload";
-          "${modifier}+Shift+e" =
-            "exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'";
-
-          "${modifier}+r" = "mode resize";
-
-          # media keys
-          XF86MonBrightnessDown = "exec ${brightness-down-cmd}";
-          XF86MonBrightnessUp = "exec ${brightness-up-cmd}";
-
-          # TODO: hook into a visual prompt to display volume?
-          XF86AudioRaiseVolume = "exec ${vol-up-cmd}";
-          XF86AudioLowerVolume = "exec ${vol-down-cmd}";
-          XF86AudioMute = "exec ${mute-cmd}";
-
-          "${modifier}+Page_Up" = "exec ${vol-up-cmd}";
-          "${modifier}+Page_Down" = "exec ${vol-down-cmd}";
-
-          "${modifier}+Print" = "exec ${screenshot-cmd}";
-        };
-
-        # mostly defaults:
-        bars = [{
-          mode = "dock";
-          hiddenState = "hide";
-          position = "top";
-          command = "${pkgs.waybar}/bin/waybar";
-          workspaceButtons = true;
-          workspaceNumbers = true;
-          statusCommand = "${pkgs.i3status}/bin/i3status";
-          fonts = {
-            # names = [ "monospace" "Noto Color Emoji" ];
-            # size = 8.0;
-            # names = [ "Font Awesome 6 Free" "DejaVu Sans" "Hack" ];
-            # names = with config.fonts.fontconfig.defaultFonts; (emoji ++ monospace ++ serif ++ sansSerif);
-            names = with config.fonts.fontconfig.defaultFonts; (monospace ++ emoji);
-            size = 24.0;
-          };
-          trayOutput = "primary";
-          colors = {
-            background = "#000000";
-            statusline = "#ffffff";
-            separator = "#666666";
-            focusedWorkspace = {
-              border = "#4c7899";
-              background = "#285577";
-              text = "#ffffff";
-            };
-            activeWorkspace = {
-              border = "#333333";
-              background = "#5f676a";
-              text = "#ffffff";
-            };
-            inactiveWorkspace = {
-              border = "#333333";
-              background = "#222222";
-              text = "#888888";
-            };
-            urgentWorkspace = {
-              border = "#2f343a";
-              background = "#900000";
-              text = "#ffffff";
-            };
-            bindingMode = {
-              border = "#2f343a";
-              background = "#900000";
-              text = "#ffffff";
-            };
-          };
-        }];
-      };
-    };
+        exec "systemctl --user import-environment; systemctl --user start sway-session.target"
+      '';
 
     sane.fs."/home/colin/.config/waybar/config" = sane-lib.fs.wantedText waybar-config-text;
 
