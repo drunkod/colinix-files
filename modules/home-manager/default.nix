@@ -51,21 +51,6 @@ in
       home.username = "colin";
       home.homeDirectory = "/home/colin";
 
-      # XDG defines things like ~/Desktop, ~/Downloads, etc.
-      # these clutter the home, so i mostly don't use them.
-      xdg.userDirs = {
-        enable = true;
-        createDirectories = false;  # on headless systems, most xdg dirs are noise
-        desktop = "$HOME/.xdg/Desktop";
-        documents = "$HOME/dev";
-        download = "$HOME/tmp";
-        music = "$HOME/Music";
-        pictures = "$HOME/Pictures";
-        publicShare = "$HOME/.xdg/Public";
-        templates = "$HOME/.xdg/Templates";
-        videos = "$HOME/Videos";
-      };
-
       # the xdg mime type for a file can be found with:
       # - `xdg-mime query filetype path/to/thing.ext`
       xdg.mimeApps.enable = true;

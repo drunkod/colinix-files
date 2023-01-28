@@ -16,6 +16,7 @@
     ./ssh.nix
     ./sublime-music.nix
     ./vlc.nix
+    ./xdg.nix
     ./zsh
   ];
 }
