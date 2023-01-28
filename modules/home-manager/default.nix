@@ -35,16 +35,14 @@ in
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
 
-    # XXX this weird rename + closure is to get home-manager's `config.lib.file` to exist.
-    # see: https://github.com/nix-community/home-manager/issues/589#issuecomment-950474105
-    home-manager.users.colin = let sysconfig = config; in { config, ... }: {
+    home-manager.users.colin = {
 
       # run `home-manager-help` to access manpages
       # or `man home-configuration.nix`
       manual.html.enable = false;  # TODO: set to true later (build failure)
       manual.manpages.enable = false;  # TODO: enable after https://github.com/nix-community/home-manager/issues/3344
 
-      home.packages = pkg-list sysconfig.sane.packages.enabledUserPkgs;
+      home.packages = pkg-list config.sane.packages.enabledUserPkgs;
       wayland.windowManager = cfg.windowManager;
 
       home.stateVersion = "21.11";
