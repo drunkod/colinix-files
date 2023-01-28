@@ -8,6 +8,7 @@
     ./gpodder.nix
     ./keyring.nix
     ./kitty.nix
+    ./libreoffice.nix
     ./mpv.nix
     ./neovim.nix
     ./newsflash.nix
