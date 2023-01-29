@@ -72,6 +72,38 @@ let
   ];
   # waybar-config-text = lib.generators.toJSON {} waybar-config;
   waybar-config-text = (pkgs.formats.json {}).generate "waybar-config.json" waybar-config;
+
+  # bare sway launcher
+  sway-launcher = pkgs.writeShellScriptBin "sway-launcher" ''
+    ${pkgs.sway}/bin/sway --debug > /tmp/sway.log 2>&1
+  '';
+  # start sway and have it construct the gtkgreeter
+  sway-as-greeter = pkgs.writeShellScriptBin "sway-as-greeter" ''
+    ${pkgs.sway}/bin/sway --debug --config ${sway-config-into-gtkgreet} > /tmp/sway-as-greeter.log 2>&1
+  '';
+  # (config file for the above)
+  sway-config-into-gtkgreet = pkgs.writeText "greetd-sway-config" ''
+    exec "${gtkgreet-launcher}"
+  '';
+  # gtkgreet which launches a layered sway instance
+  gtkgreet-launcher = pkgs.writeShellScript "gtkgreet-launcher" ''
+    # NB: the "command" field here is run in the user's shell.
+    # so that command must exist on the specific user's path who is logging in. it doesn't need to exist system-wide.
+    ${pkgs.greetd.gtkgreet}/bin/gtkgreet --layer-shell --command sway-launcher
+  '';
+  greeter-session = {
+    # greeter session config
+    command = "${sway-as-greeter}/bin/sway-as-greeter";
+    # alternatives:
+    # - TTY: `command = "${pkgs.greetd.greetd}/bin/agreety --cmd ${pkgs.sway}/bin/sway";`
+    # - autologin: `command = "${pkgs.sway}/bin/sway"; user = "colin";`
+    # - Dumb Login (doesn't work)": `command = "${pkgs.greetd.dlm}/bin/dlm";`
+  };
+  greeterless-session = {
+    # no greeter
+    command = "${sway-launcher}/bin/sway-launcher";
+    user = "colin";
+  };
 in
 {
   options = {
@@ -91,41 +123,19 @@ in
   config = mkIf cfg.enable {
     sane.gui.enable = true;
 
-    # instead of using `services.greetd`, can instead use SDDM by swapping in these lines.
+    # swap in these lines to use SDDM instead of `services.greetd`.
     # services.xserver.displayManager.sddm.enable = true;
     # services.xserver.enable = true;
-    services.greetd = let
-      sway-launcher = pkgs.writeShellScript "sway-launcher" ''
-        # launch sway with logging enabled
-        ${pkgs.sway}/bin/sway --debug > /home/colin/.sway.log 2>&1
-      '';
-      swayConfig-greeter = pkgs.writeText "greetd-sway-config" ''
-        # `-l` activates layer-shell mode.
-        exec "${pkgs.greetd.gtkgreet}/bin/gtkgreet -l -c ${sway-launcher}"
-      '';
-      default_session = {
-        "01" = {
-          # greeter session config
-          command = "${pkgs.sway}/bin/sway --config ${swayConfig-greeter}";
-          # alternatives:
-          # - TTY: `command = "${pkgs.greetd.greetd}/bin/agreety --cmd ${pkgs.sway}/bin/sway";`
-          # - autologin: `command = "${pkgs.sway}/bin/sway"; user = "colin";`
-          # - Dumb Login (doesn't work)": `command = "${pkgs.greetd.dlm}/bin/dlm";`
-        };
-        "0" = {
-          # no greeter
-          command = sway-launcher;
-          user = "colin";
-        };
-      };
-    in {
+    services.greetd = {
       # greetd source/docs:
       # - <https://git.sr.ht/~kennylevinsen/greetd>
       enable = true;
       settings = {
-        default_session = default_session."0${builtins.toString cfg.useGreeter}";
+        default_session = if cfg.useGreeter then greeter-session else greeterless-session;
       };
     };
+    # we need the greeter's command to be on our PATH
+    users.users.colin.packages = [ sway-launcher ];
 
     # some programs (e.g. fractal) **require** a "Secret Service Provider"
     services.gnome.gnome-keyring.enable = true;
