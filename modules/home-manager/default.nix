@@ -23,12 +23,6 @@ in
       default = {};
       type = types.attrs;
     };
-
-    # extra attributes to include in home-manager's `programs` option
-    sane.home-manager.programs = mkOption {
-      default = {};
-      type = types.attrs;
-    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -49,13 +43,10 @@ in
       home.username = "colin";
       home.homeDirectory = "/home/colin";
 
-      programs = lib.mkMerge [
-        {
-          # XXX: unsure what this does?
-          home-manager.enable = true;
-        }
-        cfg.programs
-      ];
+      programs = {
+        # XXX: unsure what this does?
+        home-manager.enable = true;
+      };
     };
   };
 }
