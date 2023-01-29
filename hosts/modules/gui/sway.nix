@@ -84,7 +84,7 @@ in
         launch sway via a greeter (like greetd's gtkgreet).
         sway is usable without a greeter, but skipping the greeter means no PAM session.
       '';
-      default = false;
+      default = true;
       type = types.bool;
     };
   };
@@ -95,12 +95,13 @@ in
     # services.xserver.displayManager.sddm.enable = true;
     # services.xserver.enable = true;
     services.greetd = let
+      sway-launcher = pkgs.writeShellScript "sway-launcher" ''
+        # launch sway with logging enabled
+        ${pkgs.sway}/bin/sway --debug > /home/colin/.sway.log 2>&1
+      '';
       swayConfig-greeter = pkgs.writeText "greetd-sway-config" ''
         # `-l` activates layer-shell mode.
-        exec "${pkgs.greetd.gtkgreet}/bin/gtkgreet -l -c sway"
-      '';
-      sway-launcher = pkgs.writeShellScript "sway-launcher" ''
-        ${pkgs.sway}/bin/sway --debug > /home/colin/.sway.log 2>&1
+        exec "${pkgs.greetd.gtkgreet}/bin/gtkgreet -l -c ${sway-launcher}"
       '';
       default_session = {
         "01" = {
