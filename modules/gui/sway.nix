@@ -6,8 +6,8 @@ let
   cfg = config.sane.gui.sway;
   # docs: https://github.com/Alexays/Waybar/wiki/Configuration
   # format specifiers: https://fmt.dev/latest/syntax.html#syntax
-  waybar-config = {
-    mainBar = {
+  waybar-config = [
+    { # TOP BAR
       layer = "top";
       height = 40;
       modules-left = ["sway/workspaces" "sway/mode"];
@@ -68,8 +68,8 @@ let
       clock = {
         format-alt = "{:%a, %d. %b  %H:%M}";
       };
-    };
-  };
+    }
+  ];
   waybar-config-text = lib.generators.toJSON {} waybar-config;
 in
 {
