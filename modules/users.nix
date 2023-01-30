@@ -20,8 +20,7 @@ let
     };
   };
   userModule = types.submodule ({ config, ... }: {
-    options = {
-      inherit (userOptions) fs;
+    options = userOptions.options // {
       default = mkOption {
         type = types.bool;
         default = false;

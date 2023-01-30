@@ -68,6 +68,7 @@ in
 
     security.pam.mount.enable = true;
 
+    sane.users.colin.default = true;
     # ensure ~ perms are known to sane.fs module.
     # TODO: this is generic enough to be lifted up into sane.fs itself.
     sane.fs."/home/colin".dir.acl = {
@@ -95,14 +96,14 @@ in
     ];
 
     # convenience
-    sane.fs."/home/colin/knowledge" = fs.wantedSymlinkTo "/home/colin/private/knowledge";
-    sane.fs."/home/colin/nixos" = fs.wantedSymlinkTo "/home/colin/dev/nixos";
-    sane.fs."/home/colin/Videos/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Videos";
-    sane.fs."/home/colin/Videos/servo-incomplete" = fs.wantedSymlinkTo "/mnt/servo-media/incomplete";
-    sane.fs."/home/colin/Music/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Music";
+    sane.user.fs."knowledge" = fs.wantedSymlinkTo "private/knowledge";
+    sane.user.fs."nixos" = fs.wantedSymlinkTo "dev/nixos";
+    sane.user.fs."Videos/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Videos";
+    sane.user.fs."Videos/servo-incomplete" = fs.wantedSymlinkTo "/mnt/servo-media/incomplete";
+    sane.user.fs."Music/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Music";
 
     # used by password managers, e.g. unix `pass`
-    sane.fs."/home/colin/.password-store" = fs.wantedSymlinkTo "/home/colin/knowledge/secrets/accounts";
+    sane.user.fs.".password-store" = fs.wantedSymlinkTo "knowledge/secrets/accounts";
 
     sane.persist.sys.plaintext = mkIf cfg.enable [
       # intentionally allow other users to write to the guest folder
