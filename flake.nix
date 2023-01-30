@@ -32,11 +32,6 @@
       url = "github:nixos/mobile-nixos";
       flake = false;
     };
-    home-manager = {
-      # <https://github.com/nix-community/home-manager/tree/release-22.05>
-      url = "github:nix-community/home-manager?ref=release-22.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     sops-nix = {
       # <https://github.com/Mic92/sops-nix>
       url = "github:Mic92/sops-nix";
@@ -54,7 +49,6 @@
     nixpkgs-stable,
     nixpkgs-unpatched,
     mobile-nixos,
-    home-manager,
     sops-nix,
     uninsane-dot-org
   }:
@@ -138,7 +132,6 @@
         sane = import ./modules;
         passthru = { ... }: {
           imports = [
-            home-manager.nixosModule
             sops-nix.nixosModules.sops
           ];
         };

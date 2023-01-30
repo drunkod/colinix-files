@@ -15,27 +15,6 @@
         "type": "github"
       }
     },
-    "home-manager": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1667907331,
-        "narHash": "sha256-bHkAwkYlBjkupPUFcQjimNS8gxWSWjOTevEuwdnp5m0=",
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "rev": "6639e3a837fc5deb6f99554072789724997bc8e5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "ref": "release-22.05",
-        "repo": "home-manager",
-        "type": "github"
-      }
-    },
     "mobile-nixos": {
       "flake": false,
       "locked": {
@@ -61,11 +40,11 @@
       "locked": {
         "lastModified": 1,
         "narHash": "sha256-arp7Uy7ct5ryTcmSY032eN7hr33i7D2XvjTRLliCFDc=",
-        "path": "/nix/store/xm7cg47bcix1s2cfmngvz0hjf0qqsgm1-source/nixpatches",
+        "path": "/nix/store/rk489311m97gs49qid05c1xra05h64sm-source/nixpatches",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/xm7cg47bcix1s2cfmngvz0hjf0qqsgm1-source/nixpatches",
+        "path": "/nix/store/rk489311m97gs49qid05c1xra05h64sm-source/nixpatches",
         "type": "path"
       }
     },
@@ -119,7 +98,6 @@
     },
     "root": {
       "inputs": {
-        "home-manager": "home-manager",
         "mobile-nixos": "mobile-nixos",
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
