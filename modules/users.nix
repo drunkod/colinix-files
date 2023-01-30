@@ -19,10 +19,10 @@ let
       };
 
       persist = mkOption {
-        type = options.sane.persist.home.type;
+        type = options.sane.persist.sys.type;
         default = {};
         description = ''
-          entries to pass onto `sane.persist.home`
+          entries to pass onto `sane.persist.sys` after prepending the user's home-dir to the path.
         '';
       };
     };
@@ -42,14 +42,20 @@ let
     # if we're the default user, inherit whatever settings were routed to the default user
     config = mkIf config.default sane-user-cfg;
   });
-  processUser = user: defn: {
-    sane.fs = mapAttrs' (path: value: {
-      # TODO: query the user's home dir!
-      name = path-lib.concat [ "/home/${user}" path ];
-      inherit value;
-    }) defn.fs;
-    sane.persist.home = defn.persist;
-  };
+  processUser = user: defn:
+    let
+      prefixWithHome = mapAttrs' (path: value: {
+        # TODO: query the user's home dir!
+        name = path-lib.concat [ "/home/${user}" path ];
+        inherit value;
+      });
+    in
+    {
+      sane.fs = prefixWithHome defn.fs;
+
+      # `byPath` is the actual output here, computed from the other keys.
+      sane.persist.sys.byPath = prefixWithHome defn.persist.byPath;
+    };
 in
 {
   options = {
@@ -78,7 +84,7 @@ in
       num-default-users = count (u: u.default) (attrValues cfg);
       take = f: {
         sane.fs = f.sane.fs;
-        sane.persist = f.sane.persist;
+        sane.persist.sys.byPath = f.sane.persist.sys.byPath;
       };
     in mkMerge [
       (take (sane-lib.mkTypedMerge take configs))
