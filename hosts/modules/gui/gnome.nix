@@ -25,7 +25,7 @@ in
     networking.networkmanager.enable = true;
     networking.wireless.enable = lib.mkForce false;
   };
-  # home-mananger.users.colin extras
+  # user extras:
   # obtain these by running `dconf dump /` after manually customizing gnome
   # TODO: fix "is not of type `GVariant value'"
   # dconf.settings = lib.mkIf (gui == "gnome") {

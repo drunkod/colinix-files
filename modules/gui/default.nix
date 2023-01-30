@@ -6,7 +6,6 @@ let
 in
 {
   imports = [
-    ./gnome.nix
     ./plasma.nix
     ./plasma-mobile.nix
   ];
