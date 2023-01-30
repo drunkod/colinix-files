@@ -70,6 +70,9 @@ in
             [org/gnome/settings-daemon/plugins/power]
             sleep-inactive-ac-timeout=5400
             sleep-inactive-battery-timeout=5400
+
+            [sm/puri/phosh]
+            favorites=['gpodder.desktop', 'nheko.desktop', 'sublime-music.desktop', 'firefox.desktop', 'org.kde.konsole.desktop']
           '';
         })
       ];
