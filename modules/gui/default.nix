@@ -5,10 +5,6 @@ let
   cfg = config.sane.gui;
 in
 {
-  imports = [
-    ./plasma.nix
-  ];
-
   options = {
     # doesn't directly create outputs. consumed by e.g. home-manager.nix module
     sane.gui.enable = mkOption {
