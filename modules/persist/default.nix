@@ -191,6 +191,7 @@ in
     };
     sane.persist.byPath = mkOption {
       type = types.attrsOf (convertInlineAcl entryAtPath);
+      # XXX: see computed.nix for definition
       description = ''
         map of <path> => <path config> for all paths to be persisted.
         this is computed from the other options, but users can also set it explicitly (useful for overriding)

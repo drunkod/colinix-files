@@ -1,4 +1,4 @@
-{ config, lib, sane-lib, ... }:
+{ config, lib, options, sane-lib, ... }:
 
 let
   inherit (builtins) attrValues;
@@ -15,6 +15,14 @@ let
           entries to pass onto `sane.fs` after prepending the user's home-dir to the path.
           e.g. `sane.users.colin.fs."/.config/aerc" = X`
             => `sane.fs."/home/colin/.config/aerc" = X;
+        '';
+      };
+
+      persist = mkOption {
+        type = options.sane.persist.home.type;
+        default = {};
+        description = ''
+          entries to pass onto `sane.persist.home`
         '';
       };
     };
@@ -40,6 +48,7 @@ let
       name = path-lib.concat [ "/home/${user}" path ];
       inherit value;
     }) defn.fs;
+    sane.persist.home = defn.persist;
   };
 in
 {
@@ -69,6 +78,7 @@ in
       num-default-users = count (u: u.default) (attrValues cfg);
       take = f: {
         sane.fs = f.sane.fs;
+        sane.persist = f.sane.persist;
       };
     in mkMerge [
       (take (sane-lib.mkTypedMerge take configs))
