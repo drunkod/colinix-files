@@ -38,6 +38,9 @@ in
   # zsh/prezto complains if zshrc doesn't exist; but it does allow an "empty" file.
   sane.fs."/home/colin/.config/zsh/.zshrc" = sane-lib.fs.wantedText "# ";
 
+  # enable zsh completions
+  environment.pathsToLink = [ "/share/zsh" ];
+
   programs.zsh = {
     enable = true;
     histFile = "$HOME/.local/share/zsh/history";

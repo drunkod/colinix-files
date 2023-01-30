@@ -74,8 +74,6 @@
     # NIXOS_OZONE_WL = "1";
     # LIBGL_ALWAYS_SOFTWARE = "1";
   };
-  # enable zsh completions
-  environment.pathsToLink = [ "/share/zsh" ];
 
   # link debug symbols into /run/current-system/sw/lib/debug
   # hopefully picked up by gdb automatically?
