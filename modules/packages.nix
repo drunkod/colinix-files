@@ -107,7 +107,6 @@ let
     { pkg = gpodder-configured; dir = [ "gPodder" ]; }
 
     gthumb
-    handbrake
     inkscape
 
     kdenlive
@@ -173,6 +172,9 @@ let
     # kaiteki  # Pleroma client
     # gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
     # gpt2tc  # XXX: unreliable mirror
+
+    # TODO(unpin): handbrake is broken on aarch64-linux 2023/01/29
+    handbrake
 
     logseq
     losslesscut-bin
