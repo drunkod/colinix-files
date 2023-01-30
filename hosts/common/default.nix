@@ -76,6 +76,7 @@
   };
 
   # dconf docs: <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/desktop_migration_and_administration_guide/profiles>
+  # find keys/values with `dconf dump /`
   programs.dconf.enable = true;
   programs.dconf.packages = [
     (pkgs.writeTextFile {
