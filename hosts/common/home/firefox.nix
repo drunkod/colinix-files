@@ -174,11 +174,11 @@ in
 
     sane.packages.extraGuiPkgs = [ package ];
     # flush the cache to disk to avoid it taking up too much tmp
-    sane.persist.home.byPath."${cfg.browser.cacheDir}" = lib.mkIf (cfg.persistCache != null) {
+    sane.user.persist.byPath."${cfg.browser.cacheDir}" = lib.mkIf (cfg.persistCache != null) {
       store = cfg.persistCache;
     };
 
-    sane.persist.home.byPath."${cfg.browser.dotDir}/default" = lib.mkIf (cfg.persistData != null) {
+    sane.user.persist.byPath."${cfg.browser.dotDir}/default" = lib.mkIf (cfg.persistData != null) {
       store = cfg.persistData;
     };
     sane.user.fs."${cfg.browser.dotDir}/default" = sane-lib.fs.wantedDir;

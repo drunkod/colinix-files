@@ -77,7 +77,7 @@ in
       mode = config.users.users.colin.homeMode;
     };
 
-    sane.persist.home.plaintext = [
+    sane.user.persist.plaintext = [
       "archive"
       "dev"
       # TODO: records should be private

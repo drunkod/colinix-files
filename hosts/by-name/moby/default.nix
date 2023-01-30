@@ -37,7 +37,7 @@
     # addons.sideberry.enable = false;
   };
 
-  sane.persist.home.plaintext = [
+  sane.user.persist.plaintext = [
     ".config/pulse"  # persist pulseaudio volume
   ];
 

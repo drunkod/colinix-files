@@ -72,7 +72,7 @@ let
 in
 {
   # private because there could be sensitive things in the swap
-  sane.persist.home.private = [ ".cache/vim-swap" ];
+  sane.user.persist.private = [ ".cache/vim-swap" ];
 
   programs.neovim = {
     # neovim: https://github.com/neovim/neovim

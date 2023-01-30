@@ -1,7 +1,7 @@
 { config, sane-lib, ... }:
 
 {
-  sane.persist.home.private = [ ".local/share/keyrings" ];
+  sane.user.persist.private = [ ".local/share/keyrings" ];
 
   sane.user.fs."private/.local/share/keyrings/default" = {
     generated.script.script = builtins.readFile ../../../scripts/init-keyring;

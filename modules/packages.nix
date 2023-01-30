@@ -322,8 +322,8 @@ in
 
   config = {
     environment.systemPackages = mkIf cfg.enableSystemPkgs systemPkgs;
-    sane.persist.home.plaintext = concatLists (map (p: p.dir) cfg.enabledUserPkgs);
-    sane.persist.home.private = concatLists (map (p: p.private) cfg.enabledUserPkgs);
+    sane.user.persist.plaintext = concatLists (map (p: p.dir) cfg.enabledUserPkgs);
+    sane.user.persist.private = concatLists (map (p: p.private) cfg.enabledUserPkgs);
     # XXX: this might not be necessary. try removing this and cacert.unbundled?
     environment.etc."ssl/certs".source = mkIf cfg.enableSystemPkgs "${pkgs.cacert.unbundled}/etc/ssl/certs/*";
   };
