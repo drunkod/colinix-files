@@ -18,11 +18,6 @@ in
       default = false;
       type = types.bool;
     };
-    # attributes to copy directly to home-manager's `wayland.windowManager` option
-    sane.home-manager.windowManager = mkOption {
-      default = {};
-      type = types.attrs;
-    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -37,7 +32,6 @@ in
       manual.manpages.enable = false;  # TODO: enable after https://github.com/nix-community/home-manager/issues/3344
 
       home.packages = pkg-list config.sane.packages.enabledUserPkgs;
-      wayland.windowManager = cfg.windowManager;
 
       home.stateVersion = "21.11";
       home.username = "colin";
