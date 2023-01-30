@@ -75,6 +75,19 @@
     # LIBGL_ALWAYS_SOFTWARE = "1";
   };
 
+  # dconf docs: <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/desktop_migration_and_administration_guide/profiles>
+  programs.dconf.enable = true;
+  programs.dconf.packages = [
+    (pkgs.writeTextFile {
+      name = "dconf-user-profile";
+      destination = "/etc/dconf/profile/user";
+      text = ''
+        user-db:user
+        system-db:site
+      '';
+    })
+  ];
+
   # link debug symbols into /run/current-system/sw/lib/debug
   # hopefully picked up by gdb automatically?
   environment.enableDebugInfo = true;

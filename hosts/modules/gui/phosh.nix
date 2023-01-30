@@ -59,6 +59,21 @@ in
         NIXOS_OZONE_WL = "1";
       };
 
+      programs.dconf.packages = [
+        (pkgs.writeTextFile {
+          name = "dconf-phosh-settings";
+          destination = "/etc/dconf/db/site.d/00_phosh_settings";
+          text = ''
+            [org/gnome/desktop/interface]
+            show-battery-percentage=true
+
+            [org/gnome/settings-daemon/plugins/power]
+            sleep-inactive-ac-timeout=5400
+            sleep-inactive-battery-timeout=5400
+          '';
+        })
+      ];
+
       sane.packages.extraUserPkgs = with pkgs; [
         phosh-mobile-settings
 
