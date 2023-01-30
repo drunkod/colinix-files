@@ -27,7 +27,7 @@ let
       };
     };
   };
-  userModule = types.submodule ({ config, ... }: {
+  userModule = types.submodule ({ name, config, ... }: {
     options = userOptions.options // {
       default = mkOption {
         type = types.bool;
@@ -37,6 +37,13 @@ let
           this option determines what the `sane.user` shorthand evaluates to.
         '';
       };
+
+      home = mkOption {
+        type = types.str;
+        # XXX: we'd prefer to set this to `config.users.users.home`, but that causes infinite recursion...
+        # TODO: maybe assert that this matches the actual home?
+        default = "/home/${name}";
+      };
     };
 
     # if we're the default user, inherit whatever settings were routed to the default user
@@ -45,8 +52,7 @@ let
   processUser = user: defn:
     let
       prefixWithHome = mapAttrs' (path: value: {
-        # TODO: query the user's home dir!
-        name = path-lib.concat [ "/home/${user}" path ];
+        name = path-lib.concat [ defn.home path ];
         inherit value;
       });
     in
