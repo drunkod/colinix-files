@@ -7,7 +7,6 @@
     ./ids.nix
     ./packages.nix
     ./image.nix
-    ./nixcache.nix
     ./persist
     ./services
     ./sops.nix
