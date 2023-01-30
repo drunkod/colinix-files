@@ -1,7 +1,6 @@
 { ... }:
 {
   imports = [
-    ./duplicity.nix
     ./dyn-dns.nix
     ./kiwix-serve.nix
     ./mautrix-signal.nix

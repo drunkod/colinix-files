@@ -8,6 +8,7 @@
     ./hostnames.nix
     ./hosts.nix
     ./roles
+    ./services
     ./wg-home.nix
   ];
 }
