@@ -10,7 +10,7 @@
 
   # sane.packages.enableDevPkgs = true;
 
-  # sane.users.guest.enable = true;
+  # sane.guest.enable = true;
   sane.gui.sway.enable = true;
   sane.persist.enable = true;
   sane.nixcache.enable = true;

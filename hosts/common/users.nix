@@ -3,12 +3,12 @@
 # installer docs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/profiles/installation-device.nix
 with lib;
 let
-  cfg = config.sane.users;
+  cfg = config.sane.guest;
   fs = sane-lib.fs;
 in
 {
   options = {
-    sane.users.guest.enable = mkOption {
+    sane.guest.enable = mkOption {
       default = false;
       type = types.bool;
     };
@@ -104,11 +104,11 @@ in
     # used by password managers, e.g. unix `pass`
     sane.fs."/home/colin/.password-store" = fs.wantedSymlinkTo "/home/colin/knowledge/secrets/accounts";
 
-    sane.persist.sys.plaintext = mkIf cfg.guest.enable [
+    sane.persist.sys.plaintext = mkIf cfg.enable [
       # intentionally allow other users to write to the guest folder
       { directory = "/home/guest"; user = "guest"; group = "users"; mode = "0775"; }
     ];
-    users.users.guest = mkIf cfg.guest.enable {
+    users.users.guest = mkIf cfg.enable {
       isNormalUser = true;
       home = "/home/guest";
       subUidRanges = [

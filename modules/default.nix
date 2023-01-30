@@ -12,6 +12,7 @@
     ./services
     ./sops.nix
     ./ssh.nix
+    ./users.nix
   ];
 
   _module.args =  {
