@@ -20,8 +20,12 @@ sane-lib = rec {
   isPrefixOfList = p: l: (lib.sublist 0 (lib.length p) l) == p;
 
   # merges N attrsets
-  # Type: flattenAttrsList :: [AttrSet] -> AttrSet
+  # Type: joinAttrsets :: [AttrSet] -> AttrSet
   joinAttrsets = l: lib.foldl' lib.attrsets.unionOfDisjoint {} l;
+
+  # merges N attrsets, recursively
+  # Type: joinAttrsetsRecursive :: [AttrSet] -> AttrSet
+  joinAttrsetsRecursive = l: lib.foldl' (lib.attrsets.recursiveUpdateUntil (path: lhs: rhs: false)) {} l;
 
   # evaluate a `{ name, value }` pair in the same way that `listToAttrs` does.
   # Type: nameValueToAttrs :: { name :: String, value :: Any } -> Any

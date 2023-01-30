@@ -17,7 +17,7 @@ rec {
       merged = builtins.map (p: lib.setAttrByPath p (mergeAtPath p discharged)) pathsToMerge;
     in
       assert builtins.all (assertNoExtraPaths pathsToMerge) discharged;
-      sane-lib.joinAttrsets merged;
+      sane-lib.joinAttrsetsRecursive merged;
 
   # `take` is as in mkTypedMerge. this function queries which items `take` is interested in.
   # for example:
