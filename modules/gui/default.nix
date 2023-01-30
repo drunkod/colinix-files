@@ -7,7 +7,6 @@ in
 {
   imports = [
     ./plasma.nix
-    ./plasma-mobile.nix
   ];
 
   options = {
