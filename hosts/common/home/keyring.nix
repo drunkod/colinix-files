@@ -1,6 +1,5 @@
-{ config, lib, sane-lib, ... }:
+{ config, sane-lib, ... }:
 
-lib.mkIf config.sane.home-manager.enable
 {
   sane.persist.home.private = [ ".local/share/keyrings" ];
 

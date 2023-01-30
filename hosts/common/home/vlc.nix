@@ -8,7 +8,6 @@ let
     builtins.map (feed: feed.url) wanted-feeds
   );
 in
-lib.mkIf config.sane.home-manager.enable
 {
   sane.fs."/home/colin/.config/vlc/vlcrc" = sane-lib.fs.wantedText ''
     [podcast]

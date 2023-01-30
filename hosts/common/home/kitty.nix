@@ -1,6 +1,5 @@
-{ config, lib, pkgs, sane-lib, ... }:
+{ pkgs, sane-lib, ... }:
 
-lib.mkIf config.sane.home-manager.enable
 {
   sane.fs."/home/colin/.config/kitty/kitty.conf" = sane-lib.fs.wantedText ''
     # docs: https://sw.kovidgoyal.net/kitty/conf/

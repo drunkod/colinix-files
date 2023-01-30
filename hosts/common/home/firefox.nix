@@ -145,7 +145,7 @@ in
     };
   };
 
-  config = lib.mkIf config.sane.home-manager.enable {
+  config = {
 
     # uBlock filter list configuration.
     # specifically, enable the GDPR cookie prompt blocker.

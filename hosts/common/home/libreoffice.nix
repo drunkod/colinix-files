@@ -1,6 +1,5 @@
-{ config, lib, sane-lib, ... }:
+{ sane-lib, ... }:
 
-lib.mkIf config.sane.home-manager.enable
 {
   # libreoffice: disable first-run stuff
   sane.fs."/home/colin/.config/libreoffice/4/user/registrymodifications.xcu" = sane-lib.fs.wantedText ''

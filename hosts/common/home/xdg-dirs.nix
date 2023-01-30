@@ -1,6 +1,5 @@
-{ config, lib, sane-lib, ...}:
+{ lib, sane-lib, ...}:
 
-lib.mkIf config.sane.home-manager.enable
 {
   # XDG defines things like ~/Desktop, ~/Downloads, etc.
   # these clutter the home, so i mostly don't use them.

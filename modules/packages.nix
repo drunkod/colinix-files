@@ -129,7 +129,7 @@ let
       ".local/share/nheko"  # per-account state database
     ]; }
 
-    # settings (electron app). TODO: can i manage these settings with home-manager?
+    # settings (electron app)
     { pkg = obsidian; dir = [ ".config/obsidian" ]; }
 
     pavucontrol
@@ -186,7 +186,7 @@ let
     # creds, media
     { pkg = signal-desktop; private = [ ".config/Signal" ]; }
 
-    # creds. TODO: can i manage this with home-manager?
+    # creds, widevine .so download. TODO: could easily manage these statically.
     { pkg = spotify; dir = [ ".config/spotify" ]; }
 
     # hardenedMalloc solves a crash at startup

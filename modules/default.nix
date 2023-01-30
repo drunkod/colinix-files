@@ -4,7 +4,6 @@
   imports = [
     ./feeds.nix
     ./fs
-    ./home-manager
     ./ids.nix
     ./packages.nix
     ./image.nix

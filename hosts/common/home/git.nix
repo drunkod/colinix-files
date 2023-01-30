@@ -1,9 +1,8 @@
-{ config, lib, pkgs, sane-lib, ... }:
+{ lib, pkgs, sane-lib, ... }:
 
 let
   mkCfg = lib.generators.toINI { };
 in
-lib.mkIf config.sane.home-manager.enable
 {
   sane.fs."/home/colin/.config/git/config" = sane-lib.fs.wantedText (mkCfg {
     user.name = "Colin";

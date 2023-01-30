@@ -1,7 +1,6 @@
 # Terminal UI mail client
-{ config, lib, sane-lib, ... }:
+{ config, sane-lib, ... }:
 
-lib.mkIf config.sane.home-manager.enable
 {
   sops.secrets."aerc_accounts" = {
     owner = config.users.users.colin.name;

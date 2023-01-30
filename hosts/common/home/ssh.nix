@@ -1,4 +1,4 @@
-{ config, lib, pkgs, sane-lib, ... }:
+{ config, lib, sane-lib, ... }:
 
 with lib;
 let
@@ -9,7 +9,8 @@ let
     "\n"
     (map (k: k.asHostKey) host-keys)
   ;
-in lib.mkIf config.sane.home-manager.enable {
+in
+{
   # ssh key is stored in private storage
   sane.persist.home.private = [ ".ssh/id_ed25519" ];
   sane.fs."/home/colin/.ssh/id_ed25519.pub" = sane-lib.fs.wantedText user-pubkey;

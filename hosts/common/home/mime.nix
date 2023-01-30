@@ -1,4 +1,4 @@
-{ config, lib, sane-lib, ...}:
+{ config, sane-lib, ...}:
 
 let
   www = config.sane.web-browser.browser.desktop;
@@ -9,7 +9,6 @@ let
   # audio = "mpv.desktop";
   audio = "vlc.desktop";
 in
-lib.mkIf config.sane.home-manager.enable
 {
 
   # the xdg mime type for a file can be found with:

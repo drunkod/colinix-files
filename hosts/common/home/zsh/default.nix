@@ -1,4 +1,4 @@
-{ config, lib, pkgs, sane-lib, ... }:
+{ pkgs, sane-lib, ... }:
 
 let
   # powerlevel10k prompt config
@@ -25,7 +25,6 @@ let
     source ${pkgs.zsh-prezto}/share/zsh-prezto/init.zsh
   '';
 in
-lib.mkIf config.sane.home-manager.enable
 {
   sane.persist.home.plaintext = [
     # we don't need to full zsh dir -- just the history file --

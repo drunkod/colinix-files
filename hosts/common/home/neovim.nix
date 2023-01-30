@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ lib, pkgs, ... }:
 
 let
   inherit (builtins) map;
@@ -70,7 +70,6 @@ let
   plugin-config-tex = concatMapStrings (p: optionalString (p.type or "" == "viml") p.config) plugins;
   plugin-config-lua = concatMapStrings (p: optionalString (p.type or "" == "lua") p.config) plugins;
 in
-lib.mkIf config.sane.home-manager.enable
 {
   # private because there could be sensitive things in the swap
   sane.persist.home.private = [ ".cache/vim-swap" ];
