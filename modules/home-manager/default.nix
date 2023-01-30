@@ -9,8 +9,6 @@
 with lib;
 let
   cfg = config.sane.home-manager;
-  # extract `pkg` from `sane.packages.enabledUserPkgs`
-  pkg-list = pkgspec: builtins.map (e: e.pkg) pkgspec;
 in
 {
   options = {
@@ -30,8 +28,6 @@ in
       # or `man home-configuration.nix`
       manual.html.enable = false;  # TODO: set to true later (build failure)
       manual.manpages.enable = false;  # TODO: enable after https://github.com/nix-community/home-manager/issues/3344
-
-      home.packages = pkg-list config.sane.packages.enabledUserPkgs;
 
       home.stateVersion = "21.11";
       home.username = "colin";
