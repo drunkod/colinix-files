@@ -13,8 +13,8 @@ in
 {
   # ssh key is stored in private storage
   sane.persist.home.private = [ ".ssh/id_ed25519" ];
-  sane.fs."/home/colin/.ssh/id_ed25519.pub" = sane-lib.fs.wantedText user-pubkey;
-  sane.fs."/home/colin/.ssh/known_hosts" = sane-lib.fs.wantedText known-hosts-text;
+  sane.user.fs.".ssh/id_ed25519.pub" = sane-lib.fs.wantedText user-pubkey;
+  sane.user.fs.".ssh/known_hosts" = sane-lib.fs.wantedText known-hosts-text;
 
   users.users.colin.openssh.authorizedKeys.keys =
   let

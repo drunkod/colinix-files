@@ -7,5 +7,5 @@
     sopsFile = ../../../secrets/universal/aerc_accounts.conf;
     format = "binary";
   };
-  sane.fs."/home/colin/.config/aerc/accounts.conf" = sane-lib.fs.wantedSymlinkTo config.sops.secrets.aerc_accounts.path;
+  sane.user.fs.".config/aerc/accounts.conf" = sane-lib.fs.wantedSymlinkTo config.sops.secrets.aerc_accounts.path;
 }

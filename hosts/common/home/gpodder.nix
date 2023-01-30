@@ -6,7 +6,7 @@ let
   all-feeds = config.sane.feeds;
   wanted-feeds = feeds.filterByFormat ["podcast"] all-feeds;
 in {
-  sane.fs."/home/colin/.config/gpodderFeeds.opml" = sane-lib.fs.wantedText (
+  sane.user.fs.".config/gpodderFeeds.opml" = sane-lib.fs.wantedText (
     feeds.feedsToOpml wanted-feeds
   );
 }

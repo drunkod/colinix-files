@@ -155,7 +155,7 @@ in
     # the specific attribute path is found via scraping ublock code here:
     # - <https://github.com/gorhill/uBlock/blob/master/src/js/storage.js>
     # - <https://github.com/gorhill/uBlock/blob/master/assets/assets.json>
-    sane.fs."/home/colin/${cfg.browser.dotDir}/managed-storage/uBlock0@raymondhill.net.json" = sane-lib.fs.wantedText ''
+    sane.user.fs."${cfg.browser.dotDir}/managed-storage/uBlock0@raymondhill.net.json" = sane-lib.fs.wantedText ''
       {
        "name": "uBlock0@raymondhill.net",
        "description": "ignored",
@@ -165,7 +165,7 @@ in
        }
       }
     '';
-    sane.fs."/home/colin/${cfg.browser.dotDir}/${cfg.browser.libName}.overrides.cfg" = sane-lib.fs.wantedText ''
+    sane.user.fs."${cfg.browser.dotDir}/${cfg.browser.libName}.overrides.cfg" = sane-lib.fs.wantedText ''
       // if we can't query the revocation status of a SSL cert because the issuer is offline,
       // treat it as unrevoked.
       // see: <https://librewolf.net/docs/faq/#im-getting-sec_error_ocsp_server_error-what-can-i-do>
@@ -181,10 +181,10 @@ in
     sane.persist.home.byPath."${cfg.browser.dotDir}/default" = lib.mkIf (cfg.persistData != null) {
       store = cfg.persistData;
     };
-    sane.fs."/home/colin/${cfg.browser.dotDir}/default" = sane-lib.fs.wantedDir;
+    sane.user.fs."${cfg.browser.dotDir}/default" = sane-lib.fs.wantedDir;
     # instruct Firefox to put the profile in a predictable directory (so we can do things like persist just it).
     # XXX: the directory *must* exist, even if empty; Firefox will not create the directory itself.
-    sane.fs."/home/colin/${cfg.browser.dotDir}/profiles.ini" = sane-lib.fs.wantedText ''
+    sane.user.fs."${cfg.browser.dotDir}/profiles.ini" = sane-lib.fs.wantedText ''
       [Profile0]
       Name=default
       IsRelative=1

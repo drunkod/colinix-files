@@ -9,7 +9,7 @@ let
   );
 in
 {
-  sane.fs."/home/colin/.config/vlc/vlcrc" = sane-lib.fs.wantedText ''
+  sane.user.fs.".config/vlc/vlcrc" = sane-lib.fs.wantedText ''
     [podcast]
     podcast-urls=${podcast-urls}
     [core]

@@ -5,8 +5,8 @@
 
 {
   sane.persist.home.plaintext = [ ".local/state/splatmoji" ];
-  sane.fs."/home/colin/.config/splatmoji/splatmoji.config" = sane-lib.fs.wantedText ''
-    history_file=/home/colin/.local/state/splatmoji/history
+  sane.user.fs.".config/splatmoji/splatmoji.config" = sane-lib.fs.wantedText ''
+    history_file=~/.local/state/splatmoji/history
     history_length=5
     # TODO: wayland equiv
     paste_command=xdotool key ctrl+v

@@ -4,7 +4,7 @@ let
   mkCfg = lib.generators.toINI { };
 in
 {
-  sane.fs."/home/colin/.config/git/config" = sane-lib.fs.wantedText (mkCfg {
+  sane.user.fs.".config/git/config" = sane-lib.fs.wantedText (mkCfg {
     user.name = "Colin";
     user.email = "colin@uninsane.org";
     alias.co = "checkout";

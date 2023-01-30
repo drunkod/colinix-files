@@ -7,5 +7,5 @@
     sopsFile = ../../../secrets/universal/sublime_music_config.json.bin;
     format = "binary";
   };
-  sane.fs."/home/colin/.config/sublime-music/config.json" = sane-lib.fs.wantedSymlinkTo config.sops.secrets.sublime_music_config.path;
+  sane.user.fs.".config/sublime-music/config.json" = sane-lib.fs.wantedSymlinkTo config.sops.secrets.sublime_music_config.path;
 }

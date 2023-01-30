@@ -6,7 +6,7 @@ let
   all-feeds = config.sane.feeds;
   wanted-feeds = feeds.filterByFormat ["text" "image"] all-feeds;
 in {
-  sane.fs."/home/colin/.config/newsflashFeeds.opml" = sane-lib.fs.wantedText (
+  sane.user.fs.".config/newsflashFeeds.opml" = sane-lib.fs.wantedText (
     feeds.feedsToOpml wanted-feeds
   );
 }

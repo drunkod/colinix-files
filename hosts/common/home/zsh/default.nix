@@ -36,7 +36,7 @@ in
   ];
 
   # zsh/prezto complains if zshrc doesn't exist; but it does allow an "empty" file.
-  sane.fs."/home/colin/.config/zsh/.zshrc" = sane-lib.fs.wantedText "# ";
+  sane.user.fs.".config/zsh/.zshrc" = sane-lib.fs.wantedText "# ";
 
   # enable zsh completions
   environment.pathsToLink = [ "/share/zsh" ];
@@ -107,7 +107,7 @@ in
   # prezto = oh-my-zsh fork; controls prompt, auto-completion, etc.
   # see: https://github.com/sorin-ionescu/prezto
   # i believe this file is auto-sourced by the prezto init.zsh script.
-  sane.fs."/home/colin/.config/zsh/.zpreztorc" = sane-lib.fs.wantedText ''
+  sane.user.fs.".config/zsh/.zpreztorc" = sane-lib.fs.wantedText ''
     zstyle ':prezto:*:*' color 'yes'
 
     # modules (they ship with prezto):

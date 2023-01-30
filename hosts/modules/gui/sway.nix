@@ -171,7 +171,7 @@ in
       enable = true;
       wrapperFeatures.gtk = true;
     };
-    sane.fs."/home/colin/.config/sway/config" =
+    sane.user.fs.".config/sway/config" =
       let
         fuzzel = "${pkgs.fuzzel}/bin/fuzzel";
         sed = "${pkgs.gnused}/bin/sed";
@@ -346,10 +346,10 @@ in
         }
       '';
 
-    sane.fs."/home/colin/.config/waybar/config" = sane-lib.fs.wantedSymlinkTo waybar-config-text;
+    sane.user.fs.".config/waybar/config" = sane-lib.fs.wantedSymlinkTo waybar-config-text;
 
     # style docs: https://github.com/Alexays/Waybar/wiki/Styling
-    sane.fs."/home/colin/.config/waybar/style.css" = sane-lib.fs.wantedText ''
+    sane.user.fs.".config/waybar/style.css" = sane-lib.fs.wantedText ''
       * {
         font-family: monospace;
       }

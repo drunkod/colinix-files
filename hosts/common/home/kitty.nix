@@ -1,7 +1,7 @@
 { pkgs, sane-lib, ... }:
 
 {
-  sane.fs."/home/colin/.config/kitty/kitty.conf" = sane-lib.fs.wantedText ''
+  sane.user.fs.".config/kitty/kitty.conf" = sane-lib.fs.wantedText ''
     # docs: https://sw.kovidgoyal.net/kitty/conf/
     # disable terminal bell (when e.g. you backspace too many times)
     enable_audio_bell no
