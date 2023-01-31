@@ -1,0 +1,23 @@
+diff --git a/pkgs/development/libraries/mesa/default.nix b/pkgs/development/libraries/mesa/default.nix
+index a79c19eb2eb..088e3418b3f 100644
+--- a/pkgs/development/libraries/mesa/default.nix
++++ b/pkgs/development/libraries/mesa/default.nix
+@@ -39,7 +39,7 @@
+ let
+   # Release calendar: https://www.mesa3d.org/release-calendar.html
+   # Release frequency: https://www.mesa3d.org/releasing.html#schedule
+-  version = "22.3.3";
++  version = "22.3.2";
+   branch  = versions.major version;
+ 
+   withLibdrm = lib.meta.availableOn stdenv.hostPlatform libdrm;
+@@ -62,7 +62,7 @@ self = stdenv.mkDerivation {
+       "ftp://ftp.freedesktop.org/pub/mesa/${version}/mesa-${version}.tar.xz"
+       "ftp://ftp.freedesktop.org/pub/mesa/older-versions/${branch}.x/${version}/mesa-${version}.tar.xz"
+     ];
+-    sha256 = "sha256-vteZeIvyvZ7wedl82OCTSL9TywhoGFeOQHc7KxeBKSI=";
++    sha256 = "c15df758a8795f53e57f2a228eb4593c22b16dffd9b38f83901f76cd9533140b";
+   };
+ 
+   # TODO:
+

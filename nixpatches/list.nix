@@ -13,13 +13,6 @@
     hash = "sha256-IvsIcd2wPdz4b/7FMrDrcVlIZjFecCQ9uiL0Umprbx0=";
   })
 
-  # fix libreoffice build by: Revert "mdds: 2.0.3 -> 2.1.0"
-  # merged 2023/01/25
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/212583.diff";
-    hash = "sha256-nkXgwQUtxYkJT2OzG6Jc72snizW5wHvR1nmh2KDnaPc=";
-  })
-
   # fix handbrake build by: handbrake: 1.5.1 -> 1.6.1
   # PR opened 2023/01/23
   (fetchpatch {
@@ -33,6 +26,14 @@
   # fix for <https://gitlab.com/signald/signald/-/issues/345>
   # allows to actually run signald
   ./2023-01-25-signald-update.patch
+
+  # fix for CMA memory leak in mesa: <https://gitlab.freedesktop.org/mesa/mesa/-/issues/8198>
+  # only necessary on aarch64.
+  # it's a revert of nixpkgs commit dcf630c172df2a9ecaa47c77f868211e61ae8e52
+  # NB: next nixpkgs update will require changing a line in this patch:
+  # - branch  = versions.major version;
+  # + branch  = lib.versions.major version;
+  ./2023-01-30-mesa-cma-leak.patch
 
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
