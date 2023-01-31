@@ -40,21 +40,21 @@
       "locked": {
         "lastModified": 1,
         "narHash": "sha256-arp7Uy7ct5ryTcmSY032eN7hr33i7D2XvjTRLliCFDc=",
-        "path": "/nix/store/fy0wg1vbl9gm4vwg3iy6linaj35z807v-source/nixpatches",
+        "path": "/nix/store/0nh60a9qln601acyd9774ymdshhz3s6r-source/nixpatches",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/fy0wg1vbl9gm4vwg3iy6linaj35z807v-source/nixpatches",
+        "path": "/nix/store/0nh60a9qln601acyd9774ymdshhz3s6r-source/nixpatches",
         "type": "path"
       }
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1674971084,
-        "narHash": "sha256-YxBWj2t75Jun+NJUwr2vvtcfLwvGcazSo+pnNxpt+tU=",
+        "lastModified": 1675061157,
+        "narHash": "sha256-F7/F65ZFWbq7cKSiV3K2acxCv64jKaZZ/K0A3VNT2kA=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "22c4a7a4796a91c297a7e59078a84ec29515f86e",
+        "rev": "f413457e0dd7a42adefdbcea4391dd9751509025",
         "type": "github"
       },
       "original": {
@@ -135,11 +135,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1666870107,
-        "narHash": "sha256-b9eXZxSwhzdJI5uQgfrMhu4SY2POrPkinUg7F5gQVYo=",
+        "lastModified": 1675131883,
+        "narHash": "sha256-yBgJDG72YqIr1bltasqHD1E/kHc9uRFgDjxDmy6kI8M=",
         "ref": "refs/heads/master",
-        "rev": "80c6ec95bd430e29d231cf745f19279bb76fb382",
-        "revCount": 164,
+        "rev": "b099c24091cc192abf3997b94342d4b31cc5757b",
+        "revCount": 170,
         "type": "git",
         "url": "https://git.uninsane.org/colin/uninsane"
       },
