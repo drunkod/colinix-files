@@ -19,7 +19,7 @@
   # but `inputs` is required to be a strict attrset: not an expression.
   inputs = {
     # <https://github.com/nixos/nixpkgs/tree/nixos-22.11>
-    nixpkgs-stable.url = "github:nixos/nixpkgs?ref=nixos-22.11";
+    # nixpkgs-stable.url = "github:nixos/nixpkgs?ref=nixos-22.11";
 
     # <https://github.com/nixos/nixpkgs/tree/nixos-unstable>
     nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
@@ -46,12 +46,12 @@
   outputs = {
     self,
     nixpkgs,
-    nixpkgs-stable,
     nixpkgs-unpatched,
     mobile-nixos,
     sops-nix,
-    uninsane-dot-org
-  }:
+    uninsane-dot-org,
+    ...
+  }@inputs:
     let
       nixpkgsCompiledBy = local: nixpkgs.legacyPackages."${local}";
 
@@ -117,9 +117,12 @@
         pins = import ./overlays/pins.nix;  # TODO: move to `nixpatches/` input
         passthru =
           let
-            stable = next: prev: {
-              stable = nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform.system}";
-            };
+            stable =
+              if inputs ? "nixpkgs-stable" then (
+                next: prev: {
+                  stable = inputs.nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform.system}";
+                }
+              ) else (next: prev: {});
             mobile = (import "${mobile-nixos}/overlay/overlay.nix");
             uninsane = uninsane-dot-org.overlay;
           in

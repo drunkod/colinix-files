@@ -40,31 +40,15 @@
       "locked": {
         "lastModified": 1,
         "narHash": "sha256-arp7Uy7ct5ryTcmSY032eN7hr33i7D2XvjTRLliCFDc=",
-        "path": "/nix/store/0nh60a9qln601acyd9774ymdshhz3s6r-source/nixpatches",
+        "path": "/nix/store/jblp2g67p3wid2qarcyd8bzrbs9wg5lb-source/nixpatches",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/0nh60a9qln601acyd9774ymdshhz3s6r-source/nixpatches",
+        "path": "/nix/store/jblp2g67p3wid2qarcyd8bzrbs9wg5lb-source/nixpatches",
         "type": "path"
       }
     },
     "nixpkgs-stable": {
-      "locked": {
-        "lastModified": 1675061157,
-        "narHash": "sha256-F7/F65ZFWbq7cKSiV3K2acxCv64jKaZZ/K0A3VNT2kA=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "f413457e0dd7a42adefdbcea4391dd9751509025",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-22.11",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-stable_2": {
       "locked": {
         "lastModified": 1674352297,
         "narHash": "sha256-OkAnJPrauEcUCrst4/3DKoQfUn2gXKuU6CFvhtMrLgg=",
@@ -100,7 +84,6 @@
       "inputs": {
         "mobile-nixos": "mobile-nixos",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-stable": "nixpkgs-stable",
         "nixpkgs-unpatched": "nixpkgs-unpatched",
         "sops-nix": "sops-nix",
         "uninsane-dot-org": "uninsane-dot-org"
@@ -111,7 +94,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "nixpkgs-stable": "nixpkgs-stable_2"
+        "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
         "lastModified": 1674546403,
