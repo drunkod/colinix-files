@@ -27,6 +27,11 @@
   # allows to actually run signald
   ./2023-01-25-signald-update.patch
 
+  # fix for CMA memory leak in mesa: <https://gitlab.freedesktop.org/mesa/mesa/-/issues/8198>
+  # only necessary on aarch64.
+  # it's a revert of nixpkgs commit dcf630c172df2a9ecaa47c77f868211e61ae8e52
+  ./2023-01-30-mesa-cma-leak.patch
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
