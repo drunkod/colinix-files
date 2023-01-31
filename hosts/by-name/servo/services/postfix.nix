@@ -1,3 +1,6 @@
+# DOCS:
+# - dovecot config: <https://doc.dovecot.org/configuration_manual/>
+
 { config, lib, ... }:
 
 let
@@ -144,9 +147,23 @@ in
   # inspired by https://gitlab.com/simple-nixos-mailserver/nixos-mailserver/
   services.dovecot2.enable = true;
   services.dovecot2.mailboxes = {
-    # other special-purpose mailboxes: "All" "Archive" "Drafts" "Flagged" "Junk" "Sent" "Trash"
+    # special-purpose mailboxes: "All" "Archive" "Drafts" "Flagged" "Junk" "Sent" "Trash"
     # RFC6154 describes these special mailboxes: https://www.ietf.org/rfc/rfc6154.html
+    # how these boxes are treated is 100% up to the client and server to decide.
+    # client behavior:
+    # iOS
+    #   - Drafts: ?
+    #   - Sent: works
+    #   - Trash: works
+    # aerc
+    #   - Drafts: works
+    #   - Sent: works
+    #   - Trash: no; deleted messages are actually deleted
+    #       use `:move trash` instead
+    # Sent mailbox: all sent messages are copied to it. unclear if this happens server-side or client-side.
+    Drafts = { specialUse = "Drafts"; auto = "create"; };
     Sent = { specialUse = "Sent"; auto = "create"; };
+    Trash = { specialUse = "Trash"; auto = "create"; };
   };
   services.dovecot2.sslServerCert = "/var/lib/acme/imap.uninsane.org/fullchain.pem";
   services.dovecot2.sslServerKey = "/var/lib/acme/imap.uninsane.org/key.pem";
