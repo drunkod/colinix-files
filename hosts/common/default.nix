@@ -10,6 +10,7 @@
     ./ids.nix
     ./machine-id.nix
     ./net.nix
+    ./persist.nix
     ./secrets.nix
     ./ssh.nix
     ./users.nix

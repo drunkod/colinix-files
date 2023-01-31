@@ -3,7 +3,7 @@
 let
   cfg = config.sane.persist;
 in lib.mkIf cfg.enable {
-  sane.persist.stores."plaintext" = {
+  sane.persist.stores."plaintext" = lib.mkDefault {
     origin = "/nix/persist";
   };
   # TODO: needed?
