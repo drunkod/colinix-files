@@ -21,15 +21,6 @@
   sane.packages.enableConsolePkgs = true;
   sane.packages.enableSystemPkgs = true;
 
-  sane.persist.sys.plaintext = [
-    "/var/log"
-    "/var/backup"  # for e.g. postgres dumps
-    # TODO: move elsewhere
-    "/var/lib/alsa"                # preserve output levels, default devices
-    "/var/lib/colord"              # preserve color calibrations (?)
-    "/var/lib/machines"            # maybe not needed, but would be painful to add a VM and forget.
-  ];
-
   # some services which use private directories error if the parent (/var/lib/private) isn't 700.
   sane.fs."/var/lib/private".dir.acl.mode = "0700";
 
