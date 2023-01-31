@@ -143,6 +143,11 @@ in
 
   # inspired by https://gitlab.com/simple-nixos-mailserver/nixos-mailserver/
   services.dovecot2.enable = true;
+  services.dovecot2.mailboxes = {
+    # other special-purpose mailboxes: "All" "Archive" "Drafts" "Flagged" "Junk" "Sent" "Trash"
+    # RFC6154 describes these special mailboxes: https://www.ietf.org/rfc/rfc6154.html
+    Sent = { specialUse = "Sent"; auto = "create"; };
+  };
   services.dovecot2.sslServerCert = "/var/lib/acme/imap.uninsane.org/fullchain.pem";
   services.dovecot2.sslServerKey = "/var/lib/acme/imap.uninsane.org/key.pem";
   services.dovecot2.enablePAM = false;
