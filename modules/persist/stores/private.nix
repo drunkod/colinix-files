@@ -1,8 +1,9 @@
 { config, lib, pkgs, sane-lib, utils, ... }:
 
 let
+  persist-base = config.sane.persist.stores."plaintext".origin;
   private-dir = config.sane.persist.stores."private".origin;
-  private-backing-dir = sane-lib.path.concat [ "/nix/persist" private-dir ];
+  private-backing-dir = sane-lib.path.concat [ persist-base private-dir ];
 in
 lib.mkIf config.sane.persist.enable
 {

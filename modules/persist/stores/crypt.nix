@@ -1,9 +1,10 @@
-{ config, lib, pkgs, utils, ... }:
+{ config, lib, pkgs, sane-lib, utils, ... }:
 
 let
+  persist-base = config.sane.persist.stores."plaintext".origin;
   device = config.sane.persist.stores."cryptClearOnBoot".origin;
   key = "${device}.key";
-  underlying = "/nix/persist/crypt/clearedonboot";
+  underlying = sane-lib.path.concat [ persist-base "crypt/clearedonboot" ];
 in
 lib.mkIf config.sane.persist.enable
 {
