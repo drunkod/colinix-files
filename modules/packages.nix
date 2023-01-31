@@ -25,6 +25,7 @@ let
     ifuse
     imagemagick
     ipfs
+    kitty  # TODO: move to GUI, but `ssh servo` from kitty sets `TERM=xterm-kitty` in the remove and breaks things
     libimobiledevice
     libsecret  # for managing user keyrings
     lm_sensors  # for sensors-detect
@@ -111,7 +112,6 @@ let
 
     kdenlive
     kid3  # audio tagging
-    kitty
     krita
     libreoffice-fresh  # XXX colin: maybe don't want this on mobile
     lollypop
