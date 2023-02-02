@@ -197,48 +197,6 @@ let
     { pkg = zecwallet-lite; private = [ ".zcash" ]; }
   ] else []);
 
-  # general-purpose utilities that we want any user to be able to access
-  #   (specifically: root, in case of rescue)
-  systemPkgs = [
-    btrfs-progs
-    cacert.unbundled  # some services require unbundled /etc/ssl/certs
-    cryptsetup
-    dig
-    efibootmgr
-    fatresize
-    fd
-    file
-    gawk
-    git
-    gptfdisk
-    hdparm
-    htop
-    iftop
-    inetutils  # for telnet
-    iotop
-    iptables
-    jq
-    killall
-    lsof
-    nano
-    netcat
-    nethogs
-    nmap
-    openssl
-    parted
-    pciutils
-    powertop
-    pstree
-    ripgrep
-    screen
-    smartmontools
-    socat
-    strace
-    tcpdump
-    tree
-    usbutils
-    wget
-  ];
 
   # useful devtools:
   devPkgs = [
@@ -304,11 +262,6 @@ in
       default = false;
       type = types.bool;
     };
-    sane.packages.enableSystemPkgs = mkOption {
-      default = false;
-      type = types.bool;
-      description = "enable system-wide packages";
-    };
 
     sane.packages.enabledUserPkgs = mkOption {
       default = cfg.extraUserPkgs
@@ -322,10 +275,7 @@ in
   };
 
   config = {
-    environment.systemPackages = mkIf cfg.enableSystemPkgs systemPkgs;
     sane.user.persist.plaintext = concatLists (map (p: p.dir) cfg.enabledUserPkgs);
     sane.user.persist.private = concatLists (map (p: p.private) cfg.enabledUserPkgs);
-    # XXX: this might not be necessary. try removing this and cacert.unbundled?
-    environment.etc."ssl/certs".source = mkIf cfg.enableSystemPkgs "${pkgs.cacert.unbundled}/etc/ssl/certs/*";
   };
 }

@@ -11,6 +11,7 @@
     ./machine-id.nix
     ./net.nix
     ./persist.nix
+    ./programs.nix
     ./secrets.nix
     ./ssh.nix
     ./users.nix
@@ -19,7 +20,6 @@
 
   sane.nixcache.enable-trusted-keys = true;
   sane.packages.enableConsolePkgs = true;
-  sane.packages.enableSystemPkgs = true;
 
   # some services which use private directories error if the parent (/var/lib/private) isn't 700.
   sane.fs."/var/lib/private".dir.acl.mode = "0700";
