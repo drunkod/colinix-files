@@ -66,7 +66,12 @@ let
     environment.systemPackages = mkIf p.enableFor.system [ p.package ];
     # conditionally add to user(s) PATH
     users.users = mapAttrs (user: en: optionalAttrs en {
-      "${user}".packages = [ p ];
+      packages = [ p ];
+    }) p.enableFor.users;
+    # conditionally persist relevant user dirs
+    sane.users = mapAttrs (user: en: optionalAttrs en {
+      persist.plaintext = p.dir;
+      persist.private = p.private;
     }) p.enableFor.users;
   }) cfg;
 in
