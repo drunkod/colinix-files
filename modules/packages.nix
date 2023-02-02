@@ -47,6 +47,7 @@ let
     sequoia
     snapper
     sops
+    sox
     speedtest-cli
     sqlite  # to debug sqlite3 databases
     ssh-to-age
