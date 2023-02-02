@@ -80,7 +80,7 @@ let
 
     # { pkg = fluffychat-moby; dir = [ ".local/share/chat.fluffy.fluffychat" ]; }  # TODO: ship normal fluffychat on non-moby?
 
-    foliate
+    foliate  # e-book reader
     font-manager
 
     # XXX by default fractal stores its state in ~/.local/share/<UUID>.
