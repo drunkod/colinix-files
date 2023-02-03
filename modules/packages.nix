@@ -5,22 +5,6 @@ with pkgs;
 let
   cfg = config.sane.packages;
 
-  # useful devtools:
-  devPkgs = [
-    bison
-    dtc
-    flex
-    gcc
-    gdb
-    # gcc-arm-embedded
-    # gcc_multi
-    gnumake
-    mercurial
-    mix2nix
-    rustup
-    swig
-  ];
-
   pkgSpec = types.submodule {
     options = {
       pkg = mkOption {
@@ -48,19 +32,9 @@ in
       default = [ ];
       type = types.listOf toPkgSpec;
     };
-    sane.packages.enableDevPkgs = mkOption {
-      description = ''
-        enable packages that are useful for building other software by hand.
-        you should prefer to keep this disabled except when prototyping, e.g. packaging new software.
-      '';
-      default = false;
-      type = types.bool;
-    };
 
     sane.packages.enabledUserPkgs = mkOption {
-      default = cfg.extraUserPkgs
-        ++ (if cfg.enableDevPkgs then devPkgs else [])
-      ;
+      default = cfg.extraUserPkgs;
       type = types.listOf toPkgSpec;
       description = "generated from other config options";
     };

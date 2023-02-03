@@ -4,8 +4,6 @@
     ./fs.nix
   ];
 
-  # sane.packages.enableDevPkgs = true;
-
   sane.roles.client = true;
   sane.services.wg-home.enable = true;
   sane.services.wg-home.ip = config.sane.hosts.by-name."desko".wg-home.ip;
