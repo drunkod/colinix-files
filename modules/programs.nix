@@ -29,7 +29,7 @@ let
             pkgPath = splitString "." name;
           in
             # package can be inferred by the attr name, allowing shorthand like
-            #   `sane.packages.nano.enable = true;`
+            #   `sane.programs.nano.enable = true;`
             # this indexing will throw if the package doesn't exist and the user forgets to specify
             # a valid source explicitly.
             getAttrFromPath pkgPath pkgs;

@@ -8,12 +8,13 @@
     ./services
   ];
 
-  sane.packages.extraUserPkgs = with pkgs; [
+  sane.programs = {
     # for administering services
-    freshrss
-    matrix-synapse
-    signaldctl
-  ];
+    freshrss.enableFor.user.colin = true;
+    matrix-synapse.enableFor.user.colin = true;
+    signaldctl.enableFor.user.colin = true;
+  };
+
   sane.persist.enable = true;
   sane.services.dyn-dns.enable = true;
   sane.services.wg-home.enable = true;

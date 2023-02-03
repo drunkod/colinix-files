@@ -49,8 +49,6 @@ in
 
       shell = pkgs.zsh;
 
-      packages = builtins.map (p: p.pkg) config.sane.packages.enabledUserPkgs;
-
       # mount encrypted stuff at login
       # some other nix pam users:
       # - <https://github.com/g00pix/nixconf/blob/32c04f6fa843fed97639dd3f09e157668d3eea1f/profiles/sshfs.nix>

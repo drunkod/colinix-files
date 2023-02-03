@@ -5,7 +5,6 @@
     ./feeds.nix
     ./fs
     ./ids.nix
-    ./packages.nix
     ./programs.nix
     ./image.nix
     ./persist

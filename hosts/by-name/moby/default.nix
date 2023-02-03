@@ -41,10 +41,12 @@
     ".config/pulse"  # persist pulseaudio volume
   ];
 
-  # sane.packages.enableGuiPkgs = false;  # XXX faster builds/imaging for debugging
-  sane.packages.extraUserPkgs = [
-    pkgs.plasma5Packages.konsole  # terminal
-  ];
+  sane.programs."pkgs.plasma5Packages.konsole" = {
+    # more reliable terminal
+    # TODO: move to gui/phosh
+    package = pkgs.plasma5Packages.konsole;
+    enableFor.users.colin = true;
+  };
 
   sane.nixcache.enable = true;
   sane.persist.enable = true;
