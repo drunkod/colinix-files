@@ -181,8 +181,8 @@ let
       tdesktop  # broken on phosh
       tokodon
       vlc
-      # pleroma client (Electron). input is broken on phosh.
-      whalebird
+      # pleroma client (Electron). input is broken on phosh. TODO(2023/02/02): fix electron19 input (insecure)
+      # whalebird
       xdg-utils  # for xdg-open
       xterm  # broken on phosh
     ;

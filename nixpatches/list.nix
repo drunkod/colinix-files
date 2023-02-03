@@ -13,13 +13,6 @@
     hash = "sha256-IvsIcd2wPdz4b/7FMrDrcVlIZjFecCQ9uiL0Umprbx0=";
   })
 
-  # fix libreoffice build by: Revert "mdds: 2.0.3 -> 2.1.0"
-  # merged 2023/01/25
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/212583.diff";
-    hash = "sha256-nkXgwQUtxYkJT2OzG6Jc72snizW5wHvR1nmh2KDnaPc=";
-  })
-
   # fix handbrake build by: handbrake: 1.5.1 -> 1.6.1
   # PR opened 2023/01/23
   (fetchpatch {
