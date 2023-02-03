@@ -20,6 +20,7 @@
 
   sane.nixcache.enable-trusted-keys = true;
   sane.packages.enableConsolePkgs = true;
+  sane.programs.sysadminUtils.enableFor.system = true;
 
   # some services which use private directories error if the parent (/var/lib/private) isn't 700.
   sane.fs."/var/lib/private".dir.acl.mode = "0700";

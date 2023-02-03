@@ -10,6 +10,7 @@ let
     mkDefault
     mkIf
     mkOption
+    optional
     optionalAttrs
     splitString
     types
@@ -19,7 +20,10 @@ let
   pkgSpec = types.submodule ({ name, ... }: {
     options = {
       package = mkOption {
-        type = types.package;
+        type = types.nullOr types.package;
+        description = ''
+          package, or `null` if the program is some sort of meta set (in which case it much EXPLICITLY be set null).
+        '';
       };
       enableFor.system = mkOption {
         type = types.bool;
@@ -83,7 +87,9 @@ let
 
   configs = mapAttrsToList (_name: p: {
     # conditionally add to system PATH
-    environment.systemPackages = mkIf p.enableFor.system [ p.package ];
+    environment.systemPackages = optional
+      (p.package != null && p.enableFor.system)
+      p.package;
     # conditionally add to user(s) PATH
     users.users = mapAttrs (user: en: optionalAttrs en {
       packages = [ p.package ];
