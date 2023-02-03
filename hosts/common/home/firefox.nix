@@ -125,11 +125,11 @@ in
         # `wget ...xpi`; `unar ...xpi`; `cat */manifest.json | jq '.browser_specific_settings.gecko.id'`
         # browserpass-ce.package = addon "browserpass-ce" "browserpass@maximbaz.com" "sha256-sXgUBbRvMnRpeIW1MTkmTcoqtW/8RDXAkxAq1evFkpc=";
         browserpass-extension.package = localAddon pkgs.browserpass-extension;
-        bypass-paywalls-clean.package = addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-JOj5P7c2JTTReHCRZXm4BscaGr3i+9Y4Ey/y621x8PI=";
+        bypass-paywalls-clean.package = addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-oUwdqdAwV3DezaTtOMx7A/s4lzIws+t2f08mwk+325k=";
         ether-metamask.package = addon "ether-metamask" "webextension@metamask.io" "sha256-G+MwJDOcsaxYSUXjahHJmkWnjLeQ0Wven8DU/lGeMzA=";
         i2p-in-private-browsing.package = addon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io" "sha256-dJcJ3jxeAeAkRvhODeIVrCflvX+S4E0wT/PyYzQBQWs=";
         sidebery.package = addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=";
-        sponsorblock.package = addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-d2K3ufvurWnYVzqLbyR//MgejybkY9exitAf9RdLNRo=";
+        sponsorblock.package = addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-hRsvLaAsVm3dALsTrJqHTNgRFAQcU7XSaGhr5G6+mFs=";
         ublacklist.package = addon "ublacklist" "@ublacklist" "sha256-RqY5iHzbL2qizth7aguyOKWPyINXmrwOlf/OsfqAS48=";
         ublock-origin.package = addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-a/ivUmY1P6teq9x0dt4CbgHt+3kBsEMMXlOfZ5Hx7cg=";
 
