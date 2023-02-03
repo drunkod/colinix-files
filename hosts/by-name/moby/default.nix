@@ -6,6 +6,8 @@
     ./kernel.nix
   ];
 
+  sane.web-browser.enable = lib.mkForce false;  # TODO: re-enable after i can cross compile it
+
   sane.roles.client = true;
   sane.services.wg-home.enable = true;
   sane.services.wg-home.ip = config.sane.hosts.by-name."moby".wg-home.ip;

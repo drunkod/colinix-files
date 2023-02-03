@@ -103,6 +103,10 @@ let
 in
 {
   options = {
+    sane.web-browser.enable = mkOption {
+      default = config.sane.gui.enable;
+      type = types.bool;
+    };
     sane.web-browser.browser = mkOption {
       default = defaultSettings;
       type = types.attrs;
@@ -145,7 +149,7 @@ in
     };
   };
 
-  config = {
+  config = mkIf cfg.enable {
 
     # uBlock filter list configuration.
     # specifically, enable the GDPR cookie prompt blocker.
