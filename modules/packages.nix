@@ -5,62 +5,6 @@ with pkgs;
 let
   cfg = config.sane.packages;
 
-  imagemagick = pkgs.imagemagick.override {
-    ghostscriptSupport = true;
-  };
-
-  consolePkgs = [
-    backblaze-b2
-    cdrtools
-    dmidecode
-    duplicity
-    efivar
-    flashrom
-    fwupd
-    ghostscript  # TODO: imagemagick wrapper should add gs to PATH
-    gnupg
-    gocryptfs
-    gopass
-    gopass-jsonapi
-    ifuse
-    imagemagick
-    ipfs
-    kitty  # TODO: move to GUI, but `ssh servo` from kitty sets `TERM=xterm-kitty` in the remove and breaks things
-    libimobiledevice
-    libsecret  # for managing user keyrings
-    lm_sensors  # for sensors-detect
-    lshw
-    ffmpeg
-    memtester
-    networkmanager
-    nixpkgs-review
-    # nixos-generators
-    # nettools
-    nmon
-    oathToolkit  # for oathtool
-    # ponymix
-    pulsemixer
-    python3
-    rsync
-    # python3Packages.eyeD3  # music tagging
-    sane-scripts
-    sequoia
-    snapper
-    sops
-    sox
-    speedtest-cli
-    sqlite  # to debug sqlite3 databases
-    ssh-to-age
-    sudo
-    # tageditor  # music tagging
-    unar
-    visidata
-    w3m
-    wireguard-tools
-    # youtube-dl
-    yt-dlp
-  ];
-
   guiPkgs = [
     # GUI only
     aerc  # email client
@@ -246,10 +190,6 @@ in
       type = types.listOf toPkgSpec;
       description = "packages to only ship if gui's enabled";
     };
-    sane.packages.enableConsolePkgs = mkOption {
-      default = false;
-      type = types.bool;
-    };
     sane.packages.enableGuiPkgs = mkOption {
       default = false;
       type = types.bool;
@@ -265,7 +205,6 @@ in
 
     sane.packages.enabledUserPkgs = mkOption {
       default = cfg.extraUserPkgs
-        ++ (if cfg.enableConsolePkgs then consolePkgs else [])
         ++ (if cfg.enableGuiPkgs then guiPkgs ++ cfg.extraGuiPkgs else [])
         ++ (if cfg.enableDevPkgs then devPkgs else [])
       ;

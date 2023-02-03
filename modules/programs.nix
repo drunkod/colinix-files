@@ -24,6 +24,15 @@ let
         description = ''
           package, or `null` if the program is some sort of meta set (in which case it much EXPLICITLY be set null).
         '';
+        default =
+          let
+            pkgPath = splitString "." name;
+          in
+            # package can be inferred by the attr name, allowing shorthand like
+            #   `sane.packages.nano.enable = true;`
+            # this indexing will throw if the package doesn't exist and the user forgets to specify
+            # a valid source explicitly.
+            getAttrFromPath pkgPath pkgs;
       };
       enableFor.system = mkOption {
         type = types.bool;
@@ -73,15 +82,6 @@ let
       };
     };
 
-    config =
-      let
-        pkgPath = splitString "." name;
-      in {
-        # package can be inferred by the attr name, allowing shorthand like
-        #   `sane.packages.nano.enable = true;`
-        package = mkIf (hasAttrByPath pkgPath pkgs) (mkDefault (getAttrFromPath pkgPath pkgs));
-      };
-
   });
   toPkgSpec = types.coercedTo types.package (p: { package = p; }) pkgSpec;
 
@@ -91,8 +91,8 @@ let
       (p.package != null && p.enableFor.system)
       p.package;
     # conditionally add to user(s) PATH
-    users.users = mapAttrs (user: en: optionalAttrs en {
-      packages = [ p.package ];
+    users.users = mapAttrs (user: en: {
+      packages = optional (p.package != null && en) p.package;
     }) p.enableFor.user;
     # conditionally persist relevant user dirs
     sane.users = mapAttrs (user: en: optionalAttrs en {
