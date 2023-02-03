@@ -45,7 +45,7 @@
     # more reliable terminal
     # TODO: move to gui/phosh
     package = pkgs.plasma5Packages.konsole;
-    enableFor.users.colin = true;
+    enableFor.user.colin = true;
   };
 
   sane.nixcache.enable = true;
