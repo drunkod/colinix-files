@@ -89,8 +89,9 @@ in
 
       ".cache/nix"
       ".cache/nix-index"
-      ".cargo"
-      ".rustup"
+
+      # ".cargo"
+      # ".rustup"
     ];
 
     # convenience
