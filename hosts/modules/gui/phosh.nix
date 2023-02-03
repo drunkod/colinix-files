@@ -77,12 +77,13 @@ in
         })
       ];
 
-      sane.packages.extraUserPkgs = with pkgs; [
-        phosh-mobile-settings
+      # TODO: refactor
+      sane.programs = {
+        phosh-mobile-settings.enableFor.user.colin = true;
 
         # TODO: see about removing this if the in-built gnome-settings bluetooth manager can work
-        gnome.gnome-bluetooth
-      ];
+        "gnome.gnome-bluetooth".enableFor.user.colin = true;
+      };
     }
     (mkIf cfg.useGreeter {
       services.xserver.enable = true;

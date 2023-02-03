@@ -146,6 +146,11 @@ in
   };
 
   config = {
+    sane.programs.web-browser = {
+      inherit package;
+      # TODO: define the persistence & fs config here
+    };
+    sane.programs.guiApps.suggestedPrograms = [ "web-browser" ];
 
     # uBlock filter list configuration.
     # specifically, enable the GDPR cookie prompt blocker.
@@ -171,8 +176,6 @@ in
       // see: <https://librewolf.net/docs/faq/#im-getting-sec_error_ocsp_server_error-what-can-i-do>
       defaultPref("security.OCSP.require", false);
     '';
-
-    sane.packages.extraGuiPkgs = [ package ];
     # flush the cache to disk to avoid it taking up too much tmp
     sane.user.persist.byPath."${cfg.browser.cacheDir}" = lib.mkIf (cfg.persistCache != null) {
       store = cfg.persistCache;

@@ -625,18 +625,19 @@ in
     #   }
     # '';
 
-    sane.packages.extraUserPkgs = with pkgs; [
-      swaylock
-      swayidle  # (unused)
-      wl-clipboard
-      mako # notification daemon
-      xdg-utils  # for xdg-open
+    # TODO: refactor
+    sane.programs = {
+      swaylock.enableFor.user.colin = true;
+      swayidle.enableFor.user.colin = true;  # (unused)
+      wl-clipboard.enableFor.user.colin = true;
+      mako.enableFor.user.colin = true; # notification daemon
+      xdg-utils.enableFor.user.colin = true;  # for xdg-open
       # user stuff
       # pavucontrol
-      sway-contrib.grimshot
-      gnome.gnome-bluetooth
-      gnome.gnome-control-center
-    ];
+      "sway-contrib.grimshot".enableFor.user.colin = true;
+      "gnome.gnome-bluetooth".enableFor.user.colin = true;
+      "gnome.gnome-control-center".enableFor.user.colin = true;
+    };
   };
 }
 

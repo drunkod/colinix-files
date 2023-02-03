@@ -26,7 +26,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    sane.packages.enableGuiPkgs = mkDefault true;
+    sane.programs.guiApps.enableFor.user.colin = mkDefault true;
 
     # preserve backlight brightness across power cycles
     # see `man systemd-backlight`
