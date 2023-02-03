@@ -20,9 +20,22 @@ in
     };
   };
 
-  config = mkIf cfg.enable (mkMerge [
+  config = mkMerge [
     {
+      sane.programs.phoshApps = {
+        package = null;
+        suggestedPrograms = [
+          "guiApps"
+          "phosh-mobile-settings"
+          # TODO: see about removing gnome-bluetooth if the in-built gnome-settings bluetooth manager can work
+          "gnome.gnome-bluetooth"
+        ];
+      };
+    }
+
+    (mkIf cfg.enable {
       sane.gui.enable = true;
+      sane.programs.phoshApps.enableFor.user.colin = true;
 
       # docs: https://github.com/NixOS/nixpkgs/blob/nixos-22.05/nixos/modules/services/x11/desktop-managers/phosh.nix
       services.xserver.desktopManager.phosh = {
@@ -76,16 +89,9 @@ in
           '';
         })
       ];
+    })
 
-      # TODO: refactor
-      sane.programs = {
-        phosh-mobile-settings.enableFor.user.colin = true;
-
-        # TODO: see about removing this if the in-built gnome-settings bluetooth manager can work
-        "gnome.gnome-bluetooth".enableFor.user.colin = true;
-      };
-    }
-    (mkIf cfg.useGreeter {
+    (mkIf (cfg.enable && cfg.useGreeter) {
       services.xserver.enable = true;
       # NB: setting defaultSession has the critical side-effect that it lets org.freedesktop.AccountsService
       # know that our user exists. this ensures lightdm succeeds when calling /org/freedesktop/AccountsServices ListCachedUsers
@@ -111,5 +117,5 @@ in
 
       systemd.services.phosh.wantedBy = lib.mkForce [];  # disable auto-start
     })
-  ]);
+  ];
 }
