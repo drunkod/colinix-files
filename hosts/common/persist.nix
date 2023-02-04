@@ -12,6 +12,7 @@
     "/var/lib/alsa"                # preserve output levels, default devices
     "/var/lib/colord"              # preserve color calibrations (?)
     "/var/lib/machines"            # maybe not needed, but would be painful to add a VM and forget.
+    "/var/lib/systemd/backlight"   # backlight brightness
     "/var/lib/systemd/coredump"
   ];
 }

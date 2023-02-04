@@ -13,7 +13,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    sane.gui.enable = true;
+    sane.programs.guiApps.enableFor.user.colin = true;
 
     # start gnome/gdm on boot
     services.xserver.enable = true;

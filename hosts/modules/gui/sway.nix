@@ -125,6 +125,7 @@ in
       sane.programs.swayApps = {
         package = null;
         suggestedPrograms = [
+          "guiApps"
           "swaylock"
           "swayidle"
           "wl-clipboard"
@@ -152,7 +153,6 @@ in
     }
 
     (mkIf cfg.enable {
-      sane.gui.enable = true;
       sane.programs.swayApps.enableFor.user.colin = true;
 
       # swap in these lines to use SDDM instead of `services.greetd`.

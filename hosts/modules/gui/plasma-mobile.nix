@@ -13,7 +13,8 @@ in
   };
 
   config = mkIf cfg.enable {
-    sane.gui.enable = true;
+    sane.programs.guiApps.enableFor.user.colin = true;
+
     # start plasma-mobile on boot
     services.xserver.enable = true;
     services.xserver.desktopManager.plasma5.mobile.enable = true;

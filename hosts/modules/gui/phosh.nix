@@ -44,7 +44,6 @@ in
     }
 
     (mkIf cfg.enable {
-      sane.gui.enable = true;
       sane.programs.phoshApps.enableFor.user.colin = true;
 
       # docs: https://github.com/NixOS/nixpkgs/blob/nixos-22.05/nixos/modules/services/x11/desktop-managers/phosh.nix
