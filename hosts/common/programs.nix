@@ -53,12 +53,12 @@ let
   consolePkgs = {
     inherit (pkgs)
       backblaze-b2
-      cdrtools
+      #  cdrtools  # TODO: fix for cross compilation
       dmidecode
       duplicity
       efivar
       flashrom
-      fwupd
+      #  fwupd  # TODO: fix for cross compilation
       ghostscript  # TODO: imagemagick wrapper should add gs to PATH
       gnupg
       gocryptfs

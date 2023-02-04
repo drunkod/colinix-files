@@ -78,6 +78,9 @@
                   self.overlays.passthru
                   self.overlays.pins
                 ];
+                # nixpkgs.crossSystem = target;
+                nixpkgs.hostPlatform = target;
+                nixpkgs.buildPlatform = local;
               }
             ];
           });
