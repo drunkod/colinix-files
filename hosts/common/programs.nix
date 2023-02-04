@@ -76,11 +76,11 @@ let
 
   consolePkgs = {
     inherit (pkgs)
-      cdrtools
+      #  cdrtools  # TODO: fix for cross compilation
       dmidecode
       efivar
       flashrom
-      fwupd
+      #  fwupd  # TODO: fix for cross compilation
       ghostscript  # TODO: imagemagick wrapper should add gs to PATH
       gnupg
       gocryptfs
