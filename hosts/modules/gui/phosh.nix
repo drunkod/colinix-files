@@ -32,6 +32,16 @@ in
         ];
       };
     }
+    {
+      sane.programs = {
+        inherit (pkgs // {
+          "gnome.gnome-bluetooth" = pkgs.gnome.gnome-bluetooth;
+        })
+          phosh-mobile-settings
+          # "gnome.gnome-bluetooth"
+        ;
+      };
+    }
 
     (mkIf cfg.enable {
       sane.gui.enable = true;

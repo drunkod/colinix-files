@@ -85,7 +85,12 @@ let
   });
   toPkgSpec = types.coercedTo types.package (p: { package = p; }) pkgSpec;
 
-  configs = mapAttrsToList (_name: p: {
+  configs = mapAttrsToList (name: p: {
+    assertions = map (sug: {
+      assertion = cfg ? "${sug}";
+      message = ''program "${sug}" referenced by "${name}", but not defined'';
+    }) p.suggestedPrograms;
+
     # conditionally add to system PATH
     environment.systemPackages = optional
       (p.package != null && p.enableFor.system)
@@ -112,6 +117,7 @@ in
   config =
     let
       take = f: {
+        assertions = f.assertions;
         environment.systemPackages = f.environment.systemPackages;
         users.users = f.users.users;
         sane.users = f.sane.users;
