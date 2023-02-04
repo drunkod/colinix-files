@@ -26,9 +26,10 @@ in
         package = null;
         suggestedPrograms = [
           "guiApps"
-          "phosh-mobile-settings"
           # TODO: see about removing gnome-bluetooth if the in-built gnome-settings bluetooth manager can work
           "gnome.gnome-bluetooth"
+          "phosh-mobile-settings"
+          "plasma5Packages.konsole"  # more reliable terminal
         ];
       };
     }
@@ -36,8 +37,10 @@ in
       sane.programs = {
         inherit (pkgs // {
           "gnome.gnome-bluetooth" = pkgs.gnome.gnome-bluetooth;
+          "plasma5Packages.konsole" = pkgs.plasma5Packages.konsole;
         })
           phosh-mobile-settings
+          "plasma5Packages.konsole"
           # "gnome.gnome-bluetooth"
         ;
       };

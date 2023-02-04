@@ -41,13 +41,6 @@
     ".config/pulse"  # persist pulseaudio volume
   ];
 
-  sane.programs."pkgs.plasma5Packages.konsole" = {
-    # more reliable terminal
-    # TODO: move to gui/phosh
-    package = pkgs.plasma5Packages.konsole;
-    enableFor.user.colin = true;
-  };
-
   sane.nixcache.enable = true;
   sane.persist.enable = true;
   sane.gui.phosh.enable = true;
