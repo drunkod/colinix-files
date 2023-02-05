@@ -21,7 +21,7 @@
       # provide a `pkgs.cross.<pkg>` alias that consumers can use instead of `pkgs.<foo>`
       # to explicitly opt into non-emulated cross compilation for any specific package.
       # this is most beneficial for large packages with few pre-requisites -- like Linux.
-      cross = next.crossFrom."${localSystem}";
+      cross = prev.crossFrom."${localSystem}";
     })
   ];
 }
