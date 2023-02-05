@@ -111,6 +111,8 @@
       #   - `nixos-rebuild --flake './#<host>' switch`
       imgs = builtins.mapAttrs (_: host-dfn: host-dfn.config.system.build.img) self.nixosConfigurations;
 
+      host-pkgs = builtins.mapAttrs (_: host-dfn: host-dfn.config.system.build.pkgs) self.nixosConfigurations;
+
       overlays = rec {
         default = pkgs;
         pkgs = import ./overlays/pkgs.nix;

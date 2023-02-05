@@ -9,6 +9,7 @@ let
     mapAttrsToList
     mkDefault
     mkIf
+    mkMerge
     mkOption
     optional
     optionalAttrs
@@ -122,6 +123,11 @@ in
         users.users = f.users.users;
         sane.users = f.sane.users;
       };
-    in
-      take (sane-lib.mkTypedMerge take configs);
+    in mkMerge [
+      (take (sane-lib.mkTypedMerge take configs))
+      {
+        # expose the pkgs -- as available to the system -- as a build target.
+        system.build.pkgs = pkgs;
+      }
+    ];
 }
