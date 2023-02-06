@@ -11,7 +11,7 @@
   sane.services.wg-home.ip = config.sane.hosts.by-name."moby".wg-home.ip;
 
   # TODO: re-enable once base is cross-compiled
-  sane.programs.phoshApps.enableSuggested = false;
+  sane.programs.guiApps.enableSuggested = false;
 
   # cross-compiled documentation is *slow*.
   # no obvious way to natively compile docs (2022/09/29).
@@ -46,7 +46,7 @@
 
   sane.nixcache.enable = true;
   sane.persist.enable = true;
-  # sane.gui.phosh.enable = true;
+  sane.gui.phosh.enable = true;
 
   boot.loader.efi.canTouchEfiVariables = false;
   # /boot space is at a premium. default was 20.
