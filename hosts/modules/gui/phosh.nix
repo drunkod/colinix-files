@@ -63,6 +63,26 @@ in
         };
       };
 
+      # phosh enables `services.gnome.{core-os-services, core-shell}`
+      # and this in turn enables some default apps we don't really care about.
+      # see <nixos/modules/services/x11/desktop-managers/gnome.nix>
+      environment.gnome.excludePackages = with pkgs; [
+        # gnome.gnome-menus  # unused outside gnome classic, but probably harmless
+        gnome-tour
+      ];
+      services.dleyna-renderer.enable = false;
+      services.dleyna-server.enable = false;
+      services.gnome.gnome-browser-connector.enable = false;
+      services.gnome.gnome-initial-setup.enable = false;
+      services.gnome.gnome-online-accounts.enable = false;
+      services.gnome.gnome-remote-desktop.enable = false;
+      services.gnome.gnome-user-share.enable = false;
+      services.gnome.rygel.enable = false;
+
+      # gnome doesn't use mkDefault for these -- unclear why not
+      services.gnome.evolution-data-server.enable = mkForce false;
+      services.gnome.gnome-online-miners.enable = mkForce false;
+
       # XXX: phosh enables networkmanager by default; can probably disable these lines
       networking.useDHCP = false;
       networking.networkmanager.enable = true;
