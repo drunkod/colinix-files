@@ -74,13 +74,15 @@ let
     ;
   };
 
+  # TODO: split these into smaller groups.
+  # - transcoders (ffmpeg, imagemagick) only wanted on desko/lappy ("powerutils"?)
   consolePkgs = {
     inherit (pkgs)
-      #  cdrtools  # TODO: fix for cross compilation
+      cdrtools
       dmidecode
       efivar
       flashrom
-      #  fwupd  # TODO: fix for cross compilation
+      fwupd
       ghostscript  # TODO: imagemagick wrapper should add gs to PATH
       gnupg
       gocryptfs
