@@ -50,15 +50,18 @@ let
     ;
   };
 
+  # TODO: split these into smaller groups.
+  # - iphone utils (libimobiledevice, ifuse) only wanted on desko, maybe lappy
+  # - transcoders (ffmpeg, imagemagick) only wanted on desko/lappy
   consolePkgs = {
     inherit (pkgs)
-      backblaze-b2
-      #  cdrtools  # TODO: fix for cross compilation
+      # backblaze-b2  # TODO: put into the same package set as duplicity
+      cdrtools
       dmidecode
-      duplicity
+      # duplicity  # TODO: enable as part of some smaller package set
       efivar
       flashrom
-      #  fwupd  # TODO: fix for cross compilation
+      fwupd
       ghostscript  # TODO: imagemagick wrapper should add gs to PATH
       gnupg
       gocryptfs
