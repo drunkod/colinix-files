@@ -47,11 +47,12 @@ in
           # packages which don't cross compile
           inherit (emulated)
             # adwaita-qt  # psqlodbc
-            apacheHttpd  # TODO: not properly patched
+            apacheHttpd  # TODO: not properly patched  (we only need mod_dnssd?)
             appstream
             blueman
             brltty
             cantarell-fonts  # python3.10-skia-pathops
+            cdrtools
             colord
             duplicity  # python3.10-s3transfer
             evince
@@ -70,7 +71,7 @@ in
             gst_all_1  # gst_all_1.gst-editing-services
             gupnp
             gupnp_1_6
-            gvfs
+            # gvfs
             flatpak
             hdf5
             http2
@@ -82,6 +83,7 @@ in
             librest
             librest_1_0
             libsForQt5  # qtbase
+            libuv
             mod_dnssd
             ncftp
             obex_data_server
@@ -110,7 +112,7 @@ in
           ;
           # pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           #   (py-next: py-prev: {
-          #     defcon = py-prev.defcon.override { inherit prev.emulated.stdenv; };
+          #     defcon = py-prev.defcon.override { inherit (prev.emulated) stdenv; };
           #     # psycopg2 = py-prev.psycopg2.override { inherit prev.emulated.stdenv; };
           #   })
           # ];
