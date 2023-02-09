@@ -231,17 +231,23 @@ in
           gnome = prev.gnome.overrideScope' (self: super: {
             inherit (emulated.gnome)
               evolution-data-server  # 'nix log /nix/store/ghlsq1jl5js5jiy24b4p1k67k4sgrnv7-libuv-1.44.2.drv'
-              gnome-color-manager
+              gnome-color-manager  # src/meson.build:3:0: ERROR: Program 'glib-compile-resources' not found or not executable
               gnome-control-center  # subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable
-              gnome-keyring
-              # TODO: remove gnome-remote-desktop (wanted by gnome-control-center)
-              gnome-remote-desktop  # Program gdbus-codegen found: NO
+              gnome-keyring  # configure.ac:374: error: possibly undefined macro: AM_PATH_LIBGCRYPT
               gnome-shell  # "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
-              gnome-session  # gdbus-codegen not found or executable
               gnome-settings-daemon  # subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable
-              gnome-user-share
+              gnome-user-share  # meson.build:111:6: ERROR: Program 'glib-compile-schemas' not found or not executable
               mutter  # meson.build:237:2: ERROR: Dependency "gbm" not found, tried pkgconfig  (it's provided by mesa)
             ;
+            gnome-remote-desktop = emulated.gnome.gnome-remote-desktop.overrideAttrs(orig: {
+              # TODO: remove gnome-remote-desktop (wanted by gnome-control-center)
+              # "Program gdbus-codegen found: NO"
+              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
+            });
+            gnome-session = emulated.gnome.gnome-session.overrideAttrs(orig: {
+              # "gdbus-codegen not found or executable"
+              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
+            });
           });
 
           # gst_all_1.gst-editing-services = emulated.gst_all_1.gst-editing-services;
