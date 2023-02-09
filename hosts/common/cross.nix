@@ -130,6 +130,7 @@ in
             perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
             phoc  # Program wayland-scanner found: NO
             phosh  # libadwaita-1 not found
+            phosh-mobile-settings  # meson.build:26:0: ERROR: Dependency "phosh-plugins" not found, tried pkgconfig
             # pipewire
             # psqlodbc
             pulseaudio  # FAILED: meson-internal__test
