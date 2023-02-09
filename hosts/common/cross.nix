@@ -87,6 +87,7 @@ in
             colord  # (meson) ERROR: An exe_wrapper is needed but was not found. Please define one in cross file and check the command and/or add it to PATH.
             # duplicity  # python3.10-s3transfer
             evince  # "Run-time dependency gi-docgen found: NO (tried pkgconfig and cmake)"
+            flatpak  # No package 'libxml-2.0' found
             fwupd-efi  # efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable
             fwupd  # "Run-time dependency libgcab-1.0 found: NO (tried pkgconfig and cmake)"
             gcr_4  # meson ERROR: Program 'gpg2 gpg' not found or not executable
@@ -128,6 +129,7 @@ in
             pam_mount
             perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
             phoc  # Program wayland-scanner found: NO
+            phosh  # libadwaita-1 not found
             # pipewire
             # psqlodbc
             pulseaudio  # FAILED: meson-internal__test
@@ -192,6 +194,10 @@ in
           #   # doesn't fix: "ld: error adding symbols: file in wrong format"
           #   inherit (emulated) stdenv;
           # };
+          # flatpak = prev.flatpak.override {
+          #   # doesn't fix: "ld: error adding symbols: file in wrong format"
+          #   inherit (emulated) stdenv;
+          # };
           fuzzel = prev.fuzzel.override {
             # meson.build:100:0: ERROR: Dependency lookup for wayland-scanner with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found. Giving up.
             inherit (emulated) stdenv;
@@ -230,6 +236,8 @@ in
               gnome-keyring
               # TODO: remove gnome-remote-desktop (wanted by gnome-control-center)
               gnome-remote-desktop  # Program gdbus-codegen found: NO
+              gnome-shell  # "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
+              gnome-session  # gdbus-codegen not found or executable
               gnome-settings-daemon  # subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable
               gnome-user-share
               mutter  # meson.build:237:2: ERROR: Dependency "gbm" not found, tried pkgconfig  (it's provided by mesa)
