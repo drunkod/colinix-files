@@ -15,6 +15,8 @@
   sane.gui.sway.enable = true;
   sane.programs.iphoneUtils.enableFor.user.colin = true;
 
+  sane.programs.guiApps.suggestedPrograms = [ "desktopGuiApps" ];
+
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
