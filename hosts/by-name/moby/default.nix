@@ -12,6 +12,11 @@
 
   # TODO: re-enable once base is cross-compiled
   sane.programs.guiApps.enableSuggested = false;
+  # compile a subset of the larger mobile package set, until we're ready for it.
+  sane.programs.gpodder-configured.enableFor.user.colin = true;
+  sane.programs.nheko.enableFor.user.colin = true;
+  sane.programs.sublime-music-mobile.enableFor.user.colin = true;
+  sane.programs.vlc.enableFor.user.colin = true;
 
   # cross-compiled documentation is *slow*.
   # no obvious way to natively compile docs (2022/09/29).
