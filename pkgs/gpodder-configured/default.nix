@@ -13,7 +13,7 @@ in
 (symlinkJoin {
   name = "gpodder-configured";
   paths = [ gpodder remove-extra ];
-  buildInputs = [ makeWrapper ];
+  nativeBuildInputs = [ makeWrapper ];
 
   # gpodder keeps all its feeds in a sqlite3 database.
   # we can configure the feeds externally by wrapping gpodder and just instructing it to import
