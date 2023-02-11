@@ -29,7 +29,7 @@ in
           # TODO: see about removing gnome-bluetooth if the in-built gnome-settings bluetooth manager can work
           "gnome.gnome-bluetooth"
           "phosh-mobile-settings"
-          "plasma5Packages.konsole"  # more reliable terminal
+          # "plasma5Packages.konsole"  # more reliable terminal
         ];
       };
     }
@@ -107,6 +107,7 @@ in
       };
 
       programs.dconf.packages = [
+        # org.kde.konsole.desktop
         (pkgs.writeTextFile {
           name = "dconf-phosh-settings";
           destination = "/etc/dconf/db/site.d/00_phosh_settings";
@@ -119,7 +120,7 @@ in
             sleep-inactive-battery-timeout=5400
 
             [sm/puri/phosh]
-            favorites=['gpodder.desktop', 'nheko.desktop', 'sublime-music.desktop', 'firefox.desktop', 'org.kde.konsole.desktop']
+            favorites=['gpodder.desktop', 'nheko.desktop', 'sublime-music.desktop', 'firefox.desktop', 'org.gnome.Terminal.desktop']
           '';
         })
       ];
