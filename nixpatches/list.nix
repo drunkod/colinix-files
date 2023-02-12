@@ -15,11 +15,11 @@
 
   # fix handbrake build by: handbrake: 1.5.1 -> 1.6.1
   # PR opened 2023/01/23
-  (fetchpatch {
-    # see alternate fix: <https://github.com/NixOS/nixpkgs/pull/211834>
-    url = "https://github.com/NixOS/nixpkgs/pull/212306.diff";
-    hash = "sha256-PnPzvJymafa+zjkauQW0LzFsJC7S+7D9JRszTE3in+w=";
-  })
+  # (fetchpatch {
+  #   # see alternate fix: <https://github.com/NixOS/nixpkgs/pull/211834>
+  #   url = "https://github.com/NixOS/nixpkgs/pull/212306.diff";
+  #   hash = "sha256-PnPzvJymafa+zjkauQW0LzFsJC7S+7D9JRszTE3in+w=";
+  # })
 
   ./2022-12-19-i2p-aarch64.patch
 

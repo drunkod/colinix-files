@@ -1,3 +1,4 @@
+# TODO: migrate to nixpkgs `config.ids.uids`
 { ... }:
 
 {
@@ -35,7 +36,7 @@
   sane.ids.sshd.uid = 2001;  # 997
   sane.ids.sshd.gid = 2001;  # 997
   sane.ids.polkituser.gid = 2002;  # 998
-  sane.ids.systemd-coredump.gid = 2003;  # 996
+  # sane.ids.systemd-coredump.gid = 2003;  # 996  # 2023/02/12: upstream now specifies this as 151
   sane.ids.nscd.uid = 2004;
   sane.ids.nscd.gid = 2004;
   sane.ids.systemd-oom.uid = 2005;
