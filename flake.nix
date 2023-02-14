@@ -67,7 +67,9 @@
           (nixosSystem {
             # we use pkgs built for and *by* the target, i.e. emulation, by default.
             # cross compilation only happens on explicit access to `pkgs.cross`
-            system = target;
+            # system = target;
+            # localSystem = local;
+            # crossSystem = target;
             modules = [
               (import ./hosts/instantiate.nix { localSystem = local; hostName = name; })
               self.nixosModules.default
