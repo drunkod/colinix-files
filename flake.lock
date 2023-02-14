@@ -39,12 +39,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-rkVbviFmYYmbbVfvFRtOM95IjETbNu3I517Hrxp8EF4=",
-        "path": "/nix/store/8azr0ivnzf0y1sh2r7alxaxab3w49ggx-source/nixpatches",
+        "narHash": "sha256-lOtSD7yBRLM6OF1prrI11ZSmsd2grhnL8ltYrktzuoA=",
+        "path": "/nix/store/why3zigp1ddj1i9pfq47fs5iri80y6nw-source/nixpatches",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/8azr0ivnzf0y1sh2r7alxaxab3w49ggx-source/nixpatches",
+        "path": "/nix/store/why3zigp1ddj1i9pfq47fs5iri80y6nw-source/nixpatches",
         "type": "path"
       }
     },

@@ -15,6 +15,7 @@
 # - qt:       `nix build '.#host-pkgs.moby-cross.libsForQt5.phonon'`
 # most of these can be built in a nixpkgs source root like:
 # - `nix build '.#pkgsCross.aarch64-multiplatform.xdg-utils'`
+# - `nix build '.#pkgsCross.gnu64.xdg-utils'`  # for x86_64-linux
 #
 # tracking issues, PRs:
 # - libuv tests fail: <https://github.com/NixOS/nixpkgs/issues/190807>
@@ -23,6 +24,11 @@
 # - perl Module Build broken: <https://github.com/NixOS/nixpkgs/issues/66741>
 #   - last checked: 2023-02-07
 #   - opened: 2019-08
+#   - ModuleBuild needs access to `Scalar/Utils.pm`, which doesn't *seem* to exist in the cross builds
+#     - this can be fixed by adding `nativeBuildInputs = [ perl ]` to it
+#     - alternatively, there's some "stubbing" method mentioned in <pkgs/development/interpreters/perl/default.nix>
+#       - stubbing documented at bottom: <nixpkgs:doc/languages-frameworks/perl.section.md>
+#
 # - perl536Packages.Testutf8 fails to cross: <https://github.com/NixOS/nixpkgs/issues/198548>
 #   - last checked: 2023-02-07
 #   - opened: 2022-10
@@ -35,6 +41,37 @@
 #
 #       also i haven't deployed it yet to make sure this doesn't cause anything funky at runtime though.
 #     """
+
+# TODO:
+# - ??.llvmPackages_14.llvm: "FAIL: LLVM-Unit :: ExecutionEngine/MCJIT/./MCJITTests/MCJITMultipleModuleTest.two_module_global_variables_case (43769 of 46988)"
+#   - nix log /nix/store/ib2yw6sajnhlmibxkrn7lj7chllbr85h-llvm-14.0.6.drv
+#   - wanted by clang-11-12-LLVMgold-path, compiler-rt-libc-12.0.1, clang-wrapper-12.0.1
+# - ?..llvmPackages_12.llvm: "FAIL: LLVM-Unit :: ExecutionEngine/MCJIT/./MCJITTests/MCJITTest.return_global (2857 of 42084)"
+#   - nix log /nix/store/6vydavlxh1gvs0vmrkcx9qp67g3h7kcz-llvm-12.0.1.drv
+#   - wanted by sequoia, rav1e, rustc-1.66.1
+# - `host-pkgs.desko.stdenv` fails build:
+#   - #cross-compiling:nixos.org says pkgsCross.gnu64 IS KNOWN TO NOT COMPILE. let this go for now:
+#     - make a `<machine>` (don't specifiy local/targetSystem) and `<machine>-cross` target.
+#     - `desko-cross` will be broken but `desko` can work
+#   - see <nixpkgs:pkgs/stdenv/linux/default.nix>
+#   - disallowedRequisites = [ bootstrapTools.out ];
+#   """
+#   error: output '/nix/store/w2vgzyvs2jzf7yr6qqqrjbvrqxxmhwy0-stdenv-linux' is not allowed to refer to the following paths:
+#            /nix/store/2qbgchkjj1hqi1c8raznwml94pkm3k7q-libunistring-1.0
+#            /nix/store/4j425ybkjxcdj89352l5gpdl3nmxq4zn-libidn2-2.3.2
+#            /nix/store/c35hf8g5b9vksadym9dbjrd6p2y11m8h-glibc-2.35-224
+#            /nix/store/qbgfsaviwqi2p6jr7an1g2754sv3xqhn-gcc-11.3.0-lib
+#   """
+#   - rg doesn't reveal any such references in the output though...
+#     - nor references to bootstrapTools
+#     - HOWEVER, IT DOES CONTAIN A REFERENCE TO THE PREVIOUS STAGE'S BASH:
+#       - /nix/store/w2vgzyvs2jzf7yr6qqqrjbvrqxxmhwy0-stdenv-linux/setup
+#       - export SHELL=/nix/store/qqa28hmysc23yy081d178jfd9a1yk8aw-bash-5.2-p15/bin/bash
+#       - not clear if that matters? but maybe it reaches bootstrapTools transitively?
+#         - yeah: that bash specifies the above `glibc` as its loader
+#         - so we probably can't `inherit` the emulated bash like that.
+#   - try building `.#host-pkgs.desko.stdenv.shellPackage` or `.#host-pkgs.desko.stdenv.bootstrapTools`
+#   - `file result/bin/bash` does show that it uses the interpreter for the glibc, above
 
 
 { config, lib, pkgs, ... }:
@@ -55,6 +92,7 @@ let
     };
   mkEmulated = pkgs:
     import pkgs.path {
+      # system = pkgs.stdenv.hostPlatform.system;
       localSystem = pkgs.stdenv.hostPlatform.system;
       inherit (config.nixpkgs) config;
       inherit overlays;
@@ -69,19 +107,140 @@ in
   config = {
     # the configuration of which specific package set `pkgs.cross` refers to happens elsewhere;
     # here we just define them all.
+
+    nixpkgs.config.perlPackageOverrides = pkgs: (with pkgs; with pkgs.perlPackages; {
+      # these are the upstream nixpkgs perl modules, but with `nativeBuildInputs = [ perl ]`
+      # to fix cross compilation errors
+      ModuleBuild = buildPerlPackage {
+        pname = "Module-Build";
+        version = "0.4231";
+        src = fetchurl {
+          url = "mirror://cpan/authors/id/L/LE/LEONT/Module-Build-0.4231.tar.gz";
+          hash = "sha256-fg9MaSwXQMGshOoU1+o9i8eYsvsmwJh3Ip4E9DCytxc=";
+        };
+        # support cross-compilation by removing unnecessary File::Temp version check
+        # postPatch = lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
+        #   sed -i '/File::Temp/d' Build.PL
+        # '';
+        nativeBuildInputs = [ perl ];
+        meta = {
+          description = "Build and install Perl modules";
+          license = with lib.licenses; [ artistic1 gpl1Plus ];
+          mainProgram = "config_data";
+        };
+      };
+      FileBaseDir = buildPerlModule {
+        version = "0.08";
+        pname = "File-BaseDir";
+        src = fetchurl {
+          url = "mirror://cpan/authors/id/K/KI/KIMRYAN/File-BaseDir-0.08.tar.gz";
+          hash = "sha256-wGX80+LyKudpk3vMlxuR+AKU1QCfrBQL+6g799NTBeM=";
+        };
+        configurePhase = ''
+          runHook preConfigure
+          perl Build.PL PREFIX="$out" prefix="$out"
+        '';
+        nativeBuildInputs = [ perl ];
+        propagatedBuildInputs = [ IPCSystemSimple ];
+        buildInputs = [ FileWhich ];
+        meta = {
+          description = "Use the Freedesktop.org base directory specification";
+          license = with lib.licenses; [ artistic1 gpl1Plus ];
+        };
+      };
+      # fixes: "FAILED IPython/terminal/tests/test_debug_magic.py::test_debug_magic_passes_through_generators - pexpect.exceptions.TIMEOUT: Timeout exceeded."
+      Testutf8 = buildPerlPackage {
+        pname = "Test-utf8";
+        version = "1.02";
+        src = fetchurl {
+          url = "mirror://cpan/authors/id/M/MA/MARKF/Test-utf8-1.02.tar.gz";
+          hash = "sha256-34LwnFlAgwslpJ8cgWL6JNNx5gKIDt742aTUv9Zri9c=";
+        };
+        nativeBuildInputs = [ perl ];
+        meta = {
+          description = "Handy utf8 tests";
+          homepage = "https://github.com/2shortplanks/Test-utf8/tree";
+          license = with lib.licenses; [ artistic1 gpl1Plus ];
+        };
+      };
+      # inherit (pkgs.emulated.perl.pkgs)
+      #   Testutf8
+      # ;
+    });
     nixpkgs.overlays = [
       (next: prev: {
         # non-emulated packages build *from* local *for* target.
         # for large packages like the linux kernel which are expensive to build under emulation,
         # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
-        crossFrom."x86_64-linux" = mkCrossFrom "x86_64-linux" prev;
-        crossFrom."aarch64-linux" = mkCrossFrom "aarch64-linux" prev;
+        # crossFrom."x86_64-linux" = mkCrossFrom "x86_64-linux" prev;
+        # crossFrom."aarch64-linux" = mkCrossFrom "aarch64-linux" prev;
 
         emulated = mkEmulated prev;
+      })
+      # (next: prev:
+      #   let
+      #     emulated = prev.emulated;
+      #   in {
+      #     # packages which don't "cross compile" from x86_64 -> x86_64
+      #     inherit (emulated)
+      #       # aws-crt-cpp  # "/build/source/include/aws/crt/Optional.h:6:10: fatal error: utility: No such file or directory"
+      #       # # bash  # "configure: error: C compiler cannot create executables"
+      #       # boehmgc  # "gc_badalc.cc:29:10: fatal error: new: No such file or directory <new>"
+      #       # c-ares  # dns-proto.h:11:10: fatal error: memory: No such file or directory
+      #       # db48  # "./db_cxx.h:59:10: fatal error: iostream.h: No such file or directory"
+      #       # # kexec-tools  # "configure: error: C compiler cannot create executables"
+      #       # gmp6  # "configure: error: could not find a working compiler"
+      #       # gtest  # "/build/source/googletest/src/gtest_main.cc:30:10: fatal error: cstdio: No such file or directory"
+      #       # icu72  # "../common/unicode/localpointer.h:45:10: fatal error: memory: No such file or directory"
+      #       # # libidn2  # "configure: error: C compiler cannot create executables"
+      #       # ncurses  # "configure: error: C compiler cannot create executables"
+      #     ;
+
+      #     bash = prev.bash.overrideAttrs (orig: {
+      #       # configure doesn't know how to build because it doesn't know where to find crt1.o.
+      #       # some parts of nixpkgs specify the path to it explicitly:
+      #       # - <nixpkgs:pkgs/development/libraries/gcc/libstdc++/5.nix>
+      #       # - <nixpkgs:pkgs/build-support/cc-wrapper/add-flags.sh>
+      #       # alternatively, the wrapper gcc (first item on PATH if we look at a failed bash's env-vars)
+      #       # adds these flags automatically. so we can probably just tell `configure` to *not* use any special gcc other than the wrapper.
+      #       # TESTING IN PROGRESS:
+      #       # - N.B.: BUILDCC is a vlc-ism!
+      #       # BUILDCC = "${prev.stdenv.cc}/bin/${prev.stdenv.cc.targetPrefix}cc";  # has illegal requisites
+      #       CC = "${prev.stdenv.cc}/bin/${prev.stdenv.cc.targetPrefix}cc";  # XXX: tested in nixpkgs: FAILS WITH SAME SIGNATURE. env-vars doesn't show our CC though :-(
+      #       # ^ env vars set here are making their way through, but something else (build script?) is overwriting it
+      #       SANE_CC = "${prev.stdenv.cc}/bin/${prev.stdenv.cc.targetPrefix}cc";
+      #       # CC = "gcc"  # bash configure.ac
+      #       # CC_FOR_BUILD = "gcc"  # bash configure.ac
+      #       # BUILDCC = "gcc";  # VLC
+      #     });
+      #   }
+      # )
+      (nativeSelf: nativeSuper: {
+        pkgsi686Linux = nativeSuper.pkgsi686Linux.extend (i686Self: i686Super: {
+          # fixes eval-time error: "Unsupported cross architecture"
+          #   it happens even on a x86_64 -> x86_64 build:
+          #   - defining `config.nixpkgs.buildPlatform` to the non-default causes that setting to be inherited by pkgsi686.
+          #   - hence, `pkgsi686` on a non-cross build is ordinarily *emulated*:
+          #     defining a cross build causes it to also be cross (but to the right hostPlatform)
+          # this has no inputs other than stdenv, and fetchurl, so emulating it is fine.
+          tbb = nativeSuper.emulated.pkgsi686Linux.tbb;
+          # tbb = i686Super.tbb.overrideAttrs (orig: (with i686Self; {
+          #   makeFlags = lib.optionals stdenv.cc.isClang [
+          #     "compiler=clang"
+          #   ] ++ (lib.optional (stdenv.buildPlatform != stdenv.hostPlatform)
+          #     (if stdenv.hostPlatform.isAarch64 then "arch=arm64"
+          #     else if stdenv.hostPlatform.isx86_64 then "arch=intel64"
+          #     else throw "Unsupported cross architecture: ${stdenv.buildPlatform.system} -> ${stdenv.hostPlatform.system}"));
+          # }));
+        });
       })
       (next: prev:
         let
           emulated = prev.emulated;
+          # emulated = if prev.stdenv.buildPlatform.system == prev.stdenv.hostPlatform.system then
+          #   prev
+          # else
+          #   prev.emulated;
         in {
           # packages which don't cross compile
           inherit (emulated)
@@ -109,7 +268,7 @@ in
             # libsForQt5  # qtbase  # make: g++: No such file or directory
             libtiger  # "src/tiger_internal.h:24:10: fatal error: pango/pango.h: No such file or directory"
             notmuch  # "Error: The dependencies of notmuch could not be satisfied"  (xapian, gmime, glib, talloc)
-            perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
+            # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
             phosh  # libadwaita-1 not found
             # qgnomeplatform
             # qtbase
@@ -544,13 +703,6 @@ in
           #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.libkate next.cairo next.pango ];
           # });
 
-          libuv = prev.libuv.overrideAttrs (orig: {
-            # 2 tests fail:
-            # - not ok 261 - tcp_bind6_error_addrinuse
-            # - not ok 267 - tcp_bind_error_addrinuse_listen
-            doCheck = false;
-          });
-
           ncftp = prev.ncftp.override {
             # fixes: "ar: No such file or directory"
             inherit (emulated) stdenv;
@@ -616,12 +768,6 @@ in
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.perl ];
           });
 
-          # perlPackageOverrides = _perl: {
-          #   inherit (pkgs.emulated.perl.pkgs)
-          #     Testutf8
-          #   ;
-          # };
-
           phoc = prev.phoc.override {
             # fixes "Program wayland-scanner found: NO"
             inherit (emulated) stdenv;
@@ -668,6 +814,10 @@ in
               #   buildInputs = [];
               #   # HDF5_DIR = "${hdf5}";
               # });
+              ipython = py-prev.ipython.overridePythonAttrs (orig: {
+                # fixes "FAILED IPython/terminal/tests/test_debug_magic.py::test_debug_magic_passes_through_generators - pexpect.exceptions.TIMEOUT: Timeout exceeded."
+                disabledTests = orig.disabledTests ++ [ "test_debug_magic_passes_through_generator" ];
+              });
               mutatormath = py-prev.mutatormath.overridePythonAttrs (orig: {
                 # TODO: diagnose and upstream
                 nativeBuildInputs = orig.nativeBuildInputs or [] ++ orig.nativeCheckInputs;
@@ -755,10 +905,6 @@ in
           #   inherit (emulated) stdenv;
           # };
 
-          strp = prev.srtp.overrideAttrs (orig: {
-            # roc_driver test times out after 30s
-            doCheck = false;
-          });
           sysprof = prev.sysprof.overrideAttrs (orig: {
             # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];

@@ -21,6 +21,13 @@
     hash = "sha256-PnPzvJymafa+zjkauQW0LzFsJC7S+7D9JRszTE3in+w=";
   })
 
+  # (fetchpatch {
+  #   # stdenv: fix cc for pseudo-crosscompilation
+  #   # closed because it breaks pkgsStatic (as of 2023/02/12)
+  #   url = "https://github.com/NixOS/nixpkgs/pull/196497.diff";
+  #   hash = "sha256-eTwEbVULYjmOW7zUFcTUqvBZqUFjHTKFhvmU2m3XQeo=";
+  # })
+
   ./2022-12-19-i2p-aarch64.patch
 
   # fix for <https://gitlab.com/signald/signald/-/issues/345>
