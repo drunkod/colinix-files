@@ -99,6 +99,10 @@
     sopsFile = ../../secrets/universal/net/friend-rationalist-empathist.psk.bin;
     format = "binary";
   };
+  sops.secrets."iwd/home-shared-new.psk" = {
+    sopsFile = ../../secrets/universal/net/home-shared.psk.bin;
+    format = "binary";
+  };
   sops.secrets."iwd/home-bedroom.psk" = {
     sopsFile = ../../secrets/universal/net/archive/2023-02-home-bedroom.psk.bin;
     format = "binary";
