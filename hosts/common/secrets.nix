@@ -100,15 +100,15 @@
     format = "binary";
   };
   sops.secrets."iwd/home-bedroom.psk" = {
-    sopsFile = ../../secrets/universal/net/home-bedroom.psk.bin;
+    sopsFile = ../../secrets/universal/net/archive/2023-02-home-bedroom.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/home-shared-24G.psk" = {
-    sopsFile = ../../secrets/universal/net/home-shared-24G.psk.bin;
+    sopsFile = ../../secrets/universal/net/archive/2023-02-home-shared-24G.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/home-shared.psk" = {
-    sopsFile = ../../secrets/universal/net/home-shared.psk.bin;
+    sopsFile = ../../secrets/universal/net/archive/2023-02-home-shared.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/iphone" = {
