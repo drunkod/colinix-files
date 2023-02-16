@@ -132,7 +132,7 @@ in
         sidebery.package = addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=";
         sponsorblock.package = addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-hRsvLaAsVm3dALsTrJqHTNgRFAQcU7XSaGhr5G6+mFs=";
         ublacklist.package = addon "ublacklist" "@ublacklist" "sha256-RqY5iHzbL2qizth7aguyOKWPyINXmrwOlf/OsfqAS48=";
-        ublock-origin.package = addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-a/ivUmY1P6teq9x0dt4CbgHt+3kBsEMMXlOfZ5Hx7cg=";
+        ublock-origin.package = addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-52lYqMjrS3GVTaybDrH1p6VF90YVkifguCGxobI/fNQ=";
 
         browserpass-extension.enable = lib.mkDefault true;
         # bypass-paywalls-clean.enable = lib.mkDefault true;

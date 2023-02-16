@@ -23,10 +23,6 @@
 
   ./2022-12-19-i2p-aarch64.patch
 
-  # fix for <https://gitlab.com/signald/signald/-/issues/345>
-  # allows to actually run signald
-  ./2023-01-25-signald-update.patch
-
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
