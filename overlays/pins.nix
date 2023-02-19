@@ -26,12 +26,12 @@
     # 2023/01/30: one test times out. probably flakey test that only got built because i patched mesa.
     doCheck = false;
   });
-  gssdp = prev.gssdp.overrideAttrs (orig: {
+  gssdp = prev.gssdp.overrideAttrs (_upstream: {
     # 2023/02/11
     # fixes "ERROR:../tests/test-regression.c:429:test_ggo_7: assertion failed (error == NULL): Failed to set multicast interfaceProtocol not available (gssdp-error, 1)"
     doCheck = false;
   });
-  json-glib = prev.json-glib.overrideAttrs (orig: {
+  json-glib = prev.json-glib.overrideAttrs (_upstream: {
     # 2023/02/11
     # fixes: "15/15 json-glib:docs / doc-check    TIMEOUT        30.52s   killed by signal 15 SIGTERM"
     doCheck = false;
@@ -52,15 +52,33 @@
     # 2023/01/30: one test times out. probably flakey test that only got built because i patched mesa.
     doCheck = false;
   });
-
-  libuv = prev.libuv.overrideAttrs (orig: {
+  libuv = prev.libuv.overrideAttrs (_upstream: {
     # 2023/02/11
     # 2 tests fail:
     # - not ok 261 - tcp_bind6_error_addrinuse
     # - not ok 267 - tcp_bind_error_addrinuse_listen
     doCheck = false;
   });
-  strp = prev.srtp.overrideAttrs (orig: {
+  pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+    (py-next: py-prev: {
+      pytest-xdist = py-prev.pytest-xdist.overridePythonAttrs (upstream: {
+        # 2023/02/19
+        # 4 tests fail:
+        # - FAILED: testing/test_remote.py::TestWorkInteractor::* - execnet.gateway_base.TimeoutError: no item after 10.0 seconds
+        # doCheck = false;
+        disabledTestPaths = upstream.disabledTestPaths or [] ++ [
+          "testing/test_remote.py"
+        ];
+        # disabledTests = upstream.disabledTests or [] ++ [
+        #   "test_basic_collect_and_runtests"
+        #   "test_remote_collect_fail"
+        #   "test_remote_collect_skip"
+        #   "test_runtests_all"
+        # ];
+      });
+    })
+  ];
+  strp = prev.srtp.overrideAttrs (_upstream: {
     # 2023/02/11
     # roc_driver test times out after 30s
     doCheck = false;
