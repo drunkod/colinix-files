@@ -61,6 +61,20 @@
   });
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (py-next: py-prev: {
+      ipython = py-prev.ipython.overridePythonAttrs (upstream: {
+        # > FAILED IPython/core/tests/test_debugger.py::test_xmode_skip - pexpect.exceptions.TIMEOUT: Timeout exceeded.
+        # > FAILED IPython/core/tests/test_debugger.py::test_decorator_skip - pexpect.exceptions.TIMEOUT: Timeout exceeded.
+        # > FAILED IPython/core/tests/test_debugger.py::test_decorator_skip_disabled - pexpect.exceptions.TIMEOUT: Timeout exceeded.
+        # > FAILED IPython/core/tests/test_debugger.py::test_decorator_skip_with_breakpoint - pexpect.exceptions.TIMEOUT: Timeout exceeded.
+        # > FAILED IPython/core/tests/test_debugger.py::test_where_erase_value - pexpect.exceptions.TIMEOUT: Timeout exceeded.
+        # > FAILED IPython/terminal/tests/test_debug_magic.py::test_debug_magic_passes_through_generators - pexpect.exceptions.TIMEOUT: Timeout exceeded.
+        # > FAILED IPython/terminal/tests/test_embed.py::test_nest_embed - pexpect.exceptions.TIMEOUT: Timeout exceeded.
+        disabledTestPaths = upstream.disabledTestPaths or [] ++ [
+          "IPython/core/tests/test_debugger.py"
+          "IPython/terminal/tests/test_debug_magic.py"
+          "IPython/terminal/tests/test_embed.py"
+        ];
+      });
       pytest-xdist = py-prev.pytest-xdist.overridePythonAttrs (upstream: {
         # 2023/02/19
         # 4 tests fail:
