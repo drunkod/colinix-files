@@ -246,8 +246,6 @@ in
           inherit (emulated)
             # adwaita-qt  # psqlodbc
             apacheHttpd_2_4  # `configure: error: Size of "void *" is less than size of "long"`
-            appstream  # meson.build:139:0: ERROR: Program 'gperf' not found or not executable
-            colord  # (meson) ERROR: An exe_wrapper is needed but was not found. Please define one in cross file and check the command and/or add it to PATH.
             # duplicity  # python3.10-s3transfer
             flatpak  # No package 'libxml-2.0' found
             fwupd-efi  # efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable
@@ -325,6 +323,20 @@ in
           #   # does not fix "ERROR: An exe_wrapper is needed but was not found. Please define one in cross file and check the command and/or add it to PATH."
           #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.gperf ];
           # });
+          # appstream = prev.appstream.overrideAttrs (upstream: {
+          #   # does not fix "Program 'gperf' not found or not executable"
+          #   nativeBuildInputs = upstream.nativeBuildInputs ++ lib.optionals (!prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) [
+          #     next.mesonEmulatorHook
+          #   ];
+          # });
+          appstream = prev.appstream.overrideAttrs (upstream: {
+            # fixes "Program 'gperf' not found or not executable"
+            nativeBuildInputs = upstream.nativeBuildInputs ++ lib.optionals (!prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) [
+              next.mesonEmulatorHook
+            ] ++ [
+              next.gperf
+            ];
+          });
 
           blueman = prev.blueman.overrideAttrs (orig: {
             # configure: error: ifconfig or ip not found, install net-tools or iproute2
@@ -351,6 +363,12 @@ in
           #   # doesn't fix: "ld: error adding symbols: file in wrong format"
           #   inherit (emulated) stdenv;
           # };
+          colord = prev.colord.overrideAttrs (upstream: {
+            # fixes: (meson) ERROR: An exe_wrapper is needed but was not found. Please define one in cross file and check the command and/or add it to PATH.
+            nativeBuildInputs = upstream.nativeBuildInputs ++ lib.optionals (!prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) [
+              next.mesonEmulatorHook
+            ];
+          });
 
           dante = prev.dante.override {
             # fixes: "configure: error: error: getaddrinfo() error value count too low"
