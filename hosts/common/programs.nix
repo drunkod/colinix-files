@@ -49,13 +49,35 @@ let
       wget
     ;
   };
+  sysadminExtraPkgs = {
+    # application-specific packages
+    inherit (pkgs)
+      backblaze-b2
+      duplicity
+      sqlite  # to debug sqlite3 databases
+    ;
+  };
+
+  iphonePkgs = {
+    inherit (pkgs)
+      ifuse
+      ipfs
+      libimobiledevice
+    ;
+  };
+
+  tuiPkgs = {
+    inherit (pkgs)
+      aerc  # email client
+      visidata  # TUI spreadsheet viewer/editor
+      w3m
+    ;
+  };
 
   consolePkgs = {
     inherit (pkgs)
-      backblaze-b2
       cdrtools
       dmidecode
-      duplicity
       efivar
       flashrom
       fwupd
@@ -64,17 +86,14 @@ let
       gocryptfs
       gopass
       gopass-jsonapi
-      ifuse
       imagemagick
-      ipfs
       kitty  # TODO: move to GUI, but `ssh servo` from kitty sets `TERM=xterm-kitty` in the remove and breaks things
-      libimobiledevice
       libsecret  # for managing user keyrings
       lm_sensors  # for sensors-detect
       lshw
       ffmpeg
       memtester
-      networkmanager
+      # networkmanager
       nixpkgs-review
       # nixos-generators
       # nettools
@@ -91,13 +110,10 @@ let
       sops
       sox
       speedtest-cli
-      sqlite  # to debug sqlite3 databases
       ssh-to-age
       sudo
       # tageditor  # music tagging
       unar
-      visidata
-      w3m
       wireguard-tools
       # youtube-dl
       yt-dlp
@@ -119,7 +135,6 @@ let
       "gnome.gnome-weather" = gnome.gnome-weather;
       "libsForQt5.plasmatube" = libsForQt5.plasmatube;
     }))
-      aerc  # email client
       audacity
       celluloid  # mpv frontend
       chromium
@@ -218,16 +233,15 @@ in
 {
   config = {
     sane.programs = mkMerge [
-      (declarePkgs sysadminPkgs)
       (declarePkgs consolePkgs)
       (declarePkgs guiPkgs)
+      (declarePkgs iphonePkgs)
+      (declarePkgs sysadminPkgs)
+      (declarePkgs sysadminExtraPkgs)
+      (declarePkgs tuiPkgs)
       (declarePkgs x86GuiPkgs)
       {
         # link the various package sets into their own meta packages
-        sysadminUtils = {
-          package = null;
-          suggestedPrograms = attrNames sysadminPkgs;
-        };
         consoleUtils = {
           package = null;
           suggestedPrograms = attrNames consolePkgs;
@@ -235,7 +249,24 @@ in
         guiApps = {
           package = null;
           suggestedPrograms = (attrNames guiPkgs)
+            ++ [ "tuiApps" ]
             ++ optional (pkgs.system == "x86_64-linux") "x86GuiApps";
+        };
+        iphoneUtils = {
+          package = null;
+          suggestedPrograms = attrNames iphonePkgs;
+        };
+        sysadminUtils = {
+          package = null;
+          suggestedPrograms = attrNames sysadminPkgs;
+        };
+        sysadminExtraUtils = {
+          package = null;
+          suggestedPrograms = attrNames sysadminExtraPkgs;
+        };
+        tuiApps = {
+          package = null;
+          suggestedPrograms = attrNames tuiPkgs;
         };
         x86GuiApps = {
           package = null;
