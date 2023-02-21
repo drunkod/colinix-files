@@ -3,6 +3,11 @@
 with lib;
 let
   cfg = config.sane.services.dyn-dns;
+  getIp = pkgs.writeShellScript "dyn-dns-query-wan" ''
+    # preferred method and fallback
+    ${pkgs.sane-scripts}/bin/sane-ip-check-router-wan || \
+      ${pkgs.sane-scripts}/bin/sane-ip-check
+  '';
 in
 {
   options = {
@@ -19,7 +24,7 @@ in
       };
 
       ipCmd = mkOption {
-        default = "${pkgs.sane-scripts}/bin/sane-ip-check-router-wan";
+        default = "${getIp}";
         type = types.path;
         description = "command to run to query the current WAN IP";
       };
