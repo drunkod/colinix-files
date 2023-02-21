@@ -38,11 +38,11 @@
   ];
   networking.firewall.allowedTCPPortRanges = [{
     from = 49152;  # TURN
-    to = 65535;
+    to = 49408;
   }];
   networking.firewall.allowedUDPPortRanges = [{
     from = 49152;  # TURN
-    to = 65535;
+    to = 49408;
   }];
 
   # provide access to certs
