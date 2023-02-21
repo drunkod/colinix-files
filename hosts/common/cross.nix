@@ -277,10 +277,6 @@ in
             # splatmoji
             squeekboard  # meson.build:1:0: ERROR: 'rust' compiler binary not defined in cross or native file
             twitter-color-emoji  # /nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 1: pkg-config: command not found
-            # unar has multiple failures:
-            # - "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings.  Please check for a more recent version or consider using --enable-nxconstantstring"
-            # - "/nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 1: ar: command not found"
-            unar
             visidata  # python3.10-psycopg2 python3.10-pandas python3.10-h5py
             # webkitgtk_4_1  # requires nativeBuildInputs = perl.pkgs.FileCopyRecursive => perl5.36.0-Test-utf8
             # xdg-utils  # perl5.36.0-File-BaseDir / perl5.36.0-Module-Build
@@ -940,11 +936,11 @@ in
           #   inherit (emulated) stdenv;
           # };
 
-          # unar = (prev.unar.override {
-          #   # fixes "ar: command not found"
-          #   # new error: "gcc: error: unrecognized command line option '-fobjc-runtime=gnustep-2.0'"
-          #   inherit (emulated) stdenv;
-          # });
+          unar = prev.unar.overrideAttrs (upstream: {
+            # fixes: "ar: command not found"
+            # `ar` is provided by bintools
+            nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.bintools ];
+          });
           unixODBCDrivers = prev.unixODBCDrivers // {
             # TODO: should this package be deduped with toplevel psqlodbc in upstream nixpkgs?
             psql = prev.unixODBCDrivers.psql.override {
