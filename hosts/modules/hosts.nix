@@ -94,7 +94,7 @@ in
       wg-home.pubkey = "roAw+IUFVtdpCcqa4khB385Qcv9l5JAB//730tyK4Wk=";
       wg-home.ip = "10.0.10.5";
       wg-home.endpoint = "uninsane.org:51820";
-      lan-ip = "192.168.0.5";
+      lan-ip = "192.168.15.28";
     };
   };
 }
