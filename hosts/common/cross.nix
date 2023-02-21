@@ -249,6 +249,7 @@ in
             # duplicity  # python3.10-s3transfer
             flatpak  # No package 'libxml-2.0' found
             fwupd-efi  # efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable
+            # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
             gmime3  # "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
             # gnome-tour
             # XXX: gnustep members aren't individually overridable, because the "scope" uses `rec` such that members don't see overrides
@@ -281,7 +282,6 @@ in
             # - "/nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 1: ar: command not found"
             unar
             visidata  # python3.10-psycopg2 python3.10-pandas python3.10-h5py
-            webp-pixbuf-loader  # install phase: "Builder called die: Cannot wrap '/nix/store/kpp8qhzdjqgvw73llka5gpnsj0l4jlg8-gdk-pixbuf-aarch64-unknown-linux-gnu-2.42.10/bin/gdk-pixbuf-thumbnailer' because it is not an executable file"
             # webkitgtk_4_1  # requires nativeBuildInputs = perl.pkgs.FileCopyRecursive => perl5.36.0-Test-utf8
             # xdg-utils  # perl5.36.0-File-BaseDir / perl5.36.0-Module-Build
           ;
@@ -984,6 +984,12 @@ in
           #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/2syg6jxk8zi1zkpqvkxkz87x8sl27c6b-gdk-pixbuf-2.42.10/lib/libgdk_pixbuf-2.0.so: error adding symbols: file in wrong format"
           #   inherit (emulated) stdenv;
           # };
+          webp-pixbuf-loader = prev.webp-pixbuf-loader.overrideAttrs (upstream: {
+            # fixes: "Builder called die: Cannot wrap '/nix/store/kpp8qhzdjqgvw73llka5gpnsj0l4jlg8-gdk-pixbuf-aarch64-unknown-linux-gnu-2.42.10/bin/gdk-pixbuf-thumbnailer' because it is not an executable file"
+            # gdk-pixbuf doesn't create a `bin/` directory when cross-compiling, breaks some thumbnailing stuff.
+            # see `librsvg` for a more bullet-proof cross-compilation approach
+            postInstall = "";
+          });
       })
     ];
   };
