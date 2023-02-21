@@ -6,7 +6,7 @@
   sane.services.trust-dns.listenAddrsIPv4 = [
     # specify each address explicitly, instead of using "*".
     # this ensures responses are sent from the address at which the request was received.
-    "192.168.15.28"  # TODO: fetch IP via `config`
+    config.sane.hosts.by-name."servo".lan-ip
     "10.0.1.5"
   ];
   sane.services.trust-dns.quiet = true;
