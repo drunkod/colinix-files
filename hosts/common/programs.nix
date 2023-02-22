@@ -43,6 +43,7 @@ let
       smartmontools
       socat
       strace
+      subversion
       tcpdump
       tree
       usbutils
