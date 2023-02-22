@@ -260,7 +260,6 @@ in
             # http2
             ibus  # configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0
             kitty  # "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
-            libchamplain  # "failed to produce output path for output 'devdoc'"
             libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"
             libgweather  # "Run-time dependency vapigen found: NO (tried pkgconfig)"
             libjcat  # data/tests/meson.build:10:0: ERROR: Program 'gnutls-certtool certtool' not found or not executable
@@ -662,10 +661,10 @@ in
           #   inherit (emulated) stdenv;
           # };
 
-          # libchamplain = prev.libchamplain.override {
-          #   # fails: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libglib-2.0.so: error adding symbols: file in wrong format";
-          #   inherit (emulated) stdenv;
-          # };
+          libchamplain = prev.libchamplain.overrideAttrs (upstream: {
+            # fixes: "failed to produce output path for output 'devdoc'"
+            outputs = lib.remove "devdoc" upstream.outputs;
+          });
           # libgweather = prev.libgweather.override {
           #   # solves original problem
           #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libgio-2.0.so: error adding symbols: file in wrong format"
