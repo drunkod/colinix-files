@@ -455,10 +455,14 @@ in
             #   # doesn't fix "CMake Error: try_run() invoked in cross-compiling mode, please set the following cache variables appropriately"
             #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.perl ];
             # });
-            file-roller = super.file-roller.override {
-              # fixes "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
-              inherit (emulated) stdenv;
-            };
+            # file-roller = super.file-roller.override {
+            #   # fixes "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
+            #   inherit (emulated) stdenv;
+            # };
+            file-roller = super.file-roller.overrideAttrs (orig: {
+              # fixes: "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
+              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
+            });
             gnome-color-manager = super.gnome-color-manager.overrideAttrs (orig: {
               # fixes: "src/meson.build:3:0: ERROR: Program 'glib-compile-resources' not found or not executable"
               nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
