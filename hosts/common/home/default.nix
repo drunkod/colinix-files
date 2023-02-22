@@ -13,6 +13,7 @@
     ./mpv.nix
     ./neovim.nix
     ./newsflash.nix
+    ./ripgrep.nix
     ./splatmoji.nix
     ./ssh.nix
     ./sublime-music.nix
