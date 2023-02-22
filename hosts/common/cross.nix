@@ -728,6 +728,14 @@ in
           #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.libkate next.cairo next.pango ];
           # });
 
+          libvisual = prev.libvisual.overrideAttrs (upstream: {
+            # fixes: "configure: error: *** sdl-config not found."
+            # 2023/02/21: TODO: update nixpkgs to remove this override.
+            # - it's fixed by 11b095e8805aa123a4d77a5e706bebaf86622879
+            buildInputs = [ next.glib ];
+            configureFlags = [ "--disable-examples" ];
+          });
+
           ncftp = prev.ncftp.overrideAttrs (upstream: {
             # fixes: "ar: command not found"
             # `ar` is provided by bintools
