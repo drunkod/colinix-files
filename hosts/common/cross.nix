@@ -261,8 +261,6 @@ in
             ibus  # configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0
             kitty  # "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
             libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"
-            libgweather  # "Run-time dependency vapigen found: NO (tried pkgconfig)"
-            libjcat  # data/tests/meson.build:10:0: ERROR: Program 'gnutls-certtool certtool' not found or not executable
             # libsForQt5  # qtbase  # make: g++: No such file or directory
             libtiger  # "src/tiger_internal.h:24:10: fatal error: pango/pango.h: No such file or directory"
             notmuch  # "Error: The dependencies of notmuch could not be satisfied"  (xapian, gmime, glib, talloc)
@@ -665,20 +663,34 @@ in
             # fixes: "failed to produce output path for output 'devdoc'"
             outputs = lib.remove "devdoc" upstream.outputs;
           });
-          # libgweather = prev.libgweather.override {
-          #   # solves original problem
-          #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libgio-2.0.so: error adding symbols: file in wrong format"
-          #   inherit (emulated) stdenv;
-          # };
+          libgweather = prev.libgweather.overrideAttrs (upstream: {
+            # fixes: "Run-time dependency vapigen found: NO (tried pkgconfig)"
+            mesonFlags =
+              (
+                lib.remove "-Denable_vala=true"
+                  (lib.remove "-Dgtk_doc=true" upstream.mesonFlags)
+              ) ++ [
+                "-Dintrospection=false"
+                "-Denable_vala=false"
+                "-Dgtk_doc=false"
+              ];
+            outputs = lib.remove "devdoc" upstream.outputs;
+            nativeBuildInputs = (lib.remove next.gobject-introspection upstream.nativeBuildInputs) ++ [
+              next.glib
+            ];
+          });
           libHX = prev.libHX.overrideAttrs (orig: {
             # "Can't exec "libtoolize": No such file or directory at /nix/store/r4fvx9hazsm0rdm7s393zd5v665dsh1c-autoconf-2.71/share/autoconf/Autom4te/FileUtils.pm line 294."
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.libtool ];
           });
-          # libjcat = prev.libjcat.override {
-          #   # fixes original error
-          #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libgio-2.0.so: error adding symbols: file in wrong format"
-          #   inherit (emulated) stdenv;
-          # };
+          libjcat = prev.libjcat.overrideAttrs (upstream: {
+            # fixes: "ERROR: Program 'gnutls-certtool certtool' not found or not executable"
+            # N.B.: gnutls library is used by the compiled program (i.e. the host);
+            #   gnutls binaries are used by the build machine.
+            #   therefore gnutls can be specified in both buildInputs and nativeBuildInputs
+            nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.gnutls ];
+            # buildInputs = lib.remove next.gnutls upstream.buildInputs;
+          });
 
           librest = prev.librest.overrideAttrs (orig: {
             # fixes "You must have gtk-doc >= 1.13 installed to build documentation"
