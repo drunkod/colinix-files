@@ -728,10 +728,11 @@ in
           #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.libkate next.cairo next.pango ];
           # });
 
-          ncftp = prev.ncftp.override {
-            # fixes: "ar: No such file or directory"
-            inherit (emulated) stdenv;
-          };
+          ncftp = prev.ncftp.overrideAttrs (upstream: {
+            # fixes: "ar: command not found"
+            # `ar` is provided by bintools
+            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [ next.bintools ];
+          });
           networkmanager-fortisslvpn = prev.networkmanager-fortisslvpn.overrideAttrs (orig: {
             # fixes "gdbus-codegen: command not found"
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
