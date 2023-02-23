@@ -427,7 +427,6 @@ in
               dconf-editor  # "error: Package `dconf' not found in specified Vala API directories or GObject-Introspection GIR directories"
               evolution-data-server  # "The 'perl' not found, not installing csv2vcard"
               gnome-shell  # "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
-              mutter  # meson.build:237:2: ERROR: Dependency "gbm" not found, tried pkgconfig  (it's provided by mesa)
             ;
             # dconf-editor = super.dconf-editor.override {
             #   # fails to fix original error
@@ -544,35 +543,16 @@ in
               # fixes: meson.build:111:6: ERROR: Program 'glib-compile-schemas' not found or not executable
               nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
             });
-            # mutter = super.mutter.override {
-            #   # DOES NOT FIX: "meson.build:237:2: ERROR: Dependency "gbm" not found, tried pkgconfig  (it's provided by mesa)"
-            #   inherit (next) stdenv;
-            # };
-            # mutter = super.mutter.overrideAttrs (orig: {
-            #   # fixes "meson.build:237:2: ERROR: Dependency "gbm" not found, tried pkgconfig  (it's provided by mesa)"
-            #   # new error: "/nix/store/c190src4bjkfp7bdgc5sadnmvgzv7kxb-gobject-introspection-aarch64-unknown-linux-gnu-1.74.0/lib/gobject-introspection/giscanner/_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
-            #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.gobject-introspection next.wayland-scanner ];
-            #   buildInputs = orig.buildInputs ++ [ next.mesa ];
-            #   # disable docs building
-            #   mesonFlags = lib.remove "-Ddocs=true" orig.mesonFlags;
-            # });
-            # mutter = super.mutter.overrideAttrs (orig: {
-            #   # TODO: something seems to be propagating an *emulated* version of gobject-introspection into the build
-            #   nativeBuildInputs =
-            #     (lib.remove next.python3
-            #       (lib.remove next.mesa orig.nativeBuildInputs)
-            #     )
-            #     ++ [
-            #       next.gobject-introspection
-            #       next.mesonEmulatorHook
-            #       next.python3.pythonForBuild
-            #       next.wayland-scanner
-            #     ];
-            #   buildInputs = (lib.remove next.gobject-introspection orig.buildInputs)
-            #     ++ [ next.mesa ];
-            #   # disable docs building
-            #   mesonFlags = lib.remove "-Ddocs=true" orig.mesonFlags;
-            # });
+            mutter = super.mutter.overrideAttrs (orig: {
+              # buildInputs += [next.mesa] fixes "meson.build:237:2: ERROR: Dependency "gbm" not found, tried pkgconfig"
+              # buildInputs += [next.glib] fixes "clutter/clutter/meson.build:281:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
+              # introspection=false and remove docs=true fixes gobject-introspection/_giscanner import error
+              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib next.wayland-scanner ];
+              buildInputs = orig.buildInputs ++ [ next.mesa ];
+              mesonFlags = (lib.remove "-Ddocs=true" orig.mesonFlags)
+                ++ [ "-Dintrospection=false" ];
+              outputs = lib.remove "devdoc" orig.outputs;
+            });
             # nautilus = super.nautilus.override {
             #   # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
             #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libglib-2.0.so: error adding symbols: file in wrong format"
