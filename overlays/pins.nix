@@ -31,6 +31,11 @@
     # fixes "ERROR:../tests/test-regression.c:429:test_ggo_7: assertion failed (error == NULL): Failed to set multicast interfaceProtocol not available (gssdp-error, 1)"
     doCheck = false;
   });
+  gupnp = prev.gupnp.overrideAttrs (_upstream: {
+    # 2023/02/22
+    # fixes "Bail out! ERROR:../tests/test-bugs.c:205:test_bgo_696762: assertion failed (error == NULL): Failed to set multicast interfaceProtocol not available (gssdp-erro>"
+    doCheck = false;
+  });
   json-glib = prev.json-glib.overrideAttrs (_upstream: {
     # 2023/02/11
     # fixes: "15/15 json-glib:docs / doc-check    TIMEOUT        30.52s   killed by signal 15 SIGTERM"
@@ -95,6 +100,11 @@
   strp = prev.srtp.overrideAttrs (_upstream: {
     # 2023/02/11
     # roc_driver test times out after 30s
+    doCheck = false;
+  });
+  tracker = prev.tracker.overrideAttrs (_upstream: {
+    # 2023/02/22
+    # "27/37 tracker:core / service                          TIMEOUT         60.37s   killed by signal 15 SIGTERM"
     doCheck = false;
   });
 })
