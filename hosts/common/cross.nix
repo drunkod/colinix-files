@@ -427,7 +427,6 @@ in
               dconf-editor  # "error: Package `dconf' not found in specified Vala API directories or GObject-Introspection GIR directories"
               evolution-data-server  # "The 'perl' not found, not installing csv2vcard"
               gnome-shell  # "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
-              gnome-settings-daemon  # subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable
               mutter  # meson.build:237:2: ERROR: Dependency "gbm" not found, tried pkgconfig  (it's provided by mesa)
             ;
             # dconf-editor = super.dconf-editor.override {
@@ -513,14 +512,21 @@ in
             #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.mesonEmulatorHook ];
             # });
             # gnome-settings-daemon = super.gnome-settings-daemon.overrideAttrs (orig: {
-            #   # fixes "subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
-            #   # new error: "plugins/power/meson.build:22:0: ERROR: Dependency lookup for glib-2.0 with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found. Giving up."
-            #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-            # });
-            # gnome-settings-daemon = super.gnome-settings-daemon.overrideAttrs (orig: {
             #   # does not fix original error
             #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.mesonEmulatorHook ];
             # });
+            gnome-settings-daemon = super.gnome-settings-daemon.overrideAttrs (orig: {
+              # glib solves: "Program 'glib-mkenums mkenums' not found or not executable"
+              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
+              # pkg-config solves: "plugins/power/meson.build:22:0: ERROR: Dependency lookup for glib-2.0 with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found."
+              # stdenv.cc fixes: "plugins/power/meson.build:60:0: ERROR: No build machine compiler for 'plugins/power/gsd-power-enums-update.c'"
+              # but then it fails with a link-time error.
+              # depsBuildBuild = orig.depsBuildBuild or [] ++ [ next.glib next.pkg-config next.buildPackages.stdenv.cc ];
+              # hack to just not build the power plugin (panel?), to avoid cross compilation errors
+              postPatch = orig.postPatch + ''
+                sed -i "s/disabled_plugins = \[\]/disabled_plugins = ['power']/" plugins/meson.build
+              '';
+            });
             gnome-session = super.gnome-session.overrideAttrs (orig: {
               # fixes: "gdbus-codegen not found or executable"
               nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
