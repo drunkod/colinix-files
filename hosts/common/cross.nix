@@ -378,10 +378,10 @@ in
           #   inherit (emulated) stdenv;
           # };
 
-          fuzzel = prev.fuzzel.override {
-            # meson.build:100:0: ERROR: Dependency lookup for wayland-scanner with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found. Giving up.
-            inherit (emulated) stdenv;
-          };
+          fuzzel = prev.fuzzel.overrideAttrs (upstream: {
+            # fixes: "meson.build:100:0: ERROR: Dependency lookup for wayland-scanner with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found. Giving up."
+            depsBuildBuild = upstream.depsBuildBuild or [] ++ [ next.pkg-config ];
+          });
 
           # fwupd-efi = prev.fwupd-efi.override {
           #   # efi/meson.build:33:2: ERROR: Problem encountered: gnu-efi support requested, but headers were not found
