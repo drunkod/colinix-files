@@ -247,7 +247,6 @@ in
             # adwaita-qt  # psqlodbc
             apacheHttpd_2_4  # `configure: error: Size of "void *" is less than size of "long"`
             # duplicity  # python3.10-s3transfer
-            flatpak  # No package 'libxml-2.0' found
             fwupd-efi  # efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable
             # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
             gmime3  # "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
@@ -373,10 +372,14 @@ in
             inherit (emulated) stdenv;
           };
 
-          # flatpak = prev.flatpak.override {
-          #   # doesn't fix: "ld: error adding symbols: file in wrong format"
-          #   inherit (emulated) stdenv;
-          # };
+          flatpak = prev.flatpak.overrideAttrs (upstream: {
+            # fixes "No package 'libxml-2.0' found"
+            buildInputs = upstream.buildInputs ++ [ next.libxml2 ];
+            configureFlags = upstream.configureFlags ++ [
+              "--enable-selinux-module=no"  # fixes "checking for /usr/share/selinux/devel/Makefile... configure: error: cannot check for file existence when cross compiling"
+              "--disable-gtk-doc"  # fixes "You must have gtk-doc >= 1.20 installed to build documentation for Flatpak"
+            ];
+          });
 
           fuzzel = prev.fuzzel.overrideAttrs (upstream: {
             # fixes: "meson.build:100:0: ERROR: Dependency lookup for wayland-scanner with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found. Giving up."
