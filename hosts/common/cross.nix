@@ -254,7 +254,7 @@ in
             # XXX: gnustep members aren't individually overridable, because the "scope" uses `rec` such that members don't see overrides
             gnustep  # gnustep.base: "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings."
             # grpc
-            gvfs  # meson.build:312:2: ERROR: Assert failed: http required but libxml-2.0 not found
+            # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
             # hdf5  # configure: error: cannot run test program while cross compiling
             # http2
             ibus  # configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0
@@ -608,34 +608,18 @@ in
             #   # qt5Support = true;
             # };
           };
-          # gvfs = prev.gvfs.overrideAttrs (orig: {
-          #   # meson.build:312:2: ERROR: Assert failed: http required but libxml-2.0 not found
-          #   # nativeBuildInputs = orig.nativeBuildInputs ++ [ prev.libxml2 prev.mesonEmulatorHook ];
-          #   # TODO: gvfs 1.50.2 -> 1.50.3 upgrade is upstreamed, and fixed cross compilation
-          #   version = "1.50.3";
-          #   src = next.fetchurl {
-          #     url = "mirror://gnome/sources/gvfs/1.50/gvfs-1.50.3.tar.xz";
-          #     sha256 = "aJcRnpe7FgKdJ3jhpaVKamWSYx+LLzoqHepO8rAYA/0=";
-          #   };
-          #   patches = [
-          #     # Hardcode the ssh path again.
-          #     # https://gitlab.gnome.org/GNOME/gvfs/-/issues/465
-          #     (next.fetchpatch2 {
-          #       url = "https://gitlab.gnome.org/GNOME/gvfs/-/commit/8327383e262e1e7f32750a8a2d3dd708195b0f53.patch";
-          #       hash = "sha256-ReD7qkezGeiJHyo9jTqEQNBjECqGhV9nSD+dYYGZWJ8=";
-          #       revert = true;
-          #     })
-          #   ];
-          # });
-          # gvfs = prev.gvfs.override {
-          #   # solves original config-time problem
-          #   # new failure: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/3n0n1s5gb34lkckkr8ix5b7s5hz4n48v-libxml2-2.10.3/lib/libxml2.so: error adding symbols: file in wrong format"
+          gvfs = prev.gvfs.overrideAttrs (upstream: {
+            nativeBuildInputs = upstream.nativeBuildInputs ++ [
+              next.openssh
+              next.glib  # fixes "gdbus-codegen: command not found"
+            ];
+            # fixes "meson.build:312:2: ERROR: Assert failed: http required but libxml-2.0 not found"
+            buildInputs = upstream.buildInputs ++ [ next.libxml2 ];
+          });
+
+          # hdf5 = prev.hdf5.override {
           #   inherit (emulated) stdenv;
           # };
-
-          hdf5 = prev.hdf5.override {
-            inherit (emulated) stdenv;
-          };
 
           # ibus = prev.ibus.override {
           #   # "_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
