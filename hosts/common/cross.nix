@@ -262,7 +262,6 @@ in
             libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"
             # libsForQt5  # qtbase  # make: g++: No such file or directory
             libtiger  # "src/tiger_internal.h:24:10: fatal error: pango/pango.h: No such file or directory"
-            notmuch  # "Error: The dependencies of notmuch could not be satisfied"  (xapian, gmime, glib, talloc)
             # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
             phosh  # libadwaita-1 not found
             # qgnomeplatform
@@ -758,10 +757,18 @@ in
             # fixes "fatal error: lmdb++.h: No such file or directory
             buildInputs = orig.buildInputs ++ [ next.lmdbxx ];
           });
-          # notmuch = prev.notmuch.override {
-          #   # fails to solve original error
-          #   inherit (emulated) stdenv;
-          # };
+          notmuch = prev.notmuch.overrideAttrs (upstream: {
+            # fixes "Error: The dependencies of notmuch could not be satisfied"  (xapian, gmime, glib, talloc)
+            # when cross-compiling, we only have a triple-prefixed pkg-config which notmuch's configure script doesn't know how to find.
+            # so just replace these with the nix-supplied env-var which resolves to the relevant pkg-config.
+            postPatch = upstream.postPatch or "" + ''
+              sed -i 's/pkg-config/\$PKG_CONFIG/g' configure
+            '';
+            XAPIAN_CONFIG = next.buildPackages.writeShellScript "xapian-config" ''
+              exec ${lib.getBin next.xapian}/bin/xapian-config $@
+            '';
+            nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.gnupg next.perl ];
+          });
           obex_data_server = prev.obex_data_server.override {
             # fixes "/nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 2: --prefix=ods_manager: command not found"
             inherit (emulated) stdenv;
