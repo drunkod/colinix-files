@@ -970,6 +970,11 @@ in
             # fixes "perl: command not found"
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.perl ];
           });
+          xapian = prev.xapian.overrideAttrs (upstream: {
+            # the output has #!/bin/sh scripts.
+            # - shebangs get re-written on native build, but not cross build
+            buildInputs = upstream.buildInputs ++ [ next.bash ];
+          });
           xdg-desktop-portal-gtk = prev.xdg-desktop-portal-gtk.overrideAttrs (orig: {
             # fixes "No package 'xdg-desktop-portal' found"
             buildInputs = orig.buildInputs ++ [ next.xdg-desktop-portal ];
