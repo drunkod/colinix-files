@@ -366,6 +366,14 @@ in
             inherit (emulated) stdenv;
           };
 
+          dconf = (prev.dconf.override {
+            # we need dconf to build with vala, because dconf-editor requires that.
+            # this only happens if dconf *isn't* cross-compiled
+            inherit (emulated) stdenv;
+          }).overrideAttrs (upstream: {
+            nativeBuildInputs = lib.remove next.glib upstream.nativeBuildInputs;
+          });
+
           emacs = prev.emacs.override {
             # fixes "configure: error: cannot run test program while cross compiling"
             inherit (emulated) stdenv;
@@ -426,7 +434,6 @@ in
 
           gnome = prev.gnome.overrideScope' (self: super: {
             inherit (emulated.gnome)
-              dconf-editor  # "error: Package `dconf' not found in specified Vala API directories or GObject-Introspection GIR directories"
               evolution-data-server  # "The 'perl' not found, not installing csv2vcard"
               gnome-shell  # "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
             ;
@@ -434,10 +441,13 @@ in
             #   # fails to fix original error
             #   inherit (emulated) stdenv;
             # };
-            # dconf-editor = super.dconf-editor.overrideAttrs (orig: {
-            #   # fails to fix original error
-            #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.dconf ];
-            # });
+            dconf-editor = super.dconf-editor.overrideAttrs (orig: {
+              # fixes "error: Package `dconf' not found in specified Vala API directories or GObject-Introspection GIR directories"
+              # - but ONLY if `dconf` was built with the vala feature.
+              # - dconf is NOT built with vala when cross-compiled
+              #   - that's an explicit choice/limitation in nixpkgs upstream
+              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.dconf ];
+            });
             evince = super.evince.overrideAttrs (orig: {
               # fixes (meson) "Run-time dependency gi-docgen found: NO (tried pkgconfig and cmake)"
               # inspired by gupnp
