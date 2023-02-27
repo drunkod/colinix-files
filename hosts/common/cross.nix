@@ -434,7 +434,6 @@ in
 
           gnome = prev.gnome.overrideScope' (self: super: {
             inherit (emulated.gnome)
-              evolution-data-server  # "The 'perl' not found, not installing csv2vcard"
               gnome-shell  # "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
             ;
             # dconf-editor = super.dconf-editor.override {
@@ -457,14 +456,21 @@ in
                 "-Dgtk_doc=${lib.boolToString (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform)}"
               ];
             });
-            # evolution-data-server = super.evolution-data-server.override {
-            #   inherit (next) stdenv;
-            # };
-            # evolution-data-server = super.evolution-data-server.overrideAttrs (orig: {
-            #   # fixes "The 'perl' not found, not installing csv2vcard"
-            #   # doesn't fix "CMake Error: try_run() invoked in cross-compiling mode, please set the following cache variables appropriately"
-            #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.perl ];
-            # });
+            evolution-data-server = (super.evolution-data-server.override {
+              inherit (emulated) stdenv;  # fixes aborts in "Performing Test _correct_iconv" &tc
+            }).overrideAttrs (orig: {
+              nativeBuildInputs = orig.nativeBuildInputs ++ [
+                next.perl  # fixes "The 'perl' not found, not installing csv2vcard"
+                # next.glib
+                # next.libiconv
+                # next.iconv
+              ];
+              # buildInputs = orig.buildInputs ++ [
+              #   next.pcre2  # fixes: "Package 'libpcre2-8', required by 'glib-2.0', not found"
+              #   next.mount  # fails to fix: "Package 'mount', required by 'gio-2.0', not found"
+              # ];
+            });
+
             # file-roller = super.file-roller.override {
             #   # fixes "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
             #   inherit (emulated) stdenv;
