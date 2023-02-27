@@ -103,6 +103,10 @@
     sopsFile = ../../secrets/universal/net/home-shared.psk.bin;
     format = "binary";
   };
+  sops.secrets."iwd/makespace-south.psk" = {
+    sopsFile = ../../secrets/universal/net/makespace-south.psk.bin;
+    format = "binary";
+  };
   sops.secrets."iwd/archive-2023-02-home-bedroom.psk" = {
     sopsFile = ../../secrets/universal/net/archive/2023-02-home-bedroom.psk.bin;
     format = "binary";
