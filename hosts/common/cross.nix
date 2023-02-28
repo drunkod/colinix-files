@@ -434,7 +434,6 @@ in
 
           gnome = prev.gnome.overrideScope' (self: super: {
             inherit (emulated.gnome)
-              gnome-shell  # "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
             ;
             # dconf-editor = super.dconf-editor.override {
             #   # fails to fix original error
@@ -521,13 +520,29 @@ in
             #   #   "-Dgtk_doc=${lib.boolToString (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform)}"
             #   # ];
             # });
-            # gnome-shell = super.gnome-shell.override {
-            #   inherit (next) stdenv;
-            # };
-            # gnome-shell = super.gnome-shell.overrideAttrs (orig: {
-            #   # does not solve original error
-            #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.mesonEmulatorHook ];
-            # });
+            gnome-shell = (super.gnome-shell.override {
+              inherit (next) stdenv;
+            }).overrideAttrs (upstream: {
+              nativeBuildInputs = upstream.nativeBuildInputs ++ [
+                next.gjs  # fixes "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
+                next.buildPackages.gobject-introspection  # fixes "shew| Build-time dependency gobject-introspection-1.0 found: NO"
+              ];
+              buildInputs = lib.remove next.gobject-introspection upstream.buildInputs;
+              # try to reduce gobject-introspection/shew dependencies
+              mesonFlags = [
+                "-Dextensions_app=false"
+                "-Dextensions_tool=false"
+                "-Dman=false"
+                "-Dgtk_doc=false"
+              ];
+              outputs = [ "out" "dev" ];
+              postPatch = upstream.postPatch or "" + ''
+                # disable introspection for the gvc (libgnome-volume-control) subproject
+                # to remove its dependency on gobject-introspection
+                sed -i s/introspection=true/introspection=false/ meson.build
+                sed -i 's/libgvc_gir/# libgvc_gir/' meson.build src/meson.build
+              '';
+            });
             # gnome-settings-daemon = super.gnome-settings-daemon.overrideAttrs (orig: {
             #   # does not fix original error
             #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.mesonEmulatorHook ];
@@ -562,13 +577,15 @@ in
               nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
             });
             mutter = super.mutter.overrideAttrs (orig: {
-              # buildInputs += [next.mesa] fixes "meson.build:237:2: ERROR: Dependency "gbm" not found, tried pkgconfig"
-              # buildInputs += [next.glib] fixes "clutter/clutter/meson.build:281:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
-              # introspection=false and remove docs=true fixes gobject-introspection/_giscanner import error
-              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib next.wayland-scanner ];
-              buildInputs = orig.buildInputs ++ [ next.mesa ];
-              mesonFlags = (lib.remove "-Ddocs=true" orig.mesonFlags)
-                ++ [ "-Dintrospection=false" ];
+              nativeBuildInputs = orig.nativeBuildInputs ++ [
+                next.glib  # fixes "clutter/clutter/meson.build:281:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
+                next.buildPackages.gobject-introspection  # allows to build without forcing `introspection=false` (which would break gnome-shell)
+                next.wayland-scanner
+              ];
+              buildInputs = orig.buildInputs ++ [
+                next.mesa  # fixes "meson.build:237:2: ERROR: Dependency "gbm" not found, tried pkgconfig"
+              ];
+              mesonFlags = lib.remove "-Ddocs=true" orig.mesonFlags;
               outputs = lib.remove "devdoc" orig.outputs;
             });
             # nautilus = super.nautilus.override {
