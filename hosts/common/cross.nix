@@ -257,7 +257,6 @@ in
             # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
             # hdf5  # configure: error: cannot run test program while cross compiling
             # http2
-            ibus  # configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0
             kitty  # "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
             libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"
             # libsForQt5  # qtbase  # make: g++: No such file or directory
@@ -652,10 +651,23 @@ in
           #   inherit (emulated) stdenv;
           # };
 
-          # ibus = prev.ibus.override {
-          #   # "_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
-          #   inherit (emulated) stdenv;
-          # };
+          ibus = (prev.ibus.override {
+            # fixes: "configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0"
+            inherit (emulated) stdenv;
+          }).overrideAttrs (upstream: {
+            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
+              # fixes "_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
+              next.buildPackages.gobject-introspection
+            ];
+            buildInputs = lib.remove next.gobject-introspection upstream.buildInputs;
+          });
+          # ibus = prev.ibus.overrideAttrs (upstream: {
+          #   # FIXES: configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0
+          #   # technique copied from <nixpkgs:pkgs/development/libraries/gts/default.nix>
+          #   # new error: ImportError: /nix/store/fi1rsalr11xg00dqwgzbf91jpl3zwygi-gobject-introspection-aarch64-unknown-linux-gnu-1.74.0/lib/gobject-introspection/giscanner/_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+          #   nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.glib next.gobject-introspection ];
+          #   buildInputs = lib.remove next.gobject-introspection upstream.buildInputs;
+          # });
 
           iio-sensor-proxy = prev.iio-sensor-proxy.overrideAttrs (orig: {
             # fixes "./autogen.sh: line 26: gtkdocize: not found"
