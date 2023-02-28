@@ -263,7 +263,6 @@ in
             # libsForQt5  # qtbase  # make: g++: No such file or directory
             libtiger  # "src/tiger_internal.h:24:10: fatal error: pango/pango.h: No such file or directory"
             # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
-            phosh  # libadwaita-1 not found
             # qgnomeplatform
             # qtbase
             qt5  # qt5.qtx11extras fails, but we can't selectively emulate it
@@ -819,15 +818,28 @@ in
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.perl ];
           });
 
-          phoc = prev.phoc.override {
-            # fixes "Program wayland-scanner found: NO"
-            inherit (emulated) stdenv;
-          };
-          # phosh = prev.phosh.override {
-          #   # fixes original error.
-          #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/2bzd39fbsifidd667s7x930d0b7pm3qx-pango-1.50.12/lib/libpangocairo-1.0.so: error adding symbols: file in wrong format"
+          # phoc = prev.phoc.override {
+          #   # fixes "Program wayland-scanner found: NO"
           #   inherit (emulated) stdenv;
           # };
+          phoc = prev.phoc.overrideAttrs (upstream: {
+            # buildInputs = upstream.buildInputs or [] ++ [ next.wayland-scanner ];
+            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
+              next.wayland-scanner
+              next.glib  # fixes (meson) "Program 'glib-mkenums mkenums' not found or not executable"
+            ];
+          });
+          phosh = prev.phosh.overrideAttrs (upstream: {
+            buildInputs = upstream.buildInputs ++ [
+              next.libadwaita  # "plugins/meson.build:41:2: ERROR: Dependency "libadwaita-1" not found, tried pkgconfig"
+            ];
+            mesonFlags = upstream.mesonFlags ++ [
+              "-Dphoc_tests=disabled"  # "tests/meson.build:20:0: ERROR: Program 'phoc' not found or not executable"
+            ];
+            postPatch = upstream.postPatch or "" + ''
+              sed -i 's:gio_querymodules = :gio_querymodules = "${next.buildPackages.glib.dev}/bin/gio-querymodules" if True else :' build-aux/post_install.py
+            '';
+          });
           phosh-mobile-settings = prev.phosh-mobile-settings.override {
             # fixes "meson.build:26:0: ERROR: Dependency "phosh-plugins" not found, tried pkgconfig"
             inherit (emulated) stdenv;
