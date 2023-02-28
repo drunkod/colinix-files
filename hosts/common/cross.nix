@@ -249,7 +249,6 @@ in
             # duplicity  # python3.10-s3transfer
             fwupd-efi  # efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable
             # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
-            gmime3  # "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
             # gnome-tour
             # XXX: gnustep members aren't individually overridable, because the "scope" uses `rec` such that members don't see overrides
             gnustep  # gnustep.base: "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings."
@@ -416,19 +415,27 @@ in
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
           });
           gmime = prev.gmime.overrideAttrs (orig: {
-            # "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
+            # fixes: "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
             configureFlags = orig.configureFlags ++ [ "ac_cv_have_iconv_detect_h=no" ];
+          });
+          gmime3 = prev.gmime3.overrideAttrs (upstream: {
+            configureFlags = upstream.configureFlags ++ [
+              "ac_cv_have_iconv_detect_h=no"   # fixes: "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
+            ];
+            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
+              next.buildPackages.gobject-introspection
+            ];
           });
 
           # gmime3 = prev.gmime3.overrideAttrs (orig: {
-          #   # "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
-          #   # unsolved: "ImportError: /nix/store/c190src4bjkfp7bdgc5sadnmvgzv7kxb-gobject-introspection-aarch64-unknown-linux-gnu-1.74.0/lib/gobject-introspection/giscanner/_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
+          #   # fixes: "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
+          #   # new error: something about python imports; doesn't happen on nixpkgs/tip.
           #   configureFlags = orig.configureFlags ++ [ "ac_cv_have_iconv_detect_h=no" ];
+          #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.gobject-introspection ];
+          #   # XXX lib.remove doesn't work on pkg sets (?)
+          #   buildInputs = with next; [ vala zlib gpgme libidn2 libunistring ];
+          #   # buildInputs = lib.remove next.gobject-introspection orig.buildInputs;
           # });
-          # gmime3 = prev.gmime3.override {
-          #   # doesn't fix
-          #   inherit (emulated) stdenv;
-          # };
 
           gnome = prev.gnome.overrideScope' (self: super: {
             inherit (emulated.gnome)
