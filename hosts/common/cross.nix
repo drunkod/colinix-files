@@ -690,21 +690,14 @@ in
             # fixes: "failed to produce output path for output 'devdoc'"
             outputs = lib.remove "devdoc" upstream.outputs;
           });
-          libgweather = prev.libgweather.overrideAttrs (upstream: {
-            # fixes: "Run-time dependency vapigen found: NO (tried pkgconfig)"
-            mesonFlags =
-              (
-                lib.remove "-Denable_vala=true"
-                  (lib.remove "-Dgtk_doc=true" upstream.mesonFlags)
-              ) ++ [
-                "-Dintrospection=false"
-                "-Denable_vala=false"
-                "-Dgtk_doc=false"
-              ];
-            outputs = lib.remove "devdoc" upstream.outputs;
-            nativeBuildInputs = (lib.remove next.gobject-introspection upstream.nativeBuildInputs) ++ [
-              next.glib
-            ];
+          libgweather = (prev.libgweather.override {
+            # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
+            #   but presumably that's just a different way to emulate it.
+            inherit (emulated)
+              stdenv  # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
+              gobject-introspection  # fixes gir x86-64 python -> aarch64 shared object import
+              python3  # fixes build-aux/meson/gen_locations_variant.py x86-64 python -> aarch64 import of glib
+            ;
           });
           libHX = prev.libHX.overrideAttrs (orig: {
             # "Can't exec "libtoolize": No such file or directory at /nix/store/r4fvx9hazsm0rdm7s393zd5v665dsh1c-autoconf-2.71/share/autoconf/Autom4te/FileUtils.pm line 294."
