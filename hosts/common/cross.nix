@@ -247,7 +247,6 @@ in
             # adwaita-qt  # psqlodbc
             apacheHttpd_2_4  # `configure: error: Size of "void *" is less than size of "long"`
             # duplicity  # python3.10-s3transfer
-            fwupd-efi  # efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable
             # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
             # gnome-tour
             # XXX: gnustep members aren't individually overridable, because the "scope" uses `rec` such that members don't see overrides
@@ -390,10 +389,24 @@ in
             depsBuildBuild = upstream.depsBuildBuild or [] ++ [ next.pkg-config ];
           });
 
-          # fwupd-efi = prev.fwupd-efi.override {
-          #   # efi/meson.build:33:2: ERROR: Problem encountered: gnu-efi support requested, but headers were not found
-          #   inherit (emulated) stdenv;
-          # };
+          fwupd-efi = prev.fwupd-efi.override {
+            # fwupd-efi queries meson host_machine to decide what arch to build for.
+            #   for some reason, this gives x86_64 unless meson itself is emulated.
+            #   maybe meson's use of "host_machine" actually mirrors nix's "build machine"?
+            inherit (emulated)
+              stdenv  # fixes: "efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable"
+              meson  # fixes: "efi/meson.build:33:2: ERROR: Problem encountered: gnu-efi support requested, but headers were not found"
+            ;
+          };
+          # fwupd-efi = prev.fwupd-efi.overrideAttrs (upstream: {
+          #   # does not fix: "efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable"
+          #   makeFlags = upstream.makeFlags or [] ++ [ "CC=${prev.stdenv.cc.targetPrefix}cc" ];
+          #   # does not fix: "efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable"
+
+          #   # nativeBuildInputs = upstream.nativeBuildInputs ++ lib.optionals (!prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) [
+          #   #   next.mesonEmulatorHook
+          #   # ];
+          # });
           fwupd = prev.fwupd.overrideAttrs (orig: {
             # solves (meson) "Run-time dependency libgcab-1.0 found: NO (tried pkgconfig and cmake)", and others.
             buildInputs = orig.buildInputs ++ [ next.gcab next.gnutls ];
