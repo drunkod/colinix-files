@@ -1,10 +1,19 @@
 # cross compiling
-
+#
+# terminology:
+# - buildPlatform is the machine on which a compiler is run.
+# - hostPlatform is the machine on which a built package is run.
+# - targetPlatform is used only by compilers which aren't multi-output.
+#   - specifies the platform for which a compiler will produce binaries after that compiler is built.
+#
 # - for edge-casey things, see in nixpkgs:
 #   - `git show da9a9a440415b236f22f57ba67a24ab3fb53f595`
 #     - e.g. `mesonEmulatorHook`, `depsBuildBuild`, `python3.pythonForBuild`
 #   - <doc/stdenv/cross-compilation.chapter.md>
 #     - e.g. `makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];`
+#   - <nixpkgs:pkgs/development/libraries/gdk-pixbuf/default.nix>
+#     - `${stdenv.hostPlatform.emulator buildPackages}   <command>`
+#       - to run code compiled for host platform
 #
 # build a particular package as evaluated here with:
 # - toplevel: `nix build '.#host-pkgs.moby-cross.xdg-utils'`
@@ -43,12 +52,6 @@
 #     """
 
 # TODO:
-# - ??.llvmPackages_14.llvm: "FAIL: LLVM-Unit :: ExecutionEngine/MCJIT/./MCJITTests/MCJITMultipleModuleTest.two_module_global_variables_case (43769 of 46988)"
-#   - nix log /nix/store/ib2yw6sajnhlmibxkrn7lj7chllbr85h-llvm-14.0.6.drv
-#   - wanted by clang-11-12-LLVMgold-path, compiler-rt-libc-12.0.1, clang-wrapper-12.0.1
-# - ?..llvmPackages_12.llvm: "FAIL: LLVM-Unit :: ExecutionEngine/MCJIT/./MCJITTests/MCJITTest.return_global (2857 of 42084)"
-#   - nix log /nix/store/6vydavlxh1gvs0vmrkcx9qp67g3h7kcz-llvm-12.0.1.drv
-#   - wanted by sequoia, rav1e, rustc-1.66.1
 # - `host-pkgs.desko.stdenv` fails build:
 #   - #cross-compiling:nixos.org says pkgsCross.gnu64 IS KNOWN TO NOT COMPILE. let this go for now:
 #     - make a `<machine>` (don't specifiy local/targetSystem) and `<machine>-cross` target.
@@ -256,7 +259,7 @@ in
             # hdf5  # configure: error: cannot run test program while cross compiling
             # http2
             kitty  # "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
-            libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"
+            libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
             # libsForQt5  # qtbase  # make: g++: No such file or directory
             libtiger  # "src/tiger_internal.h:24:10: fatal error: pango/pango.h: No such file or directory"
             # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
@@ -281,6 +284,7 @@ in
           # mod_dnssd = prev.mod_dnssd.override {
           #   inherit (emulated) stdenv;
           # };
+
           apacheHttpdPackagesFor = apacheHttpd: self:
             let
               prevHttpdPkgs = prev.apacheHttpdPackagesFor apacheHttpd self;
@@ -290,6 +294,7 @@ in
                 inherit (emulated) stdenv;
               };
             };
+
           # apacheHttpdPackagesFor = apacheHttpd: self:
           #   let
           #     prevHttpdPkgs = lib.fix (emulated.apacheHttpdPackagesFor apacheHttpd);
@@ -569,6 +574,7 @@ in
               ];
               buildInputs = lib.remove next.gobject-introspection upstream.buildInputs;
               # try to reduce gobject-introspection/shew dependencies
+              # TODO: these likely aren't all necessary
               mesonFlags = [
                 "-Dextensions_app=false"
                 "-Dextensions_tool=false"
@@ -658,7 +664,6 @@ in
           gupnp_1_6 = prev.gupnp_1_6.overrideAttrs (orig: {
             # fixes "subprojects/gi-docgen/meson.build:10:0: ERROR: python3 not found"
             # this patch is copied from the default gupnp.
-            # TODO: upstream
             outputs = [ "out" "dev" ]
               ++ lib.optionals (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform) [ "devdoc" ];
             mesonFlags = [
@@ -975,7 +980,7 @@ in
             inherit (emulated) stdenv;
           };
           pipewire = prev.pipewire.overrideAttrs (orig: {
-            # fix `spa/plugins/bluez5/meson.build:41:0: ERROR: Program 'gdbus-codegen' not found or not executable`
+            # fixes `spa/plugins/bluez5/meson.build:41:0: ERROR: Program 'gdbus-codegen' not found or not executable`
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
           });
           psqlodbc = prev.psqlodbc.override {
@@ -986,11 +991,9 @@ in
           pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
             (py-next: py-prev: {
               defcon = py-prev.defcon.overridePythonAttrs (orig: {
-                # TODO: diagnose and upstream
                 nativeBuildInputs = orig.nativeBuildInputs ++ orig.nativeCheckInputs;
               });
               executing = py-prev.executing.overridePythonAttrs (orig: {
-                # TODO: confirm & upstream
                 # test has an assertion that < 1s of CPU time elapsed => flakey
                 disabledTestPaths = orig.disabledTestPaths or [] ++ [
                   # "tests/test_main.py::TestStuff::test_many_source_for_filename_calls"
@@ -1012,11 +1015,9 @@ in
                 disabledTests = orig.disabledTests ++ [ "test_debug_magic_passes_through_generator" ];
               });
               mutatormath = py-prev.mutatormath.overridePythonAttrs (orig: {
-                # TODO: diagnose and upstream
                 nativeBuildInputs = orig.nativeBuildInputs or [] ++ orig.nativeCheckInputs;
               });
               pandas = py-prev.pandas.overridePythonAttrs (orig: {
-                # TODO: upstream
                 # XXX: we only actually need numpy when building in ~/nixpkgs repo: not sure why we need all the propagatedBuildInputs here.
                 # nativeBuildInputs = orig.nativeBuildInputs ++ [ py-next.numpy ];
                 nativeBuildInputs = orig.nativeBuildInputs ++ orig.propagatedBuildInputs;
