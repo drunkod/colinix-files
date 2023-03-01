@@ -427,17 +427,40 @@ in
             # fixes (meson) "Program 'glib-mkenums mkenums' not found or not executable"
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
           });
-          gmime = prev.gmime.overrideAttrs (orig: {
-            # fixes: "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
-            configureFlags = orig.configureFlags ++ [ "ac_cv_have_iconv_detect_h=no" ];
+
+          gmime = prev.gmime.overrideAttrs (upstream: {
+            configureFlags = upstream.configureFlags ++ [
+              "ac_cv_have_iconv_detect_h=yes"  # fixes: "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
+              "--enable-cryptography=yes"  # force GPGME  (TODO: might not be necessary?)
+            ];
+            postPatch = upstream.postPatch + ''
+              # mimick how upstream builds iconv-detect.h
+              # the resulting binary is for the host, but unlike configure we know how to invoke that.
+              "$CC" ./iconv-detect.c -o iconv-detect
+              ./iconv-detect
+              rm iconv-detect
+            '';
           });
           gmime3 = prev.gmime3.overrideAttrs (upstream: {
             configureFlags = upstream.configureFlags ++ [
-              "ac_cv_have_iconv_detect_h=no"   # fixes: "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
+              "ac_cv_have_iconv_detect_h=yes"  # fixes: "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
+              "--enable-crypto=yes"  # force GPGME  (TODO: might not be necessary?)
             ];
+            postPatch = upstream.postPatch + ''
+              # mimick how upstream builds iconv-detect.h
+              # the resulting binary is for the host, but unlike configure we know how to invoke that.
+              "$CC" ./iconv-detect.c -o iconv-detect
+              ./iconv-detect
+              rm iconv-detect
+            '';
             nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
               next.buildPackages.gobject-introspection
             ];
+            # configure detects gpgme support by invoking `gpgme-config` which otherwise fails on cross-compiled builds and causes gmime3 to build without gpgme support.
+            # consumers of gmime3 expect gpgme support, so make sure we build it on all platforms with this.
+            GPGME_CONFIG = next.buildPackages.writeShellScript "gpgme-config" ''
+              exec ${lib.getBin next.gpgme.dev}/bin/gpgme-config $@
+            '';
           });
 
           # gmime3 = prev.gmime3.overrideAttrs (orig: {
