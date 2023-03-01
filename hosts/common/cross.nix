@@ -847,8 +847,64 @@ in
             XAPIAN_CONFIG = next.buildPackages.writeShellScript "xapian-config" ''
               exec ${lib.getBin next.xapian}/bin/xapian-config $@
             '';
-            nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.gnupg next.perl ];
+            # depsBuildBuild = [ next.gnupg ];
+            nativeBuildInputs = upstream.nativeBuildInputs ++ [
+              next.gnupg  # nixpkgs specifies gpg as a buildInput instead of a nativeBuildInput
+              next.perl  # used to build manpages
+              # next.pythonPackages.python
+              # next.shared-mime-info
+            ];
+            buildInputs = with next; [
+              xapian gmime3 talloc zlib  # dependencies described in INSTALL
+              # perl
+              # pythonPackages.python
+              ruby  # notmuch links against ruby.so
+            ];
+            # buildInputs =
+            #   (lib.remove
+            #     next.perl
+            #     (lib.remove
+            #       next.gmime
+            #       (lib.remove next.gnupg upstream.buildInputs)
+            #     )
+            #   ) ++ [ next.gmime ];
           });
+          # notmuch = (prev.notmuch.override {
+          #   inherit (emulated)
+          #     stdenv
+          #     # gmime
+          #   ;
+          #   gmime = emulated.gmime3;
+          # }).overrideAttrs (upstream: {
+          #   postPatch = upstream.postPatch or "" + ''
+          #     sed -i 's/pkg-config/\$PKG_CONFIG/g' configure
+          #   '';
+          #   nativeBuildInputs = upstream.nativeBuildInputs ++ [
+          #     next.gnupg
+          #     next.perl
+          #   ];
+          #   buildInputs = lib.remove next.gnupg upstream.buildInputs;
+          # });
+          # notmuch = prev.notmuch.overrideAttrs (upstream: {
+          #   # fixes "Error: The dependencies of notmuch could not be satisfied"  (xapian, gmime, glib, talloc)
+          #   # when cross-compiling, we only have a triple-prefixed pkg-config which notmuch's configure script doesn't know how to find.
+          #   # so just replace these with the nix-supplied env-var which resolves to the relevant pkg-config.
+          #   postPatch = upstream.postPatch or "" + ''
+          #     sed -i 's/pkg-config/\$PKG_CONFIG/g' configure
+          #     sed -i 's: gpg : ${next.buildPackages.gnupg}/bin/gpg :' configure
+          #   '';
+          #   XAPIAN_CONFIG = next.buildPackages.writeShellScript "xapian-config" ''
+          #     exec ${lib.getBin next.xapian}/bin/xapian-config $@
+          #   '';
+          #   # depsBuildBuild = upstream.depsBuildBuild or [] ++ [
+          #   #   next.buildPackages.stdenv.cc
+          #   # ];
+          #   nativeBuildInputs = upstream.nativeBuildInputs ++ [
+          #     # next.gnupg
+          #     next.perl
+          #   ];
+          #   # buildInputs = lib.remove next.gnupg upstream.buildInputs;
+          # });
           obex_data_server = prev.obex_data_server.override {
             # fixes "/nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 2: --prefix=ods_manager: command not found"
             inherit (emulated) stdenv;
