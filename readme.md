@@ -32,6 +32,13 @@ this can then be `dd`'d onto a disk and directly booted from a EFI system.
 there's some post-processing to do before running a rebuild on the deployed system (deploying ssh keys, optionally changing fs UUIDs, etc).
 refer to flake.nix for more details.
 
+## remote deployment
+
+some of my systems support cross compilation (i.e. building from x86-64 for an aarch64 host without using emulation).
+- `nixos-rebuild --flake '.#moby-cross' build`
+- `sudo nix sign-paths -r -k ./nix-serve.key $(readlink ./result)`  (key comes from e.g. secrets/desko.yaml)
+- `nixos-rebuild --flake '.#moby-cross' switch --target-host colin@moby --use-remote-sudo`
+
 ## building packages
 
 build anything with
