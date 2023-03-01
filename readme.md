@@ -52,9 +52,13 @@ on the other hand the `packages` output contains only my own packages.
 
 in addition, my packages are placed into both the global scope and a `sane` scope.
 so use the scoped path when you want to be explicit.
-
 ```
 nix build sane.linux-megous
+```
+
+to build a package precisely how a specific host would see it (in case the host's config customizes it):
+```
+nix build '.#host-pkgs.moby-cross.xdg-utils'
 ```
 
 ## using this repo in your own config
