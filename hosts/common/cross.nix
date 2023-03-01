@@ -266,7 +266,6 @@ in
             qt6  # "You need to set QT_HOST_PATH to cross compile Qt."
             sequoia  # "/nix/store/q8hg17w47f9xr014g36rdc2gi8fv02qc-clang-aarch64-unknown-linux-gnu-12.0.1-lib/lib/libclang.so.12: cannot open shared object file: No such file or directory"', /build/sequoia-0.27.0-vendor.tar.gz/bindgen/src/lib.rs:1975:31"
             # splatmoji
-            squeekboard  # meson.build:1:0: ERROR: 'rust' compiler binary not defined in cross or native file
             twitter-color-emoji  # /nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 1: pkg-config: command not found
             visidata  # python3.10-psycopg2 python3.10-pandas python3.10-h5py
             # webkitgtk_4_1  # requires nativeBuildInputs = perl.pkgs.FileCopyRecursive => perl5.36.0-Test-utf8
@@ -1067,10 +1066,14 @@ in
           #     in
           #       orig.mesonFlags or [] ++ lib.optionals (next.stdenv.hostPlatform != next.stdenv.buildPlatform) [ "--cross-file=${crossFile}" ];
           # });
-          # squeekboard = prev.squeekboard.override {
-          #   # new error: "gcc: error: unrecognized command line option '-m64'"
-          #   inherit (emulated) stdenv;
-          # };
+          squeekboard = prev.squeekboard.override {
+            inherit (emulated)
+              rustPlatform  # fixes original "'rust' compiler binary not defined in cross or native file"
+              stdenv  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/jzh15bi6zablx3d9s928w3lgqy6and91-glib-2.74.3/lib/libgio-2.0.so"
+              glib  # fixes "gcc: error: unrecognized command line option '-m64'"
+              wayland  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/ni0vb1pnaznx85378i3h9xhw9cay68g5-wayland-1.21.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
+            ;
+          };
 
           sysprof = prev.sysprof.overrideAttrs (orig: {
             # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
