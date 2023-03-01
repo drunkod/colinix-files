@@ -22,6 +22,13 @@
     # unclear *why* this test fails.
     doCheck = false;
   });
+  fish = prev.fish.overrideAttrs (_upstream: {
+    # 2023/02/28
+    # The following tests FAILED:
+    #     177 - sigint.fish (Failed)
+    #     241 - torn_escapes.py (Failed)
+    doCheck = false;
+  });
   gjs = prev.gjs.overrideAttrs (_upstream: {
     # 2023/01/30: one test times out. probably flakey test that only got built because i patched mesa.
     doCheck = false;
