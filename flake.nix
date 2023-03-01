@@ -23,10 +23,12 @@
 
     # <https://github.com/nixos/nixpkgs/tree/nixos-unstable>
     nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    nixpkgs = {
-      url = "./nixpatches";
-      inputs.nixpkgs.follows = "nixpkgs-unpatched";
-    };
+
+    # nixpkgs = {
+    #   url = "./nixpatches";
+    #   inputs.nixpkgs.follows = "nixpkgs-unpatched";
+    # };
+
     mobile-nixos = {
       # <https://github.com/nixos/mobile-nixos>
       url = "github:nixos/mobile-nixos";
@@ -35,17 +37,18 @@
     sops-nix = {
       # <https://github.com/Mic92/sops-nix>
       url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unpatched";
     };
     uninsane-dot-org = {
       url = "git+https://git.uninsane.org/colin/uninsane";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unpatched";
     };
   };
 
   outputs = {
     self,
-    nixpkgs,
     nixpkgs-unpatched,
     mobile-nixos,
     sops-nix,
@@ -53,6 +56,14 @@
     ...
   }@inputs:
     let
+      # rather than apply our nixpkgs patches as a flake input, do that here instead.
+      # this (temporarily?) resolves the bad UX wherein a subflake residing in the same git
+      # repo as the main flake causes the main flake to have an unstable hash.
+      nixpkgs = (import ./nixpatches/flake.nix).outputs {
+        self = nixpkgs;
+        nixpkgs = nixpkgs-unpatched;
+      };
+
       nixpkgsCompiledBy = local: nixpkgs.legacyPackages."${local}";
 
       evalHost = { name, local, target }:
