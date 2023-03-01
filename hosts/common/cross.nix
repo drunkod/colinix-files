@@ -643,6 +643,18 @@ in
             # fixes "error: hash mismatch in fixed-output derivation" (vendorSha256)
             inherit (emulated) buildGoModule;  # equivalent to stdenv
           };
+          # gocryptfs = prev.gocryptfs.override {
+          #   # fixes "error: hash mismatch in fixed-output derivation" (vendorSha256)
+          #   # new error: "go: inconsistent vendoring in /build/source:"
+          #   # - "github.com/hanwen/go-fuse/v2@v2.1.1-0.20211219085202-934a183ed914: is explicitly required in go.mod, but not marked as explicit in vendor/modules.txt"
+          #   # - ...
+          #   buildGoModule = args: next.buildGoModule (args // {
+          #     vendorSha256 = {
+          #       x86_64-linux = args.vendorSha256;
+          #       aarch64-linux = "sha256-9famtUjkeAtzxfXzmWVum/pyaNp89Aqnfd+mWE7KjaI=";
+          #     }."${next.stdenv.system}";
+          #   });
+          # };
           gupnp_1_6 = prev.gupnp_1_6.overrideAttrs (orig: {
             # fixes "subprojects/gi-docgen/meson.build:10:0: ERROR: python3 not found"
             # this patch is copied from the default gupnp.
@@ -808,6 +820,15 @@ in
             # fixes "configure.ac:58: error: possibly undefined macro: AM_GLIB_GNU_GETTEXT"
             inherit (emulated) stdenv;
           };
+          # networkmanager-iodine = prev.networkmanager-iodine.overrideAttrs (upstream: {
+          #   # buildInputs = upstream.buildInputs ++ [ next.intltool next.gettext ];
+          #   # nativeBuildInputs = lib.remove next.intltool upstream.nativeBuildInputs;
+          #   # nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.gettext ];
+          #   postPatch = upstream.postPatch or "" + ''
+          #     sed -i s/AM_GLIB_GNU_GETTEXT/AM_GNU_GETTEXT/ configure.ac
+          #   '';
+          # });
+
           networkmanager-l2tp = prev.networkmanager-l2tp.overrideAttrs (orig: {
             # fixes "gdbus-codegen: command not found"
             # fixes "gtk4-builder-tool: command not found"
@@ -916,6 +937,12 @@ in
             # fixes "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
             inherit (emulated) stdenv;
           };
+          # ostree = prev.ostree.overrideAttrs (upstream: {
+          #   # fixes: "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
+          #   # new failure mode: "./src/libotutil/ot-gpg-utils.h:22:10: fatal error: gpgme.h: No such file or directory"
+          #   # buildInputs = lib.remove next.gpgme upstream.buildInputs;
+          #   nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.gpgme ];
+          # });
           pam_mount = prev.pam_mount.overrideAttrs (orig: {
             # fixes: "perl: command not found"
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.perl ];
