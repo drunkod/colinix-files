@@ -4,7 +4,7 @@
 { hostName, localSystem }:
 
 # module args
-{ config, ... }:
+{ config, lib, ... }:
 
 {
   imports = [
@@ -14,6 +14,7 @@
   ];
 
   networking.hostName = hostName;
+  nixpkgs.buildPlatform = lib.mkIf (localSystem != null) localSystem;
 
   # nixpkgs.overlays = [
   #   (next: prev: {
