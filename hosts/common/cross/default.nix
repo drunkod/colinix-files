@@ -258,7 +258,6 @@ in
             # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
             # hdf5  # configure: error: cannot run test program while cross compiling
             # http2
-            kitty  # "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
             libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
             # libsForQt5  # qtbase  # make: g++: No such file or directory
             libtiger  # "src/tiger_internal.h:24:10: fatal error: pango/pango.h: No such file or directory"
@@ -733,10 +732,17 @@ in
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib next.gtk-doc ];
           });
 
-          # kitty = prev.kitty.override {
-          #   # does not solve original error
-          #   inherit (emulated) stdenv;
-          # };
+          kitty = prev.kitty.overrideAttrs (upstream: {
+            # fixes: "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
+            PKGCONFIG_EXE = "${next.buildPackages.pkg-config}/bin/${next.buildPackages.pkg-config.targetPrefix}pkg-config";
+
+            # when building docs, kitty's setup.py invokes `sphinx`, which tries to load a .so for the host.
+            # on cross compilation, that fails
+            KITTY_NO_DOCS = true;
+            patches = upstream.patches ++ [
+              ./kitty-no-docs.patch
+            ];
+          });
 
           libchamplain = prev.libchamplain.overrideAttrs (upstream: {
             # fixes: "failed to produce output path for output 'devdoc'"
