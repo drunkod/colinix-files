@@ -44,6 +44,9 @@
   sane.nixcache.enable = true;
   sane.persist.enable = true;
   sane.gui.phosh.enable = true;
+  # sane.programs.consoleUtils.enableFor.user.colin = false;
+  # sane.programs.guiApps.enableFor.user.colin = false;
+  sane.programs.sequoia.enableFor.user.colin = false;
 
   boot.loader.efi.canTouchEfiVariables = false;
   # /boot space is at a premium. default was 20.
