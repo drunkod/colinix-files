@@ -83,8 +83,8 @@ let
   # these are the overlays which we *also* pass through to the cross and emulated package sets.
   # TODO: refactor to not specify same overlay in multiple places (here and flake.nix).
   overlays = [
-    (import ./../../overlays/pkgs.nix)
-    (import ./../../overlays/pins.nix)
+    (import ./../../../overlays/pkgs.nix)
+    (import ./../../../overlays/pins.nix)
   ];
   mkCrossFrom = localSystem: pkgs:
     import pkgs.path {
