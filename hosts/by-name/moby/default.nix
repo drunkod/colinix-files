@@ -10,13 +10,6 @@
   sane.services.wg-home.enable = true;
   sane.services.wg-home.ip = config.sane.hosts.by-name."moby".wg-home.ip;
 
-  # cross-compiled documentation is *slow*.
-  # no obvious way to natively compile docs (2022/09/29).
-  # entrypoint is nixos/modules/misc/documentation.nix
-  # doc building happens in nixos/doc/manual/default.nix
-  # TODO: we could *maybe* inject pkgs.buildPackages.xyz = cross.buildPackages.xyz?
-  documentation.nixos.enable = false;
-
   # XXX colin: phosh doesn't work well with passwordless login,
   # so set this more reliable default password should anything go wrong
   users.users.colin.initialPassword = "147147";
