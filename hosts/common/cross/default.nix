@@ -77,37 +77,43 @@
 #   - `file result/bin/bash` does show that it uses the interpreter for the glibc, above
 
 
-{ config, lib, pkgs, ... }:
+{ config, lib, options, pkgs, ... }:
 
 let
-  # these are the overlays which we *also* pass through to the cross and emulated package sets.
-  # TODO: refactor to not specify same overlay in multiple places (here and flake.nix).
-  overlays = [
+  inherit (lib) types mkIf mkOption;
+  cfg = config.sane.cross;
+  # "universal" overlay means it applies to all package sets:
+  # - cross
+  # - emulated
+  # - any arch; etc
+  # these are specified for the primary package set in flake.nix,
+  # except for the "cross only" universal overlays which we avoid specifying for non-cross builds
+  # because they don't affect the result -- only the build process -- so we can disable them as an optimization.
+  crossOnlyUniversalOverlays = [
+    (import ./../../../overlays/disable-flakey-tests.nix)
+  ];
+  universalOverlays = [
     (import ./../../../overlays/pkgs.nix)
     (import ./../../../overlays/pins.nix)
-  ];
-  mkCrossFrom = localSystem: pkgs:
-    import pkgs.path {
-      inherit localSystem;  # localSystem is equivalent to buildPlatform
-      crossSystem = pkgs.stdenv.hostPlatform.system;
-      inherit (config.nixpkgs) config;
-      inherit overlays;
-    };
+  ] ++ crossOnlyUniversalOverlays;
+
   mkEmulated = pkgs:
     import pkgs.path {
       # system = pkgs.stdenv.hostPlatform.system;
       localSystem = pkgs.stdenv.hostPlatform.system;
       inherit (config.nixpkgs) config;
-      inherit overlays;
+      overlays = universalOverlays;
     };
 in
 {
-  # options = {
-  #   perlPackageOverrides = lib.mkOption {
-  #   };
-  # };
+  options = {
+    sane.cross.enablePatches = mkOption {
+      type = types.bool;
+      default = false;
+    };
+  };
 
-  config = {
+  config = mkIf cfg.enablePatches {
     # the configuration of which specific package set `pkgs.cross` refers to happens elsewhere;
     # here we just define them all.
 
@@ -170,14 +176,8 @@ in
       #   Testutf8
       # ;
     });
-    nixpkgs.overlays = [
+    nixpkgs.overlays = crossOnlyUniversalOverlays ++ [
       (next: prev: {
-        # non-emulated packages build *from* local *for* target.
-        # for large packages like the linux kernel which are expensive to build under emulation,
-        # the config can explicitly pull such packages from `pkgs.cross` to do more efficient cross-compilation.
-        # crossFrom."x86_64-linux" = mkCrossFrom "x86_64-linux" prev;
-        # crossFrom."aarch64-linux" = mkCrossFrom "aarch64-linux" prev;
-
         emulated = mkEmulated prev;
       })
       # (next: prev:
