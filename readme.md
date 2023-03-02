@@ -35,9 +35,9 @@ refer to flake.nix for more details.
 ## remote deployment
 
 some of my systems support cross compilation (i.e. building from x86-64 for an aarch64 host without using emulation).
-- `nixos-rebuild --flake '.#moby-cross' build`
+- `nixos-rebuild --flake '.#cross-moby' build`
 - `sudo nix sign-paths -r -k /run/secrets/nix_serve_privkey $(readlink ./result)`
-- `nixos-rebuild --flake '.#moby-cross' switch --target-host colin@moby --use-remote-sudo`
+- `nixos-rebuild --flake '.#cross-moby' switch --target-host colin@moby --use-remote-sudo`
 
 ## building packages
 
