@@ -198,6 +198,11 @@
       apps."x86_64-linux" =
         let
           pkgs = self.legacyPackages."x86_64-linux";
+          deployScript = action: pkgs.writeShellScript "deploy-moby" ''
+            nixos-rebuild --flake '.#cross-moby' build
+            sudo nix sign-paths -r -k /run/secrets/nix_serve_privkey $(readlink ./result)
+            nixos-rebuild --flake '.#cross-moby' ${action} --target-host colin@moby --use-remote-sudo
+          '';
         in {
           update-feeds = {
             type = "app";
@@ -208,6 +213,17 @@
             # use like `nix run '.#init-feed' uninsane.org`
             type = "app";
             program = "${pkgs.feeds.passthru.initFeedScript}";
+          };
+
+          deploy-moby-test = {
+            # `nix run '.#deploy-moby-test'`
+            type = "app";
+            program = ''${deployScript "test"}'';
+          };
+          deploy-moby-switch = {
+            # `nix run '.#deploy-moby-switch'`
+            type = "app";
+            program = ''${deployScript "switch"}'';
           };
         };
 
