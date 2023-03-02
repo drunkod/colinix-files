@@ -21,7 +21,19 @@
   #   hash = "sha256-PnPzvJymafa+zjkauQW0LzFsJC7S+7D9JRszTE3in+w=";
   # })
 
+  # (fetchpatch {
+  #   # stdenv: fix cc for pseudo-crosscompilation
+  #   # closed because it breaks pkgsStatic (as of 2023/02/12)
+  #   url = "https://github.com/NixOS/nixpkgs/pull/196497.diff";
+  #   hash = "sha256-eTwEbVULYjmOW7zUFcTUqvBZqUFjHTKFhvmU2m3XQeo=";
+  # })
+
   ./2022-12-19-i2p-aarch64.patch
+
+  # fix for CMA memory leak in mesa: <https://gitlab.freedesktop.org/mesa/mesa/-/issues/8198>
+  # only necessary on aarch64.
+  # it's a revert of nixpkgs commit dcf630c172df2a9ecaa47c77f868211e61ae8e52
+  ./2023-01-30-mesa-cma-leak.patch
 
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).

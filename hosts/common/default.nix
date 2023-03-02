@@ -1,7 +1,7 @@
 { lib, pkgs, ... }:
 {
   imports = [
-    ./cross.nix
+    ./cross
     ./feeds.nix
     ./fs.nix
     ./hardware.nix
@@ -42,15 +42,28 @@
 
   fonts = {
     enableDefaultFonts = true;
-    fonts = with pkgs; [ font-awesome twitter-color-emoji hack-font ];
+    fonts = with pkgs; [ font-awesome noto-fonts-emoji hack-font ];
     fontconfig.enable = true;
     fontconfig.defaultFonts = {
-      emoji = [ "Font Awesome 6 Free" "Twitter Color Emoji" ];
+      emoji = [ "Font Awesome 6 Free" "Noto Color Emoji" ];
       monospace = [ "Hack" ];
       serif = [ "DejaVu Serif" ];
       sansSerif = [ "DejaVu Sans" ];
     };
   };
+
+  # XXX: twitter-color-emoji doesn't cross-compile; but not-fonts-emoji does
+  # fonts = {
+  #   enableDefaultFonts = true;
+  #   fonts = with pkgs; [ font-awesome twitter-color-emoji hack-font ];
+  #   fontconfig.enable = true;
+  #   fontconfig.defaultFonts = {
+  #     emoji = [ "Font Awesome 6 Free" "Twitter Color Emoji" ];
+  #     monospace = [ "Hack" ];
+  #     serif = [ "DejaVu Serif" ];
+  #     sansSerif = [ "DejaVu Sans" ];
+  #   };
+  # };
 
   # disable non-required packages like nano, perl, rsync, strace
   environment.defaultPackages = [];

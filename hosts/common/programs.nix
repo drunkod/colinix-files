@@ -4,11 +4,23 @@ let
   inherit (builtins) attrNames concatLists;
   inherit (lib) mapAttrs mapAttrsToList mkDefault mkMerge optional;
 
+  flattenedPkgs = pkgs // (with pkgs; {
+    # XXX can't `inherit` a nested attr, so we move them to the toplevel
+    "cacert.unbundled" = pkgs.cacert.unbundled;
+    "gnome.cheese" = gnome.cheese;
+    "gnome.dconf-editor" = gnome.dconf-editor;
+    "gnome.file-roller" = gnome.file-roller;
+    "gnome.gnome-disk-utility" = gnome.gnome-disk-utility;
+    "gnome.gnome-maps" = gnome.gnome-maps;
+    "gnome.nautilus" = gnome.nautilus;
+    "gnome.gnome-system-monitor" = gnome.gnome-system-monitor;
+    "gnome.gnome-terminal" = gnome.gnome-terminal;
+    "gnome.gnome-weather" = gnome.gnome-weather;
+    "libsForQt5.plasmatube" = libsForQt5.plasmatube;
+  });
+
   sysadminPkgs = {
-    inherit (pkgs // {
-      # XXX can't `inherit` a nested attr, so we move them to the toplevel
-      "cacert.unbundled" = pkgs.cacert.unbundled;
-    })
+    inherit (flattenedPkgs)
       btrfs-progs
       "cacert.unbundled"  # some services require unbundled /etc/ssl/certs
       cryptsetup
@@ -75,6 +87,8 @@ let
     ;
   };
 
+  # TODO: split these into smaller groups.
+  # - transcoders (ffmpeg, imagemagick) only wanted on desko/lappy ("powerutils"?)
   consolePkgs = {
     inherit (pkgs)
       cdrtools
@@ -116,40 +130,22 @@ let
       # tageditor  # music tagging
       unar
       wireguard-tools
+      xdg-utils  # for xdg-open
       # youtube-dl
       yt-dlp
     ;
   };
 
   guiPkgs = {
-    inherit (pkgs // (with pkgs; {
-      # XXX can't `inherit` a nested attr, so we move them to the toplevel
-      # TODO: could use some "flatten attrs" helper instead
-      "gnome.cheese" = gnome.cheese;
-      "gnome.dconf-editor" = gnome.dconf-editor;
-      "gnome.file-roller" = gnome.file-roller;
-      "gnome.gnome-disk-utility" = gnome.gnome-disk-utility;
-      "gnome.gnome-maps" = gnome.gnome-maps;
-      "gnome.nautilus" = gnome.nautilus;
-      "gnome.gnome-system-monitor" = gnome.gnome-system-monitor;
-      "gnome.gnome-terminal" = gnome.gnome-terminal;
-      "gnome.gnome-weather" = gnome.gnome-weather;
-      "libsForQt5.plasmatube" = libsForQt5.plasmatube;
-    }))
-      audacity
+    inherit (flattenedPkgs)
       celluloid  # mpv frontend
-      chromium
       clinfo
-      dino
-      electrum
-      element-desktop
       emote
       evince  # works on phosh
 
       # { pkg = fluffychat-moby; dir = [ ".local/share/chat.fluffy.fluffychat" ]; }  # TODO: ship normal fluffychat on non-moby?
 
-      foliate  # e-book reader
-      font-manager
+      # foliate  # e-book reader
 
       # XXX by default fractal stores its state in ~/.local/share/<UUID>.
       # after logging in, manually change ~/.local/share/keyrings/... to point it to some predictable subdir.
@@ -157,14 +153,11 @@ let
       # { pkg = fractal-latest; private = [ ".local/share/fractal" ]; }
       # { pkg = fractal-next; private = [ ".local/share/fractal" ]; }
 
-      gajim  # XMPP client
-      gimp  # broken on phosh
-      "gnome.cheese"
+      # "gnome.cheese"
       "gnome.dconf-editor"
       gnome-feeds  # RSS reader (with claimed mobile support)
       "gnome.file-roller"
-      "gnome.gnome-disk-utility"
-      "gnome.gnome-maps"  # works on phosh
+      # "gnome.gnome-maps"  # works on phosh
       "gnome.nautilus"
       # gnome-podcasts
       "gnome.gnome-system-monitor"
@@ -172,21 +165,15 @@ let
       "gnome.gnome-weather"
       gpodder-configured
       gthumb
-      inkscape
-      kdenlive
-      kid3  # audio tagging
-      krita
-      libreoffice-fresh  # XXX colin: maybe don't want this on mobile
-      lollypop
+      # lollypop
       mpv
       networkmanagerapplet
-      newsflash
+      # newsflash
       nheko
-      obsidian
       pavucontrol
       # picard  # music tagging
       playerctl
-      "libsForQt5.plasmatube"  # Youtube player
+      # "libsForQt5.plasmatube"  # Youtube player
       soundconverter
       # sublime music persists any downloaded albums here.
       # it doesn't obey a conventional ~/Music/{Artist}/{Album}/{Track} notation, so no symlinking
@@ -194,13 +181,31 @@ let
       #   possible to pass config as a CLI arg (sublime-music -c config.json)
       # { pkg = sublime-music; dir = [ ".local/share/sublime-music" ]; }
       sublime-music-mobile
-      tdesktop  # broken on phosh
-      tokodon
+      # tdesktop  # broken on phosh
+      # tokodon
       vlc
       # pleroma client (Electron). input is broken on phosh. TODO(2023/02/02): fix electron19 input (insecure)
       # whalebird
-      xdg-utils  # for xdg-open
       xterm  # broken on phosh
+    ;
+  };
+  desktopGuiPkgs = {
+    inherit (flattenedPkgs)
+      audacity
+      chromium
+      dino
+      electrum
+      element-desktop
+      font-manager
+      gajim  # XMPP client
+      gimp  # broken on phosh
+      "gnome.gnome-disk-utility"
+      inkscape
+      kdenlive
+      kid3  # audio tagging
+      krita
+      libreoffice-fresh  # XXX colin: maybe don't want this on mobile
+      obsidian
     ;
   };
   x86GuiPkgs = {
@@ -235,6 +240,7 @@ in
   config = {
     sane.programs = mkMerge [
       (declarePkgs consolePkgs)
+      (declarePkgs desktopGuiPkgs)
       (declarePkgs guiPkgs)
       (declarePkgs iphonePkgs)
       (declarePkgs sysadminPkgs)
@@ -246,6 +252,10 @@ in
         consoleUtils = {
           package = null;
           suggestedPrograms = attrNames consolePkgs;
+        };
+        desktopGuiApps = {
+          package = null;
+          suggestedPrograms = attrNames desktopGuiPkgs;
         };
         guiApps = {
           package = null;

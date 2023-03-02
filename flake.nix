@@ -23,10 +23,12 @@
 
     # <https://github.com/nixos/nixpkgs/tree/nixos-unstable>
     nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    nixpkgs = {
-      url = "./nixpatches";
-      inputs.nixpkgs.follows = "nixpkgs-unpatched";
-    };
+
+    # nixpkgs = {
+    #   url = "./nixpatches";
+    #   inputs.nixpkgs.follows = "nixpkgs-unpatched";
+    # };
+
     mobile-nixos = {
       # <https://github.com/nixos/mobile-nixos>
       url = "github:nixos/mobile-nixos";
@@ -35,17 +37,18 @@
     sops-nix = {
       # <https://github.com/Mic92/sops-nix>
       url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unpatched";
     };
     uninsane-dot-org = {
       url = "git+https://git.uninsane.org/colin/uninsane";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unpatched";
     };
   };
 
   outputs = {
     self,
-    nixpkgs,
     nixpkgs-unpatched,
     mobile-nixos,
     sops-nix,
@@ -53,6 +56,19 @@
     ...
   }@inputs:
     let
+      inherit (builtins) attrNames listToAttrs map mapAttrs;
+      mapAttrs' = f: set:
+        listToAttrs (map (attr: f attr set.${attr}) (attrNames set));
+      # mapAttrs but without the `name` argument
+      mapAttrValues = f: mapAttrs (_: f);
+      # rather than apply our nixpkgs patches as a flake input, do that here instead.
+      # this (temporarily?) resolves the bad UX wherein a subflake residing in the same git
+      # repo as the main flake causes the main flake to have an unstable hash.
+      nixpkgs = (import ./nixpatches/flake.nix).outputs {
+        self = nixpkgs;
+        nixpkgs = nixpkgs-unpatched;
+      };
+
       nixpkgsCompiledBy = local: nixpkgs.legacyPackages."${local}";
 
       evalHost = { name, local, target }:
@@ -65,9 +81,6 @@
           nixosSystem = import ((nixpkgsCompiledBy target).path + "/nixos/lib/eval-config.nix");
         in
           (nixosSystem {
-            # we use pkgs built for and *by* the target, i.e. emulation, by default.
-            # cross compilation only happens on explicit access to `pkgs.cross`
-            system = target;
             modules = [
               (import ./hosts/instantiate.nix { localSystem = local; hostName = name; })
               self.nixosModules.default
@@ -78,22 +91,45 @@
                   self.overlays.passthru
                   self.overlays.pins
                 ];
+                nixpkgs.hostPlatform = target;
+                # nixpkgs.buildPlatform = local;  # set by instantiate.nix instead
               }
             ];
           });
     in {
-      nixosConfigurations = {
-        servo = evalHost { name = "servo"; local = "x86_64-linux"; target = "x86_64-linux"; };
-        desko = evalHost { name = "desko"; local = "x86_64-linux"; target = "x86_64-linux"; };
-        lappy = evalHost { name = "lappy"; local = "x86_64-linux"; target = "x86_64-linux"; };
-        moby = evalHost { name = "moby"; local = "aarch64-linux"; target = "aarch64-linux"; };
-        # special cross-compiled variant, to speed up deploys from an x86 box to the arm target
-        # note that these *do* produce different store paths, because the closure for the tools used to cross compile
-        # v.s. emulate differ.
-        # so deploying foo-cross and then foo incurs some rebuilding.
-        moby-cross = evalHost { name = "moby"; local = "x86_64-linux"; target = "aarch64-linux"; };
-        rescue = evalHost { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
-      };
+      nixosConfigurations =
+        let
+          hosts = {
+            servo =  { name = "servo"; local = "x86_64-linux"; target = "x86_64-linux"; };
+            desko =  { name = "desko"; local = "x86_64-linux"; target = "x86_64-linux"; };
+            lappy =  { name = "lappy"; local = "x86_64-linux"; target = "x86_64-linux"; };
+            moby  =  { name = "moby";  local = "x86_64-linux"; target = "aarch64-linux"; };
+            rescue = { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux"; };
+          };
+          # cross-compiled builds: instead of emulating the host, build using a cross-compiler.
+          # - these are faster to *build* than the emulated variants (useful when tweaking packages),
+          # - but fewer of their packages can be found in upstream caches.
+          cross = mapAttrValues evalHost hosts;
+          emulated = mapAttrValues
+            ({name, local, target}: evalHost {
+              inherit name target;
+              local = null;
+            })
+            hosts;
+          prefixAttrs = prefix: attrs: mapAttrs'
+            (name: value: {
+              name = prefix + name;
+              inherit value;
+            })
+            attrs;
+        in
+          (prefixAttrs "cross-" cross) //
+          (prefixAttrs "emulated-" emulated) // {
+            # prefer native builds for these machines:
+            inherit (emulated) servo desko lappy rescue;
+            # prefer cross-compiled builds for these machines:
+            inherit (cross) moby;
+          };
 
       # unofficial output
       # this produces a EFI-bootable .img file (GPT with a /boot partition and a system (/ or /nix) partition).
@@ -109,9 +145,10 @@
       #   - if fs wasn't resized automatically, then `sudo btrfs filesystem resize max /`
       #   - checkout this flake into /etc/nixos AND UPDATE THE FS UUIDS.
       #   - `nixos-rebuild --flake './#<host>' switch`
-      imgs = builtins.mapAttrs (_: host-dfn: host-dfn.config.system.build.img) self.nixosConfigurations;
+      imgs = mapAttrValues (host: host.config.system.build.img) self.nixosConfigurations;
 
-      host-pkgs = builtins.mapAttrs (_: host-dfn: host-dfn.config.system.build.pkgs) self.nixosConfigurations;
+      # unofficial output
+      host-pkgs = mapAttrValues (host: host.config.system.build.pkgs) self.nixosConfigurations;
 
       overlays = rec {
         default = pkgs;
@@ -154,8 +191,8 @@
         };
 
       # extract only our own packages from the full set
-      packages = builtins.mapAttrs
-        (_: full: full.sane // { inherit (full) sane uninsane-dot-org; })
+      packages = mapAttrValues
+        (full: full.sane // { inherit (full) sane uninsane-dot-org; })
         self.legacyPackages;
 
       apps."x86_64-linux" =
