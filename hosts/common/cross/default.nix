@@ -328,6 +328,14 @@ in
             ];
           });
 
+          aprutil = prev.aprutil.overrideAttrs (upstream: {
+            # nixpkgs patches the ldb version only for the package itself, but derivative packages (serf -> subversion) inherit the wrong -ldb-6.9 flag.
+            postConfigure = upstream.postConfigure + lib.optionalString (next.stdenv.buildPlatform != next.stdenv.hostPlatform) ''
+              substituteInPlace apu-1-config \
+                --replace "-ldb-6.9" "-ldb"
+            '';
+          });
+
           blueman = prev.blueman.overrideAttrs (orig: {
             # configure: error: ifconfig or ip not found, install net-tools or iproute2
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.iproute2 ];
@@ -1086,6 +1094,11 @@ in
           #   # fails to fix original error
           #   inherit (emulated) stdenv;
           # };
+          serf = prev.serf.overrideAttrs (upstream: {
+            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
+              next.bintools  # fixes "sh: line 1: ar: command not found"
+            ];
+          });
 
           # squeekboard = prev.squeekboard.overrideAttrs (orig: {
           #   # fixes: "meson.build:1:0: ERROR: 'rust' compiler binary not defined in cross or native file"
