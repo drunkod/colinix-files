@@ -1121,6 +1121,13 @@ in
               wayland  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/ni0vb1pnaznx85378i3h9xhw9cay68g5-wayland-1.21.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
             ;
           };
+          subversion = prev.subversion.overrideAttrs (upstream: {
+            configureFlags = upstream.configureFlags ++ [
+              # configure can't find APR and APR-util, unclear why (are they not placed on PATH?)
+              "--with-apr=${next.apr.dev}/bin/apr-1-config"
+              "--with-apr-util=${next.aprutil.dev}/bin/apu-1-config"
+            ];
+          });
 
           sysprof = prev.sysprof.overrideAttrs (orig: {
             # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
