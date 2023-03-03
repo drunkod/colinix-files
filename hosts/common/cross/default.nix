@@ -260,7 +260,6 @@ in
             # http2
             libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
             # libsForQt5  # qtbase  # make: g++: No such file or directory
-            libtiger  # "src/tiger_internal.h:24:10: fatal error: pango/pango.h: No such file or directory"
             # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
             # qgnomeplatform
             # qtbase
@@ -821,6 +820,10 @@ in
           #   # fails to fix: "src/tiger_internal.h:24:10: fatal error: pango/pango.h: No such file or directory"
           #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.libkate next.cairo next.pango ];
           # });
+          libtiger = prev.libtiger.overrideAttrs (_upstream: {
+            # libtiger seems to expect PKG_CONFIG to be an absolute path? not sure, but without this it claims it can't find pkg-config.
+            HAVE_PKG_CONFIG = "yes";
+          });
 
           libvisual = prev.libvisual.overrideAttrs (upstream: {
             # fixes: "configure: error: *** sdl-config not found."
