@@ -133,6 +133,7 @@ in
           # # "pavucontrol"
           "gnome.gnome-bluetooth"
           "gnome.gnome-control-center"
+          "sway-contrib.grimshot"
         ];
       };
     }
@@ -141,6 +142,7 @@ in
         inherit (pkgs // {
           "gnome.gnome-bluetooth" = pkgs.gnome.gnome-bluetooth;
           "gnome.gnome-control-center" = pkgs.gnome.gnome-control-center;
+          "sway-contrib.grimshot" = pkgs.sway-contrib.grimshot;
         })
           swaylock
           swayidle
@@ -148,6 +150,7 @@ in
           mako
           "gnome.gnome-bluetooth"
           "gnome.gnome-control-center"
+          "sway-contrib.grimshot"
         ;
       };
     }
