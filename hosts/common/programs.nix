@@ -82,6 +82,7 @@ let
   tuiPkgs = {
     inherit (pkgs)
       aerc  # email client
+      offlineimap  # email mailox sync
       visidata  # TUI spreadsheet viewer/editor
       w3m
     ;
