@@ -10,13 +10,6 @@
   sane.services.wg-home.enable = true;
   sane.services.wg-home.ip = config.sane.hosts.by-name."moby".wg-home.ip;
 
-  # cross-compiled documentation is *slow*.
-  # no obvious way to natively compile docs (2022/09/29).
-  # entrypoint is nixos/modules/misc/documentation.nix
-  # doc building happens in nixos/doc/manual/default.nix
-  # TODO: we could *maybe* inject pkgs.buildPackages.xyz = cross.buildPackages.xyz?
-  documentation.nixos.enable = false;
-
   # XXX colin: phosh doesn't work well with passwordless login,
   # so set this more reliable default password should anything go wrong
   users.users.colin.initialPassword = "147147";
@@ -44,6 +37,9 @@
   sane.nixcache.enable = true;
   sane.persist.enable = true;
   sane.gui.phosh.enable = true;
+  # sane.programs.consoleUtils.enableFor.user.colin = false;
+  # sane.programs.guiApps.enableFor.user.colin = false;
+  sane.programs.sequoia.enableFor.user.colin = false;
 
   boot.loader.efi.canTouchEfiVariables = false;
   # /boot space is at a premium. default was 20.

@@ -1,4 +1,6 @@
 # TODO: migrate to nixpkgs `config.ids.uids`
+# - note that nixpkgs' `config.ids.uids` is strictly a database: it doesn't set anything by default
+#   whereas our impl sets the gid/uid of the user/group specified if they exist.
 { ... }:
 
 {
@@ -35,7 +37,7 @@
   # found on all hosts
   sane.ids.sshd.uid = 2001;  # 997
   sane.ids.sshd.gid = 2001;  # 997
-  # sane.ids.polkituser.gid = 2002;  # 998  # 2023/02/26: upstream now specifies this as config.ids.uids.polkituser = 28
+  sane.ids.polkituser.gid = 2002;  # 998
   # sane.ids.systemd-coredump.gid = 2003;  # 996  # 2023/02/12: upstream now specifies this as 151
   sane.ids.nscd.uid = 2004;
   sane.ids.nscd.gid = 2004;

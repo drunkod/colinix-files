@@ -31,21 +31,37 @@
         "type": "github"
       }
     },
-    "nixpkgs": {
+    "nix-serve": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs-unpatched"
-        ]
+        "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-AJlQHunLsnhZ8LdYirwIcqD1iojYJEQAdxGfJn9siPs=",
-        "path": "/nix/store/9f4x4836z7srhi6sxbjd5131601yjnwn-source/nixpatches",
-        "type": "path"
+        "lastModified": 1675958846,
+        "narHash": "sha256-/nf09eM2vey9GrAXoqagccJrBo/fGyVKP7oNSxPqwdo=",
+        "owner": "edolstra",
+        "repo": "nix-serve",
+        "rev": "7089565e260267c9c234a81292c841958737cef6",
+        "type": "github"
       },
       "original": {
-        "path": "/nix/store/9f4x4836z7srhi6sxbjd5131601yjnwn-source/nixpatches",
-        "type": "path"
+        "owner": "edolstra",
+        "repo": "nix-serve",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1606086654,
+        "narHash": "sha256-VFl+3eGIMqNp7cyOMJ6TjM/+UcsLKtodKoYexrlTJMI=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "19db3e5ea2777daa874563b5986288151f502e27",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-20.09",
+        "type": "indirect"
       }
     },
     "nixpkgs-stable": {
@@ -66,11 +82,11 @@
     },
     "nixpkgs-unpatched": {
       "locked": {
-        "lastModified": 1677342105,
-        "narHash": "sha256-kv1fpkfCJGb0M+LZaCHFUuIS9kRIwyVgupHu86Y28nc=",
+        "lastModified": 1676569297,
+        "narHash": "sha256-2n4C4H3/U+3YbDrQB6xIw7AaLdFISCCFwOkcETAigqU=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "b1f87ca164a9684404c8829b851c3586c4d9f089",
+        "rev": "ac1f5b72a9e95873d1de0233fddcb56f99884b37",
         "type": "github"
       },
       "original": {
@@ -83,7 +99,7 @@
     "root": {
       "inputs": {
         "mobile-nixos": "mobile-nixos",
-        "nixpkgs": "nixpkgs",
+        "nix-serve": "nix-serve",
         "nixpkgs-unpatched": "nixpkgs-unpatched",
         "sops-nix": "sops-nix",
         "uninsane-dot-org": "uninsane-dot-org"
@@ -92,7 +108,7 @@
     "sops-nix": {
       "inputs": {
         "nixpkgs": [
-          "nixpkgs"
+          "nixpkgs-unpatched"
         ],
         "nixpkgs-stable": "nixpkgs-stable"
       },
@@ -114,7 +130,7 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs": [
-          "nixpkgs"
+          "nixpkgs-unpatched"
         ]
       },
       "locked": {

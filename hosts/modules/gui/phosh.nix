@@ -29,7 +29,7 @@ in
           # TODO: see about removing gnome-bluetooth if the in-built gnome-settings bluetooth manager can work
           "gnome.gnome-bluetooth"
           "phosh-mobile-settings"
-          "plasma5Packages.konsole"  # more reliable terminal
+          # "plasma5Packages.konsole"  # more reliable terminal
         ];
       };
     }
@@ -49,6 +49,12 @@ in
     (mkIf cfg.enable {
       sane.programs.phoshApps.enableFor.user.colin = true;
 
+      # TODO(2023/02/28): remove this qt.style = "gtk2" override.
+      # gnome by default tells qt to stylize its apps similar to gnome.
+      # but the package needed for that doesn't cross-compile, hence i disable that here.
+      qt.platformTheme = "gtk2";
+      qt.style = "gtk2";
+
       # docs: https://github.com/NixOS/nixpkgs/blob/nixos-22.05/nixos/modules/services/x11/desktop-managers/phosh.nix
       services.xserver.desktopManager.phosh = {
         enable = true;
@@ -62,6 +68,26 @@ in
           };
         };
       };
+
+      # phosh enables `services.gnome.{core-os-services, core-shell}`
+      # and this in turn enables some default apps we don't really care about.
+      # see <nixos/modules/services/x11/desktop-managers/gnome.nix>
+      environment.gnome.excludePackages = with pkgs; [
+        # gnome.gnome-menus  # unused outside gnome classic, but probably harmless
+        gnome-tour
+      ];
+      services.dleyna-renderer.enable = false;
+      services.dleyna-server.enable = false;
+      services.gnome.gnome-browser-connector.enable = false;
+      services.gnome.gnome-initial-setup.enable = false;
+      services.gnome.gnome-online-accounts.enable = false;
+      services.gnome.gnome-remote-desktop.enable = false;
+      services.gnome.gnome-user-share.enable = false;
+      services.gnome.rygel.enable = false;
+
+      # gnome doesn't use mkDefault for these -- unclear why not
+      services.gnome.evolution-data-server.enable = mkForce false;
+      services.gnome.gnome-online-miners.enable = mkForce false;
 
       # XXX: phosh enables networkmanager by default; can probably disable these lines
       networking.useDHCP = false;
@@ -85,6 +111,7 @@ in
       };
 
       programs.dconf.packages = [
+        # org.kde.konsole.desktop
         (pkgs.writeTextFile {
           name = "dconf-phosh-settings";
           destination = "/etc/dconf/db/site.d/00_phosh_settings";
@@ -97,7 +124,7 @@ in
             sleep-inactive-battery-timeout=5400
 
             [sm/puri/phosh]
-            favorites=['gpodder.desktop', 'nheko.desktop', 'sublime-music.desktop', 'firefox.desktop', 'org.kde.konsole.desktop']
+            favorites=['gpodder.desktop', 'nheko.desktop', 'sublime-music.desktop', 'firefox.desktop', 'org.gnome.Terminal.desktop']
           '';
         })
       ];

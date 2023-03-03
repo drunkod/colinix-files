@@ -32,6 +32,13 @@ this can then be `dd`'d onto a disk and directly booted from a EFI system.
 there's some post-processing to do before running a rebuild on the deployed system (deploying ssh keys, optionally changing fs UUIDs, etc).
 refer to flake.nix for more details.
 
+## remote deployment
+
+some of my systems support cross compilation (i.e. building from x86-64 for an aarch64 host without using emulation).
+- `nixos-rebuild --flake '.#cross-moby' build`
+- `sudo nix sign-paths -r -k /run/secrets/nix_serve_privkey $(readlink ./result)`
+- `nixos-rebuild --flake '.#cross-moby' switch --target-host colin@moby --use-remote-sudo`
+
 ## building packages
 
 build anything with
@@ -45,9 +52,13 @@ on the other hand the `packages` output contains only my own packages.
 
 in addition, my packages are placed into both the global scope and a `sane` scope.
 so use the scoped path when you want to be explicit.
-
 ```
 nix build sane.linux-megous
+```
+
+to build a package precisely how a specific host would see it (in case the host's config customizes it):
+```
+nix build '.#host-pkgs.moby-cross.xdg-utils'
 ```
 
 ## using this repo in your own config

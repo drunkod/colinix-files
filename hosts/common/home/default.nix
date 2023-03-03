@@ -13,6 +13,7 @@
     ./mpv.nix
     ./neovim.nix
     ./newsflash.nix
+    ./offlineimap.nix
     ./ripgrep.nix
     ./splatmoji.nix
     ./ssh.nix
