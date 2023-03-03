@@ -1,13 +1,29 @@
-{ makeWrapper
+{ stdenv
+, gnome-feeds
 , gpodder
-, linkFarm
+, makeWrapper
+, python3
 , symlinkJoin
 }:
 
 let
-  remove-extra = linkFarm "gpodder-remove-extra" [
-    { name = "bin/gpodder-remove-extra"; path = ./remove_extra.py; }
-  ];
+  pyEnv = python3.withPackages (_ps: [ gnome-feeds.listparser ]);
+  remove-extra = stdenv.mkDerivation {
+    pname = "gpodder-remove-extra";
+    version = "0.1.0";
+
+    src = ./.;
+
+    patchPhase = ''
+      substituteInPlace ./remove_extra.py \
+        --replace "#!/usr/bin/env nix-shell" "#!${pyEnv.interpreter}"
+    '';
+
+    installPhase = ''
+      mkdir -p $out/bin
+      mv remove_extra.py $out/bin/gpodder-remove-extra
+    '';
+  };
 in
 # we use a symlinkJoin so that we can inherit the .desktop and icon files from the original gPodder
 (symlinkJoin {
@@ -29,4 +45,8 @@ in
     unlink $out/share/applications/gpodder.desktop
     sed "s:Exec=.*:Exec=$out/bin/gpodder-configured:" $orig_desktop > $out/share/applications/gpodder.desktop
   '';
+
+  passthru = {
+    remove-extra = remove-extra;
+  };
 })
