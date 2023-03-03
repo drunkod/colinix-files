@@ -668,6 +668,14 @@ in
           #     }."${next.stdenv.system}";
           #   });
           # };
+          gpodder = prev.gpodder.overridePythonAttrs (upstream: {
+            # fix gobject-introspection overrides import that otherwise fails on launch
+            nativeBuildInputs = upstream.nativeBuildInputs ++ [
+              next.buildPackages.gobject-introspection
+            ];
+            buildInputs = lib.remove next.gobject-introspection upstream.buildInputs;
+            strictDeps = true;
+          });
           gupnp_1_6 = prev.gupnp_1_6.overrideAttrs (orig: {
             # fixes "subprojects/gi-docgen/meson.build:10:0: ERROR: python3 not found"
             # this patch is copied from the default gupnp.
