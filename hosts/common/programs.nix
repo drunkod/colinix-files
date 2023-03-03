@@ -201,6 +201,7 @@ let
       gajim  # XMPP client
       gimp  # broken on phosh
       "gnome.gnome-disk-utility"
+      handbrake
       inkscape
       kdenlive
       kid3  # audio tagging
@@ -216,9 +217,6 @@ let
       # kaiteki  # Pleroma client
       # gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
       # gpt2tc  # XXX: unreliable mirror
-
-      # TODO(unpin): handbrake is broken on aarch64-linux 2023/01/29
-      handbrake
 
       logseq
       losslesscut-bin
