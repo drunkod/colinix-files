@@ -1,4 +1,6 @@
 # TODO: migrate to nixpkgs `config.ids.uids`
+# - note that nixpkgs' `config.ids.uids` is strictly a database: it doesn't set anything by default
+#   whereas our impl sets the gid/uid of the user/group specified if they exist.
 { ... }:
 
 {
