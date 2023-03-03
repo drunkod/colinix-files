@@ -88,8 +88,6 @@ in
       # gnome doesn't use mkDefault for these -- unclear why not
       services.gnome.evolution-data-server.enable = mkForce false;
       services.gnome.gnome-online-miners.enable = mkForce false;
-      # TODO: re-enable this once we can cross-compile gvfs
-      services.gvfs.enable = mkForce false;
 
       # XXX: phosh enables networkmanager by default; can probably disable these lines
       networking.useDHCP = false;
