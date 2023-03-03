@@ -23,6 +23,7 @@
   ./2022-12-19-i2p-aarch64.patch
 
   # fix for CMA memory leak in mesa: <https://gitlab.freedesktop.org/mesa/mesa/-/issues/8198>
+  # fixed in mesa 22.3.6: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/21330/diffs>
   # only necessary on aarch64.
   # it's a revert of nixpkgs commit dcf630c172df2a9ecaa47c77f868211e61ae8e52
   ./2023-01-30-mesa-cma-leak.patch
