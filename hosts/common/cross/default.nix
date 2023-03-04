@@ -268,7 +268,7 @@ in
             # sequoia  # "/nix/store/q8hg17w47f9xr014g36rdc2gi8fv02qc-clang-aarch64-unknown-linux-gnu-12.0.1-lib/lib/libclang.so.12: cannot open shared object file: No such file or directory"', /build/sequoia-0.27.0-vendor.tar.gz/bindgen/src/lib.rs:1975:31"
             # splatmoji
             # twitter-color-emoji  # /nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 1: pkg-config: command not found
-            visidata  # python3.10-psycopg2 python3.10-pandas python3.10-h5py
+            # visidata  # python3.10-psycopg2 python3.10-pandas python3.10-h5py
             # webkitgtk_4_1  # requires nativeBuildInputs = perl.pkgs.FileCopyRecursive => perl5.36.0-Test-utf8
             # xdg-utils  # perl5.36.0-File-BaseDir / perl5.36.0-Module-Build
           ;
@@ -1175,6 +1175,11 @@ in
             });
           };
 
+          visidata = prev.visidata.override {
+            # hdf5 / h5py don't cross-compile, but i don't use that file format anyway.
+            # setting this to null means visidata will work as normal but not be able to load hdf files.
+            h5py = null;
+          };
           vlc = prev.vlc.overrideAttrs (orig: {
             # fixes: "configure: error: could not find the LUA byte compiler"
             # fixes: "configure: error: protoc compiler needed for chromecast was not found"
