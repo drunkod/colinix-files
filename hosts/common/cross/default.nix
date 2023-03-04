@@ -292,11 +292,19 @@ in
           # same story as qdwaita-qt6
           qgnomeplatform-qt6 = next.emptyDirectory;
 
-          # apacheHttpd_2_4 = prev.apacheHttpd_2_4.override {
-          #   # fixes original error
-          #   # new failure mode: "/nix/store/czvaa9y9ch56z53c0b0f5bsjlgh14ra6-apr-aarch64-unknown-linux-gnu-1.7.0-dev/share/build/libtool: line 1890: aarch64-unknown-linux-gnu-ar: command not found"
+          # apacheHttpd_2_4 = (prev.apacheHttpd_2_4.override {
+          #   # fixes `configure: error: Size of "void *" is less than size of "long"`
           #   inherit (emulated) stdenv;
-          # };
+          # }).overrideAttrs (upstream: {
+          #   # nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.bintools ];
+          #   nativeBuildInputs = upstream.nativeBuildInputs ++ [
+          #     next.buildPackages.stdenv.cc  # fixes: "/nix/store/czvaa9y9ch56z53c0b0f5bsjlgh14ra6-apr-aarch64-unknown-linux-gnu-1.7.0-dev/share/build/libtool: line 1890: aarch64-unknown-linux-gnu-ar: command not found"
+          #   ];
+          #   # now can't find -lz for zlib.
+          #   # this is because nixpkgs zlib.dev has only include/ + a .pc file linking to zlib, which has the lib/ folder
+          #   #   but httpd expects --with-zlib=prefix/ to hold both include/ and lib/
+          #   # TODO: we could link farm, or we could skip straight to cross compilation and not emulate stdenv
+          # });
 
           # mod_dnssd = prev.mod_dnssd.override {
           #   inherit (emulated) stdenv;
@@ -374,6 +382,13 @@ in
             # "configure: error: installation or configuration problem: C compiler cc not found."
             inherit (emulated) stdenv;
           };
+          # cdrtools = prev.cdrtools.overrideAttrs (upstream: {
+          #   # can't get it to actually use our CC, even when specifying these explicitly
+          #   # CC = "${next.stdenv.cc}/bin/${next.stdenv.cc.targetPrefix}cc";
+          #   makeFlags = upstream.makeFlags ++ [
+          #     "CC=${next.stdenv.cc}/bin/${next.stdenv.cc.targetPrefix}cc"
+          #   ];
+          # });
 
           # colord = prev.colord.override {
           #   # doesn't fix: "ld: error adding symbols: file in wrong format"
@@ -521,6 +536,8 @@ in
               # - but ONLY if `dconf` was built with the vala feature.
               # - dconf is NOT built with vala when cross-compiled
               #   - that's an explicit choice/limitation in nixpkgs upstream
+              # - TODO: vapi stuff is contained in <dconf.dev:/share/vala/vapi/dconf.vapi>
+              #   it's cross-platform; should be possible to ship dconf only in buildInputs & point dconf-editor to the right place
               nativeBuildInputs = orig.nativeBuildInputs ++ [ next.dconf ];
             });
             evince = super.evince.overrideAttrs (orig: {
