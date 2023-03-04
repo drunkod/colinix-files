@@ -11,7 +11,6 @@
   # sane.guest.enable = true;
   sane.gui.sway.enable = true;
   sane.persist.enable = true;
-  sane.nixcache.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 

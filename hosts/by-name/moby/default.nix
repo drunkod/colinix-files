@@ -34,7 +34,6 @@
     ".config/pulse"  # persist pulseaudio volume
   ];
 
-  sane.nixcache.enable = true;
   sane.persist.enable = true;
   sane.gui.phosh.enable = true;
   # sane.programs.consoleUtils.enableFor.user.colin = false;
