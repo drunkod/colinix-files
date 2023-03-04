@@ -28,6 +28,10 @@
   # it's a revert of nixpkgs commit dcf630c172df2a9ecaa47c77f868211e61ae8e52
   ./2023-01-30-mesa-cma-leak.patch
 
+  # fix qt6.qtbase and qt6.qtModule to cross-compile.
+  # unfortunately there's some tangle that makes that difficult to do via the normal `override` facilities
+  ./2023-03-03-qtbase-cross-compile.patch
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
