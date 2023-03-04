@@ -745,14 +745,20 @@ in
                 "-Dpython=disabled"
               ];
             });
-            inherit (emulated.gst_all_1) gst-plugins-good;
+            # inherit (emulated.gst_all_1) gst-plugins-good;
             # gst-plugins-good = prev.gst_all_1.gst-plugins-good.override {
             #   # when invoked with `qt5Support = true`, qtbase shows up in both buildInputs and nativeBuildInputs
             #   # if these aren't identical, then qt complains: "Error: detected mismatched Qt dependencies"
             #   # doesn't fix the original error.
             #   inherit (emulated) stdenv;
+            #   # TODO: try removing qtbase from nativeBuildInputs? emulate meson, pkg-config &c?
             #   # qt5Support = true;
             # };
+            gst-plugins-good = prev.gst_all_1.gst-plugins-good.overrideAttrs (upstream: {
+              nativeBuildInputs = lib.remove next.qt5.qtbase upstream.nativeBuildInputs;
+              # TODO: swap in this line instead?
+              # buildInputs = lib.remove next.qt5.qtbase upstream.buildInputs;
+            });
           };
           gvfs = prev.gvfs.overrideAttrs (upstream: {
             nativeBuildInputs = upstream.nativeBuildInputs ++ [
