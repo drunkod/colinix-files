@@ -391,12 +391,19 @@ in
             inherit (emulated) stdenv;
           };
 
-          dconf = (prev.dconf.override {
+          # dconf = (prev.dconf.override {
+          #   # we need dconf to build with vala, because dconf-editor requires that.
+          #   # this only happens if dconf *isn't* cross-compiled
+          #   inherit (emulated) stdenv;
+          # }).overrideAttrs (upstream: {
+          #   nativeBuildInputs = lib.remove next.glib upstream.nativeBuildInputs;
+          # });
+          dconf = prev.dconf.overrideAttrs (upstream: {
             # we need dconf to build with vala, because dconf-editor requires that.
-            # this only happens if dconf *isn't* cross-compiled
-            inherit (emulated) stdenv;
-          }).overrideAttrs (upstream: {
-            nativeBuildInputs = lib.remove next.glib upstream.nativeBuildInputs;
+            # upstream nixpkgs explicitly disables that on cross compilation, but in fact, it works.
+            # so just undo upstream's mods.
+            buildInputs = upstream.buildInputs ++ [ next.vala ];
+            mesonFlags = lib.remove "-Dvapi=false" upstream.mesonFlags;
           });
 
           emacs = prev.emacs.override {
