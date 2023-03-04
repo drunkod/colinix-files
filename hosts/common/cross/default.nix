@@ -614,9 +614,7 @@ in
             #   #   "-Dgtk_doc=${lib.boolToString (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform)}"
             #   # ];
             # });
-            gnome-shell = (super.gnome-shell.override {
-              inherit (next) stdenv;
-            }).overrideAttrs (upstream: {
+            gnome-shell = super.gnome-shell.overrideAttrs (upstream: {
               nativeBuildInputs = upstream.nativeBuildInputs ++ [
                 next.gjs  # fixes "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
                 next.buildPackages.gobject-introspection  # fixes "shew| Build-time dependency gobject-introspection-1.0 found: NO"
