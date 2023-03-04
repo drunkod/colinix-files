@@ -549,16 +549,20 @@ in
                 "-Dgtk_doc=${lib.boolToString (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform)}"
               ];
             });
-            evolution-data-server = (super.evolution-data-server.override {
-              inherit (emulated) stdenv;  # fixes aborts in "Performing Test _correct_iconv" &tc
-            }).overrideAttrs (orig: {
-              nativeBuildInputs = orig.nativeBuildInputs ++ [
-                next.perl  # fixes "The 'perl' not found, not installing csv2vcard"
-                # next.glib
-                # next.libiconv
-                # next.iconv
+            evolution-data-server = super.evolution-data-server.overrideAttrs (upstream: {
+              # fixes aborts in "Performing Test _correct_iconv"
+              cmakeFlags = upstream.cmakeFlags ++ [
+                "-DCMAKE_CROSSCOMPILING_EMULATOR=${next.stdenv.hostPlatform.emulator next.buildPackages}"
               ];
-              # buildInputs = orig.buildInputs ++ [
+              # N.B.: the deps are funky even without cross compiling.
+              # upstream probably wants to replace pcre with pcre2, and maybe provide perl
+              # nativeBuildInputs = upstream.nativeBuildInputs ++ [
+              #   next.perl  # fixes "The 'perl' not found, not installing csv2vcard"
+              #   # next.glib
+              #   # next.libiconv
+              #   # next.iconv
+              # ];
+              # buildInputs = upstream.buildInputs ++ [
               #   next.pcre2  # fixes: "Package 'libpcre2-8', required by 'glib-2.0', not found"
               #   next.mount  # fails to fix: "Package 'mount', required by 'gio-2.0', not found"
               # ];
