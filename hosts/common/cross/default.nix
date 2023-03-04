@@ -1008,10 +1008,10 @@ in
             # fixes `spa/plugins/bluez5/meson.build:41:0: ERROR: Program 'gdbus-codegen' not found or not executable`
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
           });
-          psqlodbc = prev.psqlodbc.override {
-            # fixes "configure: error: odbc_config not found (required for unixODBC build)"
-            inherit (emulated) stdenv;
-          };
+          # psqlodbc = prev.psqlodbc.override {
+          #   # fixes "configure: error: odbc_config not found (required for unixODBC build)"
+          #   inherit (emulated) stdenv;
+          # };
 
           pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
             (py-next: py-prev: {
@@ -1164,15 +1164,15 @@ in
           });
           unixODBCDrivers = prev.unixODBCDrivers // {
             # TODO: should this package be deduped with toplevel psqlodbc in upstream nixpkgs?
-            psql = prev.unixODBCDrivers.psql.override {
-              # fixes "configure: error: odbc_config not found (required for unixODBC build)"
-              inherit (emulated) stdenv;
-            };
-            # psql = prev.unixODBCDrivers.psql.overrideAttrs (orig: {
-            #   # fixes "configure: error: odbc_config not found (required for unixODBC build)"
-            #   # new error: "/nix/store/h3ms3h95rbj5p8yhxfhbsbnxgvpnb8w0-aarch64-unknown-linux-gnu-binutils-2.39/bin/aarch64-unknown-linux-gnu-ld: /nix/store/6h6z98qvg5k8rsqpivi42r5008zjfp2v-unixODBC-2.3.11/lib/libodbcinst.so: error adding symbols: file in wrong format"
-            #   nativeBuildInputs = orig.nativeBuildInputs or [] ++ orig.buildInputs;
-            # });
+            psql = prev.unixODBCDrivers.psql.overrideAttrs (_upstream: {
+              # XXX: these are both available as configureFlags, if we prefer that (we probably do, so as to make them available only during specific parts of the build).
+              ODBC_CONFIG = next.buildPackages.writeShellScript "odbc_config" ''
+                exec ${next.stdenv.hostPlatform.emulator next.buildPackages} ${next.unixODBC}/bin/odbc_config $@
+              '';
+              PG_CONFIG = next.buildPackages.writeShellScript "pg_config" ''
+                exec ${next.stdenv.hostPlatform.emulator next.buildPackages} ${next.postgresql}/bin/pg_config $@
+              '';
+            });
           };
 
           vlc = prev.vlc.overrideAttrs (orig: {
