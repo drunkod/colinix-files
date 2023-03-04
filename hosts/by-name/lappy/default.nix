@@ -15,7 +15,10 @@
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
-  sane.programs.guiApps.suggestedPrograms = [ "desktopGuiApps" ];
+  sane.programs.guiApps.suggestedPrograms = [
+    "desktopGuiApps"
+    "stepmania"
+  ];
 
   sops.secrets.colin-passwd = {
     sopsFile = ../../../secrets/lappy.yaml;

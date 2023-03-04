@@ -229,6 +229,13 @@ let
     ;
   };
 
+  # packages not part of any package set
+  otherPkgs = {
+    inherit (pkgs)
+      stepmania
+    ;
+  };
+
   # define -- but don't enable -- the packages in some attrset.
   # use `mkDefault` for the package here so we can customize some of them further down this file
   declarePkgs = pkgsAsAttrs: mapAttrs (_n: p: {
@@ -246,6 +253,7 @@ in
       (declarePkgs sysadminExtraPkgs)
       (declarePkgs tuiPkgs)
       (declarePkgs x86GuiPkgs)
+      (declarePkgs otherPkgs)
       {
         # link the various package sets into their own meta packages
         consoleUtils = {
