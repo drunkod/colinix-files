@@ -52,6 +52,11 @@
 #     """
 
 # TODO:
+# - qt6.qtbase. cross compiling documented in upstream <qt6:qtbase/cmake/README.md>
+#   - `nix build '.#host-pkgs.moby.qgnomeplatform-qt6'` FAILS
+#   - `nix build '.#host-pkgs.moby.qt6Packages.qtwayland'` FAILS
+#     - it uses qmake in nativeBuildInputs  (but `.#host-pkgs.moby.buildPackages.qt6.qmake` builds, same with native qtbase...)
+#     - failed version build log truly doesn't have the `QT_HOST_PATH` flag.
 # - `host-pkgs.desko.stdenv` fails build:
 #   - #cross-compiling:nixos.org says pkgsCross.gnu64 IS KNOWN TO NOT COMPILE. let this go for now:
 #     - make a `<machine>` (don't specifiy local/targetSystem) and `<machine>-cross` target.
@@ -264,7 +269,7 @@ in
             # qgnomeplatform
             # qtbase
             qt5  # qt5.qtx11extras fails, but we can't selectively emulate it
-            qt6  # "You need to set QT_HOST_PATH to cross compile Qt."
+            # qt6  # "You need to set QT_HOST_PATH to cross compile Qt."
             # sequoia  # "/nix/store/q8hg17w47f9xr014g36rdc2gi8fv02qc-clang-aarch64-unknown-linux-gnu-12.0.1-lib/lib/libclang.so.12: cannot open shared object file: No such file or directory"', /build/sequoia-0.27.0-vendor.tar.gz/bindgen/src/lib.rs:1975:31"
             # splatmoji
             # twitter-color-emoji  # /nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 1: pkg-config: command not found
@@ -1083,6 +1088,7 @@ in
               #   it tries to call `cc` during the build, but can't find it.
             })
           ];
+
           # qt5 = prev.qt5.overrideScope' (self: super: {
           #   qtbase = super.qtbase.override {
           #     inherit (emulated) stdenv;
@@ -1094,11 +1100,26 @@ in
           #   };
           # });
           # qt6 = prev.qt6.overrideScope' (self: super: {
-          #   qtbase = super.qtbase.override {
-          #     # fixes: "You need to set QT_HOST_PATH to cross compile Qt."
-          #     inherit (emulated) stdenv;
-          #   };
+          #   # inherit (emulated.qt6) qtModule;
+          #   qtbase = super.qtbase.overrideAttrs (upstream: {
+          #     # cmakeFlags = upstream.cmakeFlags ++ lib.optionals (next.stdenv.buildPlatform != next.stdenv.hostPlatform) [
+          #     cmakeFlags = upstream.cmakeFlags ++ lib.optionals (next.stdenv.buildPlatform != next.stdenv.hostPlatform) [
+          #       # "-DCMAKE_CROSSCOMPILING=True" # fails to solve QT_HOST_PATH error
+          #       "-DQT_HOST_PATH=${next.buildPackages.qt6.full}"
+          #     ];
+          #   });
+          #   # qtwayland = super.qtwayland.overrideAttrs (upstream: {
+          #   #   preConfigure = "fixQtBuiltinPaths . '*.pr?'";
+          #   # });
+          #   # qtwayland = super.qtwayland.override {
+          #   #   inherit (self) qtbase;
+          #   # };
+          #   # qtbase = super.qtbase.override {
+          #   #   # fixes: "You need to set QT_HOST_PATH to cross compile Qt."
+          #   #   inherit (emulated) stdenv;
+          #   # };
           # });
+
           rapidfuzz-cpp = prev.rapidfuzz-cpp.overrideAttrs (orig: {
             # fixes "error: could not find git for clone of catch2-populate"
             buildInputs = orig.buildInputs or [] ++ [ next.catch2_3 ];
