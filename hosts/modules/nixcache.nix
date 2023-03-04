@@ -13,6 +13,7 @@
 with lib;
 let
   cfg = config.sane.nixcache;
+  hostName = config.networking.hostName;
 in
 {
   options = {
@@ -24,6 +25,16 @@ in
       default = config.sane.nixcache.enable;
       type = types.bool;
     };
+    sane.nixcache.substituters = mkOption {
+      type = types.listOf types.string;
+      default =
+        (lib.optional (hostName != "servo") "https://nixcache.uninsane.org")
+        ++ (lib.optional (hostName != "desko") "http://desko:5000")
+        ++ [
+          "https://nix-community.cachix.org"
+          "https://cache.nixos.org/"
+        ];
+    };
   };
 
   config = {
@@ -31,12 +42,7 @@ in
     # to explicitly build from a specific cache (in case others are down):
     # - `nixos-rebuild ... --option substituters https://cache.nixos.org`
     # - `nix build ... --substituters http://desko:5000`
-    nix.settings.substituters = mkIf cfg.enable [
-      "https://nixcache.uninsane.org"
-      "http://desko:5000"
-      "https://nix-community.cachix.org"
-      "https://cache.nixos.org/"
-    ];
+    nix.settings.substituters = mkIf cfg.enable cfg.substituters;
     # always trust our keys (so one can explicitly use a substituter even if it's not the default
     nix.settings.trusted-public-keys = mkIf cfg.enable-trusted-keys [
       "nixcache.uninsane.org:r3WILM6+QrkmsLgqVQcEdibFD7Q/4gyzD9dGT33GP70="
