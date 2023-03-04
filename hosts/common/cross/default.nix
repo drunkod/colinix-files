@@ -247,7 +247,7 @@ in
         in {
           # packages which don't cross compile
           inherit (emulated)
-            # adwaita-qt  # psqlodbc
+            # adwaita-qt6  # although qtbase cross-compiles with minor change, qtModule's qtbase can't
             apacheHttpd_2_4  # `configure: error: Size of "void *" is less than size of "long"`
             # duplicity  # python3.10-s3transfer
             # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
@@ -272,6 +272,20 @@ in
             # webkitgtk_4_1  # requires nativeBuildInputs = perl.pkgs.FileCopyRecursive => perl5.36.0-Test-utf8
             # xdg-utils  # perl5.36.0-File-BaseDir / perl5.36.0-Module-Build
           ;
+
+          # adwaita-qt6 = prev.adwaita-qt6.override {
+          #   # adwaita-qt6 still uses the qt5 version of these libs by default?
+          #   inherit (next.qt6) qtbase qtwayland;
+          # };
+          # qt6 doesn't cross compile. the only thing that wants it is phosh/gnome, in order to
+          # configure qt6 apps to look stylistically like gtk apps.
+          # adwaita-qt6 isn't an input into any other packages we build -- it's just placed on the systemPackages.
+          # so... just set it to null and that's Good Enough (TM).
+          # adwaita-qt6 = derivation { name = "null-derivation"; builder = "/dev/null"; }; # null;
+          # adwaita-qt6 = next.stdenv.mkDerivation { name = "null-derivation"; };
+          adwaita-qt6 = next.emptyDirectory;
+          # same story as qdwaita-qt6
+          qgnomeplatform-qt6 = next.emptyDirectory;
 
           # apacheHttpd_2_4 = prev.apacheHttpd_2_4.override {
           #   # fixes original error
