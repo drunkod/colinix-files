@@ -813,12 +813,21 @@ in
           libgweather = (prev.libgweather.override {
             # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
             #   but presumably that's just a different way to emulate it.
+            # the python gobject-introspection stuff is a tangled mess that's impossible to debug:
+            # don't dig further, leave this for some other dedicated soul.
             inherit (emulated)
               stdenv  # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
               gobject-introspection  # fixes gir x86-64 python -> aarch64 shared object import
               python3  # fixes build-aux/meson/gen_locations_variant.py x86-64 python -> aarch64 import of glib
             ;
           });
+          # libgweather = prev.libgweather.overrideAttrs (upstream: {
+          #   nativeBuildInputs = (lib.remove next.gobject-introspection upstream.nativeBuildInputs) ++ [
+          #     next.buildPackages.gobject-introspection  # fails to fix "gi._error.GError: g-invoke-error-quark: Could not locate g_option_error_quark: /nix/store/dsx6kqmyg7f3dz9hwhz7m3jrac4vn3pc-glib-aarch64-unknown-linux-gnu-2.74.3/lib/libglib-2.0.so.0"
+          #   ];
+          #   # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
+          #   buildInputs = upstream.buildInputs ++ [ next.vala ];
+          # });
           libHX = prev.libHX.overrideAttrs (orig: {
             # "Can't exec "libtoolize": No such file or directory at /nix/store/r4fvx9hazsm0rdm7s393zd5v665dsh1c-autoconf-2.71/share/autoconf/Autom4te/FileUtils.pm line 294."
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.libtool ];
@@ -1148,6 +1157,14 @@ in
           #       # "-DCMAKE_CROSSCOMPILING=True" # fails to solve QT_HOST_PATH error
           #       "-DQT_HOST_PATH=${next.buildPackages.qt6.full}"
           #     ];
+          #   });
+          #   qtModule = args: (super.qtModule args).overrideAttrs (upstream: {
+          #     # the nixpkgs comment about libexec seems to be outdated:
+          #     # it's just that cross-compiled syncqt.pl doesn't get its #!/usr/bin/env shebang replaced.
+          #     preConfigure = lib.replaceStrings
+          #       ["${lib.getDev self.qtbase}/libexec/syncqt.pl"]
+          #       ["perl ${lib.getDev self.qtbase}/libexec/syncqt.pl"]
+          #       upstream.preConfigure;
           #   });
           #   # qtwayland = super.qtwayland.overrideAttrs (upstream: {
           #   #   preConfigure = "fixQtBuiltinPaths . '*.pr?'";
