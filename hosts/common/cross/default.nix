@@ -1049,10 +1049,23 @@ in
               sed -i 's:gio_querymodules = :gio_querymodules = "${next.buildPackages.glib.dev}/bin/gio-querymodules" if True else :' build-aux/post_install.py
             '';
           });
-          phosh-mobile-settings = prev.phosh-mobile-settings.override {
+          # phosh-mobile-settings = prev.phosh-mobile-settings.override {
+          #   # fixes "meson.build:26:0: ERROR: Dependency "phosh-plugins" not found, tried pkgconfig"
+          #   inherit (emulated) stdenv;
+          # };
+          phosh-mobile-settings = prev.phosh-mobile-settings.overrideAttrs (upstream: {
             # fixes "meson.build:26:0: ERROR: Dependency "phosh-plugins" not found, tried pkgconfig"
-            inherit (emulated) stdenv;
-          };
+            # phosh is used only for its plugins; these are specified as a runtime dep in src.
+            # it's correct for them to be runtime dep: src/ms-lockscreen-panel.c loads stuff from
+            # MOBILE_SETTINGS_PHOSH_PLUGINS_DIR at runtime
+            buildInputs = upstream.buildInputs ++ [ next.phosh ];
+            nativeBuildInputs = (lib.remove next.phosh upstream.nativeBuildInputs) ++ [
+              next.gettext  # fixes "data/meson.build:1:0: ERROR: Program 'msgfmt' not found or not executable"
+              next.wayland-scanner  # fixes "protocols/meson.build:7:0: ERROR: Program 'wayland-scanner' not found or not executable"
+              next.glib  # fixes "src/meson.build:1:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
+              next.desktop-file-utils  # fixes "meson.build:116:8: ERROR: Program 'update-desktop-database' not found or not executable"
+            ];
+          });
           pipewire = prev.pipewire.overrideAttrs (orig: {
             # fixes `spa/plugins/bluez5/meson.build:41:0: ERROR: Program 'gdbus-codegen' not found or not executable`
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
