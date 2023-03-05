@@ -95,7 +95,7 @@
                   self.overlays.default
                   self.overlays.passthru
                   self.overlays.pins
-                  self.overlays.optimizations
+                  # self.overlays.optimizations
                 ];
                 nixpkgs.hostPlatform = target;
                 # nixpkgs.buildPlatform = local;  # set by instantiate.nix instead

@@ -16,7 +16,9 @@ in {
   #     export CCACHE_DIR="/homeless-shelter/.ccache"
   #   '';
   # };
-  firefox-esr = ccache-able super.firefox-esr;
+  # firefox-esr = ccache-able super.firefox-esr;
+  # firefox/librewolf distribution is wacky: it grabs the stdenv off of `rustc.llvmPackages`, and really wants those to match.
+  # buildMozillaMach = opts: ccache-able (super.buildMozillaMach opts);
   webkitgtk = ccache-able super.webkitgtk;
   mesa = ccache-able super.mesa;
   # webkitgtk = (ccache-able super.webkitgtk).overrideAttrs (_upstream: {

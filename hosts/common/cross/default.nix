@@ -101,7 +101,7 @@ let
   # because they don't affect the result -- only the build process -- so we can disable them as an optimization.
   crossOnlyUniversalOverlays = [
     (import ./../../../overlays/disable-flakey-tests.nix)
-    # (import ./../../../overlays/optimizations.nix)
+    (import ./../../../overlays/optimizations.nix)
   ];
   universalOverlays = [
     (import ./../../../overlays/pkgs.nix)

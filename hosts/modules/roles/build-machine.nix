@@ -12,7 +12,23 @@ in
 
   config = mkMerge [
     {
-      nix.settings.extra-sandbox-paths = [ cacheDir ];
+      # programs.ccache.cacheDir = "/var/cache/ccache";  # nixos default
+      # programs.ccache.cacheDir = "/homeless-shelter/.ccache";  # ccache default (~/.ccache)
+
+      # if the cache doesn't reside at ~/.ccache, then CCACHE_DIR has to be set.
+      # we can do that manually as commented out below, or let nixos do it for us by telling it to use ccache on a dummy package:
+      programs.ccache.packageNames = [ "dummy-pkg-to-force-ccache-config" ];
+      # nixpkgs.overlays = [
+      #   (self: super: {
+      #     # XXX: if the cache resides not at ~/.ccache (i.e. /homeless-shelter/.ccache)
+      #     # then we need to explicitly tell ccache where that is.
+      #     ccacheWrapper = super.ccacheWrapper.override {
+      #       extraConfig = ''
+      #         export CCACHE_DIR="${cacheDir}"
+      #       '';
+      #     };
+      #   })
+      # ];
     }
     (mkIf config.sane.roles.build-machine {
       # serve packages to other machines that ask for them
@@ -31,35 +47,13 @@ in
       # TODO: whitelist `--verbose` in <nixpkgs:nixos/modules/programs/ccache.nix>
       # TODO: configure without compression (leverage fs-level compression), and enable file-clone (i.e. hardlinks)
       programs.ccache.enable = true;
-      programs.ccache.cacheDir = "/homeless-shelter/.ccache";
+      nix.settings.extra-sandbox-paths = [ cacheDir ];
       sane.persist.sys.plaintext = [
         { group = "nixbld"; mode = "0775"; directory = config.programs.ccache.cacheDir; }
       ];
       sane.fs."${cacheDir}/ccache.conf" = sane-lib.fs.wantedText ''
         max_size = 50G
       '';
-
-      nixpkgs.overlays = [
-        (self: super: {
-          # TODO: if we link /homeless-shelter/.ccache into the nix environment,
-          # then maybe we get better use of upstream caches?
-          ccacheWrapper = super.ccacheWrapper.override {
-            extraConfig = ''
-              export CCACHE_DIR="${cacheDir}"
-            '';
-          };
-        })
-      ];
-      # programs.ccache.packageNames = [
-      #   # these have to exist in toplevel package set:
-      #   # nixpkgs config creates an overlay which overrides each of these packages to build with ccache
-      #   # note a potential bootstrapping problem: if the cache directory above hasn't yet been created, then this blocks deployment.
-      #   # solution is to manually disable all these entries on the first deployment
-      #   # TODO: distribute these elsewhere; make sure it works on cross-compiled builds
-      #   "firefox-esr"
-      #   # "qtwebengine"
-      #   "webkitgtk"
-      # ];
     })
   ];
 }
