@@ -1,0 +1,22 @@
+diff --git a/pkgs/development/tools/misc/ccache/default.nix b/pkgs/development/tools/misc/ccache/default.nix
+index cad25a942d6..d02d212cec0 100644
+--- a/pkgs/development/tools/misc/ccache/default.nix
++++ b/pkgs/development/tools/misc/ccache/default.nix
+@@ -2,7 +2,7 @@
+ , stdenv
+ , fetchFromGitHub
+ , substituteAll
+-, binutils
++, buildPackages
+ , asciidoctor
+ , cmake
+ , perl
+@@ -33,7 +33,7 @@ let ccache = stdenv.mkDerivation rec {
+     # Darwin.
+     (substituteAll {
+       src = ./force-objdump-on-darwin.patch;
+-      objdump = "${binutils.bintools}/bin/objdump";
++      objdump = "${buildPackages.binutils.bintools}/bin/objdump";
+     })
+   ];
+ 

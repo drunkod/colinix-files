@@ -16,6 +16,9 @@
 #       - to run code compiled for host platform
 #   - `override { foo = next.emptyDirectory; }`
 #     - to populate some dep as a dummy, if you don't really need it
+# - for optimizing, see:
+#   - ccache
+#   - disable LTO (e.g. webkitgtk)
 #
 # build a particular package as evaluated here with:
 # - toplevel: `nix build '.#host-pkgs.moby-cross.xdg-utils'`
@@ -98,6 +101,7 @@ let
   # because they don't affect the result -- only the build process -- so we can disable them as an optimization.
   crossOnlyUniversalOverlays = [
     (import ./../../../overlays/disable-flakey-tests.nix)
+    # (import ./../../../overlays/optimizations.nix)
   ];
   universalOverlays = [
     (import ./../../../overlays/pkgs.nix)
@@ -1310,6 +1314,7 @@ in
             # fixes: "src/meson.build:25:0: ERROR: Program 'gdbus-codegen' not found or not executable"
             nativeBuildInputs = orig.nativeBuildInputs ++ [ next.gettext next.glib ];
           });
+          # webkitgtk = prev.webkitgtk.override { stdenv = next.ccacheStdenv; };
           # webp-pixbuf-loader = prev.webp-pixbuf-loader.override {
           #   # fixes "Builder called die: Cannot wrap '/nix/store/kpp8qhzdjqgvw73llka5gpnsj0l4jlg8-gdk-pixbuf-aarch64-unknown-linux-gnu-2.42.10/bin/gdk-pixbuf-thumbnailer' because it is not an executable file"
           #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/2syg6jxk8zi1zkpqvkxkz87x8sl27c6b-gdk-pixbuf-2.42.10/lib/libgdk_pixbuf-2.0.so: error adding symbols: file in wrong format"

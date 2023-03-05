@@ -95,9 +95,11 @@
                   self.overlays.default
                   self.overlays.passthru
                   self.overlays.pins
+                  self.overlays.optimizations
                 ];
                 nixpkgs.hostPlatform = target;
                 # nixpkgs.buildPlatform = local;  # set by instantiate.nix instead
+                # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
               }
             ];
           });
@@ -159,6 +161,7 @@
         default = pkgs;
         pkgs = import ./overlays/pkgs.nix;
         pins = import ./overlays/pins.nix;  # TODO: move to `nixpatches/` input
+        optimizations = import ./overlays/optimizations.nix;
         passthru =
           let
             stable =

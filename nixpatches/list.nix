@@ -32,6 +32,9 @@
   # unfortunately there's some tangle that makes that difficult to do via the normal `override` facilities
   ./2023-03-03-qtbase-cross-compile.patch
 
+  # let ccache cross-compile
+  ./2023-03-04-ccache-cross-fix.patch
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
