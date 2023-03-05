@@ -14,6 +14,8 @@
 #   - <nixpkgs:pkgs/development/libraries/gdk-pixbuf/default.nix>
 #     - `${stdenv.hostPlatform.emulator buildPackages}   <command>`
 #       - to run code compiled for host platform
+#   - `override { foo = next.emptyDirectory; }`
+#     - to populate some dep as a dummy, if you don't really need it
 #
 # build a particular package as evaluated here with:
 # - toplevel: `nix build '.#host-pkgs.moby-cross.xdg-utils'`
