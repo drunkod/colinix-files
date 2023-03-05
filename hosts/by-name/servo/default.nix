@@ -15,6 +15,7 @@
     signaldctl.enableFor.user.colin = true;
   };
 
+  sane.roles.build-machine = true;
   sane.persist.enable = true;
   sane.services.dyn-dns.enable = true;
   sane.services.wg-home.enable = true;
