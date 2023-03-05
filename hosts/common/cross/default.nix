@@ -263,7 +263,7 @@ in
             # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
             # hdf5  # configure: error: cannot run test program while cross compiling
             # http2
-            libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
+            # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
             # libsForQt5  # qtbase  # make: g++: No such file or directory
             # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
             # qgnomeplatform
@@ -421,9 +421,14 @@ in
             mesonFlags = lib.remove "-Dvapi=false" upstream.mesonFlags;
           });
 
+          # emacs = prev.emacs.override {
+          #   # fixes "configure: error: cannot run test program while cross compiling"
+          #   inherit (emulated) stdenv;
+          # };
           emacs = prev.emacs.override {
-            # fixes "configure: error: cannot run test program while cross compiling"
-            inherit (emulated) stdenv;
+            nativeComp = false;
+            # TODO: we can specify 'action-if-cross-compiling' to actually invoke the test programs:
+            # <https://www.gnu.org/software/autoconf/manual/autoconf-2.63/html_node/Runtime.html>
           };
 
           flatpak = prev.flatpak.overrideAttrs (upstream: {
