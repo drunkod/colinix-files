@@ -288,9 +288,9 @@ in
           # so... just set it to null and that's Good Enough (TM).
           # adwaita-qt6 = derivation { name = "null-derivation"; builder = "/dev/null"; }; # null;
           # adwaita-qt6 = next.stdenv.mkDerivation { name = "null-derivation"; };
-          adwaita-qt6 = next.emptyDirectory;
+          # adwaita-qt6 = next.emptyDirectory;
           # same story as qdwaita-qt6
-          qgnomeplatform-qt6 = next.emptyDirectory;
+          # qgnomeplatform-qt6 = next.emptyDirectory;
 
           # apacheHttpd_2_4 = (prev.apacheHttpd_2_4.override {
           #   # fixes `configure: error: Size of "void *" is less than size of "long"`
