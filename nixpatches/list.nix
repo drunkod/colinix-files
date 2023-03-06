@@ -26,7 +26,9 @@
   # fixed in mesa 22.3.6: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/21330/diffs>
   # only necessary on aarch64.
   # it's a revert of nixpkgs commit dcf630c172df2a9ecaa47c77f868211e61ae8e52
-  ./2023-01-30-mesa-cma-leak.patch
+  # ./2023-01-30-mesa-cma-leak.patch
+  # upgrade to 22.3.6 instead
+  ./2023-02-28-mesa-22.3.6.patch
 
   # fix qt6.qtbase and qt6.qtModule to cross-compile.
   # unfortunately there's some tangle that makes that difficult to do via the normal `override` facilities

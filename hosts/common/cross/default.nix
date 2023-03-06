@@ -924,6 +924,12 @@ in
           #   gnutls binaries are used by the build machine.
           #   therefore gnutls can be specified in both buildInputs and nativeBuildInputs
           libjcat = addNativeInputs [ next.gnutls ] prev.libjcat;
+          libqmi = prev.libqmi.overrideAttrs (upstream: {
+            # fixes "failed to produce output devdoc"; nixpkgs only builds that output conditionally
+            outputs = [ "out" "dev" ] ++ lib.optionals (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform) [
+              "devdoc"
+            ];
+          });
 
           librest = prev.librest.overrideAttrs (orig: {
             # fixes "You must have gtk-doc >= 1.13 installed to build documentation"
@@ -965,13 +971,6 @@ in
             HAVE_PKG_CONFIG = "yes";
           });
 
-          libvisual = prev.libvisual.overrideAttrs (upstream: {
-            # fixes: "configure: error: *** sdl-config not found."
-            # 2023/02/21: TODO: update nixpkgs to remove this override.
-            # - it's fixed by 11b095e8805aa123a4d77a5e706bebaf86622879
-            buildInputs = [ next.glib ];
-            configureFlags = [ "--disable-examples" ];
-          });
 
           # fixes: "ar: command not found"
           # `ar` is provided by bintools
