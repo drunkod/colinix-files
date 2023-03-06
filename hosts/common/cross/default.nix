@@ -1279,9 +1279,10 @@ in
             ];
           });
 
-          # squeekboard = prev.squeekboard.overrideAttrs (orig: {
+          # squeekboard = prev.squeekboard.overrideAttrs (upstream: {
           #   # fixes: "meson.build:1:0: ERROR: 'rust' compiler binary not defined in cross or native file"
           #   # new error: "meson.build:1:0: ERROR: Rust compiler rustc --target aarch64-unknown-linux-gnu -C linker=aarch64-unknown-linux-gnu-gcc can not compile programs."
+          #   # NB(2023/03/04): upstream nixpkgs has a new squeekboard that's closer to cross-compiling; use that
           #   mesonFlags =
           #     let
           #       # ERROR: 'rust' compiler binary not defined in cross or native file
@@ -1290,8 +1291,36 @@ in
           #         rust = [ 'rustc', '--target', '${next.rust.toRustTargetSpec next.stdenv.hostPlatform}' ]
           #       '';
           #     in
-          #       orig.mesonFlags or [] ++ lib.optionals (next.stdenv.hostPlatform != next.stdenv.buildPlatform) [ "--cross-file=${crossFile}" ];
+          #       # upstream.mesonFlags or [] ++
+          #       [
+          #         "-Dtests=false"
+          #         "-Dnewer=false"
+          #         "-Donline=false"
+          #       ]
+          #       ++ lib.optional
+          #         (next.stdenv.hostPlatform != next.stdenv.buildPlatform)
+          #         "--cross-file=${crossFile}"
+          #       ;
+
+          #   cargoDeps = null;
+          #   cargoVendorDir = "vendor";
+
+          #   depsBuildBuild = upstream.depsBuildBuild or [] ++ [
+          #     next.pkg-config
+          #   ];
+          #   nativeBuildInputs = with next; [
+          #     meson
+          #     ninja
+          #     pkg-config
+          #     glib
+          #     wayland
+          #     wrapGAppsHook
+          #     rustPlatform.cargoSetupHook
+          #     cargo
+          #     rustc
+          #   ];
           # });
+
           squeekboard = prev.squeekboard.override {
             inherit (emulated)
               rustPlatform  # fixes original "'rust' compiler binary not defined in cross or native file"
