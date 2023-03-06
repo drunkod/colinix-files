@@ -19,13 +19,14 @@ in {
   # firefox-esr = ccache-able super.firefox-esr;
   # firefox/librewolf distribution is wacky: it grabs the stdenv off of `rustc.llvmPackages`, and really wants those to match.
   # buildMozillaMach = opts: ccache-able (super.buildMozillaMach opts);
-  webkitgtk = ccache-able super.webkitgtk;
-  mesa = ccache-able super.mesa;
-  # webkitgtk = (ccache-able super.webkitgtk).overrideAttrs (_upstream: {
-  #   # means we drop debug info when linking.
-  #   # this is a trade-off to require less memory when linking, since
-  #   # building `webkitgtk` otherwise requires about 40G+ of RAM.
-  #   # <https://github.com/NixOS/nixpkgs/issues/153528>
-  #   separateDebugInfo = false;
-  # });
+  # webkitgtk = ccache-able super.webkitgtk;
+  # mesa = ccache-able super.mesa;
+
+  webkitgtk = super.webkitgtk.overrideAttrs (_upstream: {
+    # means we drop debug info when linking.
+    # this is a trade-off to require less memory when linking, since
+    # building `webkitgtk` otherwise requires about 40G+ of RAM.
+    # <https://github.com/NixOS/nixpkgs/issues/153528>
+    separateDebugInfo = false;
+  });
 })

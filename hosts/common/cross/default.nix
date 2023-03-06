@@ -57,6 +57,7 @@
 #     """
 
 # TODO:
+# - fix firefox build so that it doesn't invoke clang w/o the ccache
 # - qt6.qtbase. cross compiling documented in upstream <qt6:qtbase/cmake/README.md>
 #   - `nix build '.#host-pkgs.moby.qgnomeplatform-qt6'` FAILS
 #   - `nix build '.#host-pkgs.moby.qt6Packages.qtwayland'` FAILS
@@ -108,11 +109,13 @@ let
     (import ./../../../overlays/pins.nix)
   ] ++ crossOnlyUniversalOverlays;
 
+  # TODO: can we grab this more directly from pkgs?
   mkEmulated = pkgs:
     import pkgs.path {
       # system = pkgs.stdenv.hostPlatform.system;
       localSystem = pkgs.stdenv.hostPlatform.system;
       inherit (config.nixpkgs) config;
+      # config = builtins.removeAttrs config.nixpkgs.config [ "replaceStdenv" ];
       overlays = universalOverlays;
     };
 in
@@ -187,10 +190,57 @@ in
       #   Testutf8
       # ;
     });
+    # XXX: replaceStdenv only affects non-cross stages
+    # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
     nixpkgs.overlays = crossOnlyUniversalOverlays ++ [
       (next: prev: {
         emulated = mkEmulated prev;
       })
+
+      (next: prev: lib.optionalAttrs (
+        # we want to affect only the final bootstrap stage, identified by:
+        # - buildPlatform = local,
+        # - targetPlatform = cross,
+        # - hostPlatform = cross
+        # and specifically in the event of `pkgsCross` sets -- e.g. the `pkgsCross.wasi32` used by firefox
+        # -- we want to *not* override the stdenv. it's theoretically possible, but doing so breaks firefox.
+        prev.stdenv.buildPlatform != prev.stdenv.hostPlatform &&
+        prev.stdenv.hostPlatform == prev.stdenv.targetPlatform &&
+        prev.stdenv.hostPlatform == config.nixpkgs.hostPlatform
+      ) {
+        # stdenv = prev.stdenv.override {
+        #   cc = next.buildPackages.ccacheWrapper.overrideAttrs (orig: {
+        #     passthru = orig.passthru // {
+        #       # cc = orig.passthru.unwrappedCC;
+        #       cc = prev.stdenv.cc.cc;
+        #     };
+        #     # passthru = next.buildPackages.stdenv.cc.passthru // orig.passthru;
+        #   });
+        #   # cc = prev.stdenv.__bootPackages.ccacheWrapper;
+        # };
+        # stdenv = prev.stdenv.__bootPackages.ccacheStdenv;
+        # stdenv = prev.stdenv.override {
+        #   cc = prev.buildPackages.ccacheWrapper;
+        # };
+
+        # XXX: stdenv.cc is the cc-wrapper, from <nixpkgs:pkgs/build-support/cc-wrapper/default.nix>.
+        #      always the same.
+        # stdenv.cc.cc is either the real gcc (for buildPackages.stdenv), or the ccache (for normal stdenv).
+        stdenv = prev.stdenv.override {
+          cc = prev.stdenv.cc.override {
+            # cc = prev.buildPackages.ccacheWrapper;
+            cc = (prev.buildPackages.ccacheWrapper.override {
+              cc = prev.stdenv.cc;
+             }).overrideAttrs (_orig: {
+               # some things query stdenv.cc.cc.version, etc (rarely), so pass those through
+               passthru = prev.stdenv.cc.cc;
+            });
+          };
+        };
+        # stdenv = prev.buildPackages.ccacheStdenv;
+        # stdenv = prev.ccacheStdenv.override { inherit (prev) stdenv; };
+      })
+
       # (next: prev:
       #   let
       #     emulated = prev.emulated;
@@ -1209,6 +1259,15 @@ in
             # fixes "Checking whether the C compiler works... no"
             inherit (emulated) stdenv;
           };
+          samba = prev.samba.overrideAttrs (_upstream: {
+            # we get "cannot find C preprocessor: aarch64-unknown-linux-gnu-cpp", but ONLY when building with the ccache stdenv.
+            # this solves that, but `CPP` must be a *single* path -- not an expression.
+            # i do not understand how the original error arises, as my ccacheStdenv should match the API of the base stdenv (except for cpp being a symlink??).
+            # but oh well, this fixes it.
+            CPP = next.buildPackages.writeShellScript "cpp" ''
+              exec ${lib.getBin next.stdenv.cc}/bin/${next.stdenv.cc.targetPrefix}cc -E $@;
+            '';
+          });
           # sequoia = prev.sequoia.override {
           #   # fails to fix original error
           #   inherit (emulated) stdenv;

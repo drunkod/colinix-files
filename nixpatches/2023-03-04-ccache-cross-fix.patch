@@ -20,7 +20,7 @@ index cad25a942d6..9130097ab07 100644
      })
    ];
  
-@@ -71,7 +71,7 @@ let ccache = stdenv.mkDerivation rec {
+@@ -71,11 +71,12 @@ let ccache = stdenv.mkDerivation rec {
    passthru = {
      # A derivation that provides gcc and g++ commands, but that
      # will end up calling ccache for the given cacheDir
@@ -29,7 +29,12 @@ index cad25a942d6..9130097ab07 100644
        name = "ccache-links";
        passthru = {
          isClang = unwrappedCC.isClang or false;
-@@ -83,7 +83,7 @@ let ccache = stdenv.mkDerivation rec {
+         isGNU = unwrappedCC.isGNU or false;
++        cc = unwrappedCC;
+       };
+       inherit (unwrappedCC) lib;
+       nativeBuildInputs = [ makeWrapper ];
+@@ -83,7 +84,7 @@ let ccache = stdenv.mkDerivation rec {
          mkdir -p $out/bin
  
          wrap() {
