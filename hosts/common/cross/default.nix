@@ -1076,10 +1076,11 @@ in
           #   ];
           #   # buildInputs = lib.remove next.gnupg upstream.buildInputs;
           # });
-          obex_data_server = prev.obex_data_server.override {
+          obex_data_server = prev.obex_data_server.overrideAttrs (upstream: {
             # fixes "/nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 2: --prefix=ods_manager: command not found"
-            inherit (emulated) stdenv;
-          };
+            # - dbus-glib incorrectly specified in buildInputs instead of nativeBuildInputs
+            nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.dbus-glib ];
+          });
           openfortivpn = prev.openfortivpn.override {
             # fixes "checking for /proc/net/route... configure: error: cannot check for file existence when cross compiling"
             inherit (emulated) stdenv;
