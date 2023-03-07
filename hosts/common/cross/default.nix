@@ -57,6 +57,7 @@
 #     """
 
 # TODO:
+# - fix(journalctl) "gnome-terminal-server[126562]: Installed schemas failed verification: Schema "org.gtk.Settings.Debug" is missing"
 # - fix firefox build so that it doesn't invoke clang w/o the ccache
 # - qt6.qtbase. cross compiling documented in upstream <qt6:qtbase/cmake/README.md>
 #   - `nix build '.#host-pkgs.moby.qgnomeplatform-qt6'` FAILS
@@ -337,6 +338,8 @@ in
             # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
             # gnome-tour
             # XXX: gnustep members aren't individually overridable, because the "scope" uses `rec` such that members don't see overrides
+            # gnustep is going to need a *lot* of work/domain-specific knowledge to truly cross-compile,
+            # though if we make the members overridable maybe we can get away with emulating only stdenv.
             gnustep  # gnustep.base: "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings."
             # grpc
             # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
@@ -1269,6 +1272,15 @@ in
 
           # fixes "sh: line 1: ar: command not found"
           serf = addNativeInputs [ next.bintools ] prev.serf;
+
+          spandsp = prev.spandsp.overrideAttrs (upstream: {
+            configureFlags = upstream.configureFlags or [] ++ [
+              # experimental solution to runtime error: "undefined symbol: rpl_realloc"
+              # source is <https://github.com/NixOS/nixpkgs/pull/57825>
+              "ac_cv_func_malloc_0_nonnull=yes"
+              "ac_cv_func_realloc_0_nonnull=yes"
+            ];
+          });
 
           # squeekboard = prev.squeekboard.overrideAttrs (upstream: {
           #   # fixes: "meson.build:1:0: ERROR: 'rust' compiler binary not defined in cross or native file"
