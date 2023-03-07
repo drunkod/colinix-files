@@ -126,6 +126,7 @@ let
     depsBuildBuild = upstream.depsBuildBuild or [] ++ depsBuildBuild;
   });
   addNativeInputs = nativeBuildInputs: addInputs { inherit nativeBuildInputs; };
+  addBuildInputs = buildInputs: addInputs { inherit buildInputs; };
   mvToNativeInputs = nativeBuildInputs: mvInputs { inherit nativeBuildInputs; };
   mvToBuildInputs = buildInputs: mvInputs { inherit buildInputs; };
   rmInputs = { buildInputs ? [], nativeBuildInputs ? [] }: pkg: pkg.overrideAttrs (upstream: {
@@ -550,11 +551,16 @@ in
           #   #   next.mesonEmulatorHook
           #   # ];
           # });
-          fwupd = prev.fwupd.overrideAttrs (orig: {
-            # solves (meson) "Run-time dependency libgcab-1.0 found: NO (tried pkgconfig and cmake)", and others.
-            buildInputs = orig.buildInputs ++ [ next.gcab next.gnutls ];
-            mesonFlags = (lib.remove "-Ddocs=enabled" orig.mesonFlags) ++ [ "-Ddocs=disabled" ];
-            outputs = lib.remove "devdoc" orig.outputs;
+          # solves (meson) "Run-time dependency libgcab-1.0 found: NO (tried pkgconfig and cmake)", and others.
+          fwupd = (addBuildInputs
+            [ next.gcab ]
+            (mvToBuildInputs [ next.gnutls ] prev.fwupd)
+          ).overrideAttrs (upstream: {
+            # XXX: gcab is apparently needed as both build and native input
+            # can't build docs w/o adding `gi-docgen` to ldpath, but that adds a new glibc to the ldpath
+            # which causes host binaries to be linked against the build libc & fail
+            mesonFlags = (lib.remove "-Ddocs=enabled" upstream.mesonFlags) ++ [ "-Ddocs=disabled" ];
+            outputs = lib.remove "devdoc" upstream.outputs;
           });
           # fwupd = prev.fwupd.override {
           #   # solves missing libgcab-1.0;
