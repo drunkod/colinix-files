@@ -118,6 +118,28 @@ let
       # config = builtins.removeAttrs config.nixpkgs.config [ "replaceStdenv" ];
       overlays = universalOverlays;
     };
+
+  ## package override helpers
+  addInputs = { buildInputs ? [], nativeBuildInputs ? [], depsBuildBuild ? [] }: pkg: pkg.overrideAttrs (upstream: {
+    buildInputs = upstream.buildInputs or [] ++ buildInputs;
+    nativeBuildInputs = upstream.nativeBuildInputs or [] ++ nativeBuildInputs;
+    depsBuildBuild = upstream.depsBuildBuild or [] ++ depsBuildBuild;
+  });
+  addNativeInputs = nativeBuildInputs: addInputs { inherit nativeBuildInputs; };
+  mvToNativeInputs = nativeBuildInputs: mvInputs { inherit nativeBuildInputs; };
+  mvToBuildInputs = buildInputs: mvInputs { inherit buildInputs; };
+  rmInputs = { buildInputs ? [], nativeBuildInputs ? [] }: pkg: pkg.overrideAttrs (upstream: {
+    buildInputs = lib.subtractLists buildInputs (upstream.buildInputs or []);
+    nativeBuildInputs = lib.subtractLists nativeBuildInputs (upstream.nativeBuildInputs or []);
+  });
+  # move items from buildInputs into nativeBuildInputs, or vice-versa.
+  # arguments represent the final location of specific inputs.
+  mvInputs = { buildInputs ? [], nativeBuildInputs ? [] }: pkg:
+    addInputs { buildInputs = buildInputs; nativeBuildInputs = nativeBuildInputs; }
+    (
+      rmInputs { buildInputs = nativeBuildInputs; nativeBuildInputs = buildInputs; }
+      pkg
+    );
 in
 {
   options = {
@@ -426,10 +448,21 @@ in
             # configure: error: no acceptable C compiler found in $PATH
             inherit (emulated) stdenv;
           };
-          browserpass = prev.browserpass.override {
+          # browserpass = prev.browserpass.override {
+          #   # fixes "qemu-aarch64: Could not open '/lib/ld-linux-aarch64.so.1': No such file or directory"
+          #   inherit (emulated) buildGoModule;  # buildGoModule holds the stdenv
+          # };
+          browserpass = prev.browserpass.overrideAttrs (upstream: {
             # fixes "qemu-aarch64: Could not open '/lib/ld-linux-aarch64.so.1': No such file or directory"
-            inherit (emulated) buildGoModule;  # buildGoModule holds the stdenv
-          };
+            # default browserpass `make` both builds AND tests
+            buildPhase = ''
+              make browserpass
+            '';
+            checkPhase = ''
+              make test
+            '';
+            doCheck = next.stdenv.hostPlatform == next.stdenv.buildPlatform;
+          });
           cantarell-fonts = prev.cantarell-fonts.override {
             # fixes error where python3.10-skia-pathops dependency isn't available for the build platform
             inherit (emulated) stdenv;
@@ -496,10 +529,8 @@ in
             ];
           });
 
-          fuzzel = prev.fuzzel.overrideAttrs (upstream: {
-            # fixes: "meson.build:100:0: ERROR: Dependency lookup for wayland-scanner with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found. Giving up."
-            depsBuildBuild = upstream.depsBuildBuild or [] ++ [ next.pkg-config ];
-          });
+          # fixes: "meson.build:100:0: ERROR: Dependency lookup for wayland-scanner with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found. Giving up."
+          fuzzel = addInputs { depsBuildBuild = [ next.pkg-config ]; } prev.fuzzel;
 
           fwupd-efi = prev.fwupd-efi.override {
             # fwupd-efi queries meson host_machine to decide what arch to build for.
@@ -531,14 +562,9 @@ in
           #   inherit (emulated) stdenv;
           # };
 
-          gcr_4 = prev.gcr_4.overrideAttrs (orig: {
-            # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.gnupg next.openssh ];
-          });
-          gthumb = prev.gthumb.overrideAttrs (orig: {
-            # fixes (meson) "Program 'glib-mkenums mkenums' not found or not executable"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-          });
+          # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
+          gcr_4 = mvInputs { nativeBuildInputs = [ next.gnupg next.openssh ]; } prev.gcr_4;
+          gthumb = mvInputs { nativeBuildInputs = [ next.glib ]; } prev.gthumb;
 
           gmime = prev.gmime.overrideAttrs (upstream: {
             configureFlags = upstream.configureFlags ++ [
@@ -592,15 +618,13 @@ in
             #   # fails to fix original error
             #   inherit (emulated) stdenv;
             # };
-            dconf-editor = super.dconf-editor.overrideAttrs (orig: {
-              # fixes "error: Package `dconf' not found in specified Vala API directories or GObject-Introspection GIR directories"
-              # - but ONLY if `dconf` was built with the vala feature.
-              # - dconf is NOT built with vala when cross-compiled
-              #   - that's an explicit choice/limitation in nixpkgs upstream
-              # - TODO: vapi stuff is contained in <dconf.dev:/share/vala/vapi/dconf.vapi>
-              #   it's cross-platform; should be possible to ship dconf only in buildInputs & point dconf-editor to the right place
-              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.dconf ];
-            });
+            # fixes "error: Package `dconf' not found in specified Vala API directories or GObject-Introspection GIR directories"
+            # - but ONLY if `dconf` was built with the vala feature.
+            # - dconf is NOT built with vala when cross-compiled
+            #   - that's an explicit choice/limitation in nixpkgs upstream
+            # - TODO: vapi stuff is contained in <dconf.dev:/share/vala/vapi/dconf.vapi>
+            #   it's cross-platform; should be possible to ship dconf only in buildInputs & point dconf-editor to the right place
+            dconf-editor = addNativeInputs [ next.dconf ] super.dconf-editor;
             evince = super.evince.overrideAttrs (orig: {
               # fixes (meson) "Run-time dependency gi-docgen found: NO (tried pkgconfig and cmake)"
               # inspired by gupnp
@@ -633,18 +657,12 @@ in
             #   # fixes "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
             #   inherit (emulated) stdenv;
             # };
-            file-roller = super.file-roller.overrideAttrs (orig: {
-              # fixes: "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
-              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-            });
-            gnome-color-manager = super.gnome-color-manager.overrideAttrs (orig: {
-              # fixes: "src/meson.build:3:0: ERROR: Program 'glib-compile-resources' not found or not executable"
-              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-            });
-            gnome-control-center = super.gnome-control-center.overrideAttrs (orig: {
-              # fixes "subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
-              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-            });
+            # fixes: "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
+            file-roller = mvToNativeInputs [ next.glib ] super.file-roller;
+            # fixes: "src/meson.build:3:0: ERROR: Program 'glib-compile-resources' not found or not executable"
+            gnome-color-manager = mvToNativeInputs [ next.glib ] super.gnome-color-manager;
+            # fixes "subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
+            gnome-control-center = mvToNativeInputs [ next.glib ] super.gnome-control-center;
             # gnome-control-center = super.gnome-control-center.override {
             #   inherit (next) stdenv;
             # };
@@ -656,11 +674,8 @@ in
               # fixes "configure.ac:374: error: possibly undefined macro: AM_PATH_LIBGCRYPT"
               nativeBuildInputs = orig.nativeBuildInputs ++ [ next.libgcrypt next.openssh next.glib ];
             });
-            gnome-remote-desktop = super.gnome-remote-desktop.overrideAttrs (orig: {
-              # TODO: remove gnome-remote-desktop (wanted by gnome-control-center)
-              # fixes: "Program gdbus-codegen found: NO"
-              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-            });
+            # fixes: "Program gdbus-codegen found: NO"
+            gnome-remote-desktop = mvToNativeInputs [ next.glib ] super.gnome-remote-desktop;
             # gnome-shell = super.gnome-shell.overrideAttrs (orig: {
             #   # fixes "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
             #   # does not fix "_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"  (python import failure)
@@ -717,10 +732,8 @@ in
                 sed -i "s/disabled_plugins = \[\]/disabled_plugins = ['power']/" plugins/meson.build
               '';
             });
-            gnome-session = super.gnome-session.overrideAttrs (orig: {
-              # fixes: "gdbus-codegen not found or executable"
-              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-            });
+            # fixes: "gdbus-codegen not found or executable"
+            gnome-session = mvToNativeInputs [ next.glib ] super.gnome-session;
             # gnome-terminal = super.gnome-terminal.override {
             #   # fixes: "meson.build:343:0: ERROR: Dependency "libpcre2-8" not found, tried pkgconfig"
             #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libglib-2.0.so: error adding symbols: file in wrong format"
@@ -730,10 +743,8 @@ in
               # fixes "meson.build:343:0: ERROR: Dependency "libpcre2-8" not found, tried pkgconfig"
               buildInputs = orig.buildInputs ++ [ next.pcre2 ];
             });
-            gnome-user-share = super.gnome-user-share.overrideAttrs (orig: {
-              # fixes: meson.build:111:6: ERROR: Program 'glib-compile-schemas' not found or not executable
-              nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-            });
+            # fixes: meson.build:111:6: ERROR: Program 'glib-compile-schemas' not found or not executable
+            gnome-user-share = addNativeInputs [ next.glib ] super.gnome-user-share;
             mutter = super.mutter.overrideAttrs (orig: {
               nativeBuildInputs = orig.nativeBuildInputs ++ [
                 next.glib  # fixes "clutter/clutter/meson.build:281:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
@@ -854,10 +865,8 @@ in
           #   buildInputs = lib.remove next.gobject-introspection upstream.buildInputs;
           # });
 
-          iio-sensor-proxy = prev.iio-sensor-proxy.overrideAttrs (orig: {
-            # fixes "./autogen.sh: line 26: gtkdocize: not found"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib next.gtk-doc ];
-          });
+          # fixes "./autogen.sh: line 26: gtkdocize: not found"
+          iio-sensor-proxy = mvToNativeInputs [ next.glib next.gtk-doc ] prev.iio-sensor-proxy;
 
           kitty = prev.kitty.overrideAttrs (upstream: {
             # fixes: "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
@@ -893,18 +902,13 @@ in
           #   # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
           #   buildInputs = upstream.buildInputs ++ [ next.vala ];
           # });
-          libHX = prev.libHX.overrideAttrs (orig: {
-            # "Can't exec "libtoolize": No such file or directory at /nix/store/r4fvx9hazsm0rdm7s393zd5v665dsh1c-autoconf-2.71/share/autoconf/Autom4te/FileUtils.pm line 294."
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.libtool ];
-          });
-          libjcat = prev.libjcat.overrideAttrs (upstream: {
-            # fixes: "ERROR: Program 'gnutls-certtool certtool' not found or not executable"
-            # N.B.: gnutls library is used by the compiled program (i.e. the host);
-            #   gnutls binaries are used by the build machine.
-            #   therefore gnutls can be specified in both buildInputs and nativeBuildInputs
-            nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.gnutls ];
-            # buildInputs = lib.remove next.gnutls upstream.buildInputs;
-          });
+          # "Can't exec "libtoolize": No such file or directory at /nix/store/r4fvx9hazsm0rdm7s393zd5v665dsh1c-autoconf-2.71/share/autoconf/Autom4te/FileUtils.pm line 294."
+          libHX = mvToNativeInputs [ next.libtool ] prev.libHX;
+          # fixes: "ERROR: Program 'gnutls-certtool certtool' not found or not executable"
+          # N.B.: gnutls library is used by the compiled program (i.e. the host);
+          #   gnutls binaries are used by the build machine.
+          #   therefore gnutls can be specified in both buildInputs and nativeBuildInputs
+          libjcat = addNativeInputs [ next.gnutls ] prev.libjcat;
 
           librest = prev.librest.overrideAttrs (orig: {
             # fixes "You must have gtk-doc >= 1.13 installed to build documentation"
@@ -954,15 +958,11 @@ in
             configureFlags = [ "--disable-examples" ];
           });
 
-          ncftp = prev.ncftp.overrideAttrs (upstream: {
-            # fixes: "ar: command not found"
-            # `ar` is provided by bintools
-            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [ next.bintools ];
-          });
-          networkmanager-fortisslvpn = prev.networkmanager-fortisslvpn.overrideAttrs (orig: {
-            # fixes "gdbus-codegen: command not found"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-          });
+          # fixes: "ar: command not found"
+          # `ar` is provided by bintools
+          ncftp = addNativeInputs [ next.bintools ] prev.ncftp;
+          # fixes "gdbus-codegen: command not found"
+          networkmanager-fortisslvpn = mvToNativeInputs [ next.glib ] prev.networkmanager-fortisslvpn;
           # networkmanager-iodine = prev.networkmanager-iodine.overrideAttrs (orig: {
           #   # fails to fix "configure.ac:58: error: possibly undefined macro: AM_GLIB_GNU_GETTEXT"
           #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.gettext ];
@@ -980,30 +980,21 @@ in
           #   '';
           # });
 
-          networkmanager-l2tp = prev.networkmanager-l2tp.overrideAttrs (orig: {
-            # fixes "gdbus-codegen: command not found"
-            # fixes "gtk4-builder-tool: command not found"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib next.gtk4 ];
-          });
-          networkmanager-openconnect = prev.networkmanager-openconnect.overrideAttrs (orig: {
-            # fixes "properties/gresource.xml: Permission denied"
-            #   - by providing glib-compile-resources
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-          });
-          networkmanager-openvpn = prev.networkmanager-openvpn.overrideAttrs (orig: {
-            # fixes "properties/gresource.xml: Permission denied"
-            #   - by providing glib-compile-resources
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-          });
-          networkmanager-sstp = prev.networkmanager-sstp.overrideAttrs (orig: {
-            # fixes "gdbus-codegen: command not found"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-          });
-          networkmanager-vpnc = prev.networkmanager-vpnc.overrideAttrs (orig: {
-            # fixes "properties/gresource.xml: Permission denied"
-            #   - by providing glib-compile-resources
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-          });
+          # fixes "gdbus-codegen: command not found"
+          # fixes "gtk4-builder-tool: command not found"
+          networkmanager-l2tp = addNativeInputs [ next.gtk4 ]
+            (mvToNativeInputs [ next.glib ] prev.networkmanager-l2tp);
+          # fixes "properties/gresource.xml: Permission denied"
+          #   - by providing glib-compile-resources
+          networkmanager-openconnect = mvToNativeInputs [ next.glib ] prev.networkmanager-openconnect;
+          # fixes "properties/gresource.xml: Permission denied"
+          #   - by providing glib-compile-resources
+          networkmanager-openvpn = mvToNativeInputs [ next.glib ] prev.networkmanager-openvpn;
+          # fixes "gdbus-codegen: command not found"
+          networkmanager-sstp = mvToNativeInputs [ next.glib ] prev.networkmanager-sstp;
+          networkmanager-vpnc = mvToNativeInputs [ next.glib ] prev.networkmanager-vpnc;
+          # fixes "properties/gresource.xml: Permission denied"
+          #   - by providing glib-compile-resources
           nheko = prev.nheko.overrideAttrs (orig: {
             # fixes "fatal error: lmdb++.h: No such file or directory
             buildInputs = orig.buildInputs ++ [ next.lmdbxx ];
@@ -1076,11 +1067,10 @@ in
           #   ];
           #   # buildInputs = lib.remove next.gnupg upstream.buildInputs;
           # });
-          obex_data_server = prev.obex_data_server.overrideAttrs (upstream: {
-            # fixes "/nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 2: --prefix=ods_manager: command not found"
-            # - dbus-glib incorrectly specified in buildInputs instead of nativeBuildInputs
-            nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.dbus-glib ];
-          });
+
+          # fixes "/nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 2: --prefix=ods_manager: command not found"
+          # - dbus-glib should maybe be removed from buildInputs, too? but doing so breaks upstream configure
+          obex_data_server = addNativeInputs [ next.dbus-glib ] prev.obex_data_server;
           openfortivpn = prev.openfortivpn.override {
             # fixes "checking for /proc/net/route... configure: error: cannot check for file existence when cross compiling"
             inherit (emulated) stdenv;
@@ -1095,22 +1085,16 @@ in
           #   # buildInputs = lib.remove next.gpgme upstream.buildInputs;
           #   nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.gpgme ];
           # });
-          pam_mount = prev.pam_mount.overrideAttrs (orig: {
-            # fixes: "perl: command not found"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.perl ];
-          });
+
+          # fixes: "perl: command not found"
+          pam_mount = mvToNativeInputs [ next.perl ] prev.pam_mount;
 
           # phoc = prev.phoc.override {
           #   # fixes "Program wayland-scanner found: NO"
           #   inherit (emulated) stdenv;
           # };
-          phoc = prev.phoc.overrideAttrs (upstream: {
-            # buildInputs = upstream.buildInputs or [] ++ [ next.wayland-scanner ];
-            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
-              next.wayland-scanner
-              next.glib  # fixes (meson) "Program 'glib-mkenums mkenums' not found or not executable"
-            ];
-          });
+          # fixes (meson) "Program 'glib-mkenums mkenums' not found or not executable"
+          phoc = mvToNativeInputs [ next.wayland-scanner next.glib ] prev.phoc;
           phosh = prev.phosh.overrideAttrs (upstream: {
             buildInputs = upstream.buildInputs ++ [
               next.libadwaita  # "plugins/meson.build:41:2: ERROR: Dependency "libadwaita-1" not found, tried pkgconfig"
@@ -1126,23 +1110,20 @@ in
           #   # fixes "meson.build:26:0: ERROR: Dependency "phosh-plugins" not found, tried pkgconfig"
           #   inherit (emulated) stdenv;
           # };
-          phosh-mobile-settings = prev.phosh-mobile-settings.overrideAttrs (upstream: {
+          phosh-mobile-settings = mvInputs {
             # fixes "meson.build:26:0: ERROR: Dependency "phosh-plugins" not found, tried pkgconfig"
             # phosh is used only for its plugins; these are specified as a runtime dep in src.
             # it's correct for them to be runtime dep: src/ms-lockscreen-panel.c loads stuff from
-            # MOBILE_SETTINGS_PHOSH_PLUGINS_DIR at runtime
-            buildInputs = upstream.buildInputs ++ [ next.phosh ];
-            nativeBuildInputs = (lib.remove next.phosh upstream.nativeBuildInputs) ++ [
+            buildInputs = [ next.phosh ];
+            nativeBuildInputs = [
               next.gettext  # fixes "data/meson.build:1:0: ERROR: Program 'msgfmt' not found or not executable"
               next.wayland-scanner  # fixes "protocols/meson.build:7:0: ERROR: Program 'wayland-scanner' not found or not executable"
               next.glib  # fixes "src/meson.build:1:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
               next.desktop-file-utils  # fixes "meson.build:116:8: ERROR: Program 'update-desktop-database' not found or not executable"
             ];
-          });
-          pipewire = prev.pipewire.overrideAttrs (orig: {
-            # fixes `spa/plugins/bluez5/meson.build:41:0: ERROR: Program 'gdbus-codegen' not found or not executable`
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-          });
+          } prev.phosh-mobile-settings;
+          # fixes `spa/plugins/bluez5/meson.build:41:0: ERROR: Program 'gdbus-codegen' not found or not executable`
+          pipewire = mvToNativeInputs [ next.glib ] prev.pipewire;
           # psqlodbc = prev.psqlodbc.override {
           #   # fixes "configure: error: odbc_config not found (required for unixODBC build)"
           #   inherit (emulated) stdenv;
@@ -1273,11 +1254,9 @@ in
           #   # fails to fix original error
           #   inherit (emulated) stdenv;
           # };
-          serf = prev.serf.overrideAttrs (upstream: {
-            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
-              next.bintools  # fixes "sh: line 1: ar: command not found"
-            ];
-          });
+
+          # fixes "sh: line 1: ar: command not found"
+          serf = addNativeInputs [ next.bintools ] prev.serf;
 
           # squeekboard = prev.squeekboard.overrideAttrs (upstream: {
           #   # fixes: "meson.build:1:0: ERROR: 'rust' compiler binary not defined in cross or native file"
@@ -1337,14 +1316,10 @@ in
             ];
           });
 
-          sysprof = prev.sysprof.overrideAttrs (orig: {
-            # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-          });
-          tpm2-abrmd = prev.tpm2-abrmd.overrideAttrs (orig: {
-            # fixes "configure: error: *** gdbus-codegen is required to build tpm2-abrmd; No package 'gio-unix-2.0' found"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.glib ];
-          });
+          # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
+          sysprof = mvToNativeInputs [ next.glib ] prev.sysprof;
+          # fixes "configure: error: *** gdbus-codegen is required to build tpm2-abrmd; No package 'gio-unix-2.0' found"
+          tpm2-abrmd = addNativeInputs [ next.glib ] prev.tpm2-abrmd;
           tracker-miners = prev.tracker-miners.override {
             # fixes "meson.build:183:0: ERROR: Can not run test applications in this cross environment."
             inherit (emulated) stdenv;
@@ -1354,11 +1329,9 @@ in
           #   inherit (emulated) stdenv;
           # };
 
-          unar = prev.unar.overrideAttrs (upstream: {
-            # fixes: "ar: command not found"
-            # `ar` is provided by bintools
-            nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.bintools ];
-          });
+          # fixes: "ar: command not found"
+          # `ar` is provided by bintools
+          unar = addNativeInputs [ next.bintools ] prev.unar;
           unixODBCDrivers = prev.unixODBCDrivers // {
             # TODO: should this package be deduped with toplevel psqlodbc in upstream nixpkgs?
             psql = prev.unixODBCDrivers.psql.overrideAttrs (_upstream: {
@@ -1385,24 +1358,18 @@ in
             # makeFlags = orig.makeFlags or [] ++ [ "CC=${prev.stdenv.cc.targetPrefix}cc" ];
             BUILDCC = "${prev.stdenv.cc}/bin/${prev.stdenv.cc.targetPrefix}cc";
           });
-          vpnc = prev.vpnc.overrideAttrs (orig: {
-            # fixes "perl: command not found"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.perl ];
-          });
+          # fixes "perl: command not found"
+          vpnc = mvToNativeInputs [ next.perl ] prev.vpnc;
           xapian = prev.xapian.overrideAttrs (upstream: {
             # the output has #!/bin/sh scripts.
             # - shebangs get re-written on native build, but not cross build
             buildInputs = upstream.buildInputs ++ [ next.bash ];
           });
-          xdg-desktop-portal-gtk = prev.xdg-desktop-portal-gtk.overrideAttrs (orig: {
-            # fixes "No package 'xdg-desktop-portal' found"
-            buildInputs = orig.buildInputs ++ [ next.xdg-desktop-portal ];
-          });
-          xdg-desktop-portal-gnome = prev.xdg-desktop-portal-gnome.overrideAttrs (orig: {
-            # fixes: "data/meson.build:33:5: ERROR: Program 'msgfmt' not found or not executable"
-            # fixes: "src/meson.build:25:0: ERROR: Program 'gdbus-codegen' not found or not executable"
-            nativeBuildInputs = orig.nativeBuildInputs ++ [ next.gettext next.glib ];
-          });
+          # fixes "No package 'xdg-desktop-portal' found"
+          xdg-desktop-portal-gtk = mvToBuildInputs [ next.xdg-desktop-portal ] prev.xdg-desktop-portal-gtk;
+          # fixes: "data/meson.build:33:5: ERROR: Program 'msgfmt' not found or not executable"
+          # fixes: "src/meson.build:25:0: ERROR: Program 'gdbus-codegen' not found or not executable"
+          xdg-desktop-portal-gnome = mvToNativeInputs [ next.gettext next.glib ] prev.xdg-desktop-portal-gnome;
           # webkitgtk = prev.webkitgtk.override { stdenv = next.ccacheStdenv; };
           # webp-pixbuf-loader = prev.webp-pixbuf-loader.override {
           #   # fixes "Builder called die: Cannot wrap '/nix/store/kpp8qhzdjqgvw73llka5gpnsj0l4jlg8-gdk-pixbuf-aarch64-unknown-linux-gnu-2.42.10/bin/gdk-pixbuf-thumbnailer' because it is not an executable file"
