@@ -817,14 +817,20 @@ in
             # };
             # XXX this feels risky; it propagates a (conflicting) gst-plugins to all consumers
             # gst-editing-services = emulated.gst_all_1.gst-editing-services;
-            gst-editing-services = prev.gst_all_1.gst-editing-services.overrideAttrs (orig: {
-              # fixes "Run-time dependency gst-validate-1.0 found: NO"
-              buildInputs = orig.buildInputs ++ [ next.gst_all_1.gst-devtools ];
-              mesonFlags = orig.mesonFlags ++ [
-                # disable "python formatters" to avoid undefined references to Py_Initialize, etc.
-                "-Dpython=disabled"
-              ];
-            });
+            # fixes "Run-time dependency gst-validate-1.0 found: NO"
+            # fixes undefined references to Py_Initialize, etc.
+            # - alternative is `mesonFlags = [ "-Dpython=disabled" ]`
+            gst-editing-services = addBuildInputs
+              [ next.python3 ]
+              (mvToBuildInputs [ next.gst_all_1.gst-devtools ] prev.gst_all_1.gst-editing-services);
+            # gst-editing-services =
+            #   (mvToBuildInputs [ next.gst_all_1.gst-devtools ] prev.gst_all_1.gst-editing-services);
+            #   .overrideAttrs (upstream: {
+            #     mesonFlags = upstream.mesonFlags ++ [
+            #       # disable "python formatters" to avoid undefined references to Py_Initialize, etc.
+            #       "-Dpython=disabled"
+            #     ];
+            #   });
             # inherit (emulated.gst_all_1) gst-plugins-good;
             # gst-plugins-good = prev.gst_all_1.gst-plugins-good.override {
             #   # when invoked with `qt5Support = true`, qtbase shows up in both buildInputs and nativeBuildInputs
