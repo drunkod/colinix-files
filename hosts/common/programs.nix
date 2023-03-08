@@ -193,6 +193,7 @@ let
   desktopGuiPkgs = {
     inherit (flattenedPkgs)
       audacity
+      brave  # for the integrated wallet -- as a backup
       chromium
       dino
       electrum
