@@ -57,6 +57,7 @@ let
     ## Cory Doctorow -- both podcast & text entries
     (fromDb "craphound.com" // pol)
     (fromDb "congressionaldish.libsyn.com" // pol)
+    (mkPod "https://podcasts.la.utexas.edu/this-is-democracy/feed/podcast/" // pol // weekly)
     ## Civboot -- https://anchor.fm/civboot
     (fromDb "anchor.fm/s/34c7232c/podcast/rss" // tech)
     ## Emerge: making sense of what's next -- <https://www.whatisemerging.com/emergepodcast>
@@ -64,6 +65,8 @@ let
     (fromDb "feeds.feedburner.com/80000HoursPodcast" // rat)
     ## Daniel Huberman on sleep
     (fromDb "feeds.megaphone.fm/hubermanlab" // uncat)
+    ## Multidisciplinary Association for Psychedelic Studies
+    (fromDb "mapspodcast.libsyn.com" // uncat)
     (fromDb "allinchamathjason.libsyn.com" // pol)
     (fromDb "acquired.libsyn.com" // tech)
     # The Intercept - Deconstructed; also available: <rss.acast.com/deconstructed>
