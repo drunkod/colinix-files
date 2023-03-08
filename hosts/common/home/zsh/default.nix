@@ -83,6 +83,8 @@ in
         pushd "$1";
       }
 
+      ${pkgs.sane-scripts}/bin/sane-deadlines
+
       # auto-cd into any of these dirs by typing them and pressing 'enter':
       hash -d 3rd="/home/colin/dev/3rd"
       hash -d dev="/home/colin/dev"
