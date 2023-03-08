@@ -333,7 +333,6 @@ in
           # packages which don't cross compile
           inherit (emulated)
             # adwaita-qt6  # although qtbase cross-compiles with minor change, qtModule's qtbase can't
-            apacheHttpd_2_4  # `configure: error: Size of "void *" is less than size of "long"`
             # duplicity  # python3.10-s3transfer
             # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
             # gnome-tour
@@ -374,6 +373,29 @@ in
           # same story as qdwaita-qt6
           # qgnomeplatform-qt6 = next.emptyDirectory;
 
+          apacheHttpd_2_4 = prev.apacheHttpd_2_4.overrideAttrs (upstream: {
+            configureFlags = upstream.configureFlags or [] ++ [
+              "ap_cv_void_ptr_lt_long=no"  # configure can't AC_TRY_RUN, and can't validate that sizeof (void*) == sizeof long
+            ];
+            # let nix figure out the perl shebangs.
+            # some of these perl scripts are shipped on the host, others in the .dev output for the build machine.
+            # postPatch methods create cycles
+            # postPatch = ''
+            #   substituteInPlace configure --replace \
+            #     '/replace/with/path/to/perl/interpreter' \
+            #     '/usr/bin/perl'
+            # '';
+            # postPatch = ''
+            #   substituteInPlace support/apxs.in --replace \
+            #     '@perlbin@' \
+            #     '/usr/bin/perl'
+            # '';
+            # TODO: test this, alongside native mod_dnssd
+            # postInstall = upstream.postInstall + ''
+            #   sed -i 's:/replace/with/path/to/perl/interpreter:${next.perl}/bin/perl:' $out/bin/apxs
+            # '';
+          });
+
           # apacheHttpd_2_4 = (prev.apacheHttpd_2_4.override {
           #   # fixes `configure: error: Size of "void *" is less than size of "long"`
           #   inherit (emulated) stdenv;
@@ -400,6 +422,13 @@ in
               mod_dnssd = prevHttpdPkgs.mod_dnssd.override {
                 inherit (emulated) stdenv;
               };
+              # TODO: the below apxs doesn't have a valid shebang (#!/replace/with/...).
+              #   we can't replace it at the origin?
+              # mod_dnssd = prevHttpdPkgs.mod_dnssd.overrideAttrs (upstream: {
+              #   configureFlags = upstream.configureFlags ++ [
+              #     "--with-apxs=${self.apacheHttpd}/bin/apxs"
+              #   ];
+              # });
             };
 
           # apacheHttpdPackagesFor = apacheHttpd: self:
