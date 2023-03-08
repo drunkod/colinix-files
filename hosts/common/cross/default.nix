@@ -862,23 +862,18 @@ in
           #   inherit (emulated) stdenv;
           # };
 
-          ibus = (prev.ibus.override {
-            # fixes: "configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0"
-            inherit (emulated) stdenv;
-          }).overrideAttrs (upstream: {
+          # ibus = (prev.ibus.override {
+          #   # fixes: "configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0"
+          #   inherit (emulated) stdenv;
+          ibus = prev.ibus.overrideAttrs (upstream: {
             nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
-              # fixes "_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
-              next.buildPackages.gobject-introspection
+              next.glib  # fixes: ImportError: /nix/store/fi1rsalr11xg00dqwgzbf91jpl3zwygi-gobject-introspection-aarch64-unknown-linux-gnu-1.74.0/lib/gobject-introspection/giscanner/_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+              next.buildPackages.gobject-introspection  # fixes "_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
             ];
-            buildInputs = lib.remove next.gobject-introspection upstream.buildInputs;
+            buildInputs = lib.remove next.gobject-introspection upstream.buildInputs ++ [
+              next.vala  # fixes: "Package `ibus-1.0' not found in specified Vala API directories or GObject-Introspection GIR directories"
+            ];
           });
-          # ibus = prev.ibus.overrideAttrs (upstream: {
-          #   # FIXES: configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0
-          #   # technique copied from <nixpkgs:pkgs/development/libraries/gts/default.nix>
-          #   # new error: ImportError: /nix/store/fi1rsalr11xg00dqwgzbf91jpl3zwygi-gobject-introspection-aarch64-unknown-linux-gnu-1.74.0/lib/gobject-introspection/giscanner/_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
-          #   nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.glib next.gobject-introspection ];
-          #   buildInputs = lib.remove next.gobject-introspection upstream.buildInputs;
-          # });
 
           # fixes "./autogen.sh: line 26: gtkdocize: not found"
           iio-sensor-proxy = mvToNativeInputs [ next.glib next.gtk-doc ] prev.iio-sensor-proxy;
