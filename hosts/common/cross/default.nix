@@ -1243,14 +1243,6 @@ in
             # fixes "error: could not find git for clone of catch2-populate"
             buildInputs = orig.buildInputs or [] ++ [ next.catch2_3 ];
           });
-          re2 = (prev.re2.override {
-            # fixes: "FAILED: CMakeFiles/test.util"
-            inherit (emulated) stdenv;
-          }).overrideAttrs (orig: {
-            # exhaustive{,1,2}_test times out after 1500s.
-            # this is after exhaustive3_test takes 600s to pass.
-            doCheck = false;
-          });
           rmlint = prev.rmlint.override {
             # fixes "Checking whether the C compiler works... no"
             inherit (emulated) stdenv;
