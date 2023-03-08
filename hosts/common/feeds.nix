@@ -62,6 +62,8 @@ let
     ## Emerge: making sense of what's next -- <https://www.whatisemerging.com/emergepodcast>
     (mkPod "https://anchor.fm/s/21bc734/podcast/rss" // pol // infrequent)
     (fromDb "feeds.feedburner.com/80000HoursPodcast" // rat)
+    ## Daniel Huberman on sleep
+    (fromDb "feeds.megaphone.fm/hubermanlab" // uncat)
     (fromDb "allinchamathjason.libsyn.com" // pol)
     (fromDb "acquired.libsyn.com" // tech)
     # The Intercept - Deconstructed; also available: <rss.acast.com/deconstructed>
