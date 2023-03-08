@@ -28,14 +28,13 @@
         ''
           sources_dir=modules/data/feeds/sources
           name="$1"
-          url="https://$name"
           json_path="$sources_dir/$name/default.json"
 
           # the name could have slashes in it, so we want to mkdir -p that
           # but in a way where the least could go wrong.
           pushd "$sources_dir"; mkdir -p "$name"; popd
 
-          ${./update.py} "$url" "$json_path"
+          ${./update.py} "$name" "$json_path"
           cat "$json_path"
         '';
     }
