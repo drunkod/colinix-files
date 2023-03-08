@@ -83,11 +83,6 @@ in
         pushd "$1";
       }
 
-      expiration=$(date -d "6 Mar" +%s)
-      today=$(date +%s)
-      days_until=$(( ($expiration - $today) / (24*60*60) ))
-      echo "You have $days_until days to renew your driver's license"
-
       # auto-cd into any of these dirs by typing them and pressing 'enter':
       hash -d 3rd="/home/colin/dev/3rd"
       hash -d dev="/home/colin/dev"
