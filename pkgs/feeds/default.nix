@@ -26,8 +26,16 @@
       passthru.initFeedScript = pkgs.writeShellScript
         "init-feed"
         ''
+          # this is the `nix run '.#init-feed' <url>` script`
           sources_dir=modules/data/feeds/sources
-          name="$1"
+          # prettify the URL, by default
+          name=$( \
+            echo "$1" \
+            | sed 's|^https://||' \
+            | sed 's|^http://||' \
+            | sed 's|^www\.||' \
+            | sed 's|/+$||' \
+          )
           json_path="$sources_dir/$name/default.json"
 
           # the name could have slashes in it, so we want to mkdir -p that
