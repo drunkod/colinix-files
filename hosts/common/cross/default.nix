@@ -1318,9 +1318,11 @@ in
           squeekboard = prev.squeekboard.override {
             inherit (emulated)
               rustPlatform  # fixes original "'rust' compiler binary not defined in cross or native file"
-              stdenv  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/jzh15bi6zablx3d9s928w3lgqy6and91-glib-2.74.3/lib/libgio-2.0.so"
-              glib  # fixes "gcc: error: unrecognized command line option '-m64'"
+              stdenv  # fixes "gcc: error: unrecognized command line option '-m64'"
+              glib  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/jzh15bi6zablx3d9s928w3lgqy6and91-glib-2.74.3/lib/libgio-2.0.so"
               wayland  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/ni0vb1pnaznx85378i3h9xhw9cay68g5-wayland-1.21.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
+              # gtk3  # fails to fix: "/nix/store/acl3fg3z4i96d6lha2cbr16k7bl1zjs5-binutils-2.40/bin/ld: /nix/store/k2jd14yl5qcl3kwifhhs271607fjafbx-gtk+3-3.24.36/lib/libgtk-3.so: error adding symbols: file in wrong format"
+              wrapGAppsHook  # introduces a competing gtk3 at link-time, unless emulated
             ;
           };
           subversion = prev.subversion.overrideAttrs (upstream: {
