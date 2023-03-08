@@ -112,6 +112,7 @@ let
 
     # DEVELOPERS
     (fromDb "uninsane.org" // tech)
+    (fromDb "ascii.textfiles.com" // tech)  # Jason Scott
     (fromDb "mg.lol" // tech)
     (fromDb "drewdevault.com" // tech)
     ## Ken Shirriff
