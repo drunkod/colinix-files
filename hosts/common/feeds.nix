@@ -50,6 +50,8 @@ let
     (fromDb "lexfridman.com/podcast" // rat)
     ## Astral Codex Ten
     (fromDb "sscpodcast.libsyn.com" // rat)
+    ## Less Wrong Curated
+    (fromDb "feeds.libsyn.com/421877" // rat)
     ## Econ Talk
     (fromDb "feeds.simplecast.com/wgl4xEgL" // rat)
     ## Cory Doctorow -- both podcast & text entries
