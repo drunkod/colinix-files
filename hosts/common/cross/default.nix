@@ -1240,6 +1240,7 @@ in
           });
           rmlint = prev.rmlint.override {
             # fixes "Checking whether the C compiler works... no"
+            # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
             inherit (emulated) stdenv;
           };
           samba = prev.samba.overrideAttrs (_upstream: {
