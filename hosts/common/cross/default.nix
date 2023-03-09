@@ -391,9 +391,9 @@ in
             #     '/usr/bin/perl'
             # '';
             # TODO: test this, alongside native mod_dnssd
-            # postInstall = upstream.postInstall + ''
-            #   sed -i 's:/replace/with/path/to/perl/interpreter:${next.perl}/bin/perl:' $out/bin/apxs
-            # '';
+            postFixup = upstream.postFixup or "" + ''
+              sed -i 's:/replace/with/path/to/perl/interpreter:${next.buildPackages.perl}/bin/perl:' $dev/bin/apxs
+            '';
           });
 
           # apacheHttpd_2_4 = (prev.apacheHttpd_2_4.override {
@@ -419,16 +419,16 @@ in
               prevHttpdPkgs = prev.apacheHttpdPackagesFor apacheHttpd self;
             in prevHttpdPkgs // {
               # fixes "configure: error: *** Sorry, could not find apxs ***"
-              mod_dnssd = prevHttpdPkgs.mod_dnssd.override {
-                inherit (emulated) stdenv;
-              };
+              # mod_dnssd = prevHttpdPkgs.mod_dnssd.override {
+              #   inherit (emulated) stdenv;
+              # };
               # TODO: the below apxs doesn't have a valid shebang (#!/replace/with/...).
               #   we can't replace it at the origin?
-              # mod_dnssd = prevHttpdPkgs.mod_dnssd.overrideAttrs (upstream: {
-              #   configureFlags = upstream.configureFlags ++ [
-              #     "--with-apxs=${self.apacheHttpd}/bin/apxs"
-              #   ];
-              # });
+              mod_dnssd = prevHttpdPkgs.mod_dnssd.overrideAttrs (upstream: {
+                configureFlags = upstream.configureFlags ++ [
+                  "--with-apxs=${self.apacheHttpd.dev}/bin"
+                ];
+              });
             };
 
           # apacheHttpdPackagesFor = apacheHttpd: self:
