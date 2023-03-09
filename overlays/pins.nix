@@ -15,4 +15,6 @@
   # so just forward the unstable packages.
   inherit (next.stable or prev)
   ;
+  # TODO(2023/03/09): chromium 110.0.5481.177 build hangs. next flake update should resolve?
+  chromium = next.emptyDirectory;
 })
