@@ -13,9 +13,13 @@ logging.getLogger().setLevel(logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 logging.getLogger(__name__).debug("logging enabled")
 
-url = coerce_url(url, default_scheme="https")
-items = search(url, total_timeout=180, request_timeout=90, max_content_length=100*1024*1024)
-items = sort_urls(items)
+def try_scheme(url: str, scheme: str):
+    url = coerce_url(url, default_scheme=scheme)
+    print(f"trying {url}")
+    items = search(url, total_timeout=180, request_timeout=90, max_content_length=100*1024*1024)
+    return sort_urls(items)
+
+items = try_scheme(url, "https") or try_scheme(url, "http")
 
 # print all results
 serialized = [item.serialize() for item in items]

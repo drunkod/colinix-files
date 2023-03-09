@@ -74,7 +74,7 @@ in
       # see for an example: <https://filipe.kiss.ink/zmv-zsh-rename/>
       autoload -Uz zmv
 
-      HISTORY_IGNORE='(sane-shutdown *|sane-reboot *|rm *)'
+      HISTORY_IGNORE='(sane-shutdown *|sane-reboot *|rm *|nixos-rebuild.* switch)'
 
       # extra aliases
       # TODO: move to `shellAliases` config?

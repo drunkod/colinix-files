@@ -1,3 +1,9 @@
+# candidates:
+# - The Nonlinear Library (podcast): <https://forum.effectivealtruism.org/posts/JTZTBienqWEAjGDRv/listen-to-more-ea-content-with-the-nonlinear-library>
+#   - has ~10 posts per day, text-to-speech; i would need better tagging before adding this
+# - <https://www.metaculus.com/questions/11102/introducing-the-metaculus-journal-podcast/>
+#   - dead since 2022/10 - 2023/03
+
 { lib, sane-data, ... }:
 let
   hourly = { freq = "hourly"; };
@@ -50,16 +56,23 @@ let
     (fromDb "lexfridman.com/podcast" // rat)
     ## Astral Codex Ten
     (fromDb "sscpodcast.libsyn.com" // rat)
+    ## Less Wrong Curated
+    (fromDb "feeds.libsyn.com/421877" // rat)
     ## Econ Talk
     (fromDb "feeds.simplecast.com/wgl4xEgL" // rat)
     ## Cory Doctorow -- both podcast & text entries
     (fromDb "craphound.com" // pol)
     (fromDb "congressionaldish.libsyn.com" // pol)
+    (mkPod "https://podcasts.la.utexas.edu/this-is-democracy/feed/podcast/" // pol // weekly)
     ## Civboot -- https://anchor.fm/civboot
     (fromDb "anchor.fm/s/34c7232c/podcast/rss" // tech)
     ## Emerge: making sense of what's next -- <https://www.whatisemerging.com/emergepodcast>
     (mkPod "https://anchor.fm/s/21bc734/podcast/rss" // pol // infrequent)
     (fromDb "feeds.feedburner.com/80000HoursPodcast" // rat)
+    ## Daniel Huberman on sleep
+    (fromDb "feeds.megaphone.fm/hubermanlab" // uncat)
+    ## Multidisciplinary Association for Psychedelic Studies
+    (fromDb "mapspodcast.libsyn.com" // uncat)
     (fromDb "allinchamathjason.libsyn.com" // pol)
     (fromDb "acquired.libsyn.com" // tech)
     # The Intercept - Deconstructed; also available: <rss.acast.com/deconstructed>
@@ -112,6 +125,7 @@ let
 
     # DEVELOPERS
     (fromDb "uninsane.org" // tech)
+    (fromDb "ascii.textfiles.com" // tech)  # Jason Scott
     (fromDb "mg.lol" // tech)
     (fromDb "drewdevault.com" // tech)
     ## Ken Shirriff
