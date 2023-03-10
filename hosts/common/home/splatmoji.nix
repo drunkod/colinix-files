@@ -6,7 +6,8 @@
 {
   sane.user.persist.plaintext = [ ".local/state/splatmoji" ];
   sane.user.fs.".config/splatmoji/splatmoji.config" = sane-lib.fs.wantedText ''
-    history_file=~/.local/state/splatmoji/history
+    # XXX doesn't seem to understand ~ as shorthand for `$HOME`
+    history_file=/home/colin/.local/state/splatmoji/history
     history_length=5
     # TODO: wayland equiv
     paste_command=xdotool key ctrl+v
