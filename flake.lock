@@ -2,11 +2,11 @@
   "nodes": {
     "flake-utils": {
       "locked": {
-        "lastModified": 1659877975,
-        "narHash": "sha256-zllb8aq3YO3h8B/U0/J1WBgAL8EX5yWf5pMj3G0NAmc=",
+        "lastModified": 1676283394,
+        "narHash": "sha256-XX2f9c3iySLCw54rJ/CZs+ZK6IQy7GXNY4nSOyu2QG4=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "c0e246b9b83f637f4681389ecabcb2681b4f3af0",
+        "rev": "3db36a8b464d0c4532ba1c7dda728f4576d6d073",
         "type": "github"
       },
       "original": {
@@ -134,11 +134,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1675131883,
-        "narHash": "sha256-yBgJDG72YqIr1bltasqHD1E/kHc9uRFgDjxDmy6kI8M=",
+        "lastModified": 1678438369,
+        "narHash": "sha256-GfhWNvAfNZpvP5RZo1yetgJ5+eAp+zlkjS2+YJqN8fs=",
         "ref": "refs/heads/master",
-        "rev": "b099c24091cc192abf3997b94342d4b31cc5757b",
-        "revCount": 170,
+        "rev": "9b549e42da18218e46d1bf217b5eb81c0c4caf11",
+        "revCount": 173,
         "type": "git",
         "url": "https://git.uninsane.org/colin/uninsane"
       },
