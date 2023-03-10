@@ -37,6 +37,12 @@
   # let ccache cross-compile
   ./2023-03-04-ccache-cross-fix.patch
 
+  # 2023-03-09: phosh: 0.23 -> 0.25.1
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/219355.diff";
+    hash = "sha256-hx2keVWuokla2Oi92zoXsnjVuwakxL2cB55ctzlO8OQ=";
+  })
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized

@@ -1140,9 +1140,9 @@ in
             mesonFlags = upstream.mesonFlags ++ [
               "-Dphoc_tests=disabled"  # "tests/meson.build:20:0: ERROR: Program 'phoc' not found or not executable"
             ];
-            postPatch = upstream.postPatch or "" + ''
-              sed -i 's:gio_querymodules = :gio_querymodules = "${next.buildPackages.glib.dev}/bin/gio-querymodules" if True else :' build-aux/post_install.py
-            '';
+            # postPatch = upstream.postPatch or "" + ''
+            #   sed -i 's:gio_querymodules = :gio_querymodules = "${next.buildPackages.glib.dev}/bin/gio-querymodules" if True else :' build-aux/post_install.py
+            # '';
           });
           # phosh-mobile-settings = prev.phosh-mobile-settings.override {
           #   # fixes "meson.build:26:0: ERROR: Dependency "phosh-plugins" not found, tried pkgconfig"
