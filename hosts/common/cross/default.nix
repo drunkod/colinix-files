@@ -64,29 +64,9 @@
 #   - `nix build '.#host-pkgs.moby.qt6Packages.qtwayland'` FAILS
 #     - it uses qmake in nativeBuildInputs  (but `.#host-pkgs.moby.buildPackages.qt6.qmake` builds, same with native qtbase...)
 #     - failed version build log truly doesn't have the `QT_HOST_PATH` flag.
-# - `host-pkgs.desko.stdenv` fails build:
+#
+# - `host-pkgs.cross-desko.stdenv` fails build:
 #   - #cross-compiling:nixos.org says pkgsCross.gnu64 IS KNOWN TO NOT COMPILE. let this go for now:
-#     - make a `<machine>` (don't specifiy local/targetSystem) and `<machine>-cross` target.
-#     - `desko-cross` will be broken but `desko` can work
-#   - see <nixpkgs:pkgs/stdenv/linux/default.nix>
-#   - disallowedRequisites = [ bootstrapTools.out ];
-#   """
-#   error: output '/nix/store/w2vgzyvs2jzf7yr6qqqrjbvrqxxmhwy0-stdenv-linux' is not allowed to refer to the following paths:
-#            /nix/store/2qbgchkjj1hqi1c8raznwml94pkm3k7q-libunistring-1.0
-#            /nix/store/4j425ybkjxcdj89352l5gpdl3nmxq4zn-libidn2-2.3.2
-#            /nix/store/c35hf8g5b9vksadym9dbjrd6p2y11m8h-glibc-2.35-224
-#            /nix/store/qbgfsaviwqi2p6jr7an1g2754sv3xqhn-gcc-11.3.0-lib
-#   """
-#   - rg doesn't reveal any such references in the output though...
-#     - nor references to bootstrapTools
-#     - HOWEVER, IT DOES CONTAIN A REFERENCE TO THE PREVIOUS STAGE'S BASH:
-#       - /nix/store/w2vgzyvs2jzf7yr6qqqrjbvrqxxmhwy0-stdenv-linux/setup
-#       - export SHELL=/nix/store/qqa28hmysc23yy081d178jfd9a1yk8aw-bash-5.2-p15/bin/bash
-#       - not clear if that matters? but maybe it reaches bootstrapTools transitively?
-#         - yeah: that bash specifies the above `glibc` as its loader
-#         - so we probably can't `inherit` the emulated bash like that.
-#   - try building `.#host-pkgs.desko.stdenv.shellPackage` or `.#host-pkgs.desko.stdenv.bootstrapTools`
-#   - `file result/bin/bash` does show that it uses the interpreter for the glibc, above
 
 
 { config, lib, options, pkgs, ... }:
@@ -232,21 +212,6 @@ in
         prev.stdenv.hostPlatform == prev.stdenv.targetPlatform &&
         prev.stdenv.hostPlatform == config.nixpkgs.hostPlatform
       ) {
-        # stdenv = prev.stdenv.override {
-        #   cc = next.buildPackages.ccacheWrapper.overrideAttrs (orig: {
-        #     passthru = orig.passthru // {
-        #       # cc = orig.passthru.unwrappedCC;
-        #       cc = prev.stdenv.cc.cc;
-        #     };
-        #     # passthru = next.buildPackages.stdenv.cc.passthru // orig.passthru;
-        #   });
-        #   # cc = prev.stdenv.__bootPackages.ccacheWrapper;
-        # };
-        # stdenv = prev.stdenv.__bootPackages.ccacheStdenv;
-        # stdenv = prev.stdenv.override {
-        #   cc = prev.buildPackages.ccacheWrapper;
-        # };
-
         # XXX: stdenv.cc is the cc-wrapper, from <nixpkgs:pkgs/build-support/cc-wrapper/default.nix>.
         #      always the same.
         # stdenv.cc.cc is either the real gcc (for buildPackages.stdenv), or the ccache (for normal stdenv).
@@ -265,44 +230,6 @@ in
         # stdenv = prev.ccacheStdenv.override { inherit (prev) stdenv; };
       })
 
-      # (next: prev:
-      #   let
-      #     emulated = prev.emulated;
-      #   in {
-      #     # packages which don't "cross compile" from x86_64 -> x86_64
-      #     inherit (emulated)
-      #       # aws-crt-cpp  # "/build/source/include/aws/crt/Optional.h:6:10: fatal error: utility: No such file or directory"
-      #       # # bash  # "configure: error: C compiler cannot create executables"
-      #       # boehmgc  # "gc_badalc.cc:29:10: fatal error: new: No such file or directory <new>"
-      #       # c-ares  # dns-proto.h:11:10: fatal error: memory: No such file or directory
-      #       # db48  # "./db_cxx.h:59:10: fatal error: iostream.h: No such file or directory"
-      #       # # kexec-tools  # "configure: error: C compiler cannot create executables"
-      #       # gmp6  # "configure: error: could not find a working compiler"
-      #       # gtest  # "/build/source/googletest/src/gtest_main.cc:30:10: fatal error: cstdio: No such file or directory"
-      #       # icu72  # "../common/unicode/localpointer.h:45:10: fatal error: memory: No such file or directory"
-      #       # # libidn2  # "configure: error: C compiler cannot create executables"
-      #       # ncurses  # "configure: error: C compiler cannot create executables"
-      #     ;
-
-      #     bash = prev.bash.overrideAttrs (orig: {
-      #       # configure doesn't know how to build because it doesn't know where to find crt1.o.
-      #       # some parts of nixpkgs specify the path to it explicitly:
-      #       # - <nixpkgs:pkgs/development/libraries/gcc/libstdc++/5.nix>
-      #       # - <nixpkgs:pkgs/build-support/cc-wrapper/add-flags.sh>
-      #       # alternatively, the wrapper gcc (first item on PATH if we look at a failed bash's env-vars)
-      #       # adds these flags automatically. so we can probably just tell `configure` to *not* use any special gcc other than the wrapper.
-      #       # TESTING IN PROGRESS:
-      #       # - N.B.: BUILDCC is a vlc-ism!
-      #       # BUILDCC = "${prev.stdenv.cc}/bin/${prev.stdenv.cc.targetPrefix}cc";  # has illegal requisites
-      #       CC = "${prev.stdenv.cc}/bin/${prev.stdenv.cc.targetPrefix}cc";  # XXX: tested in nixpkgs: FAILS WITH SAME SIGNATURE. env-vars doesn't show our CC though :-(
-      #       # ^ env vars set here are making their way through, but something else (build script?) is overwriting it
-      #       SANE_CC = "${prev.stdenv.cc}/bin/${prev.stdenv.cc.targetPrefix}cc";
-      #       # CC = "gcc"  # bash configure.ac
-      #       # CC_FOR_BUILD = "gcc"  # bash configure.ac
-      #       # BUILDCC = "gcc";  # VLC
-      #     });
-      #   }
-      # )
       (nativeSelf: nativeSuper: {
         pkgsi686Linux = nativeSuper.pkgsi686Linux.extend (i686Self: i686Super: {
           # fixes eval-time error: "Unsupported cross architecture"
@@ -390,7 +317,6 @@ in
             #     '@perlbin@' \
             #     '/usr/bin/perl'
             # '';
-            # TODO: test this, alongside native mod_dnssd
             postFixup = upstream.postFixup or "" + ''
               sed -i 's:/replace/with/path/to/perl/interpreter:${next.buildPackages.perl}/bin/perl:' $dev/bin/apxs
             '';
@@ -1140,9 +1066,9 @@ in
             mesonFlags = upstream.mesonFlags ++ [
               "-Dphoc_tests=disabled"  # "tests/meson.build:20:0: ERROR: Program 'phoc' not found or not executable"
             ];
-            postPatch = upstream.postPatch or "" + ''
-              sed -i 's:gio_querymodules = :gio_querymodules = "${next.buildPackages.glib.dev}/bin/gio-querymodules" if True else :' build-aux/post_install.py
-            '';
+            # postPatch = upstream.postPatch or "" + ''
+            #   sed -i 's:gio_querymodules = :gio_querymodules = "${next.buildPackages.glib.dev}/bin/gio-querymodules" if True else :' build-aux/post_install.py
+            # '';
           });
           # phosh-mobile-settings = prev.phosh-mobile-settings.override {
           #   # fixes "meson.build:26:0: ERROR: Dependency "phosh-plugins" not found, tried pkgconfig"
@@ -1291,7 +1217,7 @@ in
 
           spandsp = prev.spandsp.overrideAttrs (upstream: {
             configureFlags = upstream.configureFlags or [] ++ [
-              # experimental solution to runtime error: "undefined symbol: rpl_realloc"
+              # fixes runtime error: "undefined symbol: rpl_realloc"
               # source is <https://github.com/NixOS/nixpkgs/pull/57825>
               "ac_cv_func_malloc_0_nonnull=yes"
               "ac_cv_func_realloc_0_nonnull=yes"

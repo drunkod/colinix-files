@@ -2,11 +2,11 @@
   "nodes": {
     "flake-utils": {
       "locked": {
-        "lastModified": 1659877975,
-        "narHash": "sha256-zllb8aq3YO3h8B/U0/J1WBgAL8EX5yWf5pMj3G0NAmc=",
+        "lastModified": 1676283394,
+        "narHash": "sha256-XX2f9c3iySLCw54rJ/CZs+ZK6IQy7GXNY4nSOyu2QG4=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "c0e246b9b83f637f4681389ecabcb2681b4f3af0",
+        "rev": "3db36a8b464d0c4532ba1c7dda728f4576d6d073",
         "type": "github"
       },
       "original": {
@@ -36,11 +36,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1675958846,
-        "narHash": "sha256-/nf09eM2vey9GrAXoqagccJrBo/fGyVKP7oNSxPqwdo=",
+        "lastModified": 1678202930,
+        "narHash": "sha256-SF82/tTnagdazlETJLzXD9kjZ6lyk38agdLbmMx1UZE=",
         "owner": "edolstra",
         "repo": "nix-serve",
-        "rev": "7089565e260267c9c234a81292c841958737cef6",
+        "rev": "3b6d30016d910a43e0e16f94170440a3e0b8fa8d",
         "type": "github"
       },
       "original": {
@@ -82,11 +82,11 @@
     },
     "nixpkgs-unpatched": {
       "locked": {
-        "lastModified": 1677932085,
-        "narHash": "sha256-+AB4dYllWig8iO6vAiGGYl0NEgmMgGHpy9gzWJ3322g=",
+        "lastModified": 1678293141,
+        "narHash": "sha256-lLlQHaR0y+q6nd6kfpydPTGHhl1rS9nU9OQmztzKOYs=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "3c5319ad3aa51551182ac82ea17ab1c6b0f0df89",
+        "rev": "c90c4025bb6e0c4eaf438128a3b2640314b1c58d",
         "type": "github"
       },
       "original": {
@@ -113,11 +113,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1677987270,
-        "narHash": "sha256-NRqhY8jbrmP1C6oiVqv1T0T1r560eo4ZpmEdHoQmKj4=",
+        "lastModified": 1678264398,
+        "narHash": "sha256-COgbuQH/oAQZUBFTTQgSifabzZ5/GRCCbBIqZJjR3s0=",
         "owner": "Mic92",
         "repo": "sops-nix",
-        "rev": "7cff56b43952edc5a2c212076d5fc922f764240f",
+        "rev": "00e9e9cd46600d68dd98a392025d4894c3711b58",
         "type": "github"
       },
       "original": {
@@ -134,11 +134,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1675131883,
-        "narHash": "sha256-yBgJDG72YqIr1bltasqHD1E/kHc9uRFgDjxDmy6kI8M=",
+        "lastModified": 1678438369,
+        "narHash": "sha256-GfhWNvAfNZpvP5RZo1yetgJ5+eAp+zlkjS2+YJqN8fs=",
         "ref": "refs/heads/master",
-        "rev": "b099c24091cc192abf3997b94342d4b31cc5757b",
-        "revCount": 170,
+        "rev": "9b549e42da18218e46d1bf217b5eb81c0c4caf11",
+        "revCount": 173,
         "type": "git",
         "url": "https://git.uninsane.org/colin/uninsane"
       },

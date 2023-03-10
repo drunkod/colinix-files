@@ -162,7 +162,7 @@ let
       "gnome.nautilus"
       # gnome-podcasts
       "gnome.gnome-system-monitor"
-      "gnome.gnome-terminal"  # works on phosh
+      # "gnome.gnome-terminal"  # works on phosh
       "gnome.gnome-weather"
       gpodder-configured
       gthumb

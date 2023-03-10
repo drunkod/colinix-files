@@ -15,6 +15,7 @@
   # so just forward the unstable packages.
   inherit (next.stable or prev)
   ;
-  # TODO(2023/03/09): chromium 110.0.5481.177 build hangs. next flake update should resolve?
-  chromium = next.emptyDirectory;
+  # chromium can take 4 hours to build from source, with no signs of progress.
+  # disable it if you're in a rush.
+  # chromium = next.emptyDirectory;
 })
