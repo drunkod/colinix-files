@@ -203,6 +203,7 @@ let
       gimp  # broken on phosh
       "gnome.gnome-disk-utility"
       handbrake
+      hase
       inkscape
       kdenlive
       kid3  # audio tagging

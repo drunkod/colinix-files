@@ -43,6 +43,8 @@
     hash = "sha256-hx2keVWuokla2Oi92zoXsnjVuwakxL2cB55ctzlO8OQ=";
   })
 
+  ./2023-03-10-hase.patch
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
