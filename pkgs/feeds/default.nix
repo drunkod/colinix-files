@@ -1,5 +1,7 @@
 { lib
 , callPackage
+, python3
+, stdenv
 , writeShellScript
 }:
 
@@ -17,8 +19,24 @@ let
   update-scripts = lib.mapAttrsToList
     (name: feed: builtins.concatStringsSep " " feed.passthru.updateScript)
     feed-pkgs;
-in {
+in rec {  # TODO: make this a scope
   inherit feed-pkgs;
+  update = stdenv.mkDerivation {
+    pname = "update";
+    version = "0.1.0";
+    src = ./.;
+    patchPhase =
+      let
+        pyEnv = python3.withPackages (ps: [ ps.feedsearch-crawler ]);
+      in ''
+      substituteInPlace ./update.py \
+        --replace "#!/usr/bin/env nix-shell" "#!${pyEnv.interpreter}"
+    '';
+    installPhase = ''
+      mkdir -p $out/bin
+      mv update.py $out/bin/update.py
+    '';
+  };
   passthru = {
     updateScript = writeShellScript
       "feeds-update"
@@ -43,7 +61,7 @@ in {
         # but in a way where the least could go wrong.
         pushd "$sources_dir"; mkdir -p "$name"; popd
 
-        ${./update.py} "$name" "$json_path"
+        ${update}/bin/update.py "$name" "$json_path"
         cat "$json_path"
       '';
   };
