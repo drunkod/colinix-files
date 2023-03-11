@@ -117,6 +117,10 @@ let
     (fromDb "semiaccurate.com" // tech)
     (mkText "https://linuxphoneapps.org/blog/atom.xml" // tech // infrequent)
     (fromDb "spectrum.ieee.org" // tech)
+    (fromDb "thisweek.gnome.org" // tech)
+    # more nixos stuff here, but unclear how to subscribe: <https://nixos.org/blog/categories.html>
+    (mkText "https://nixos.org/blog/announcements-rss.xml" // tech // infrequent)
+    (mkText "https://nixos.org/blog/stories-rss.xml" // tech // weekly)
     ## n.b.: quality RSS list here: <https://forum.merveilles.town/thread/57/share-your-rss-feeds%21-6/>
     (mkText "https://forum.merveilles.town/rss.xml" // pol // infrequent)
 
@@ -125,7 +129,6 @@ let
 
     # DEVELOPERS
     (fromDb "uninsane.org" // tech)
-    (fromDb "thisweek.gnome.org" // tech)
     (fromDb "ascii.textfiles.com" // tech)  # Jason Scott
     (fromDb "mg.lol" // tech)
     (fromDb "drewdevault.com" // tech)
