@@ -125,6 +125,7 @@ let
 
     # DEVELOPERS
     (fromDb "uninsane.org" // tech)
+    (fromDb "thisweek.gnome.org" // tech)
     (fromDb "ascii.textfiles.com" // tech)  # Jason Scott
     (fromDb "mg.lol" // tech)
     (fromDb "drewdevault.com" // tech)
