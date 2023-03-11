@@ -37,32 +37,32 @@ in rec {  # TODO: make this a scope
       mv update.py $out/bin/update.py
     '';
   };
+  init-feed = writeShellScript
+    "init-feed"
+    ''
+      # this is the `nix run '.#init-feed' <url>` script`
+      sources_dir=modules/data/feeds/sources
+      # prettify the URL, by default
+      name=$( \
+        echo "$1" \
+        | sed 's|^https://||' \
+        | sed 's|^http://||' \
+        | sed 's|^www\.||' \
+        | sed 's|/+$||' \
+      )
+      json_path="$sources_dir/$name/default.json"
+
+      # the name could have slashes in it, so we want to mkdir -p that
+      # but in a way where the least could go wrong.
+      pushd "$sources_dir"; mkdir -p "$name"; popd
+
+      ${update}/bin/update.py "$name" "$json_path"
+      cat "$json_path"
+    '';
   passthru = {
     updateScript = writeShellScript
       "feeds-update"
       (builtins.concatStringsSep "\n" update-scripts);
-
-    initFeedScript = writeShellScript
-      "init-feed"
-      ''
-        # this is the `nix run '.#init-feed' <url>` script`
-        sources_dir=modules/data/feeds/sources
-        # prettify the URL, by default
-        name=$( \
-          echo "$1" \
-          | sed 's|^https://||' \
-          | sed 's|^http://||' \
-          | sed 's|^www\.||' \
-          | sed 's|/+$||' \
-        )
-        json_path="$sources_dir/$name/default.json"
-
-        # the name could have slashes in it, so we want to mkdir -p that
-        # but in a way where the least could go wrong.
-        pushd "$sources_dir"; mkdir -p "$name"; popd
-
-        ${update}/bin/update.py "$name" "$json_path"
-        cat "$json_path"
-      '';
+    initFeedScript = init-feed;
   };
 }
