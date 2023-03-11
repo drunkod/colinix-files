@@ -3,11 +3,18 @@
 let
   inherit (lib) mkIf mkMerge mkOption types;
   inherit (config.programs.ccache) cacheDir;
+  cfg = config.sane.roles.build-machine;
 in
 {
-  options.sane.roles.build-machine = mkOption {
-    type = types.bool;
-    default = false;
+  options.sane.roles.build-machine = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+    };
+    emulation = mkOption {
+      type = types.bool;
+      default = true;
+    };
   };
 
   config = mkMerge [
@@ -30,13 +37,13 @@ in
       #   })
       # ];
     }
-    (mkIf config.sane.roles.build-machine {
+    (mkIf cfg.enable {
       # serve packages to other machines that ask for them
       sane.services.nixserve.enable = true;
 
       # enable cross compilation
       # TODO: do this via stdenv injection, linking into /run/binfmt the stuff in <nixpkgs:nixos/modules/system/boot/binfmt.nix>
-      boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+      boot.binfmt.emulatedSystems = lib.optional cfg.emulation [ "aarch64-linux" ];
       # corresponds to env var: NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1
       # nixpkgs.config.allowUnsupportedSystem = true;
 

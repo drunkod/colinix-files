@@ -28,8 +28,9 @@ in
     sane.nixcache.substituters = mkOption {
       type = types.listOf types.string;
       default =
+        # TODO: make these blacklisted entries injectable
         (lib.optional (hostName != "servo") "https://nixcache.uninsane.org")
-        ++ (lib.optional (hostName != "desko") "http://desko:5000")
+        ++ (lib.optional (hostName != "servo" && hostName != "desko") "http://desko:5000")
         ++ [
           "https://nix-community.cachix.org"
           "https://cache.nixos.org/"

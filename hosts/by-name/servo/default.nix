@@ -15,7 +15,8 @@
     signaldctl.enableFor.user.colin = true;
   };
 
-  sane.roles.build-machine = true;
+  sane.roles.build-machine.enable = true;
+  sane.roles.build-machine.emulation = false;
   sane.zsh.showDeadlines = false;  # ~/knowledge doesn't always exist
   sane.services.dyn-dns.enable = true;
   sane.services.wg-home.enable = true;
