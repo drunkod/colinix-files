@@ -4,7 +4,7 @@
     sane = rec {
       #### my own, non-upstreamable packages:
       sane-scripts = callPackage ../pkgs/sane-scripts { };
-      feeds = callPackage ../pkgs/feeds { };
+      feeds = recurseIntoAttrs (callPackage ../pkgs/feeds { });
       tow-boot-pinephone = callPackage ../pkgs/tow-boot-pinephone { };
       tow-boot-rpi4 = callPackage ../pkgs/tow-boot-rpi4 { };
       bootpart-uefi-x86_64 = callPackage ../pkgs/bootpart-uefi-x86_64 { };
