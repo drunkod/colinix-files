@@ -61,7 +61,7 @@
     ...
   }@inputs:
     let
-      inherit (builtins) attrNames listToAttrs map mapAttrs;
+      inherit (builtins) attrNames elem listToAttrs map mapAttrs;
       mapAttrs' = f: set:
         listToAttrs (map (attr: f attr set.${attr}) (attrNames set));
       # mapAttrs but without the `name` argument
@@ -92,9 +92,9 @@
               self.nixosModules.passthru
               {
                 nixpkgs.overlays = [
-                  self.overlays.default
                   self.overlays.passthru
                   self.overlays.pins
+                  self.overlays.pkgs
                   # self.overlays.optimizations
                 ];
                 nixpkgs.hostPlatform = target;
@@ -157,19 +157,21 @@
       # unofficial output
       host-pkgs = mapAttrValues (host: host.config.system.build.pkgs) self.nixosConfigurations;
 
-      overlays = rec {
-        default = pkgs;
-        pkgs = import ./overlays/pkgs.nix;
-        pins = import ./overlays/pins.nix;  # TODO: move to `nixpatches/` input
-        optimizations = import ./overlays/optimizations.nix;
-        passthru =
+      overlays = {
+        # N.B.: `nix flake check` requires every overlay to take `final: prev:` at defn site,
+        #   hence the weird redundancy.
+        default = final: prev: self.overlays.pkgs final prev;
+        pkgs = final: prev: import ./overlays/pkgs.nix final prev;
+        pins = final: prev: import ./overlays/pins.nix final prev;
+        optimizations = final: prev: import ./overlays/optimizations.nix final prev;
+        passthru = final: prev:
           let
             stable =
               if inputs ? "nixpkgs-stable" then (
-                next: prev: {
-                  stable = inputs.nixpkgs-stable.legacyPackages."${prev.stdenv.hostPlatform.system}";
+                final': prev': {
+                  stable = inputs.nixpkgs-stable.legacyPackages."${prev'.stdenv.hostPlatform.system}";
                 }
-              ) else (next: prev: {});
+              ) else (final': prev': {});
             mobile = (import "${mobile-nixos}/overlay/overlay.nix");
             uninsane = uninsane-dot-org.overlay;
             # nix-serve' = nix-serve.overlay;
@@ -180,11 +182,10 @@
               inherit (nix-serve.packages."${next.system}") nix-serve;
             };
           in
-            next: prev:
-              (stable next prev)
-              // (mobile next prev)
-              // (uninsane next prev)
-              // (nix-serve' next prev)
+              (stable final prev)
+              // (mobile final prev)
+              // (uninsane final prev)
+              // (nix-serve' final prev)
             ;
       };
 
@@ -209,10 +210,24 @@
           aarch64-linux = allPkgsFor "aarch64-linux";
         };
 
-      # extract only our own packages from the full set
-      packages = mapAttrValues
-        (full: full.sane // { inherit (full) sane uninsane-dot-org; })
-        self.legacyPackages;
+      # extract only our own packages from the full set.
+      # because of `nix flake check`, we flatten the package set and only surface x86_64-linux packages.
+      packages = mapAttrs
+        (system: allPkgs:
+          allPkgs.lib.filterAttrs (name: pkg:
+            # keep only packages which will pass `nix flake check`, i.e. keep only:
+            # - derivations (not package sets)
+            # - packages that build for the given platform
+            (! elem name [ "feeds" "pythonPackagesExtensions" ])
+            && (allPkgs.lib.meta.availableOn allPkgs.stdenv.hostPlatform pkg)
+          )
+          (allPkgs.sane // {
+            inherit (allPkgs) uninsane-dot-org;
+          })
+        )
+        # self.legacyPackages;
+        { inherit (self.legacyPackages) x86_64-linux; }
+      ;
 
       apps."x86_64-linux" =
         let
