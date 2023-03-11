@@ -25,6 +25,7 @@
   };
   sops.secrets."mautrix_signal_env" = {
     sopsFile = ../../../secrets/servo/mautrix_signal_env.bin;
+    format = "binary";
   };
 
   sops.secrets."mediawiki_pw" = {

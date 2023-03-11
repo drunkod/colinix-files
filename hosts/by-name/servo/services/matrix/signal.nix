@@ -7,6 +7,9 @@
     { user = "signald"; group = "signald"; directory = "/var/lib/signald"; }
   ];
 
+  # allow synapse to read the registration file
+  users.users.matrix-synapse.extraGroups = [ "mautrix-signal" ];
+
   services.signald.enable = true;
   services.mautrix-signal.enable = true;
   services.mautrix-signal.environmentFile =
@@ -27,7 +30,6 @@
   };
 
   sops.secrets."mautrix_signal_env" = {
-    format = "binary";
     mode = "0440";
     owner = config.users.users.mautrix-signal.name;
     group = config.users.users.matrix-synapse.name;

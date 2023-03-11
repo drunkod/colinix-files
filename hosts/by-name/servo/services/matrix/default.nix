@@ -6,11 +6,9 @@
   imports = [
     ./discord-puppet.nix
     # ./irc.nix
-    ./signal.nix
+    # TODO(2023/03/10): disabled because it's not bridging and mautrix_signal is hogging CPU
+    # ./signal.nix
   ];
-
-  # allow synapse to read the registration files of its appservices
-  users.users.matrix-synapse.extraGroups = [ "mautrix-signal" ];
 
   sane.persist.sys.plaintext = [
     { user = "matrix-synapse"; group = "matrix-synapse"; directory = "/var/lib/matrix-synapse"; }
