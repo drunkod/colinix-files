@@ -10,7 +10,6 @@
   sane.services.wg-home.ip = config.sane.hosts.by-name."desko".wg-home.ip;
   sane.services.duplicity.enable = true;
   sane.services.nixserve.sopsFile = ../../../secrets/desko.yaml;
-  sane.persist.enable = true;
 
   sane.gui.sway.enable = true;
   sane.programs.iphoneUtils.enableFor.user.colin = true;

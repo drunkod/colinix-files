@@ -16,7 +16,6 @@
   };
 
   sane.roles.build-machine = true;
-  sane.persist.enable = true;
   sane.zsh.showDeadlines = false;  # ~/knowledge doesn't always exist
   sane.services.dyn-dns.enable = true;
   sane.services.wg-home.enable = true;

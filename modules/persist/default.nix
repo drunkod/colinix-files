@@ -124,6 +124,9 @@ let
   #   <option>.private.".cache/vim" = { mode = "0700"; };
   # to place ".cache/vim" into the private store and create with the appropriate mode
   dirsSubModule = types.submodule ({ config, ... }: {
+    # TODO: this should be a plain-old `attrsOf (convertInlineAcl entryInStoreOrShorthand)` with downstream checks,
+    #   rather than being filled in based on *other* settings.
+    #   otherwise, it behaves poorly when `sane.persist.enable = false`
     options = lib.attrsets.unionOfDisjoint
       (mapAttrs (store: store-cfg: mkOption {
         default = [];
