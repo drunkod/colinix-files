@@ -15,10 +15,24 @@ in
       type = types.bool;
       default = true;
     };
+    ccache = mkOption {
+      type = types.bool;
+      default = true;
+    };
   };
 
   config = mkMerge [
-    {
+    (mkIf cfg.enable {
+      # serve packages to other machines that ask for them
+      sane.services.nixserve.enable = true;
+
+      # enable cross compilation
+      # TODO: do this via stdenv injection, linking into /run/binfmt the stuff in <nixpkgs:nixos/modules/system/boot/binfmt.nix>
+      boot.binfmt.emulatedSystems = lib.optionals cfg.emulation [ "aarch64-linux" ];
+      # corresponds to env var: NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1
+      # nixpkgs.config.allowUnsupportedSystem = true;
+    })
+    (mkIf (cfg.enable && cfg.ccache) {
       # programs.ccache.cacheDir = "/var/cache/ccache";  # nixos default
       # programs.ccache.cacheDir = "/homeless-shelter/.ccache";  # ccache default (~/.ccache)
 
@@ -36,16 +50,6 @@ in
       #     };
       #   })
       # ];
-    }
-    (mkIf cfg.enable {
-      # serve packages to other machines that ask for them
-      sane.services.nixserve.enable = true;
-
-      # enable cross compilation
-      # TODO: do this via stdenv injection, linking into /run/binfmt the stuff in <nixpkgs:nixos/modules/system/boot/binfmt.nix>
-      boot.binfmt.emulatedSystems = lib.optionals cfg.emulation [ "aarch64-linux" ];
-      # corresponds to env var: NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1
-      # nixpkgs.config.allowUnsupportedSystem = true;
 
       # granular compilation cache
       # docs: <https://nixos.wiki/wiki/CCache>
