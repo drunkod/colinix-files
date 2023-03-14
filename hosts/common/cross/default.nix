@@ -57,6 +57,9 @@
 #     """
 
 # TODO:
+# - emulated `stdenv`:
+#   - qchem overrides stdenv.mkDerivation:
+#     <nur-combined:repos/qchem/default.nix>
 # - fix(journalctl) "gnome-terminal-server[126562]: Installed schemas failed verification: Schema "org.gtk.Settings.Debug" is missing"
 # - fix firefox build so that it doesn't invoke clang w/o the ccache
 # - qt6.qtbase. cross compiling documented in upstream <qt6:qtbase/cmake/README.md>
@@ -90,7 +93,9 @@ let
     (import ./../../../overlays/pins.nix)
   ] ++ crossOnlyUniversalOverlays;
 
-  # TODO: can we grab this more directly from pkgs?
+  # from a cross-compiled package set, build a package set that builds from the host for the host.
+  # this forces an emulated build, or for the build to be run on a host-like machine.
+  # nix emulates using binfmt -- which is impure and has to be configured externally.
   mkEmulated = pkgs:
     import pkgs.path {
       # system = pkgs.stdenv.hostPlatform.system;
@@ -99,6 +104,129 @@ let
       # config = builtins.removeAttrs config.nixpkgs.config [ "replaceStdenv" ];
       overlays = universalOverlays;
     };
+
+  # attempts to build emulated package sets without binfmt, using userland qemu instead.
+  # it fails, notably because bash running under qemu-aarch64 spawns x86_64 binaries when it shells out.
+  # i.e. qemu doesn't wrap syscalls like `exec`.
+  # mkEmulated = pkgs':
+  #   import pkgs'.path {
+  #     localSystem = pkgs'.stdenv.hostPlatform.system;
+  #     overlays = universalOverlays;
+  #     config = config.nixpkgs.config // {
+  #       # doesn't work: `pkgs.stdenv` does not exist
+  #       # replaceStdenv = pkgs: pkgs.stdenv.override (emuStdenvArgs: {
+  #       #   name = emuStdenvArgs.name + "-pseudo_cross";
+  #       #   inherit (pkgs'.stdenv) buildPlatform;
+  #       #   shell =
+  #       #     let
+  #       #       qemu = pkgs'.stdenv.hostPlatform.emulator pkgs'.buildPackages;
+  #       #       hostShell = emuStdenvArgs.shell;
+  #       #     in pkgs'.buildPackages.writeShellScript "bash" ''
+  #       #       ${qemu} ${hostShell}/bin/bash $@
+  #       #     '';
+  #       #   extraAttrs = {
+  #       #     buildPlatform = emuStdenvArgs.buildPlatform;
+  #       #   };
+  #       # });
+  #       replaceStdenv = pkgs: pkgs'.stdenv.override (crossStdenvArgs: {
+  #         name = crossStdenvArgs.name + "-pseudo_cross";
+  #         # buildPlatform = crossStdenvArgs.hostPlatform // {
+  #         #   inherit (crossStdenvArgs.buildPlatform) system;
+  #         # };
+  #         shell =
+  #           let
+  #             qemu = pkgs'.stdenv.hostPlatform.emulator pkgs'.buildPackages;
+  #             hostShell = pkgs.bash;
+  #           in pkgs'.buildPackages.writeShellScript "bash" ''
+  #             ${qemu} ${hostShell}/bin/bash $@
+  #           '';
+  #         extraAttrs = {
+  #           buildPlatform = crossStdenvArgs.hostPlatform;
+  #         };
+  #       });
+  #     };
+  #   };
+
+  # mkEmulated = pkgs': pkgs'.extend (final: pkgs:
+  #   lib.optionalAttrs (pkgs.stdenv.buildPlatform != pkgs.stdenv.hostPlatform) {
+  # XXX: this one works only if we assign stdenv via `//`, not as an overlay
+  # mkEmulated = pkgs: pkgs // ({
+  #   stdenv = pkgs.stdenv.override (crossStdenvArgs: {
+  #     name = crossStdenvArgs.name + "-pseudo_cross";
+  #     # buildPlatform = crossStdenvArgs.hostPlatform // {
+  #     #   inherit (crossStdenvArgs.buildPlatform) system;
+  #     # };
+  #     shell =
+  #       let
+  #         qemu = pkgs'.stdenv.hostPlatform.emulator pkgs'.buildPackages;
+  #         hostShell = pkgs'.bash;
+  #       in pkgs.buildPackages.writeShellScript "bash" ''
+  #         ${qemu} ${hostShell}/bin/bash $@
+  #       '';
+  #     extraAttrs = {
+  #       # fake it for anyone who queries `stdenv.buildPlatform`,
+  #       # particularly `stdenv.buildPlatform == stdenv.hostPlatform`
+  #       # and `stdenv.buildPlatform.system`.
+  #       # this tricks even `stdenv.mkDerivation` into thinking it's building on a different platform than it actually is.
+  #       buildPlatform = crossStdenvArgs.hostPlatform;
+  #     };
+  #     # shell = "/dead" + crossStdenvArgs.shell;
+  #     # extraAttrs = {
+  #     #   system = crossStdenvArgs.buildPlatform;
+  #     #   # buildPlatform = crossStdenvArgs.hostPlatform;
+  #     # };
+  #   });
+  # });
+
+  # mkEmulated = pkgs: pkgs.extend (final: crossPkgs: {
+  #   stdenv = crossPkgs.stdenv.override (crossStdenvArgs: {
+  #     buildPlatform = crossPkgs.stdenv.hostPlatform;
+  #     # buildPlatform = crossStdenvArgs.hostPlatform;
+  #     # shell = # TODO: set this to a qemu-emulated version of the old shell?
+
+  #     # extraAttrs = {
+  #     #   # trick nix into believing this package is still *buildable* by the real build system,
+  #     #   # while hopefully not impacting anything higher level.
+  #     #   system = crossStdenvArgs.buildPlatform.system;
+  #     #   # inherit
+  #     #   #   (
+  #     #   #     crossPkgs.stdenv.override (crossStdenvArgs': {
+  #     #   #       buildPlatform = crossStdenvArgs'.hostPlatform // {
+  #     #   #         inherit (crossStdenvArgs'.buildPlatform) system;
+  #     #   #       };
+  #     #   #     })
+  #     #   #   )
+  #     #   #   mkDerivation;
+  #     # };
+
+  #     # mkDerivationFromStdenv = stdenvFromPkgs: crossStdenv.mkDerivationFromStdenv stdenvFromPkgs.override (nearlyStdenvFromPkgs: {
+  #     #   # mkDerivation sets the `derivation`'s `system` attribute from `stdenv.buildPlatform.system`,
+  #     #   # so we have no way to avoid providing it with a cross-like stdenv.
+  #     #   # this stdenv changes a few behaviors of `mkDerivation` (most of which we can patch), but isn't
+  #     #   # exposed to any code outside that `mkDerivation` function, so the impacted scope is limited.
+  #     #   buildPlatform = nearlyStdenvFromPkgs.buildPlatform // {
+  #     #     # TODO: can we inherit `nearlyStdenvFromPkgs.system` instead?
+  #     #     inherit (crossStdenv.buildPlatform) system;
+  #     #   };
+  #     #   # shell = # TODO: set this to a qemu-emulated version of the old shell?
+  #     # });
+
+  #     # mkDerivationFromStdenv = stdenvFromPkgs: (
+  #     #   stdenvFromPkgs.override (nearlyStdenvFromPkgs: {
+  #     #     # mkDerivation sets the `derivation`'s `system` attribute from `stdenv.buildPlatform.system`,
+  #     #     # so we have no way to avoid providing it with a cross-like stdenv.
+  #     #     # this stdenv changes a few behaviors of `mkDerivation` (most of which we can patch), but isn't
+  #     #     # exposed to any code outside that `mkDerivation` function, so the impacted scope is limited.
+  #     #     buildPlatform = nearlyStdenvFromPkgs.buildPlatform // {
+  #     #       # TODO: can we inherit `nearlyStdenvFromPkgs.system` instead?
+  #     #       inherit (crossStdenv.buildPlatform) system;
+  #     #     };
+  #     #     # shell = # TODO: set this to a qemu-emulated version of the old shell?
+  #     #   })
+  #     # ).mkDerivation;
+
+  #   });
+  # });
 
   ## package override helpers
   addInputs = { buildInputs ? [], nativeBuildInputs ? [], depsBuildBuild ? [] }: pkg: pkg.overrideAttrs (upstream: {
@@ -198,7 +326,11 @@ in
     # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
     nixpkgs.overlays = crossOnlyUniversalOverlays ++ [
       (next: prev: {
-        emulated = mkEmulated prev;
+        emulated = if (prev.stdenv.hostPlatform != prev.stdenv.buildPlatform) then
+          mkEmulated prev
+        else
+          prev
+        ;
       })
 
       (next: prev: lib.optionalAttrs (
