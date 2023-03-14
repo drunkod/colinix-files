@@ -333,34 +333,34 @@ in
         ;
       })
 
-      (next: prev: lib.optionalAttrs (
-        # we want to affect only the final bootstrap stage, identified by:
-        # - buildPlatform = local,
-        # - targetPlatform = cross,
-        # - hostPlatform = cross
-        # and specifically in the event of `pkgsCross` sets -- e.g. the `pkgsCross.wasi32` used by firefox
-        # -- we want to *not* override the stdenv. it's theoretically possible, but doing so breaks firefox.
-        prev.stdenv.buildPlatform != prev.stdenv.hostPlatform &&
-        prev.stdenv.hostPlatform == prev.stdenv.targetPlatform &&
-        prev.stdenv.hostPlatform == config.nixpkgs.hostPlatform
-      ) {
-        # XXX: stdenv.cc is the cc-wrapper, from <nixpkgs:pkgs/build-support/cc-wrapper/default.nix>.
-        #      always the same.
-        # stdenv.cc.cc is either the real gcc (for buildPackages.stdenv), or the ccache (for normal stdenv).
-        stdenv = prev.stdenv.override {
-          cc = prev.stdenv.cc.override {
-            # cc = prev.buildPackages.ccacheWrapper;
-            cc = (prev.buildPackages.ccacheWrapper.override {
-              cc = prev.stdenv.cc;
-             }).overrideAttrs (_orig: {
-               # some things query stdenv.cc.cc.version, etc (rarely), so pass those through
-               passthru = prev.stdenv.cc.cc;
-            });
-          };
-        };
-        # stdenv = prev.buildPackages.ccacheStdenv;
-        # stdenv = prev.ccacheStdenv.override { inherit (prev) stdenv; };
-      })
+      # (next: prev: lib.optionalAttrs (
+      #   # we want to affect only the final bootstrap stage, identified by:
+      #   # - buildPlatform = local,
+      #   # - targetPlatform = cross,
+      #   # - hostPlatform = cross
+      #   # and specifically in the event of `pkgsCross` sets -- e.g. the `pkgsCross.wasi32` used by firefox
+      #   # -- we want to *not* override the stdenv. it's theoretically possible, but doing so breaks firefox.
+      #   prev.stdenv.buildPlatform != prev.stdenv.hostPlatform &&
+      #   prev.stdenv.hostPlatform == prev.stdenv.targetPlatform &&
+      #   prev.stdenv.hostPlatform == config.nixpkgs.hostPlatform
+      # ) {
+      #   # XXX: stdenv.cc is the cc-wrapper, from <nixpkgs:pkgs/build-support/cc-wrapper/default.nix>.
+      #   #      always the same.
+      #   # stdenv.cc.cc is either the real gcc (for buildPackages.stdenv), or the ccache (for normal stdenv).
+      #   stdenv = prev.stdenv.override {
+      #     cc = prev.stdenv.cc.override {
+      #       # cc = prev.buildPackages.ccacheWrapper;
+      #       cc = (prev.buildPackages.ccacheWrapper.override {
+      #         cc = prev.stdenv.cc;
+      #        }).overrideAttrs (_orig: {
+      #          # some things query stdenv.cc.cc.version, etc (rarely), so pass those through
+      #          passthru = prev.stdenv.cc.cc;
+      #       });
+      #     };
+      #   };
+      #   # stdenv = prev.buildPackages.ccacheStdenv;
+      #   # stdenv = prev.ccacheStdenv.override { inherit (prev) stdenv; };
+      # })
 
       (nativeSelf: nativeSuper: {
         pkgsi686Linux = nativeSuper.pkgsi686Linux.extend (i686Self: i686Super: {
