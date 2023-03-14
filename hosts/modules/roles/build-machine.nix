@@ -43,7 +43,7 @@ in
 
       # enable cross compilation
       # TODO: do this via stdenv injection, linking into /run/binfmt the stuff in <nixpkgs:nixos/modules/system/boot/binfmt.nix>
-      boot.binfmt.emulatedSystems = lib.optional cfg.emulation [ "aarch64-linux" ];
+      boot.binfmt.emulatedSystems = lib.optionals cfg.emulation [ "aarch64-linux" ];
       # corresponds to env var: NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1
       # nixpkgs.config.allowUnsupportedSystem = true;
 
