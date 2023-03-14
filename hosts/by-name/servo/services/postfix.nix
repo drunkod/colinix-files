@@ -30,11 +30,14 @@ in
   ];
 
   networking.firewall.allowedTCPPorts = [
-    25   # SMTP
+    # exposed over non-vpn imap.uninsane.org
     143  # IMAP
+    993  # IMAPS
+
+    # exposed over vpn mx.uninsane.org
+    25   # SMTP
     465  # SMTPS
     587  # SMTPS/submission
-    993  # IMAPS
   ];
 
   # exists only to manage certs for dovecot
