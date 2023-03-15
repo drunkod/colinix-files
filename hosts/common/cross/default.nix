@@ -71,6 +71,11 @@
 # - `host-pkgs.cross-desko.stdenv` fails build:
 #   - #cross-compiling:nixos.org says pkgsCross.gnu64 IS KNOWN TO NOT COMPILE. let this go for now:
 
+# Nixpkgs PR tracker:
+# - browserpass (2023/03/14): <https://github.com/NixOS/nixpkgs/pull/221310>
+# - gupnp_1_6 (2023/03/14): <https://github.com/NixOS/nixpkgs/pull/221308>
+# - libmbim (2023/02/22, not mine): <https://github.com/NixOS/nixpkgs/pull/217701>
+
 
 { config, lib, options, pkgs, ... }:
 
