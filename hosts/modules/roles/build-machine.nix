@@ -1,4 +1,4 @@
-{ config, lib, sane-lib, ... }:
+{ config, lib, pkgs, sane-lib, ... }:
 
 let
   inherit (lib) mkIf mkMerge mkOption types;
@@ -22,7 +22,13 @@ in
   };
 
   config = mkMerge [
+    ({
+      sane.programs.qemu = pkgs.qemu;
+    })
     (mkIf cfg.enable {
+      # enable opt-in emulation of any package at runtime.
+      # i.e. `nix build '.#host-pkgs.moby.bash' ; qemu-aarch64 ./result/bin/bash`.
+      sane.programs.qemu.enableFor.user.colin = true;
       # serve packages to other machines that ask for them
       sane.services.nixserve.enable = true;
 
