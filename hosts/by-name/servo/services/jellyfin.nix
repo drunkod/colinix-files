@@ -1,8 +1,20 @@
+# configuration options (today i don't store my config in nix):
+#
+# - jellyfin-web can be statically configured (result/share/jellyfin-web/config.json)
+#   - <https://jellyfin.org/docs/general/clients/web-config>
+#   - configure server list, plugins, "menuLinks", colors
+#
+# - jellfyin server is configured in /var/lib/jellfin/
+#   - root/default/<LibraryType>/
+#     - <LibraryName>.mblink: contains the directory name where this library lives
+#     - options.xml: contains preferences which were defined in the web UI during import
+#       - e.g. `EnablePhotos`, `EnableChapterImageExtraction`, etc.
+#   - config/encoding.xml: transcoder settings
+#   - config/system.xml: misc preferences like log file duration, audiobook resume settings, etc.
+#   - data/jellyfin.db: maybe account definitions? internal state?
+
 { config, lib, ... }:
 
-# TODO: re-enable after migrating media dir to /var/lib/uninsane/media
-# else it's too spammy
-lib.mkIf false
 {
   networking.firewall.allowedUDPPorts = [
     1900 7359 # DLNA: https://jellyfin.org/docs/general/networking/index.html
