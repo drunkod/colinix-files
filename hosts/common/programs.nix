@@ -16,6 +16,7 @@ let
     "gnome.gnome-system-monitor" = gnome.gnome-system-monitor;
     "gnome.gnome-terminal" = gnome.gnome-terminal;
     "gnome.gnome-weather" = gnome.gnome-weather;
+    "gnome.totem" = gnome.totem;
     "libsForQt5.plasmatube" = libsForQt5.plasmatube;
   });
 
@@ -202,9 +203,11 @@ let
       gajim  # XMPP client
       gimp  # broken on phosh
       "gnome.gnome-disk-utility"
+      # "gnome.totem"  # video player, supposedly supports UPnP
       handbrake
       hase
       inkscape
+      jellyfin-media-player  # TODO: try on moby!
       kdenlive
       kid3  # audio tagging
       krita
@@ -322,6 +325,11 @@ in
         # XXX: we preserve the whole thing because if we only preserve gPodder/Downloads
         #   then startup is SLOW during feed import, and we might end up with zombie eps in the dl dir.
         gpodder-configured.dir = [ "gPodder" ];
+
+        # jellyfin stores things in a bunch of directories: this one persists auth info.
+        # it *might* be possible to populate this externally (it's Qt stuff), but likely to
+        # be fragile and take an hour+ to figure out.
+        jellyfin-media-player.dir = [ ".local/share/Jellyfin Media Player" ];
 
         # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
         # XXX: is it really safe to persist this? it doesn't have info that could de-anonymize if captured?
