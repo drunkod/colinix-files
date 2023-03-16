@@ -150,6 +150,9 @@ let
     (fromDb "jefftk.com" // tech)
     (fromDb "pomeroyb.com" // tech)
 
+    # TECH PROJECTS
+    (fromDb "blog.rust-lang.org" // tech)
+
     # (TECH; POL) COMMENTATORS
     ## Matt Webb -- engineering-ish, but dreamy
     (fromDb "interconnected.org/home/feed" // rat)
