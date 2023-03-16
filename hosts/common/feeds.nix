@@ -149,6 +149,7 @@ let
     (mkText "https://anish.lakhwara.com/home.html" // tech // weekly)
     (fromDb "jefftk.com" // tech)
     (fromDb "pomeroyb.com" // tech)
+    (mkText "https://til.simonwillison.net/tils/feed.atom" // tech // weekly)
 
     # TECH PROJECTS
     (fromDb "blog.rust-lang.org" // tech)
