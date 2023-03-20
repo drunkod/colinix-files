@@ -11,5 +11,6 @@
     ./roles
     ./services
     ./wg-home.nix
+    ./yggdrasil.nix
   ];
 }
