@@ -107,6 +107,8 @@ let
     (fromDb "seattlenice.buzzsprout.com" // pol)
     ## Sci-Fi? has Peter Watts; author of No Moods, Ads or Cutesy Fucking Icons (rifters.com)
     (fromDb "talesfromthebridge.buzzsprout.com" // tech)
+    ## UnNamed Reverse Engineering Podcast
+    (fromDb "reverseengineering.libsyn.com/rss" // tech)
   ];
 
   texts = [
