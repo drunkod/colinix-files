@@ -62,6 +62,8 @@ let
     (fromDb "feeds.simplecast.com/wgl4xEgL" // rat)
     ## Cory Doctorow -- both podcast & text entries
     (fromDb "craphound.com" // pol)
+    ## Maggie Killjoy -- referenced by Cory Doctorow
+    (fromDb "omny.fm/shows/cool-people-who-did-cool-stuff" // pol)
     (fromDb "congressionaldish.libsyn.com" // pol)
     (mkPod "https://podcasts.la.utexas.edu/this-is-democracy/feed/podcast/" // pol // weekly)
     ## Civboot -- https://anchor.fm/civboot
