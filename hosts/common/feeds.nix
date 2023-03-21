@@ -77,6 +77,8 @@ let
     (fromDb "mapspodcast.libsyn.com" // uncat)
     (fromDb "allinchamathjason.libsyn.com" // pol)
     (fromDb "acquired.libsyn.com" // tech)
+    ## ACQ2 - more "Acquired" episodes
+    (fromDb "acquiredlpbonussecretsecret.libsyn.com" // tech)
     # The Intercept - Deconstructed; also available: <rss.acast.com/deconstructed>
     (fromDb "rss.prod.firstlook.media/deconstructed/podcast.rss" // pol)
     ## The Daily
