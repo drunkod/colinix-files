@@ -189,7 +189,7 @@ let
       serviceConfig.Type = "oneshot";
 
       script = wrapper.script;
-      scriptArgs = builtins.concatStringsSep " " wrapper.scriptArgs;
+      scriptArgs = escapeShellArgs wrapper.scriptArgs;
 
       after = gen-opt.depends;
       wants = gen-opt.depends;
