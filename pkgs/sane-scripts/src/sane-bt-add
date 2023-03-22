@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -e
+
+endpoint=https://bt.uninsane.org/transmission/rpc
+PASS=$(sudo cat /run/secrets/transmission_passwd)
+
+options=$(getopt -l film,prefix: -- "" "${@}")
+eval "set -- ${options}"
+
+prefix=
+while true; do
+  case "$1" in
+    (--prefix)
+      shift
+      prefix="$1"
+      shift
+    ;;
+    (--film)
+      prefix=Videos/Film/
+      shift
+    ;;
+    (--)
+      shift
+      if [ $# -eq 1 ]; then
+        break
+      fi
+    ;;
+    (*)
+      echo "invalid arguments"
+      exit 1
+    ;;
+  esac
+done
+# positional ("non-option") parameters
+torrent="$1"
+
+transmission-remote "$endpoint" \
+  --auth "colin:$PASS" \
+  --download-dir "/var/lib/uninsane/media/$prefix" \
+  --add "$torrent"
