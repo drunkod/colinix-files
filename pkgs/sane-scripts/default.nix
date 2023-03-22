@@ -49,6 +49,7 @@ let
           sops
           sudo
           systemd
+          transmission
           util-linux
           which
         ];
@@ -89,6 +90,7 @@ let
           "cannot:${sops}/bin/sops"
           "cannot:${ssh-to-age}/bin/ssh-to-age"
           "cannot:${systemd}/bin/systemctl"
+          "cannot:${transmission}/bin/transmission-remote"
         ];
       };
     };

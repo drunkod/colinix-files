@@ -55,6 +55,9 @@
   sops.secrets."router_passwd" = {
     sopsFile = ../../secrets/universal.yaml;
   };
+  sops.secrets."transmission_passwd" = {
+    sopsFile = ../../secrets/universal.yaml;
+  };
   sops.secrets."wg_ovpnd_us_privkey" = {
     sopsFile = ../../secrets/universal.yaml;
   };
