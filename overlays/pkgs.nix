@@ -3,6 +3,7 @@
   let
     sane = rec {
       #### my own, non-upstreamable packages:
+      static-nix-shell = callPackages ../pkgs/static-nix-shell { };
       sane-scripts = callPackage ../pkgs/sane-scripts { };
       feeds = recurseIntoAttrs (callPackage ../pkgs/feeds { });
       tow-boot-pinephone = callPackage ../pkgs/tow-boot-pinephone { };

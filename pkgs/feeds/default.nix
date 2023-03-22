@@ -1,7 +1,7 @@
 { lib
 , callPackage
 , python3
-, stdenv
+, static-nix-shell
 , writeShellScript
 }:
 
@@ -21,21 +21,11 @@ let
     feed-pkgs;
 in rec {  # TODO: make this a scope
   inherit feed-pkgs;
-  update = stdenv.mkDerivation {
+  update = static-nix-shell.mkPython3Bin {
     pname = "update";
-    version = "0.1.0";
     src = ./.;
-    patchPhase =
-      let
-        pyEnv = python3.withPackages (ps: [ ps.feedsearch-crawler ]);
-      in ''
-      substituteInPlace ./update.py \
-        --replace "#!/usr/bin/env nix-shell" "#!${pyEnv.interpreter}"
-    '';
-    installPhase = ''
-      mkdir -p $out/bin
-      mv update.py $out/bin/update.py
-    '';
+    pyPkgs = [ "feedsearch-crawler" ];
+    srcPath = "update.py";
   };
   init-feed = writeShellScript
     "init-feed"
