@@ -175,6 +175,7 @@ let
     (fromDb "lynalden.com" // pol)
     (fromDb "austinvernon.site" // tech)
     (mkSubstack "oversharing" // pol // daily)
+    (mkSubstack "byrnehobart" // pol // infrequent)
     # (mkSubstack "doomberg" // tech // weekly)  # articles are all pay-walled
     ## David Rosenthal
     (fromDb "blog.dshr.org" // pol)
