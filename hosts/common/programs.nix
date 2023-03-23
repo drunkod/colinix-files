@@ -338,6 +338,8 @@ in
 
         mpv.dir = [ ".config/mpv/watch_later" ];
 
+        mumble.private = [ ".local/share/Mumble" ];
+
         # not strictly necessary, but allows caching articles; offline use, etc.
         newsflash.dir = [ ".local/share/news-flash" ];
         nheko.private = [
