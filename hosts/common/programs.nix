@@ -306,14 +306,7 @@ in
         dino.private = [ ".local/share/dino" ];
 
         # creds, but also 200 MB of node modules, etc
-        discord = {
-          package = pkgs.discord.override {
-            # XXX 2022-07-31: fix to allow links to open in default web-browser:
-            #   https://github.com/NixOS/nixpkgs/issues/78961
-            nss = pkgs.nss_latest;
-          };
-          private = [ ".config/discord" ];
-        };
+        discord.private = [ ".config/discord" ];
 
         # creds/session keys, etc
         element-desktop.private = [ ".config/Element" ];
