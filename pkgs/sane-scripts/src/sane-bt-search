@@ -20,7 +20,7 @@ ENDPOINTS = dict(
     results="api/v2.0/indexers/all/results"
 )
 
-@dataclass(eq=True, order=True)
+@dataclass(eq=True, order=True, unsafe_hash=True)
 class Torrent:
     seeders: int
     pub_date: datetime
@@ -64,12 +64,12 @@ class Client:
         return resp.json()
 
     def query(self, q: str) -> list:
-        torrents = []
+        torrents = set()
         api_res = self.api_call("results", dict(Query=q))
         for r in api_res["Results"]:
             t = Torrent.from_dict(r)
             if t is not None:
-                torrents.append(t)
+                torrents.add(t)
 
         return sorted(torrents, reverse=True)
 
