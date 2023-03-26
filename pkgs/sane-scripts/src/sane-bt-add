@@ -5,7 +5,7 @@ set -e
 endpoint=https://bt.uninsane.org/transmission/rpc
 PASS=$(sudo cat /run/secrets/transmission_passwd)
 
-options=$(getopt -l film,prefix: -- "" "${@}")
+options=$(getopt -l film,series:,prefix: -- "" "${@}")
 eval "set -- ${options}"
 
 prefix=
@@ -18,6 +18,11 @@ while true; do
     ;;
     (--film)
       prefix=Videos/Film/
+      shift
+    ;;
+    (--series)
+      shift
+      prefix=Videos/Shows/"$1"/
       shift
     ;;
     (--)
