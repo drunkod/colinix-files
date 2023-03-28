@@ -216,6 +216,7 @@ let
     (fromDb "xkcd.com" // img // humor)
     (fromDb "pbfcomics.com" // img // humor)
     # (mkImg "http://dilbert.com/feed" // humor // daily)
+    (fromDb "poorlydrawnlines.com/feed" // img // humor)
 
     # ART
     (fromDb "miniature-calendar.com" // img // art // daily)
