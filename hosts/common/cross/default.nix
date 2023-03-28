@@ -241,6 +241,7 @@ let
   });
   addNativeInputs = nativeBuildInputs: addInputs { inherit nativeBuildInputs; };
   addBuildInputs = buildInputs: addInputs { inherit buildInputs; };
+  addDepsBuildBuild = depsBuildBuild: addInputs { inherit depsBuildBuild; };
   mvToNativeInputs = nativeBuildInputs: mvInputs { inherit nativeBuildInputs; };
   mvToBuildInputs = buildInputs: mvInputs { inherit buildInputs; };
   rmInputs = { buildInputs ? [], nativeBuildInputs ? [] }: pkg: pkg.overrideAttrs (upstream: {
@@ -563,6 +564,9 @@ in
             # fixes error where python3.10-skia-pathops dependency isn't available for the build platform
             inherit (emulated) stdenv;
           };
+          # fixes "FileNotFoundError: [Errno 2] No such file or directory: 'gtk4-update-icon-cache'"
+          # - only required because of my wrapGAppsHook4 change
+          celluloid = addNativeInputs [ next.gtk4 ] prev.celluloid;
           cdrtools = prev.cdrtools.override {
             # "configure: error: installation or configuration problem: C compiler cc not found."
             inherit (emulated) stdenv;
@@ -760,6 +764,8 @@ in
             # };
             # fixes: "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
             file-roller = mvToNativeInputs [ next.glib ] super.file-roller;
+            # fixes: "meson.build:75:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
+            gnome-clocks = addNativeInputs [ next.gtk4 ] super.gnome-clocks;
             # fixes: "src/meson.build:3:0: ERROR: Program 'glib-compile-resources' not found or not executable"
             gnome-color-manager = mvToNativeInputs [ next.glib ] super.gnome-color-manager;
             # fixes "subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
@@ -846,6 +852,8 @@ in
             });
             # fixes: meson.build:111:6: ERROR: Program 'glib-compile-schemas' not found or not executable
             gnome-user-share = addNativeInputs [ next.glib ] super.gnome-user-share;
+            # fixes: "FileNotFoundError: [Errno 2] No such file or directory: 'gtk4-update-icon-cache'"
+            gnome-weather = addNativeInputs [ next.gtk4 ] super.gnome-weather;
             mutter = super.mutter.overrideAttrs (orig: {
               nativeBuildInputs = orig.nativeBuildInputs ++ [
                 next.glib  # fixes "clutter/clutter/meson.build:281:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
@@ -863,10 +871,12 @@ in
             #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libglib-2.0.so: error adding symbols: file in wrong format"
             #   inherit (emulated) stdenv;
             # };
-            nautilus = super.nautilus.overrideAttrs (orig: {
+            nautilus = addInputs {
               # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
-              buildInputs = orig.buildInputs ++ [ next.libxml2 ];
-            });
+              buildInputs = [ next.libxml2 ];
+              # fixes: "meson.build:226:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
+              nativeBuildInputs = [ next.gtk4 ];
+            } super.nautilus;
           });
 
           gocryptfs = prev.gocryptfs.override {
@@ -1232,6 +1242,14 @@ in
 
           pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
             (py-next: py-prev: {
+
+              aiohttp = py-prev.aiohttp.overridePythonAttrs (orig: {
+                # fixes "ModuleNotFoundError: No module named 'setuptools'"
+                propagatedBuildInputs = orig.propagatedBuildInputs ++ [
+                  py-next.setuptools
+                ];
+              });
+
               defcon = py-prev.defcon.overridePythonAttrs (orig: {
                 nativeBuildInputs = orig.nativeBuildInputs ++ orig.nativeCheckInputs;
               });
@@ -1241,6 +1259,12 @@ in
                   # "tests/test_main.py::TestStuff::test_many_source_for_filename_calls"
                   "tests/test_main.py"
                 ];
+              });
+              gssapi = py-prev.gssapi.overridePythonAttrs (_orig: {
+                # "krb5-aarch64-unknown-linux-gnu-1.20.1/lib/libgssapi_krb5.so: cannot open shared object file"
+                # setup.py only needs this to detect if kerberos was configured with gssapi support (not sure why it doesn't call krb5-config for that?)
+                # it doesn't actually link or use anything from the build krb5 except a "canary" symobl.
+                GSSAPI_MAIN_LIB = "${next.buildPackages.krb5}/lib/libgssapi_krb5.so";
               });
               # h5py = py-prev.h5py.overridePythonAttrs (orig: {
               #   # XXX: can't upstream until its dependency, hdf5, is fixed. that looks TRICKY.
@@ -1282,6 +1306,19 @@ in
                   "tests/unit/test_compat.py"
                 ];
               });
+              scipy = py-prev.scipy.override {
+                inherit (emulated) stdenv;
+              };
+              # scipy = py-prev.scipy.overridePythonAttrs (orig: {
+              #   # "/nix/store/yhz6yy9bp52x9fvcda4lr6kgsngxnv2l-python3.10-numpy-1.24.2/lib/python3.10/site-packages/numpy/core/include/../lib/libnpymath.a: error adding symbols: file in wrong format"
+              #   # mesonFlags = orig.mesonFlags or [] ++ [ "-Duse-pythran=false" ];
+              #   # don't know how to plumb meson falgs through python apps
+              #   # postPatch = orig.postPatch or "" + ''
+              #   #   sed -i "s/option('use-pythran', type: 'boolean', value: true,/option('use-pythran', type: 'boolean', value: false,/" meson_options.txt
+              #   # '';
+              #   SCIPY_USE_PYTHRAN = false;
+              #   nativeBuildInputs = lib.remove py-next.pythran orig.nativeBuildInputs;
+              # });
               # skia-pathops = ?
               #   it tries to call `cc` during the build, but can't find it.
             })
@@ -1330,6 +1367,13 @@ in
             # fixes "error: could not find git for clone of catch2-populate"
             buildInputs = orig.buildInputs or [] ++ [ next.catch2_3 ];
           });
+          rav1e = prev.rav1e.override {
+            # fix "aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option '-m64'"
+            inherit (emulated)
+              rustPlatform
+              stdenv
+            ;
+          };
           rmlint = prev.rmlint.override {
             # fixes "Checking whether the C compiler works... no"
             # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
@@ -1422,7 +1466,12 @@ in
           });
 
           # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
-          sysprof = mvToNativeInputs [ next.glib ] prev.sysprof;
+          sysprof = mvToNativeInputs [ next.glib ] (
+            addNativeInputs [ next.wrapGAppsHook ] (
+              # addDepsBuildBuild [ next.pkg-config ] prev.sysprof
+              rmInputs { nativeBuildInputs = [ next.wrapGAppsHook4 ]; } prev.sysprof
+            )
+          );
           # fixes "configure: error: *** gdbus-codegen is required to build tpm2-abrmd; No package 'gio-unix-2.0' found"
           tpm2-abrmd = addNativeInputs [ next.glib ] prev.tpm2-abrmd;
           tracker-miners = prev.tracker-miners.override {
@@ -1465,6 +1514,9 @@ in
           });
           # fixes "perl: command not found"
           vpnc = mvToNativeInputs [ next.perl ] prev.vpnc;
+          wrapGAppsHook4 = prev.wrapGAppsHook4.override {
+            gtk3 = next.emptyDirectory;
+          };
           xapian = prev.xapian.overrideAttrs (upstream: {
             # the output has #!/bin/sh scripts.
             # - shebangs get re-written on native build, but not cross build

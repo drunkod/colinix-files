@@ -23,7 +23,7 @@
 
     # <https://github.com/nixos/nixpkgs/tree/nixos-unstable>
     # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=staging";
+    nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=staging-next";
 
     # nixpkgs = {
     #   url = "./nixpatches";
