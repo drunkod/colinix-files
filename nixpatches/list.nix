@@ -45,6 +45,13 @@
 
   ./2023-03-10-hase.patch
 
+  # 2023-03-28: jellyfin-media-player: 1.8.1 -> 1.9.0
+  # TODO: i should review/approve this PR if it works
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/220974.diff";
+    hash = "sha256-AK/l0vteCEg/ae4E0dS1oWnlLI4xyeyLFJcqMgCQ4RI=";
+  })
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
