@@ -97,6 +97,7 @@ in
     # convenience
     sane.user.fs."knowledge" = fs.wantedSymlinkTo "private/knowledge";
     sane.user.fs."nixos" = fs.wantedSymlinkTo "dev/nixos";
+    sane.user.fs."Books/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Books";
     sane.user.fs."Videos/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Videos";
     sane.user.fs."Videos/servo-incomplete" = fs.wantedSymlinkTo "/mnt/servo-media/incomplete";
     sane.user.fs."Music/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Music";
