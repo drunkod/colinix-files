@@ -12,6 +12,11 @@
 # - Flake RFC: <https://github.com/tweag/rfcs/blob/flakes/rfcs/0049-flakes.md>
 #   - Discussion: <https://github.com/NixOS/rfcs/pull/49>
 # - <https://serokell.io/blog/practical-nix-flakes>
+#
+#
+# COMMON OPERATIONS:
+# - update a specific flake input:
+#   - `nix flake lock --update-input nixpkgs`
 
 {
   # XXX: use the `github:` scheme instead of the more readable git+https: because it's *way* more efficient
