@@ -32,8 +32,8 @@ in
     owner = "colin";
     repo = "browserpass-native";
     # don't forcibly append '.gpg'
-    rev = "85bdb08379c03297c1236f66e8764160c922d397";
-    hash = "sha256-SEfihU+GreWhYfLVr7tTnMCo6Iq20a78F8iVbycOQUQ=";
+    rev = "d3ef88e12cb127914fb0ead762b7baee6913592f";
+    hash = "sha256-FRnFmCJI/1f92DOI1VXSPivSBzIR372gmgLUfLLiuPc=";
   };
   installPhase = ''
     make install

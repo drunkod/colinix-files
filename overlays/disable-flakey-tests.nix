@@ -60,6 +60,12 @@
     # - not ok 267 - tcp_bind_error_addrinuse_listen
     doCheck = false;
   });
+  libwacom = prev.libwacom.overrideAttrs (_upstream: {
+    # 2023/03/30
+    # "libwacom:all / pytest TIMEOUT"
+    doCheck = false;
+    mesonFlags = [ "-Dtests=disabled" ];
+  });
 
   llvmPackages_12 =
     let
