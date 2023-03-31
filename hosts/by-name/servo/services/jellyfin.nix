@@ -16,13 +16,48 @@
 { config, lib, ... }:
 
 {
+  # identical to:
+  # services.jellyfin.openFirewall = true;
   networking.firewall.allowedUDPPorts = [
-    1900 7359 # DLNA: https://jellyfin.org/docs/general/networking/index.html
+    # https://jellyfin.org/docs/general/networking/index.html
+    1900  # UPnP service discovery
+    7359  # Jellyfin-specific (?) client discovery
+  ];
+  networking.firewall.allowedTCPPorts = [
+    8096  # HTTP (for the LAN)
+    8920  # HTTPS (for the LAN)
   ];
   sane.persist.sys.plaintext = [
-    # TODO: mode? could be more granular
-    { user = "jellyfin"; group = "jellyfin"; directory = "/var/lib/jellyfin"; }
+    { user = "jellyfin"; group = "jellyfin"; mode = "0700"; directory = "/var/lib/jellyfin"; }
   ];
+  sane.fs."/var/lib/jellyfin/config/logging.json" = {
+    # "Emby.Dlna" logging: <https://jellyfin.org/docs/general/networking/dlna>
+    symlink.text = ''
+      {
+        "Serilog": {
+          "MinimumLevel": {
+            "Default": "Information",
+            "Override": {
+              "Microsoft": "Warning",
+              "System": "Warning",
+              "Emby.Dlna": "Debug",
+              "Emby.Dlna.Eventing": "Debug"
+            }
+          },
+          "WriteTo": [
+            {
+              "Name": "Console",
+              "Args": {
+                "outputTemplate": "[{Timestamp:HH:mm:ss}] [{Level:u3}] [{ThreadId}] {SourceContext}: {Message:lj}{NewLine}{Exception}"
+              }
+            }
+          ],
+          "Enrich": [ "FromLogContext", "WithThreadId" ]
+        }
+      }
+    '';
+    wantedBeforeBy = [ "jellyfin.service" ];
+  };
 
   # Jellyfin multimedia server
   # this is mostly taken from the official jellfin.org docs
