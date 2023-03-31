@@ -7,7 +7,7 @@
     ./git.nix
     ./gpodder.nix
     ./keyring.nix
-    ./kitty.nix
+    ./kitty
     ./libreoffice.nix
     ./mime.nix
     ./mpv.nix

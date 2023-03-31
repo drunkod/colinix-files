@@ -7,9 +7,11 @@
     enable_audio_bell no
 
     map ctrl+n new_os_window_with_cwd
-
-    include ${pkgs.kitty-themes}/themes/PaperColor_dark.conf
+    include ${./PaperColor_dark.conf}
   '';
+
+  #  include ${pkgs.kitty-themes}/themes/PaperColor_dark.conf
+
   # THEME CHOICES:
   #   docs: https://github.com/kovidgoyal/kitty-themes
   # theme = "1984 Light";  # dislike: awful, harsh blues/teals
