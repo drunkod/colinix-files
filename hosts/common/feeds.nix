@@ -109,6 +109,9 @@ let
     (fromDb "talesfromthebridge.buzzsprout.com" // tech)
     ## UnNamed Reverse Engineering Podcast
     (fromDb "reverseengineering.libsyn.com/rss" // tech)
+    ## The Witch Trials of J.K. Rowling
+    ## - <https://www.thefp.com/witchtrials>
+    (mkPod "https://feeds.megaphone.fm/RUNMED9919162779" // pol // infrequent)
   ];
 
   texts = [
