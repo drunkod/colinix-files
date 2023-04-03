@@ -210,6 +210,9 @@ let
     ## mostly dating topics. not advice, or humor, but looking through a social lens
     (fromDb "putanumonit.com" // rat)
 
+    # LOCAL
+    (fromDb "capitolhillseattle.com" // pol)
+
     # CODE
     # (mkText "https://github.com/Kaiteki-Fedi/Kaiteki/commits/master.atom" // tech // infrequent)
   ];
