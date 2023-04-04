@@ -90,10 +90,10 @@ let
   # except for the "cross only" universal overlays which we avoid specifying for non-cross builds
   # because they don't affect the result -- only the build process -- so we can disable them as an optimization.
   crossOnlyUniversalOverlays = [
-    (import ./../../../overlays/disable-flakey-tests.nix)
     (import ./../../../overlays/optimizations.nix)
   ];
   universalOverlays = [
+    (import ./../../../overlays/disable-flakey-tests.nix)
     (import ./../../../overlays/pkgs.nix)
     (import ./../../../overlays/pins.nix)
   ] ++ crossOnlyUniversalOverlays;
