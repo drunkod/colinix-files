@@ -118,7 +118,7 @@ let
     # AGGREGATORS (> 1 post/day)
     (fromDb "lwn.net" // tech)
     (fromDb "lesswrong.com" // rat)
-    (fromDb "econlib.org" // pol)
+    # (fromDb "econlib.org" // pol)
 
     # AGGREGATORS (< 1 post/day)
     (fromDb "palladiummag.com" // uncat)
