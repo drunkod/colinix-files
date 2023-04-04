@@ -1,23 +1,52 @@
 #!/usr/bin/env bash
 # script to reclaim some hard drive space
+# some of this is documented here:
+# - <https://nixos.wiki/wiki/Storage_optimization>
 set -e
 
-options=$(getopt -l "fast" -o "f" -- "$@")
-do_rmlint=true
-for arg in $options; do
-  case $arg in
-    -f|--fast)
-      do_rmlint=false
-      ;;
-    --)
-      ;;
+options=$(getopt -l "gc,rmlint,all" -- "" "$@")
+eval "set -- ${options}"
+do_rmlint=false
+do_gc=false
+while true; do
+  case "$1" in
+    (--all)
+      shift
+      do_gc=true
+      do_rmlint=true
+    ;;
+    (--gc)
+      shift
+      do_gc=true
+    ;;
+    (--rmlint)
+      shift
+      do_rmlint=true
+    ;;
+    (--)
+      shift
+      if [ $# -eq 0 ]; then
+        break
+      fi
+    ;;
+    (*)
+      echo "invalid arguments"
+      exit 1
+    ;;
   esac
 done
 
 set -x
 
-# always claim nix garbage
-sudo nix-collect-garbage
+# scan the store and hard-link identical files
+# nix-store --optimise
+
+if [ $do_gc = true ]
+then
+  # TODO: do we need `sudo` here?
+  # TODO: `nix-store --gc`?
+  sudo nix-collect-garbage
+fi
 
 if [ $do_rmlint = true ]
 then
