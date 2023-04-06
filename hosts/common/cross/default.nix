@@ -938,16 +938,6 @@ in
             buildInputs = lib.remove next.gobject-introspection upstream.buildInputs;
             strictDeps = true;
           });
-          gupnp_1_6 = prev.gupnp_1_6.overrideAttrs (orig: {
-            # fixes "subprojects/gi-docgen/meson.build:10:0: ERROR: python3 not found"
-            # this patch is copied from the default gupnp.
-            outputs = [ "out" "dev" ]
-              ++ lib.optionals (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform) [ "devdoc" ];
-            mesonFlags = [
-              "-Dgtk_doc=${lib.boolToString (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform)}"
-              "-Dintrospection=${lib.boolToString (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform)}"
-            ];
-          });
 
           gst_all_1 = prev.gst_all_1 // {
             # gst-editing-services = prev.gst_all_1.gst-editing-services.override {
