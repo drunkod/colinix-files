@@ -98,6 +98,7 @@
               self.nixosModules.passthru
               {
                 nixpkgs.overlays = [
+                  self.overlays.disable-flakey-tests
                   self.overlays.passthru
                   self.overlays.pins
                   self.overlays.pkgs
@@ -167,6 +168,7 @@
         # N.B.: `nix flake check` requires every overlay to take `final: prev:` at defn site,
         #   hence the weird redundancy.
         default = final: prev: self.overlays.pkgs final prev;
+        disable-flakey-tests = final: prev: import ./overlays/disable-flakey-tests.nix final prev;
         pkgs = final: prev: import ./overlays/pkgs.nix final prev;
         pins = final: prev: import ./overlays/pins.nix final prev;
         optimizations = final: prev: import ./overlays/optimizations.nix final prev;
