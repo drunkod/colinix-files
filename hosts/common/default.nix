@@ -41,6 +41,11 @@
     "nixpkgs=${pkgs.path}"
     "nixpkgs-overlays=${../..}/overlays"
   ];
+  # hardlinks identical files in the nix store to save 25-35% disk space.
+  # unclear _when_ this occurs. it's not a service.
+  # does the daemon continually scan the nix store?
+  # does the builder use some content-addressed db to efficiently dedupe?
+  nix.settings.auto-optimise-store = true;
 
   fonts = {
     enableDefaultFonts = true;
