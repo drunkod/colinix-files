@@ -508,29 +508,6 @@ in
           #         inherit (self) apacheHttpd;
           #       };
           #     };
-          # appstream = prev.appstream.override {
-          #   # doesn't fix: "ld: error adding symbols: file in wrong format"
-          #   inherit (emulated) stdenv;
-          # };
-          # appstream = prev.appstream.overrideAttrs (orig: {
-          #   # fixes "Program 'gperf' not found or not executable"
-          #   # does not fix "ERROR: An exe_wrapper is needed but was not found. Please define one in cross file and check the command and/or add it to PATH."
-          #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.gperf ];
-          # });
-          # appstream = prev.appstream.overrideAttrs (upstream: {
-          #   # does not fix "Program 'gperf' not found or not executable"
-          #   nativeBuildInputs = upstream.nativeBuildInputs ++ lib.optionals (!prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) [
-          #     next.mesonEmulatorHook
-          #   ];
-          # });
-          appstream = prev.appstream.overrideAttrs (upstream: {
-            # fixes "Program 'gperf' not found or not executable"
-            nativeBuildInputs = upstream.nativeBuildInputs ++ lib.optionals (!prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) [
-              next.mesonEmulatorHook
-            ] ++ [
-              next.gperf
-            ];
-          });
 
           aprutil = prev.aprutil.overrideAttrs (upstream: {
             # nixpkgs patches the ldb version only for the package itself, but derivative packages (serf -> subversion) inherit the wrong -ldb-6.9 flag.
