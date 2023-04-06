@@ -394,6 +394,9 @@ in
           #   prev
           # else
           #   prev.emulated;
+          useEmulatedStdenv = p: p.override {
+            inherit (emulated) stdenv;
+          };
         in {
           # packages which don't cross compile
           inherit (emulated)
@@ -879,6 +882,38 @@ in
             } super.nautilus;
           });
 
+          gnome2 = prev.gnome2.overrideScope' (self: super: {
+            # inherit (emulated.gnome2)
+            #   GConf
+            # ;
+            # GConf = (
+            #   # python3 -> nativeBuildInputs fixes "2to3: command not found"
+            #   # glib.dev in nativeBuildInputs fixes "gconfmarshal.list: command not found"
+            #   # new error: "** (orbit-idl-2): WARNING **: ./GConfX.idl compilation failed"
+            #   addNativeInputs
+            #     [ next.glib.dev ]
+            #     (mvToNativeInputs [ next.python3 ] super.GConf);
+            # );
+            GConf = super.GConf.override {
+              inherit (emulated) stdenv;
+            };
+
+            # gnome_vfs = (
+            #   # fixes: "configure: error: gconftool-2 executable not found in your path - should be installed with GConf"
+            #   # new error: "configure: error: cannot run test program while cross compiling"
+            #   mvToNativeInputs [ self.GConf ] super.gnome_vfs
+            # );
+            gnome_vfs = useEmulatedStdenv super.gnome_vfs;
+            libIDL  = super.libIDL.override {
+              # "configure: error: cannot run test program while cross compiling"
+              inherit (emulated) stdenv;
+            };
+            ORBit2 = super.ORBit2.override {
+              # "configure: error: Failed to find alignment. Check config.log for details."
+              inherit (emulated) stdenv;
+            };
+          });
+
           gocryptfs = prev.gocryptfs.override {
             # fixes "error: hash mismatch in fixed-output derivation" (vendorSha256)
             inherit (emulated) buildGoModule;  # equivalent to stdenv
@@ -964,6 +999,9 @@ in
           #   inherit (emulated) stdenv;
           # };
 
+          # "setup: line 1595: ant: command not found"
+          i2p = mvToNativeInputs [ next.ant next.gettext ] prev.i2p;
+
           # ibus = (prev.ibus.override {
           #   # fixes: "configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0"
           #   inherit (emulated) stdenv;
@@ -979,6 +1017,34 @@ in
 
           # fixes "./autogen.sh: line 26: gtkdocize: not found"
           iio-sensor-proxy = mvToNativeInputs [ next.glib next.gtk-doc ] prev.iio-sensor-proxy;
+
+          # fixes: "make: gcc: No such file or directory"
+          java-service-wrapper = useEmulatedStdenv prev.java-service-wrapper;
+
+          javaPackages = prev.javaPackages // {
+            compiler = prev.javaPackages.compiler // {
+              adoptopenjdk-8 = prev.javaPackages.compiler.adoptopenjdk-8 // {
+                # fixes "error: auto-patchelf could not satisfy dependency libgcc_s.so.1 wanted by /nix/store/fvln9pahd3c4ys8xv5c0w91xm2347cvq-adoptopenjdk-hotspot-bin-aarch64-unknown-linux-gnu-8.0.322/jre/lib/aarch64/libsunec.so"
+                jdk-hotspot  = useEmulatedStdenv prev.javaPackages.compiler.adoptopenjdk-8.jdk-hotspot;
+              };
+              openjdk8-bootstrap = useEmulatedStdenv prev.javaPackages.compiler.openjdk8-bootstrap;
+              # fixes "configure: error: Could not find required tool for WHICH"
+              openjdk8 = useEmulatedStdenv prev.javaPackages.compiler.openjdk8;
+              openjdk19 = (
+                # fixes "configure: error: Could not find required tool for ZIPEXE"
+                # new failure: "checking for cc... [not found]"
+                (mvToNativeInputs
+                  [ next.zip ]
+                  (useEmulatedStdenv prev.javaPackages.compiler.openjdk19)
+                ).overrideAttrs (_upstream: {
+                  # avoid building `support/demos`, which segfaults
+                  buildFlags = [ "product-images" ];
+                  doCheck = false;  # pre-emptive
+                })
+              );
+              # openjdk19 = emulated.javaPackages.compiler.openjdk19;
+            };
+          };
 
           kitty = prev.kitty.overrideAttrs (upstream: {
             # fixes: "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
