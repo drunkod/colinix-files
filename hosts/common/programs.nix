@@ -214,6 +214,7 @@ let
       libreoffice-fresh  # XXX colin: maybe don't want this on mobile
       mumble
       obsidian
+      slic3r
     ;
   };
   x86GuiPkgs = {
@@ -347,6 +348,8 @@ in
         # creds, media
         signal-desktop.private = [ ".config/Signal" ];
 
+        # printer/filament settings
+        slic3r.dir = [ ".Slic3r" ];
 
         # creds, widevine .so download. TODO: could easily manage these statically.
         spotify.dir = [ ".config/spotify" ];
