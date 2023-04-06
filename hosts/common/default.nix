@@ -33,6 +33,7 @@
   time.timeZone = "Etc/UTC";  # DST is too confusing for me => use a stable timezone
 
   # allow `nix flake ...` command
+  # TODO: is this still required?
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';
