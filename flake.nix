@@ -241,9 +241,9 @@
         let
           pkgs = self.legacyPackages."x86_64-linux";
           deployScript = action: pkgs.writeShellScript "deploy-moby" ''
-            nixos-rebuild --flake '.#cross-moby' build
+            nixos-rebuild --flake '.#moby' build $@
             sudo nix sign-paths -r -k /run/secrets/nix_serve_privkey $(readlink ./result)
-            nixos-rebuild --flake '.#cross-moby' ${action} --target-host colin@moby --use-remote-sudo
+            nixos-rebuild --flake '.#moby' ${action} --target-host colin@moby --use-remote-sudo $@
           '';
         in {
           update-feeds = {
