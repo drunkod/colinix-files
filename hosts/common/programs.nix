@@ -167,6 +167,7 @@ let
       "gnome.gnome-weather"
       gpodder-configured
       gthumb
+      jellyfin-media-player
       # lollypop
       mpv
       networkmanagerapplet
@@ -207,7 +208,6 @@ let
       handbrake
       hase
       inkscape
-      jellyfin-media-player  # TODO: try on moby!
       kdenlive
       kid3  # audio tagging
       krita

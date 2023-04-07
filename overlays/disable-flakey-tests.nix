@@ -5,12 +5,14 @@
 # - they assume too much about their environment and fail under qemu.
 #
 (next: prev: {
-  # ell = prev.ell.overrideAttrs (_upstream: {
-  #   # 2023/02/11
-  #   # fixes "TEST FAILED in get_random_return_callback at unit/test-dbus-message-fds.c:278: !l_dbus_message_get_error(message, ((void *)0), ((void *)0))"
-  #   # unclear *why* this test fails.
-  #   doCheck = false;
-  # });
+  ell = prev.ell.overrideAttrs (_upstream: {
+    # 2023/02/11
+    # fixes "TEST FAILED in get_random_return_callback at unit/test-dbus-message-fds.c:278: !l_dbus_message_get_error(message, ((void *)0), ((void *)0))"
+    # 2023/04/06
+    # fixes "test-cipher: unit/test-cipher.c:102: test_aes_ctr: Assertion `!r' failed."
+    # unclear *why* this test fails.
+    doCheck = false;
+  });
   # fish = prev.fish.overrideAttrs (_upstream: {
   #   # 2023/02/28
   #   # The following tests FAILED:

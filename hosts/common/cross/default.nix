@@ -412,6 +412,7 @@ in
             # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
             # hdf5  # configure: error: cannot run test program while cross compiling
             # http2
+            jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
             # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
             # libsForQt5  # qtbase  # make: g++: No such file or directory
             # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
@@ -1013,6 +1014,18 @@ in
             };
           };
 
+          jellyfin-media-player = prev.jellyfin-media-player.overrideAttrs (upstream: {
+            meta = upstream.meta // {
+              platforms = upstream.meta.platforms ++ [
+                "aarch64-linux"
+              ];
+            };
+          });
+          # jellyfin-web = prev.jellyfin-web.override {
+          #   # in node-dependencies-jellyfin-web: "node: command not found"
+          #   inherit (emulated) stdenv;
+          # };
+
           kitty = prev.kitty.overrideAttrs (upstream: {
             # fixes: "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
             PKGCONFIG_EXE = "${next.buildPackages.pkg-config}/bin/${next.buildPackages.pkg-config.targetPrefix}pkg-config";
@@ -1051,7 +1064,7 @@ in
           libHX = mvToNativeInputs [ next.libtool ] prev.libHX;
           # fixes: "ERROR: Program 'gnutls-certtool certtool' not found or not executable"
           # N.B.: gnutls library is used by the compiled program (i.e. the host);
-          #   gnutls binaries are used by the build machine.
+          #   gnutls binaries are used by the build machine (for tests).
           #   therefore gnutls can be specified in both buildInputs and nativeBuildInputs
           libjcat = addNativeInputs [ next.gnutls ] prev.libjcat;
           libqmi = prev.libqmi.overrideAttrs (upstream: {
@@ -1267,6 +1280,7 @@ in
             ];
           } prev.phosh-mobile-settings;
           # fixes `spa/plugins/bluez5/meson.build:41:0: ERROR: Program 'gdbus-codegen' not found or not executable`
+          # TODO (2023/04/07): remove pipewire override. it builds on staging
           pipewire = mvToNativeInputs [ next.glib ] prev.pipewire;
           # psqlodbc = prev.psqlodbc.override {
           #   # fixes "configure: error: odbc_config not found (required for unixODBC build)"
