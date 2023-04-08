@@ -1,10 +1,4 @@
 { fetchpatch, fetchurl }: [
-  # librewolf: build with `MOZ_REQUIRE_SIGNING=false`
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/199134.diff";
-    # url = "https://git.uninsane.org/colin/nixpkgs/commit/99b82e07fee4d194520d6e8d51bc45c80a4d3c7e.diff";
-    sha256 = "sha256-Ne4hyHQDwBHUlWo8Z3QyRdmEv1rYGOjFGxSfOAcLUvQ=";
-  })
 
   # splatmoji: init at 1.2.0
   (fetchpatch {
@@ -46,6 +40,12 @@
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/220974.diff";
     hash = "sha256-AK/l0vteCEg/ae4E0dS1oWnlLI4xyeyLFJcqMgCQ4RI=";
+  })
+
+  # 2023-04-11: sequoia: 0.27.0 -> 0.28.0 & fix staging-next build
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/225823.diff";
+    hash = "sha256-6ExUJZxP1t5SbTaHimaqzScTjFdqnZhZqTIUxY452QQ=";
   })
 
   # # kaiteki: init at 2022-09-03

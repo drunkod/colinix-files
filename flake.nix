@@ -243,7 +243,7 @@
           deployScript = action: pkgs.writeShellScript "deploy-moby" ''
             nixos-rebuild --flake '.#moby' build $@
             sudo nix sign-paths -r -k /run/secrets/nix_serve_privkey $(readlink ./result)
-            nixos-rebuild --flake '.#moby' ${action} --target-host colin@moby --use-remote-sudo $@
+            nixos-rebuild --flake '.#moby' ${action} --target-host colin@moby-hn --use-remote-sudo $@
           '';
         in {
           update-feeds = {

@@ -795,6 +795,8 @@ in
                 "-Dextensions_tool=false"
                 "-Dman=false"
                 "-Dgtk_doc=false"
+                # fixes "src/st/meson.build:198:2: ERROR: Dependency "libmutter-test-12" not found, tried pkgconfig"
+                "-Dtests=false"
               ];
               outputs = [ "out" "dev" ];
               postPatch = upstream.postPatch or "" + ''
@@ -1573,7 +1575,11 @@ in
           xdg-desktop-portal-gtk = mvToBuildInputs [ next.xdg-desktop-portal ] prev.xdg-desktop-portal-gtk;
           # fixes: "data/meson.build:33:5: ERROR: Program 'msgfmt' not found or not executable"
           # fixes: "src/meson.build:25:0: ERROR: Program 'gdbus-codegen' not found or not executable"
-          xdg-desktop-portal-gnome = mvToNativeInputs [ next.gettext next.glib ] prev.xdg-desktop-portal-gnome;
+          xdg-desktop-portal-gnome = (
+            addNativeInputs [ next.wayland-scanner ] (
+              mvToNativeInputs [ next.gettext next.glib ] prev.xdg-desktop-portal-gnome
+            )
+          );
           # webkitgtk = prev.webkitgtk.override { stdenv = next.ccacheStdenv; };
           # webp-pixbuf-loader = prev.webp-pixbuf-loader.override {
           #   # fixes "Builder called die: Cannot wrap '/nix/store/kpp8qhzdjqgvw73llka5gpnsj0l4jlg8-gdk-pixbuf-aarch64-unknown-linux-gnu-2.42.10/bin/gdk-pixbuf-thumbnailer' because it is not an executable file"
