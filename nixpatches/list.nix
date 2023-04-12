@@ -39,12 +39,6 @@
     hash = "sha256-AK/l0vteCEg/ae4E0dS1oWnlLI4xyeyLFJcqMgCQ4RI=";
   })
 
-  # 2023-04-11: sequoia: 0.27.0 -> 0.28.0 & fix staging-next build
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/225823.diff";
-    hash = "sha256-6ExUJZxP1t5SbTaHimaqzScTjFdqnZhZqTIUxY452QQ=";
-  })
-
   # 2023-04-11: bambu-studio: init at unstable-2023-01-11
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/206495.diff";
