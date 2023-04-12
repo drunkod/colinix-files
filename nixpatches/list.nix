@@ -48,6 +48,12 @@
     hash = "sha256-6ExUJZxP1t5SbTaHimaqzScTjFdqnZhZqTIUxY452QQ=";
   })
 
+  # 2023-04-11: bambu-studio: init at unstable-2023-01-11
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/206495.diff";
+    hash = "sha256-RbQzAtFTr7Nrk2YBcHpKQMYoPlFMVSXNl96B/lkKluQ=";
+  })
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
