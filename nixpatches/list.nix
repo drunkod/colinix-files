@@ -32,9 +32,6 @@
   # TODO: why doesn't this apply?
   # ./2023-03-04-ccache-cross-fix.patch
 
-  # TODO: point to upstream PR
-  ./2023-03-10-hase.patch
-
   # 2023-03-28: jellyfin-media-player: 1.8.1 -> 1.9.0
   # TODO: i should review/approve this PR if it works
   (fetchpatch {
