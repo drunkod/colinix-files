@@ -33,7 +33,7 @@ sort "$deadlines" | while read line; do
         # normalize dates into seconds since unix epoch
         deadline=$(date -d "$deadline_field" +%s)
         threshold=$(echo "$threshold_field" | sed 's/d/day /g')
-        birthtime=$(date -d "$deadline_field - ($threshold)" +%s)
+        birthtime=$(date -d "$deadline_field - $threshold" +%s)
 
         # show the event iff it's near
         if test "$now" -ge "$birthtime"; then
