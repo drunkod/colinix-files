@@ -272,6 +272,7 @@ in
     nixpkgs.config.perlPackageOverrides = pkgs: (with pkgs; with pkgs.perlPackages; {
       # these are the upstream nixpkgs perl modules, but with `nativeBuildInputs = [ perl ]`
       # to fix cross compilation errors
+      # TODO: try this PR: https://github.com/NixOS/nixpkgs/pull/225640
       ModuleBuild = buildPerlPackage {
         pname = "Module-Build";
         version = "0.4231";
