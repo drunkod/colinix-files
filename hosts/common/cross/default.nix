@@ -610,9 +610,6 @@ in
             ];
           });
 
-          # fixes: "meson.build:100:0: ERROR: Dependency lookup for wayland-scanner with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found. Giving up."
-          fuzzel = addInputs { depsBuildBuild = [ next.pkg-config ]; } prev.fuzzel;
-
           fwupd-efi = prev.fwupd-efi.override {
             # fwupd-efi queries meson host_machine to decide what arch to build for.
             #   for some reason, this gives x86_64 unless meson itself is emulated.
@@ -651,51 +648,6 @@ in
           # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
           gcr_4 = mvInputs { nativeBuildInputs = [ next.gnupg next.openssh ]; } prev.gcr_4;
           gthumb = mvInputs { nativeBuildInputs = [ next.glib ]; } prev.gthumb;
-
-          gmime = prev.gmime.overrideAttrs (upstream: {
-            configureFlags = upstream.configureFlags ++ [
-              "ac_cv_have_iconv_detect_h=yes"  # fixes: "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
-              "--enable-cryptography=yes"  # force GPGME  (TODO: might not be necessary?)
-            ];
-            postPatch = upstream.postPatch + ''
-              # mimick how upstream builds iconv-detect.h
-              # the resulting binary is for the host, but unlike configure we know how to invoke that.
-              "$CC" ./iconv-detect.c -o iconv-detect
-              ./iconv-detect
-              rm iconv-detect
-            '';
-          });
-          gmime3 = prev.gmime3.overrideAttrs (upstream: {
-            configureFlags = upstream.configureFlags ++ [
-              "ac_cv_have_iconv_detect_h=yes"  # fixes: "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
-              "--enable-crypto=yes"  # force GPGME  (TODO: might not be necessary?)
-            ];
-            postPatch = upstream.postPatch + ''
-              # mimick how upstream builds iconv-detect.h
-              # the resulting binary is for the host, but unlike configure we know how to invoke that.
-              "$CC" ./iconv-detect.c -o iconv-detect
-              ./iconv-detect
-              rm iconv-detect
-            '';
-            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
-              next.buildPackages.gobject-introspection
-            ];
-            # configure detects gpgme support by invoking `gpgme-config` which otherwise fails on cross-compiled builds and causes gmime3 to build without gpgme support.
-            # consumers of gmime3 expect gpgme support, so make sure we build it on all platforms with this.
-            GPGME_CONFIG = next.buildPackages.writeShellScript "gpgme-config" ''
-              exec ${lib.getBin next.gpgme.dev}/bin/gpgme-config $@
-            '';
-          });
-
-          # gmime3 = prev.gmime3.overrideAttrs (orig: {
-          #   # fixes: "checking preferred charset formats for system iconv... cannot run test program while cross compiling"
-          #   # new error: something about python imports; doesn't happen on nixpkgs/tip.
-          #   configureFlags = orig.configureFlags ++ [ "ac_cv_have_iconv_detect_h=no" ];
-          #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.gobject-introspection ];
-          #   # XXX lib.remove doesn't work on pkg sets (?)
-          #   buildInputs = with next; [ vala zlib gpgme libidn2 libunistring ];
-          #   # buildInputs = lib.remove next.gobject-introspection orig.buildInputs;
-          # });
 
           gnome = prev.gnome.overrideScope' (self: super: {
             inherit (emulated.gnome)
@@ -1040,35 +992,6 @@ in
             ];
           });
 
-          libchamplain = prev.libchamplain.overrideAttrs (upstream: {
-            # fixes: "failed to produce output path for output 'devdoc'"
-            outputs = lib.remove "devdoc" upstream.outputs;
-          });
-          libgweather = (prev.libgweather.override {
-            # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
-            #   but presumably that's just a different way to emulate it.
-            # the python gobject-introspection stuff is a tangled mess that's impossible to debug:
-            # don't dig further, leave this for some other dedicated soul.
-            inherit (emulated)
-              stdenv  # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
-              gobject-introspection  # fixes gir x86-64 python -> aarch64 shared object import
-              python3  # fixes build-aux/meson/gen_locations_variant.py x86-64 python -> aarch64 import of glib
-            ;
-          });
-          # libgweather = prev.libgweather.overrideAttrs (upstream: {
-          #   nativeBuildInputs = (lib.remove next.gobject-introspection upstream.nativeBuildInputs) ++ [
-          #     next.buildPackages.gobject-introspection  # fails to fix "gi._error.GError: g-invoke-error-quark: Could not locate g_option_error_quark: /nix/store/dsx6kqmyg7f3dz9hwhz7m3jrac4vn3pc-glib-aarch64-unknown-linux-gnu-2.74.3/lib/libglib-2.0.so.0"
-          #   ];
-          #   # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
-          #   buildInputs = upstream.buildInputs ++ [ next.vala ];
-          # });
-          # "Can't exec "libtoolize": No such file or directory at /nix/store/r4fvx9hazsm0rdm7s393zd5v665dsh1c-autoconf-2.71/share/autoconf/Autom4te/FileUtils.pm line 294."
-          libHX = mvToNativeInputs [ next.libtool ] prev.libHX;
-          # fixes: "ERROR: Program 'gnutls-certtool certtool' not found or not executable"
-          # N.B.: gnutls library is used by the compiled program (i.e. the host);
-          #   gnutls binaries are used by the build machine (for tests).
-          #   therefore gnutls can be specified in both buildInputs and nativeBuildInputs
-          libjcat = addNativeInputs [ next.gnutls ] prev.libjcat;
           libqmi = prev.libqmi.overrideAttrs (upstream: {
             # fixes "failed to produce output devdoc"; nixpkgs only builds that output conditionally
             outputs = [ "out" "dev" ] ++ lib.optionals (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform) [
@@ -1076,20 +999,6 @@ in
             ];
           });
 
-          librest = prev.librest.overrideAttrs (orig: {
-            # fixes "You must have gtk-doc >= 1.13 installed to build documentation"
-            #   by removing the "--enable-gtk-doc" flag
-            configureFlags = [ "--with-ca-certificates=/etc/ssl/certs/ca-certificates.crt" ];
-          });
-          librest_1_0 = prev.librest_1_0.overrideAttrs (orig: {
-            # fixes (meson) "Run-time dependency gi-docgen found: NO (tried pkgconfig and cmake)"
-            # inspired by gupnp
-            outputs = [ "out" "dev" ]
-              ++ lib.optionals (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform) [ "devdoc" ];
-            mesonFlags = orig.mesonFlags ++ [
-              "-Dgtk_doc=${lib.boolToString (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform)}"
-            ];
-          });
           libsForQt5 = prev.libsForQt5.overrideScope' (self: super: {
             qgpgme = super.qgpgme.overrideAttrs (orig: {
               # fix so it can find the MOC compiler
@@ -1412,10 +1321,6 @@ in
           #   # };
           # });
 
-          rapidfuzz-cpp = prev.rapidfuzz-cpp.overrideAttrs (orig: {
-            # fixes "error: could not find git for clone of catch2-populate"
-            buildInputs = orig.buildInputs or [] ++ [ next.catch2_3 ];
-          });
           rav1e = prev.rav1e.override {
             # fix "aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option '-m64'"
             inherit (emulated)
