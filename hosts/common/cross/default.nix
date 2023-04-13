@@ -510,6 +510,7 @@ in
           #       };
           #     };
 
+          # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225977
           aprutil = prev.aprutil.overrideAttrs (upstream: {
             # nixpkgs patches the ldb version only for the package itself, but derivative packages (serf -> subversion) inherit the wrong -ldb-6.9 flag.
             postConfigure = upstream.postConfigure + lib.optionalString (next.stdenv.buildPlatform != next.stdenv.hostPlatform) ''
@@ -872,6 +873,7 @@ in
           });
 
           gst_all_1 = prev.gst_all_1 // {
+            # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225664
             # gst-editing-services = prev.gst_all_1.gst-editing-services.override {
             #   # fixes "Run-time dependency gst-validate-1.0 found: NO"
             #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libgobject-2.0.so: error adding symbols: file in wrong format"
@@ -991,7 +993,26 @@ in
               ./kitty-no-docs.patch
             ];
           });
+          libgweather = (prev.libgweather.override {
+            # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
+            #   but presumably that's just a different way to emulate it.
+            # the python gobject-introspection stuff is a tangled mess that's impossible to debug:
+            # don't dig further, leave this for some other dedicated soul.
+            inherit (emulated)
+              stdenv  # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
+              gobject-introspection  # fixes gir x86-64 python -> aarch64 shared object import
+              python3  # fixes build-aux/meson/gen_locations_variant.py x86-64 python -> aarch64 import of glib
+            ;
+          });
+          # libgweather = prev.libgweather.overrideAttrs (upstream: {
+          #   nativeBuildInputs = (lib.remove next.gobject-introspection upstream.nativeBuildInputs) ++ [
+          #     next.buildPackages.gobject-introspection  # fails to fix "gi._error.GError: g-invoke-error-quark: Could not locate g_option_error_quark: /nix/store/dsx6kqmyg7f3dz9hwhz7m3jrac4vn3pc-glib-aarch64-unknown-linux-gnu-2.74.3/lib/libglib-2.0.so.0"
+          #   ];
+          #   # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
+          #   buildInputs = upstream.buildInputs ++ [ next.vala ];
+          # });
 
+          # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225977
           libqmi = prev.libqmi.overrideAttrs (upstream: {
             # fixes "failed to produce output devdoc"; nixpkgs only builds that output conditionally
             outputs = [ "out" "dev" ] ++ lib.optionals (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform) [
@@ -1154,6 +1175,7 @@ in
           #   nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.gpgme ];
           # });
 
+          # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225977
           # fixes: "perl: command not found"
           pam_mount = mvToNativeInputs [ next.perl ] prev.pam_mount;
 
@@ -1347,6 +1369,7 @@ in
           #   inherit (emulated) stdenv;
           # };
 
+          # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225977
           # fixes "sh: line 1: ar: command not found"
           serf = addNativeInputs [ next.bintools ] prev.serf;
 
@@ -1411,6 +1434,7 @@ in
               wrapGAppsHook  # introduces a competing gtk3 at link-time, unless emulated
             ;
           };
+          # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225977
           subversion = prev.subversion.overrideAttrs (upstream: {
             configureFlags = upstream.configureFlags ++ [
               # configure can't find APR and APR-util, unclear why (are they not placed on PATH?)
