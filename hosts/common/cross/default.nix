@@ -1438,8 +1438,6 @@ in
               rmInputs { nativeBuildInputs = [ next.wrapGAppsHook4 ]; } prev.sysprof
             )
           );
-          # fixes "configure: error: *** gdbus-codegen is required to build tpm2-abrmd; No package 'gio-unix-2.0' found"
-          tpm2-abrmd = addNativeInputs [ next.glib ] prev.tpm2-abrmd;
           tracker-miners = prev.tracker-miners.override {
             # fixes "meson.build:183:0: ERROR: Can not run test applications in this cross environment."
             inherit (emulated) stdenv;
