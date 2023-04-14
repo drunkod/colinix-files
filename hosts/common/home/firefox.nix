@@ -29,8 +29,8 @@ let
     cacheDir = ".cache/mozilla";
     desktop = "firefox.desktop";
   };
-  defaultSettings = firefoxSettings;
-  # defaultSettings = librewolfSettings;
+  # defaultSettings = firefoxSettings;
+  defaultSettings = librewolfSettings;
 
   addon = name: extid: hash: pkgs.fetchFirefoxAddon {
     inherit name hash;
