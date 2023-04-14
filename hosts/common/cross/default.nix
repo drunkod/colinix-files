@@ -1345,6 +1345,7 @@ in
           # });
 
           rav1e = prev.rav1e.override {
+            # TODO(2023/04/13): fixed in soon-to-be-merged PR: https://github.com/NixOS/nixpkgs/pull/225360
             # fix "aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option '-m64'"
             inherit (emulated)
               rustPlatform
