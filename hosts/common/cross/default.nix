@@ -1034,20 +1034,6 @@ in
             });
           });
 
-          # libtiger = prev.libtiger.override {
-          #   # fails to fix: "src/tiger_internal.h:24:10: fatal error: pango/pango.h: No such file or directory"
-          #   inherit (emulated) stdenv;
-          # };
-          # libtiger = prev.libtiger.overrideAttrs (orig: {
-          #   # fails to fix: "src/tiger_internal.h:24:10: fatal error: pango/pango.h: No such file or directory"
-          #   nativeBuildInputs = orig.nativeBuildInputs ++ [ next.libkate next.cairo next.pango ];
-          # });
-          libtiger = prev.libtiger.overrideAttrs (_upstream: {
-            # libtiger seems to expect PKG_CONFIG to be an absolute path? not sure, but without this it claims it can't find pkg-config.
-            HAVE_PKG_CONFIG = "yes";
-          });
-
-
           # fixes: "ar: command not found"
           # `ar` is provided by bintools
           ncftp = addNativeInputs [ next.bintools ] prev.ncftp;
