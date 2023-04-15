@@ -262,7 +262,7 @@
             type = "app";
             program = ''${deployScript "test"}'';
           };
-          deploy-moby-switch = {
+          deploy-moby = {
             # `nix run '.#deploy-moby-switch'`
             type = "app";
             program = ''${deployScript "switch"}'';
