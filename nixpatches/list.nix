@@ -32,17 +32,16 @@
   # TODO: why doesn't this apply?
   # ./2023-03-04-ccache-cross-fix.patch
 
-  # 2023-03-28: jellyfin-media-player: 1.8.1 -> 1.9.0
-  # TODO: i should review/approve this PR if it works
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/220974.diff";
-    hash = "sha256-AK/l0vteCEg/ae4E0dS1oWnlLI4xyeyLFJcqMgCQ4RI=";
-  })
-
   # 2023-04-11: bambu-studio: init at unstable-2023-01-11
   (fetchpatch {
     url = "https://github.com/NixOS/nixpkgs/pull/206495.diff";
     hash = "sha256-RbQzAtFTr7Nrk2YBcHpKQMYoPlFMVSXNl96B/lkKluQ=";
+  })
+
+  # 2023-04-18: obsidian: update electron_21 -> 24 (merged; waiting to reach downstream branches)
+  (fetchpatch {
+    url = "https://github.com/NixOS/nixpkgs/pull/226591.diff";
+    hash = "sha256-5Nv529giGtsU9z1WPIxOOLNlAwCw2MCYEaHAap/E0NI=";
   })
 
   # # kaiteki: init at 2022-09-03

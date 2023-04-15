@@ -19,16 +19,3 @@ index e71b0a7613d..72779ac57a5 100644
    ];
  
    NIX_LDFLAGS = toString (lib.optionals stdenv.isDarwin [
-diff --git a/pkgs/development/libraries/qt-6/qtModule.nix b/pkgs/development/libraries/qt-6/qtModule.nix
-index 28180d3b0ca..f14c73b10ee 100644
---- a/pkgs/development/libraries/qt-6/qtModule.nix
-+++ b/pkgs/development/libraries/qt-6/qtModule.nix
-@@ -61,7 +61,7 @@ stdenv.mkDerivation (args // {
-       if [[ -z "$dontSyncQt" && -f sync.profile ]]; then
-         # FIXME: this probably breaks crosscompiling as it's not from nativeBuildInputs
-         # I don't know how to get /libexec from nativeBuildInputs to work, it's not under /bin
--        ${lib.getDev qtbase}/libexec/syncqt.pl -version "''${version%%-*}"
-+        perl ${lib.getDev qtbase}/libexec/syncqt.pl -version "''${version%%-*}"
-       fi
-     '';
- 

@@ -26,14 +26,26 @@
     # <https://github.com/nixos/nixpkgs/tree/nixos-22.11>
     # nixpkgs-stable.url = "github:nixos/nixpkgs?ref=nixos-22.11";
 
+    # branch workflow:
+    # - daily:
+    #   - nixos-unstable cut from master after enough packages have been built in caches.
+    # - every 6 hours:
+    #   - master auto-merged into staging.
+    #   - staging-next auto-merged into staging.
+    # - manually, approximately once per month:
+    #   - staging-next is cut from staging.
+    #   - staging-next merged into master.
+    #
+    # which branch to source from?
+    # - for everyday development, prefer `nixos-unstable` branch, as it provides good caching.
+    # - if need to test bleeding updates (e.g. if submitting code into staging):
+    #   - use `staging-next` if it's been cut (i.e. if there's an active staging-next -> master PR)
+    #   - use `staging` if no staging-next branch has been cut.
+    #
     # <https://github.com/nixos/nixpkgs/tree/nixos-unstable>
-    # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=staging-next";
-
-    # nixpkgs = {
-    #   url = "./nixpatches";
-    #   inputs.nixpkgs.follows = "nixpkgs-unpatched";
-    # };
+    nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=staging-next";
+    # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=staging";
 
     mobile-nixos = {
       # <https://github.com/nixos/mobile-nixos>
