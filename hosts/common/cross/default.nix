@@ -72,10 +72,8 @@
 #   - #cross-compiling:nixos.org says pkgsCross.gnu64 IS KNOWN TO NOT COMPILE. let this go for now:
 
 # Nixpkgs PR tracker:
-# - browserpass (2023/03/14): <https://github.com/NixOS/nixpkgs/pull/221310>
-# - gupnp_1_6 (2023/03/14): <https://github.com/NixOS/nixpkgs/pull/221308>
-# - libmbim (2023/02/22, not mine): <https://github.com/NixOS/nixpkgs/pull/217701>
-
+# - 2023/04/12 (gst_all_1): https://github.com/NixOS/nixpkgs/pull/225664
+# - 2023/04/12 (subversion,serf,apr-util,pam_mount): https://github.com/NixOS/nixpkgs/pull/225977
 
 { config, lib, options, pkgs, ... }:
 
@@ -528,21 +526,6 @@ in
             # configure: error: no acceptable C compiler found in $PATH
             inherit (emulated) stdenv;
           };
-          # browserpass = prev.browserpass.override {
-          #   # fixes "qemu-aarch64: Could not open '/lib/ld-linux-aarch64.so.1': No such file or directory"
-          #   inherit (emulated) buildGoModule;  # buildGoModule holds the stdenv
-          # };
-          browserpass = prev.browserpass.overrideAttrs (upstream: {
-            # fixes "qemu-aarch64: Could not open '/lib/ld-linux-aarch64.so.1': No such file or directory"
-            # default browserpass `make` both builds AND tests
-            buildPhase = ''
-              make browserpass
-            '';
-            checkPhase = ''
-              make test
-            '';
-            doCheck = next.stdenv.hostPlatform == next.stdenv.buildPlatform;
-          });
           cantarell-fonts = prev.cantarell-fonts.override {
             # fixes error where python3.10-skia-pathops dependency isn't available for the build platform
             inherit (emulated) stdenv;
@@ -1504,9 +1487,11 @@ in
           webp-pixbuf-loader = prev.webp-pixbuf-loader.overrideAttrs (upstream: {
             # fixes: "Builder called die: Cannot wrap '/nix/store/kpp8qhzdjqgvw73llka5gpnsj0l4jlg8-gdk-pixbuf-aarch64-unknown-linux-gnu-2.42.10/bin/gdk-pixbuf-thumbnailer' because it is not an executable file"
             # gdk-pixbuf doesn't create a `bin/` directory when cross-compiling, breaks some thumbnailing stuff.
+            # - gnome's gdk-pixbuf *explicitly* doesn't build thumbnailer on cross builds
             # see `librsvg` for a more bullet-proof cross-compilation approach
             postInstall = "";
           });
+          # XXX: aarch64 webp-pixbuf-loader wanted by gdk-pixbuf-loaders.cache.drv, wanted by aarch64 gnome-control-center
       })
     ];
   };
