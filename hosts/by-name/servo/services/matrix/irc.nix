@@ -3,8 +3,7 @@
 {
   sane.persist.sys.plaintext = [
     # TODO: mode?
-    # user and group are both "matrix-appservice-irc"
-    { user = "993"; group = "992"; directory = "/var/lib/matrix-appservice-irc"; }
+    { user = "matrix-appservice-irc"; group = "matrix-appservice-irc"; directory = "/var/lib/matrix-appservice-irc"; }
   ];
 
   services.matrix-synapse.settings.app_service_config_files = [

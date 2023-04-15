@@ -15,6 +15,8 @@
   sane.ids.acme.gid = 996;
   sane.ids.pleroma.uid = 997;
   sane.ids.acme.uid = 998;
+  sane.ids.matrix-appservice-irc.uid = 993;
+  sane.ids.matrix-appservice-irc.gid = 992;
 
   # greetd (used by sway)
   sane.ids.greeter.uid = 999;
