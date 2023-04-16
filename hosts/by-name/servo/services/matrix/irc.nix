@@ -35,6 +35,8 @@
           botConfig = {
             # bot has no presence in IRC channel; only real Matrix users
             enabled = false;
+            # this is the IRC username/nickname *of the bot* (not visible in channels): not of the end-user.
+            # the irc username/nick of a mapped Matrix user is determined further down in `ircClients` section.
             # nick = "UninsaneDotOrg";
             nick = "uninsane";
             username = "uninsane";
@@ -44,7 +46,7 @@
             aliasTemplate = "#irc_rizon_$CHANNEL";
           };
           ircClients = {
-            nickTemplate = "$LOCALPARTsane";
+            nickTemplate = "$LOCALPARTsane";  # @colin:uninsane.org (Matrix) -> colinsane (IRC)
             # by default, Matrix will convert messages greater than (3) lines into a pastebin-like URL to send to IRC.
             lineLimit = 20;
           };
@@ -75,19 +77,12 @@
             initial = true;
           };
 
-          # hardcoded mappings, for when dynamicChannels fails us. TODO: probably safe to remove these.
-          # mappings = {
-          #   "#chat" = {
-          #     roomIds = [ "!GXJSOTdbtxRboGtDep:uninsane.org" ];
-          #   };
-          #   # BakaBT requires account registration, which i think means my user needs to be added before the appservice user
-          #   "#BakaBT" = {
-          #     roomIds = [ "!feZKttuYuHilqPFSkD:uninsane.org" ];
-          #   };
-          # };
           # for per-user IRC password:
-          #   invite @irc_rizon_NickServ:uninsane.org to a DM and type `help`  => register
-          #   invite the matrix-appservice-irc user to a DM and type `!help`   => add PW to database
+          # - invite @irc_rizon_NickServ:uninsane.org to a DM and type `help`  => register
+          # - invite the matrix-appservice-irc user to a DM and type `!help`   => add PW to database
+          # to validate that i'm authenticated on the IRC network, DM @irc_rizon_NickServ:uninsane.org:
+          # - send: `STATUS colinsane`
+          # - response should be `3`: "user recognized as owner via password identification"
           # passwordEncryptionKeyPath = "/path/to/privkey";  # appservice will generate its own if unspecified
         };
       };

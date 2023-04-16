@@ -5,7 +5,7 @@
 {
   imports = [
     ./discord-puppet.nix
-    # ./irc.nix
+    ./irc.nix
     # TODO(2023/03/10): disabled because it's not bridging and mautrix_signal is hogging CPU
     # ./signal.nix
   ];
