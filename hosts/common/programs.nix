@@ -110,11 +110,12 @@ let
       lshw
       ffmpeg
       memtester
+      # nettools
       # networkmanager
       nixpkgs-review
       # nixos-generators
-      # nettools
       nmon
+      # node2nix
       oathToolkit  # for oathtool
       # ponymix
       pulsemixer
@@ -133,6 +134,7 @@ let
       unar
       wireguard-tools
       xdg-utils  # for xdg-open
+      # yarn
       # youtube-dl
       yt-dlp
     ;
@@ -375,6 +377,8 @@ in
         vlc.dir = [ ".config/vlc" ];
 
         whalebird.private = [ ".config/Whalebird" ];
+
+        yarn.dir = [ ".cache/yarn" ];
 
         # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
         zecwallet-lite.private = [ ".zcash" ];
