@@ -1,5 +1,93 @@
+# config docs:
+# - <https://github.com/matrix-org/matrix-appservice-irc/blob/develop/config.sample.yaml>
+# TODO: /quit message for bridged users reveals to IRC users that i'm using a bridge;
+#       probably want to remove that.
 { config, lib, ... }:
 
+let
+  ircServer = { name, additionalAddresses ? [] }: let
+    lowerName = lib.toLower name;
+  in {
+    inherit name additionalAddresses;
+    port = 6697;
+    ssl = true;
+    sasl = true;  # appservice doesn't support NickServ identification (only SASL w/ fallback to PASS)
+    botConfig = {
+      # bot has no presence in IRC channel; only real Matrix users
+      enabled = false;
+      # this is the IRC username/nickname *of the bot* (not visible in channels): not of the end-user.
+      # the irc username/nick of a mapped Matrix user is determined further down in `ircClients` section.
+      # if `enabled` is false, then this name probably never shows up on the IRC side (?)
+      nick = "uninsane";
+      username = "uninsane";
+      joinChannelsIfNoUsers = false;
+    };
+    dynamicChannels = {
+      enabled = true;
+      aliasTemplate = "#irc_${lowerName}_$CHANNEL";
+      published = false;  # false => irc rooms aren't listed in homeserver public rooms list
+      federate = false;  # false => Matrix users from other homeservers can't join IRC channels
+    };
+    ircClients = {
+      nickTemplate = "$LOCALPARTsane";  # @colin:uninsane.org (Matrix) -> colinsane (IRC)
+      # by default, Matrix will convert messages greater than (3) lines into a pastebin-like URL to send to IRC.
+      lineLimit = 20;
+      # Rizon in particular allows only 4 connections from one IP before a 30min ban.
+      # that's effectively reduced to 2 during a netsplit, or maybe during a restart.
+      #   - https://wiki.rizon.net/index.php?title=Connection/Session_Limit_Exemptions
+      # especially, misconfigurations elsewhere in this config may cause hundreds of connections
+      # so this is a safeguard.
+      maxClients = 2;
+      # don't have the bridge disconnect me from IRC when idle.
+      idleTimeout = 0;
+      concurrentReconnectLimit = 2;
+      reconnectIntervalMs = 60000;
+      kickOn = {
+        # remove Matrix user from room when...
+        channelJoinFailure = false;
+        ircConnectionFailure = false;
+        userQuit = true;
+      };
+    };
+    matrixClients = {
+      userTemplate = "@irc_${lowerName}_$NICK";  # the :uninsane.org part is appended automatically
+    };
+
+    # this will let this user message the appservice with `!join #<IRCChannel>` and the rest "Just Works"
+    "@colin:uninsane.org" = "admin";
+
+    membershipLists = {
+      enabled = true;
+      global = {
+        ircToMatrix = {
+          initial = true;
+          incremental = true;
+          requireMatrixJoined = false;
+        };
+        matrixToIrc = {
+          initial = true;
+          incremental = true;
+        };
+      };
+      ignoreIdleUsersOnStartup = {
+        enabled = false;  # false => always bridge users, even if idle
+      };
+    };
+    # sync room description?
+    bridgeInfoState = {
+      enabled = true;
+      initial = true;
+    };
+
+    # for per-user IRC password:
+    # - invite @irc_${lowerName}_NickServ:uninsane.org to a DM and type `help`  => register
+    # - invite the matrix-appservice-irc user to a DM and type `!help`   => add PW to database
+    # to validate that i'm authenticated on the IRC network, DM @irc_${lowerName}_NickServ:uninsane.org:
+    # - send: `STATUS colinsane`
+    # - response should be `3`: "user recognized as owner via password identification"
+    # passwordEncryptionKeyPath = "/path/to/privkey";  # appservice will generate its own if unspecified
+  };
+in
 {
   sane.persist.sys.plaintext = [
     # TODO: mode?
@@ -10,11 +98,9 @@
     "/var/lib/matrix-appservice-irc/registration.yml"  # auto-created by irc appservice
   ];
 
-  # note: Rizon allows only FOUR simultaneous IRC connections per IP: https://wiki.rizon.net/index.php?title=Connection/Session_Limit_Exemptions
   # Rizon supports CertFP for auth: https://wiki.rizon.net/index.php?title=CertFP
   services.matrix-appservice-irc.enable = true;
   services.matrix-appservice-irc.registrationUrl = "http://127.0.0.1:8009";
-  # settings documented here: https://github.com/matrix-org/matrix-appservice-irc/blob/develop/config.sample.yaml
   services.matrix-appservice-irc.settings = {
     homeserver = {
       url = "http://127.0.0.1:8008";
@@ -27,63 +113,10 @@
 
     ircService = {
       servers = {
-        "irc.rizon.net" = {
-          name = "Rizon";
-          port = 6697;  # SSL port
-          ssl = true;
-          sasl = true;  # appservice doesn't support NickServ identification
-          botConfig = {
-            # bot has no presence in IRC channel; only real Matrix users
-            enabled = false;
-            # this is the IRC username/nickname *of the bot* (not visible in channels): not of the end-user.
-            # the irc username/nick of a mapped Matrix user is determined further down in `ircClients` section.
-            # nick = "UninsaneDotOrg";
-            nick = "uninsane";
-            username = "uninsane";
-          };
-          dynamicChannels = {
-            enabled = true;
-            aliasTemplate = "#irc_rizon_$CHANNEL";
-          };
-          ircClients = {
-            nickTemplate = "$LOCALPARTsane";  # @colin:uninsane.org (Matrix) -> colinsane (IRC)
-            # by default, Matrix will convert messages greater than (3) lines into a pastebin-like URL to send to IRC.
-            lineLimit = 20;
-          };
-          matrixClients = {
-            userTemplate = "@irc_rizon_$NICK";  # the :uninsane.org part is appended automatically
-          };
-
-          # this will let this user message the appservice with `!join #<IRCChannel>` and the rest "Just Works"
-          "@colin:uninsane.org" = "admin";
-
-          membershipLists = {
-            enabled = true;
-            global = {
-              ircToMatrix = {
-                initial = true;
-                incremental = true;
-                requireMatrixJoined = false;
-              };
-              matrixToIrc = {
-                initial = true;
-                incremental = true;
-              };
-            };
-          };
-          # sync room description?
-          bridgeInfoState = {
-            enabled = true;
-            initial = true;
-          };
-
-          # for per-user IRC password:
-          # - invite @irc_rizon_NickServ:uninsane.org to a DM and type `help`  => register
-          # - invite the matrix-appservice-irc user to a DM and type `!help`   => add PW to database
-          # to validate that i'm authenticated on the IRC network, DM @irc_rizon_NickServ:uninsane.org:
-          # - send: `STATUS colinsane`
-          # - response should be `3`: "user recognized as owner via password identification"
-          # passwordEncryptionKeyPath = "/path/to/privkey";  # appservice will generate its own if unspecified
+        "irc.rizon.net" = ircServer { name = "Rizon"; };
+        "irc.myanonamouse.net" = ircServer {
+          name = "MyAnonamouse";
+          additionalAddresses = [ "irc2.myanonamouse.net" ];
         };
       };
     };
