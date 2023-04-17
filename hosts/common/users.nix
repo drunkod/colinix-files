@@ -101,6 +101,7 @@ in
     sane.user.fs."Videos/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Videos";
     sane.user.fs."Videos/servo-incomplete" = fs.wantedSymlinkTo "/mnt/servo-media/incomplete";
     sane.user.fs."Music/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Music";
+    sane.user.fs."Pictures/servo-macros" = fs.wantedSymlinkTo "/mnt/servo-media/Pictures/macros";
 
     # used by password managers, e.g. unix `pass`
     sane.user.fs.".password-store" = fs.wantedSymlinkTo "knowledge/secrets/accounts";
