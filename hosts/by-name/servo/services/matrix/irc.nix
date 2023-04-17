@@ -5,13 +5,13 @@
 { config, lib, ... }:
 
 let
-  ircServer = { name, additionalAddresses ? [] }: let
+  ircServer = { name, additionalAddresses ? [], sasl ? true }: let
     lowerName = lib.toLower name;
   in {
-    inherit name additionalAddresses;
+    # XXX sasl: appservice doesn't support NickServ identification (only SASL, or PASS if sasl = false)
+    inherit name additionalAddresses sasl;
     port = 6697;
     ssl = true;
-    sasl = true;  # appservice doesn't support NickServ identification (only SASL w/ fallback to PASS)
     botConfig = {
       # bot has no presence in IRC channel; only real Matrix users
       enabled = false;
@@ -117,6 +117,7 @@ in
         "irc.myanonamouse.net" = ircServer {
           name = "MyAnonamouse";
           additionalAddresses = [ "irc2.myanonamouse.net" ];
+          sasl = false;
         };
       };
     };
