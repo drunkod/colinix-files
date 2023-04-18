@@ -2,6 +2,39 @@
 
 with lib;
 let
+  # TODO: upstream these "optional-dependencies"
+  # - search that phrase in <nixpkgs:doc/languages-frameworks/python.section.md>
+  pkg = pkgs.mautrix-signal.overridePythonAttrs (super: {
+    propagatedBuildInputs = super.propagatedBuildInputs ++ (with pkgs.python3.pkgs; [
+      # these optional deps come from mautrix-signal's "optional-requirements.txt"
+
+      # #/e2be
+      # python-olm>=3,<4
+      # pycryptodome>=3,<4
+      # unpaddedbase64>=1,<3
+      # XXX: ^above already included in nixpkgs package
+
+      # #/metrics
+      # prometheus_client>=0.6,<0.17
+      # XXX: ^above already included in nixpkgs package
+
+      # #/formattednumbers
+      # phonenumbers>=8,<9
+      # XXX: ^above already included in nixpkgs package
+
+      # #/qrlink
+      # qrcode>=6,<8
+      # Pillow>=4,<10
+      # XXX: ^above already included in nixpkgs package
+
+      # #/stickers
+      # signalstickers-client>=3,<4
+
+      # #/sqlite
+      # aiosqlite>=0.16,<0.19
+      aiosqlite
+    ]);
+  });
   dataDir = "/var/lib/mautrix-signal";
   registrationFile = "${dataDir}/signal-registration.yaml";
   cfg = config.services.mautrix-signal;
@@ -136,10 +169,10 @@ in
       preStart = ''
         # generate the appservice's registration file if absent
         if [ ! -f '${registrationFile}' ]; then
-          ${pkgs.mautrix-signal}/bin/mautrix-signal \
+          ${pkg}/bin/mautrix-signal \
             --generate-registration \
             --no-update \
-            --base-config='${pkgs.mautrix-signal}/${pkgs.mautrix-signal.pythonModule.sitePackages}/mautrix_signal/example-config.yaml' \
+            --base-config='${pkg}/${pkg.pythonModule.sitePackages}/mautrix_signal/example-config.yaml' \
             --config='${settingsFile}' \
             --registration='${registrationFile}'
         fi
@@ -158,13 +191,13 @@ in
         ProtectControlGroups = true;
 
         PrivateTmp = true;
-        WorkingDirectory = pkgs.mautrix-signal;
+        WorkingDirectory = pkg;
         StateDirectory = baseNameOf dataDir;
         UMask = "0027";
         EnvironmentFile = cfg.environmentFile;
 
         ExecStart = ''
-          ${pkgs.mautrix-signal}/bin/mautrix-signal \
+          ${pkg}/bin/mautrix-signal \
             --config='${settingsFile}' \
             --no-update
         '';
