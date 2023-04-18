@@ -98,6 +98,7 @@ let
       efivar
       flashrom
       fwupd
+      gh  # MS GitHub cli
       ghostscript  # TODO: imagemagick wrapper should add gs to PATH
       gnupg
       gocryptfs
@@ -318,6 +319,9 @@ in
         # mostly, it just keeps a LRU of previously-used emotes to optimize display order.
         # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
         emote.dir = [ ".local/share/Emote" ];
+
+        # MS GitHub stores auth token in .config
+        gh.private = [ ".config/gh" ];
 
         # XXX: we preserve the whole thing because if we only preserve gPodder/Downloads
         #   then startup is SLOW during feed import, and we might end up with zombie eps in the dl dir.
