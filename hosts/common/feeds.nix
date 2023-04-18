@@ -137,6 +137,7 @@ let
     (fromDb "rifters.com/crawl" // uncat)
 
     # DEVELOPERS
+    (fromDb "blog.jmp.chat" // tech)
     (fromDb "uninsane.org" // tech)
     (fromDb "ascii.textfiles.com" // tech)  # Jason Scott
     (fromDb "xn--gckvb8fzb.com" // tech)
