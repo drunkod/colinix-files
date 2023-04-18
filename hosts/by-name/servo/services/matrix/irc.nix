@@ -30,6 +30,8 @@ let
     };
     ircClients = {
       nickTemplate = "$LOCALPARTsane";  # @colin:uninsane.org (Matrix) -> colinsane (IRC)
+      realnameFormat = "reverse-mxid";  # @colin:uninsane.org (Matrix) -> org.uninsane:colin (IRC)
+      # realnameFormat = "localpart";  # @colin:uninsane.org (Matrix) -> colin (IRC)  -- but requires the mxid patch below
       # by default, Matrix will convert messages greater than (3) lines into a pastebin-like URL to send to IRC.
       lineLimit = 20;
       # Rizon in particular allows only 4 connections from one IP before a 30min ban.
@@ -89,6 +91,18 @@ let
   };
 in
 {
+
+  nixpkgs.overlays = [
+    (next: prev: {
+      matrix-appservice-irc = prev.matrix-appservice-irc.overrideAttrs (super: {
+        patches = super.patches or [] ++ [
+          ./irc-no-reveal-bridge.patch
+          # ./irc-no-reveal-mxid.patch
+        ];
+      });
+    })
+  ];
+
   sane.persist.sys.plaintext = [
     # TODO: mode?
     { user = "matrix-appservice-irc"; group = "matrix-appservice-irc"; directory = "/var/lib/matrix-appservice-irc"; }
