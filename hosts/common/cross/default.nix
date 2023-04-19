@@ -857,28 +857,6 @@ in
           });
 
           gst_all_1 = prev.gst_all_1 // {
-            # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225664
-            # gst-editing-services = prev.gst_all_1.gst-editing-services.override {
-            #   # fixes "Run-time dependency gst-validate-1.0 found: NO"
-            #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libgobject-2.0.so: error adding symbols: file in wrong format"
-            #   inherit (emulated) stdenv;
-            # };
-            # XXX this feels risky; it propagates a (conflicting) gst-plugins to all consumers
-            # gst-editing-services = emulated.gst_all_1.gst-editing-services;
-            # fixes "Run-time dependency gst-validate-1.0 found: NO"
-            # fixes undefined references to Py_Initialize, etc.
-            # - alternative is `mesonFlags = [ "-Dpython=disabled" ]`
-            gst-editing-services = addBuildInputs
-              [ next.python3 ]
-              (mvToBuildInputs [ next.gst_all_1.gst-devtools ] prev.gst_all_1.gst-editing-services);
-            # gst-editing-services =
-            #   (mvToBuildInputs [ next.gst_all_1.gst-devtools ] prev.gst_all_1.gst-editing-services);
-            #   .overrideAttrs (upstream: {
-            #     mesonFlags = upstream.mesonFlags ++ [
-            #       # disable "python formatters" to avoid undefined references to Py_Initialize, etc.
-            #       "-Dpython=disabled"
-            #     ];
-            #   });
             # inherit (emulated.gst_all_1) gst-plugins-good;
             # gst-plugins-good = prev.gst_all_1.gst-plugins-good.override {
             #   # when invoked with `qt5Support = true`, qtbase shows up in both buildInputs and nativeBuildInputs
@@ -1182,9 +1160,6 @@ in
               next.desktop-file-utils  # fixes "meson.build:116:8: ERROR: Program 'update-desktop-database' not found or not executable"
             ];
           } prev.phosh-mobile-settings;
-          # fixes `spa/plugins/bluez5/meson.build:41:0: ERROR: Program 'gdbus-codegen' not found or not executable`
-          # TODO (2023/04/07): remove pipewire override. it builds on staging
-          pipewire = mvToNativeInputs [ next.glib ] prev.pipewire;
           # psqlodbc = prev.psqlodbc.override {
           #   # fixes "configure: error: odbc_config not found (required for unixODBC build)"
           #   inherit (emulated) stdenv;
@@ -1313,14 +1288,6 @@ in
           #   # };
           # });
 
-          rav1e = prev.rav1e.override {
-            # TODO(2023/04/13): fixed in soon-to-be-merged PR: https://github.com/NixOS/nixpkgs/pull/225360
-            # fix "aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option '-m64'"
-            inherit (emulated)
-              rustPlatform
-              stdenv
-            ;
-          };
           rmlint = prev.rmlint.override {
             # fixes "Checking whether the C compiler works... no"
             # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
