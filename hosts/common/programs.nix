@@ -321,6 +321,7 @@ in
         emote.dir = [ ".local/share/Emote" ];
 
         # MS GitHub stores auth token in .config
+        # TODO: we can populate gh's stuff statically; it even lets us use the same oauth across machines
         gh.private = [ ".config/gh" ];
 
         # XXX: we preserve the whole thing because if we only preserve gPodder/Downloads
