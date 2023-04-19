@@ -38,12 +38,6 @@
     hash = "sha256-RbQzAtFTr7Nrk2YBcHpKQMYoPlFMVSXNl96B/lkKluQ=";
   })
 
-  # 2023-04-18: obsidian: update electron_21 -> 24 (merged; waiting to reach downstream branches)
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/226591.diff";
-    hash = "sha256-5Nv529giGtsU9z1WPIxOOLNlAwCw2MCYEaHAap/E0NI=";
-  })
-
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized

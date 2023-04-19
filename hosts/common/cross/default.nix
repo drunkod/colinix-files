@@ -267,14 +267,15 @@ in
     # the configuration of which specific package set `pkgs.cross` refers to happens elsewhere;
     # here we just define them all.
 
-    nixpkgs.config.perlPackageOverrides = pkgs: (with pkgs; with pkgs.perlPackages; {
+    nixpkgs.config.perlPackageOverrides = pkgs': (with pkgs'; with pkgs'.perlPackages; {
       # these are the upstream nixpkgs perl modules, but with `nativeBuildInputs = [ perl ]`
       # to fix cross compilation errors
+      # see <nixpkgs:pkgs/top-level/perl-packages.nix>
       # TODO: try this PR: https://github.com/NixOS/nixpkgs/pull/225640
       ModuleBuild = buildPerlPackage {
         pname = "Module-Build";
         version = "0.4231";
-        src = fetchurl {
+        src = pkgs.fetchurl {
           url = "mirror://cpan/authors/id/L/LE/LEONT/Module-Build-0.4231.tar.gz";
           hash = "sha256-fg9MaSwXQMGshOoU1+o9i8eYsvsmwJh3Ip4E9DCytxc=";
         };
@@ -292,7 +293,7 @@ in
       FileBaseDir = buildPerlModule {
         version = "0.08";
         pname = "File-BaseDir";
-        src = fetchurl {
+        src = pkgs.fetchurl {
           url = "mirror://cpan/authors/id/K/KI/KIMRYAN/File-BaseDir-0.08.tar.gz";
           hash = "sha256-wGX80+LyKudpk3vMlxuR+AKU1QCfrBQL+6g799NTBeM=";
         };
@@ -312,7 +313,7 @@ in
       Testutf8 = buildPerlPackage {
         pname = "Test-utf8";
         version = "1.02";
-        src = fetchurl {
+        src = pkgs.fetchurl {
           url = "mirror://cpan/authors/id/M/MA/MARKF/Test-utf8-1.02.tar.gz";
           hash = "sha256-34LwnFlAgwslpJ8cgWL6JNNx5gKIDt742aTUv9Zri9c=";
         };
