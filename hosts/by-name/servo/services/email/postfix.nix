@@ -1,18 +1,6 @@
-# DOCS:
-# - postfix config options: <https://www.postfix.org/postconf.5.html>
-# - dovecot config: <https://doc.dovecot.org/configuration_manual/>
-# - rspamd nixos: <https://nixos.wiki/wiki/Rspamd>
-# - rspamd guide: <https://rspamd.com/doc/quickstart.html>
-#
-# nix configs to reference:
-# - <https://gitlab.com/simple-nixos-mailserver/nixos-mailserver>
-# - <https://github.com/nix-community/nur-combined/-/tree/master/repos/eh5/machines/srv-m/mail-rspamd.nix>
-#   - postfix / dovecot / rspamd / stalwart-jmap / sogo
+# postfix config options: <https://www.postfix.org/postconf.5.html>
 
-# TODO:
-# - rspamd integration: <https://dataswamp.org/~solene/2021-07-13-smtpd-rspamd.html>
-
-{ config, lib, ... }:
+{ lib, ... }:
 
 let
   submissionOptions = {
@@ -41,20 +29,12 @@ in
   ];
 
   networking.firewall.allowedTCPPorts = [
-    # exposed over non-vpn imap.uninsane.org
-    143  # IMAP
-    993  # IMAPS
-
     # exposed over vpn mx.uninsane.org
     25   # SMTP
     465  # SMTPS
     587  # SMTPS/submission
   ];
 
-  # exists only to manage certs for dovecot
-  services.nginx.virtualHosts."imap.uninsane.org" = {
-    enableACME = true;
-  };
   # exists only to manage certs for Postfix
   services.nginx.virtualHosts."mx.uninsane.org" = {
     enableACME = true;
@@ -65,7 +45,6 @@ in
     MX."@" = "10 mx.uninsane.org.";
     # XXX: RFC's specify that the MX record CANNOT BE A CNAME
     A."mx" = "185.157.162.178";
-    CNAME."imap" = "native";
 
     # Sender Policy Framework:
     #   +mx     => mail passes if it originated from the MX
@@ -164,62 +143,6 @@ in
     UMask = lib.mkForce "0011";
   };
 
-  # inspired by https://gitlab.com/simple-nixos-mailserver/nixos-mailserver/
-  services.dovecot2.enable = true;
-  services.dovecot2.mailboxes = {
-    # special-purpose mailboxes: "All" "Archive" "Drafts" "Flagged" "Junk" "Sent" "Trash"
-    # RFC6154 describes these special mailboxes: https://www.ietf.org/rfc/rfc6154.html
-    # how these boxes are treated is 100% up to the client and server to decide.
-    # client behavior:
-    # iOS
-    #   - Drafts: ?
-    #   - Sent: works
-    #   - Trash: works
-    #   - Junk: ?
-    # aerc
-    #   - Drafts: works
-    #   - Sent: works
-    #   - Trash: no; deleted messages are actually deleted
-    #       use `:move trash` instead
-    #   - Junk: ?
-    # Sent mailbox: all sent messages are copied to it. unclear if this happens server-side or client-side.
-    Drafts = { specialUse = "Drafts"; auto = "create"; };
-    Sent = { specialUse = "Sent"; auto = "create"; };
-    Trash = { specialUse = "Trash"; auto = "create"; };
-    Junk = { specialUse = "Junk"; auto = "create"; };
-  };
-  services.dovecot2.sslServerCert = "/var/lib/acme/imap.uninsane.org/fullchain.pem";
-  services.dovecot2.sslServerKey = "/var/lib/acme/imap.uninsane.org/key.pem";
-  services.dovecot2.enablePAM = false;
-  services.dovecot2.extraConfig =
-  let
-    passwdFile = config.sops.secrets.dovecot_passwd.path;
-  in
-    ''
-    passdb {
-      driver = passwd-file
-      args = ${passwdFile}
-    }
-    userdb {
-      driver = passwd-file
-      args = ${passwdFile}
-    }
-
-    # allow postfix to query our auth db
-    service auth {
-      unix_listener auth {
-        mode = 0660
-        user = postfix
-        group = postfix
-      }
-    }
-    auth_mechanisms = plain login
-
-
-    mail_debug = yes
-    auth_debug = yes
-    # verbose_ssl = yes
-  '';
 
   #### OUTGOING MESSAGE REWRITING:
   services.postfix.enableHeaderChecks = true;
@@ -241,14 +164,4 @@ in
     #   pattern = "/^Subject:.*activate your account/";
     # }
   ];
-
-  #### SPAM FILTERING
-  # services.rspamd.enable = true;
-  # services.rspamd.postfix.enable = true;
-
-  sops.secrets."dovecot_passwd" = {
-    owner = config.users.users.dovecot2.name;
-    # TODO: debug why mail can't be sent without this being world-readable
-    mode = "0444";
-  };
 }
