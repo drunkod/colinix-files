@@ -1,5 +1,16 @@
 # DOCS:
+# - postfix config options: <https://www.postfix.org/postconf.5.html>
 # - dovecot config: <https://doc.dovecot.org/configuration_manual/>
+# - rspamd nixos: <https://nixos.wiki/wiki/Rspamd>
+# - rspamd guide: <https://rspamd.com/doc/quickstart.html>
+#
+# nix configs to reference:
+# - <https://gitlab.com/simple-nixos-mailserver/nixos-mailserver>
+# - <https://github.com/nix-community/nur-combined/-/tree/master/repos/eh5/machines/srv-m/mail-rspamd.nix>
+#   - postfix / dovecot / rspamd / stalwart-jmap / sogo
+
+# TODO:
+# - rspamd integration: <https://dataswamp.org/~solene/2021-07-13-smtpd-rspamd.html>
 
 { config, lib, ... }:
 
@@ -109,6 +120,12 @@ in
     milter_default_action = accept
     inet_protocols = ipv4
     smtp_tls_security_level = may
+
+    # anti-spam options: <https://www.postfix.org/SMTPD_ACCESS_README.html>
+    # reject_unknown_sender_domain: causes postfix to `dig <sender> MX` and make sure that exists.
+    # but may cause problems receiving mail from google & others who load-balance?
+    # - <https://unix.stackexchange.com/questions/592131/how-to-reject-email-from-unknown-domains-with-postfix-on-centos>
+    # smtpd_sender_restrictions = reject_unknown_sender_domain
   '';
 
   services.postfix.enableSubmission = true;
@@ -158,15 +175,18 @@ in
     #   - Drafts: ?
     #   - Sent: works
     #   - Trash: works
+    #   - Junk: ?
     # aerc
     #   - Drafts: works
     #   - Sent: works
     #   - Trash: no; deleted messages are actually deleted
     #       use `:move trash` instead
+    #   - Junk: ?
     # Sent mailbox: all sent messages are copied to it. unclear if this happens server-side or client-side.
     Drafts = { specialUse = "Drafts"; auto = "create"; };
     Sent = { specialUse = "Sent"; auto = "create"; };
     Trash = { specialUse = "Trash"; auto = "create"; };
+    Junk = { specialUse = "Junk"; auto = "create"; };
   };
   services.dovecot2.sslServerCert = "/var/lib/acme/imap.uninsane.org/fullchain.pem";
   services.dovecot2.sslServerKey = "/var/lib/acme/imap.uninsane.org/key.pem";
@@ -221,6 +241,10 @@ in
     #   pattern = "/^Subject:.*activate your account/";
     # }
   ];
+
+  #### SPAM FILTERING
+  # services.rspamd.enable = true;
+  # services.rspamd.postfix.enable = true;
 
   sops.secrets."dovecot_passwd" = {
     owner = config.users.users.dovecot2.name;
