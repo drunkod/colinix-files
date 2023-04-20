@@ -95,12 +95,11 @@ let
       };
     };
 
-    patchPhase = ''
-      # remove python scripts  (we package them further below)
-      rm sane-bt-search
-      rm sane-date-math
-      rm sane-reclaim-boot-space
-    '';
+    # remove python scripts  (we package them further below)
+    patchPhase = builtins.concatStringsSep
+      "\n"
+      (lib.mapAttrsToList (name: pkg: "rm ${pkg.pname}") py-scripts)
+    ;
 
     installPhase = ''
       mkdir -p $out/bin
@@ -108,24 +107,29 @@ let
     '';
   };
 
-  bt-search = static-nix-shell.mkPython3Bin {
-    pname = "sane-bt-search";
-    src = ./src;
-    pyPkgs = [ "natsort" "requests" ];
+  py-scripts = {
+    bt-search = static-nix-shell.mkPython3Bin {
+      pname = "sane-bt-search";
+      src = ./src;
+      pyPkgs = [ "natsort" "requests" ];
+    };
+    date-math = static-nix-shell.mkPython3Bin {
+      pname = "sane-date-math";
+      src = ./src;
+    };
+    reclaim-boot-space = static-nix-shell.mkPython3Bin {
+      pname = "sane-reclaim-boot-space";
+      src = ./src;
+    };
+    ip-reconnect = static-nix-shell.mkPython3Bin {
+      pname = "sane-ip-reconnect";
+      src = ./src;
+    };
   };
-  date-math = static-nix-shell.mkPython3Bin {
-    pname = "sane-date-math";
-    src = ./src;
-  };
-  reclaim-boot-space = static-nix-shell.mkPython3Bin {
-    pname = "sane-reclaim-boot-space";
-    src = ./src;
-  };
-
 in
 symlinkJoin {
   name = "sane-scripts";
-  paths = [ shell-scripts bt-search date-math reclaim-boot-space ];
+  paths = [ shell-scripts ] ++ lib.attrValues py-scripts;
   meta = {
     description = "collection of scripts associated with uninsane systems";
     homepage = "https://git.uninsane.org";
