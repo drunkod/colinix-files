@@ -1,6 +1,6 @@
 # postfix config options: <https://www.postfix.org/postconf.5.html>
 
-{ lib, ... }:
+{ lib, pkgs, ... }:
 
 let
   submissionOptions = {
@@ -88,24 +88,40 @@ in
     @uninsane.org colin
   '';
 
-  services.postfix.extraConfig = ''
+  services.postfix.config = {
     # smtpd_milters = local:/run/opendkim/opendkim.sock
     # milter docs: http://www.postfix.org/MILTER_README.html
-    # mail filters for receiving email and authorized SMTP clients
+    # mail filters for receiving email and from authorized SMTP clients (i.e. via submission)
     # smtpd_milters = inet:185.157.162.190:8891
-    smtpd_milters = unix:/run/opendkim/opendkim.sock
+    # opendkim.sock will add a Authentication-Results header, with `dkim=pass|fail|...` value to received messages
+    smtpd_milters = "unix:/run/opendkim/opendkim.sock";
     # mail filters for sendmail
-    non_smtpd_milters = $smtpd_milters
-    milter_default_action = accept
-    inet_protocols = ipv4
-    smtp_tls_security_level = may
+    non_smtpd_milters = "$smtpd_milters";
+
+    # what to do when a milter exits unexpectedly:
+    milter_default_action = "accept";
+
+    inet_protocols = "ipv4";
+    smtp_tls_security_level = "may";
+
+    # hand received mail over to dovecot so that it can run sieves & such
+    mailbox_command = ''${pkgs.dovecot}/libexec/dovecot/dovecot-lda -f "$SENDER" -a "$RECIPIENT"'';
+
+    # hand received mail over to dovecot
+    # virtual_alias_maps = [
+    #   "hash:/etc/postfix/virtual"
+    # ];
+    # mydestination = "";
+    # virtual_mailbox_domains = [ "localhost" "uninsane.org" ];
+    # # virtual_mailbox_maps = "hash:/etc/postfix/virtual";
+    # virtual_transport = "lmtp:unix:/run/dovecot2/dovecot-lmtp";
 
     # anti-spam options: <https://www.postfix.org/SMTPD_ACCESS_README.html>
     # reject_unknown_sender_domain: causes postfix to `dig <sender> MX` and make sure that exists.
     # but may cause problems receiving mail from google & others who load-balance?
     # - <https://unix.stackexchange.com/questions/592131/how-to-reject-email-from-unknown-domains-with-postfix-on-centos>
     # smtpd_sender_restrictions = reject_unknown_sender_domain
-  '';
+  };
 
   services.postfix.enableSubmission = true;
   services.postfix.submissionOptions = submissionOptions;
@@ -119,6 +135,8 @@ in
     NetworkNamespacePath = "/run/netns/ovpns";
   };
 
+
+  #### OPENDKIM
 
   services.opendkim.enable = true;
   # services.opendkim.domains = "csl:uninsane.org";
