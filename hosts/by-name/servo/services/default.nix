@@ -3,6 +3,7 @@
   imports = [
     ./ddns-afraid.nix
     ./ddns-he.nix
+    ./email
     ./ejabberd.nix
     ./freshrss.nix
     ./gitea.nix
@@ -16,7 +17,6 @@
     ./nixserve.nix
     ./nginx.nix
     ./pleroma.nix
-    ./postfix.nix
     ./postgres.nix
     ./prosody.nix
     ./transmission.nix
