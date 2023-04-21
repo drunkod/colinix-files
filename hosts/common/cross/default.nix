@@ -267,67 +267,67 @@ in
     # the configuration of which specific package set `pkgs.cross` refers to happens elsewhere;
     # here we just define them all.
 
-    nixpkgs.config.perlPackageOverrides = pkgs': (with pkgs'; with pkgs'.perlPackages; {
-      # these are the upstream nixpkgs perl modules, but with `nativeBuildInputs = [ perl ]`
-      # to fix cross compilation errors
-      # see <nixpkgs:pkgs/top-level/perl-packages.nix>
-      # TODO: try this PR: https://github.com/NixOS/nixpkgs/pull/225640
-      ModuleBuild = buildPerlPackage {
-        pname = "Module-Build";
-        version = "0.4231";
-        src = pkgs.fetchurl {
-          url = "mirror://cpan/authors/id/L/LE/LEONT/Module-Build-0.4231.tar.gz";
-          hash = "sha256-fg9MaSwXQMGshOoU1+o9i8eYsvsmwJh3Ip4E9DCytxc=";
-        };
-        # support cross-compilation by removing unnecessary File::Temp version check
-        # postPatch = lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
-        #   sed -i '/File::Temp/d' Build.PL
-        # '';
-        nativeBuildInputs = [ perl ];
-        meta = {
-          description = "Build and install Perl modules";
-          license = with lib.licenses; [ artistic1 gpl1Plus ];
-          mainProgram = "config_data";
-        };
-      };
-      FileBaseDir = buildPerlModule {
-        version = "0.08";
-        pname = "File-BaseDir";
-        src = pkgs.fetchurl {
-          url = "mirror://cpan/authors/id/K/KI/KIMRYAN/File-BaseDir-0.08.tar.gz";
-          hash = "sha256-wGX80+LyKudpk3vMlxuR+AKU1QCfrBQL+6g799NTBeM=";
-        };
-        configurePhase = ''
-          runHook preConfigure
-          perl Build.PL PREFIX="$out" prefix="$out"
-        '';
-        nativeBuildInputs = [ perl ];
-        propagatedBuildInputs = [ IPCSystemSimple ];
-        buildInputs = [ FileWhich ];
-        meta = {
-          description = "Use the Freedesktop.org base directory specification";
-          license = with lib.licenses; [ artistic1 gpl1Plus ];
-        };
-      };
-      # fixes: "FAILED IPython/terminal/tests/test_debug_magic.py::test_debug_magic_passes_through_generators - pexpect.exceptions.TIMEOUT: Timeout exceeded."
-      Testutf8 = buildPerlPackage {
-        pname = "Test-utf8";
-        version = "1.02";
-        src = pkgs.fetchurl {
-          url = "mirror://cpan/authors/id/M/MA/MARKF/Test-utf8-1.02.tar.gz";
-          hash = "sha256-34LwnFlAgwslpJ8cgWL6JNNx5gKIDt742aTUv9Zri9c=";
-        };
-        nativeBuildInputs = [ perl ];
-        meta = {
-          description = "Handy utf8 tests";
-          homepage = "https://github.com/2shortplanks/Test-utf8/tree";
-          license = with lib.licenses; [ artistic1 gpl1Plus ];
-        };
-      };
-      # inherit (pkgs.emulated.perl.pkgs)
-      #   Testutf8
-      # ;
-    });
+    # nixpkgs.config.perlPackageOverrides = pkgs': (with pkgs'; with pkgs'.perlPackages; {
+    #   # these are the upstream nixpkgs perl modules, but with `nativeBuildInputs = [ perl ]`
+    #   # to fix cross compilation errors
+    #   # see <nixpkgs:pkgs/top-level/perl-packages.nix>
+    #   # TODO: try this PR: https://github.com/NixOS/nixpkgs/pull/225640
+    #   ModuleBuild = buildPerlPackage {
+    #     pname = "Module-Build";
+    #     version = "0.4231";
+    #     src = pkgs.fetchurl {
+    #       url = "mirror://cpan/authors/id/L/LE/LEONT/Module-Build-0.4231.tar.gz";
+    #       hash = "sha256-fg9MaSwXQMGshOoU1+o9i8eYsvsmwJh3Ip4E9DCytxc=";
+    #     };
+    #     # support cross-compilation by removing unnecessary File::Temp version check
+    #     # postPatch = lib.optionalString (pkgs.stdenv.hostPlatform != pkgs.stdenv.buildPlatform) ''
+    #     #   sed -i '/File::Temp/d' Build.PL
+    #     # '';
+    #     nativeBuildInputs = [ perl ];
+    #     meta = {
+    #       description = "Build and install Perl modules";
+    #       license = with lib.licenses; [ artistic1 gpl1Plus ];
+    #       mainProgram = "config_data";
+    #     };
+    #   };
+    #   FileBaseDir = buildPerlModule {
+    #     version = "0.08";
+    #     pname = "File-BaseDir";
+    #     src = pkgs.fetchurl {
+    #       url = "mirror://cpan/authors/id/K/KI/KIMRYAN/File-BaseDir-0.08.tar.gz";
+    #       hash = "sha256-wGX80+LyKudpk3vMlxuR+AKU1QCfrBQL+6g799NTBeM=";
+    #     };
+    #     configurePhase = ''
+    #       runHook preConfigure
+    #       perl Build.PL PREFIX="$out" prefix="$out"
+    #     '';
+    #     nativeBuildInputs = [ perl ];
+    #     propagatedBuildInputs = [ IPCSystemSimple ];
+    #     buildInputs = [ FileWhich ];
+    #     meta = {
+    #       description = "Use the Freedesktop.org base directory specification";
+    #       license = with lib.licenses; [ artistic1 gpl1Plus ];
+    #     };
+    #   };
+    #   # fixes: "FAILED IPython/terminal/tests/test_debug_magic.py::test_debug_magic_passes_through_generators - pexpect.exceptions.TIMEOUT: Timeout exceeded."
+    #   Testutf8 = buildPerlPackage {
+    #     pname = "Test-utf8";
+    #     version = "1.02";
+    #     src = pkgs.fetchurl {
+    #       url = "mirror://cpan/authors/id/M/MA/MARKF/Test-utf8-1.02.tar.gz";
+    #       hash = "sha256-34LwnFlAgwslpJ8cgWL6JNNx5gKIDt742aTUv9Zri9c=";
+    #     };
+    #     nativeBuildInputs = [ perl ];
+    #     meta = {
+    #       description = "Handy utf8 tests";
+    #       homepage = "https://github.com/2shortplanks/Test-utf8/tree";
+    #       license = with lib.licenses; [ artistic1 gpl1Plus ];
+    #     };
+    #   };
+    #   # inherit (pkgs.emulated.perl.pkgs)
+    #   #   Testutf8
+    #   # ;
+    # });
     # XXX: replaceStdenv only affects non-cross stages
     # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
     nixpkgs.overlays = crossOnlyUniversalOverlays ++ [
@@ -415,7 +415,7 @@ in
             jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
             # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
             # libsForQt5  # qtbase  # make: g++: No such file or directory
-            # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
+            perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
             # qgnomeplatform
             # qtbase
             qt5  # qt5.qtx11extras fails, but we can't selectively emulate it

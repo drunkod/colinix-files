@@ -38,6 +38,12 @@
     hash = "sha256-RbQzAtFTr7Nrk2YBcHpKQMYoPlFMVSXNl96B/lkKluQ=";
   })
 
+  # 2023-04-20: perl: fix modules for compatibility with miniperl
+  # (fetchpatch {
+  #   url = "https://github.com/NixOS/nixpkgs/pull/225640.diff";
+  #   hash = "sha256-MNG8C0OgdPnFQ8SF2loiEhXJuP2z4n9pkXr8Zh4X7QU=";
+  # })
+
   # # kaiteki: init at 2022-09-03
   # vendorHash changes too frequently (might not be reproducible).
   # using local package defn until stabilized
