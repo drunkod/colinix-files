@@ -32,6 +32,8 @@
   sane.ids.mautrix-signal.gid = 2404;
   sane.ids.navidrome.uid = 2405;
   sane.ids.navidrome.gid = 2405;
+  sane.ids.calibre-web.uid = 2406;
+  sane.ids.calibre-web.gid = 2406;
 
   sane.ids.colin.uid = 1000;
   sane.ids.guest.uid = 1100;
