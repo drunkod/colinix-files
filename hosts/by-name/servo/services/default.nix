@@ -13,6 +13,7 @@
     ./jackett.nix
     ./jellyfin.nix
     ./kiwix-serve.nix
+    ./komga.nix
     ./matrix
     ./navidrome.nix
     ./nixserve.nix
