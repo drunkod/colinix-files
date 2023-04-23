@@ -1,8 +1,8 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   inherit (builtins) attrNames concatLists;
-  inherit (lib) mapAttrs mapAttrsToList mkDefault mkMerge optional;
+  inherit (lib) mapAttrs mapAttrsToList mkDefault mkIf mkMerge optional;
 
   flattenedPkgs = pkgs // (with pkgs; {
     # XXX can't `inherit` a nested attr, so we move them to the toplevel
@@ -218,6 +218,7 @@ let
       mumble
       obsidian
       slic3r
+      steam
     ;
   };
   x86GuiPkgs = {
@@ -361,6 +362,11 @@ in
         # creds, widevine .so download. TODO: could easily manage these statically.
         spotify.dir = [ ".config/spotify" ];
 
+        steam.dir = [
+          ".steam"
+          ".local/share/Steam"
+        ];
+
         # sublime music persists any downloaded albums here.
         # it doesn't obey a conventional ~/Music/{Artist}/{Album}/{Track} notation, so no symlinking
         # config (e.g. server connection details) is persisted in ~/.config/sublime-music/config.json
@@ -392,5 +398,13 @@ in
 
     # XXX: this might not be necessary. try removing this and cacert.unbundled (servo)?
     environment.etc."ssl/certs".source = "${pkgs.cacert.unbundled}/etc/ssl/certs/*";
+
+    # steam requires system-level config for e.g. firewall or controller support
+    programs.steam = mkIf config.sane.programs.steam.enabled {
+      enable = true;
+      # not sure if needed: stole this whole snippet from the wiki
+      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+      dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    };
   };
 }

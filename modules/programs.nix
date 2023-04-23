@@ -1,6 +1,6 @@
 { config, lib, pkgs, sane-lib, ... }:
 let
-  inherit (builtins) any elem map;
+  inherit (builtins) any attrValues elem map;
   inherit (lib)
     filterAttrs
     hasAttrByPath
@@ -18,7 +18,7 @@ let
   ;
   inherit (sane-lib) joinAttrsets;
   cfg = config.sane.programs;
-  pkgSpec = types.submodule ({ name, ... }: {
+  pkgSpec = types.submodule ({ config, name, ... }: {
     options = {
       package = mkOption {
         type = types.nullOr types.package;
@@ -59,6 +59,12 @@ let
           place this program on the PATH for some specified user(s).
         '';
       };
+      enabled = mkOption {
+        type = types.bool;
+        description = ''
+          generated (i.e. read-only) value indicating if the program is enabled either for any user or for the system.
+        '';
+      };
       suggestedPrograms = mkOption {
         type = types.listOf types.str;
         default = [];
@@ -83,6 +89,9 @@ let
       };
     };
 
+    config = {
+      enabled = config.enableFor.system || any (en: en) (attrValues config.enableFor.user);
+    };
   });
   toPkgSpec = types.coercedTo types.package (p: { package = p; }) pkgSpec;
 
