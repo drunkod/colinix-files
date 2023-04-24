@@ -2,7 +2,7 @@
 
 {
   # libreoffice: disable first-run stuff
-  sane.user.fs.".config/libreoffice/4/user/registrymodifications.xcu" = sane-lib.fs.wantedText ''
+  sane.programs.libreoffice-fresh.fs.".config/libreoffice/4/user/registrymodifications.xcu" = sane-lib.fs.wantedText ''
     <?xml version="1.0" encoding="UTF-8"?>
     <oor:items xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="FirstRun" oor:op="fuse"><value>false</value></prop></item>

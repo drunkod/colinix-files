@@ -111,6 +111,7 @@ let
       lshw
       ffmpeg
       memtester
+      neovim
       # nettools
       # networkmanager
       nixpkgs-review
@@ -148,15 +149,15 @@ let
       emote
       evince  # works on phosh
 
-      # { pkg = fluffychat-moby; dir = [ ".local/share/chat.fluffy.fluffychat" ]; }  # TODO: ship normal fluffychat on non-moby?
+      # { pkg = fluffychat-moby; persist.plaintext = [ ".local/share/chat.fluffy.fluffychat" ]; }  # TODO: ship normal fluffychat on non-moby?
 
       # foliate  # e-book reader
 
       # XXX by default fractal stores its state in ~/.local/share/<UUID>.
       # after logging in, manually change ~/.local/share/keyrings/... to point it to some predictable subdir.
       # then reboot (so that libsecret daemon re-loads the keyring...?)
-      # { pkg = fractal-latest; private = [ ".local/share/fractal" ]; }
-      # { pkg = fractal-next; private = [ ".local/share/fractal" ]; }
+      # { pkg = fractal-latest; persist.private = [ ".local/share/fractal" ]; }
+      # { pkg = fractal-next; persist.private = [ ".local/share/fractal" ]; }
 
       # "gnome.cheese"
       "gnome.dconf-editor"
@@ -181,12 +182,7 @@ let
       playerctl
       # "libsForQt5.plasmatube"  # Youtube player
       soundconverter
-      # sublime music persists any downloaded albums here.
-      # it doesn't obey a conventional ~/Music/{Artist}/{Album}/{Track} notation, so no symlinking
-      # config (e.g. server connection details) is persisted in ~/.config/sublime-music/config.json
-      #   possible to pass config as a CLI arg (sublime-music -c config.json)
-      # { pkg = sublime-music; dir = [ ".local/share/sublime-music" ]; }
-      sublime-music-mobile
+      sublime-music
       # tdesktop  # broken on phosh
       # tokodon
       vlc
@@ -308,75 +304,65 @@ in
           ghostscriptSupport = true;
         };
 
-        dino.private = [ ".local/share/dino" ];
+        dino.persist.private = [ ".local/share/dino" ];
 
         # creds, but also 200 MB of node modules, etc
-        discord.private = [ ".config/discord" ];
+        discord.persist.private = [ ".config/discord" ];
 
         # creds/session keys, etc
-        element-desktop.private = [ ".config/Element" ];
+        element-desktop.persist.private = [ ".config/Element" ];
 
         # `emote` will show a first-run dialog based on what's in this directory.
         # mostly, it just keeps a LRU of previously-used emotes to optimize display order.
         # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
-        emote.dir = [ ".local/share/Emote" ];
+        emote.persist.plaintext = [ ".local/share/Emote" ];
 
         # MS GitHub stores auth token in .config
         # TODO: we can populate gh's stuff statically; it even lets us use the same oauth across machines
-        gh.private = [ ".config/gh" ];
+        gh.persist.private = [ ".config/gh" ];
 
         # XXX: we preserve the whole thing because if we only preserve gPodder/Downloads
         #   then startup is SLOW during feed import, and we might end up with zombie eps in the dl dir.
-        gpodder-configured.dir = [ "gPodder" ];
+        gpodder-configured.persist.plaintext = [ "gPodder" ];
 
         # jellyfin stores things in a bunch of directories: this one persists auth info.
         # it *might* be possible to populate this externally (it's Qt stuff), but likely to
         # be fragile and take an hour+ to figure out.
-        jellyfin-media-player.dir = [ ".local/share/Jellyfin Media Player" ];
+        jellyfin-media-player.persist.plaintext = [ ".local/share/Jellyfin Media Player" ];
 
         # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
         # XXX: is it really safe to persist this? it doesn't have info that could de-anonymize if captured?
-        monero-gui.dir = [ ".bitmonero" ];
+        monero-gui.persist.plaintext = [ ".bitmonero" ];
 
-        mpv.dir = [ ".config/mpv/watch_later" ];
-
-        mumble.private = [ ".local/share/Mumble" ];
+        mumble.persist.private = [ ".local/share/Mumble" ];
 
         # not strictly necessary, but allows caching articles; offline use, etc.
-        newsflash.dir = [ ".local/share/news-flash" ];
-        nheko.private = [
+        nheko.persist.private = [
           ".config/nheko"  # config file (including client token)
           ".cache/nheko"  # media cache
           ".local/share/nheko"  # per-account state database
         ];
 
         # settings (electron app)
-        obsidian.dir = [ ".config/obsidian" ];
+        obsidian.persist.plaintext = [ ".config/obsidian" ];
 
         # creds, media
-        signal-desktop.private = [ ".config/Signal" ];
+        signal-desktop.persist.private = [ ".config/Signal" ];
 
         # printer/filament settings
-        slic3r.dir = [ ".Slic3r" ];
+        slic3r.persist.plaintext = [ ".Slic3r" ];
 
         # creds, widevine .so download. TODO: could easily manage these statically.
-        spotify.dir = [ ".config/spotify" ];
+        spotify.persist.plaintext = [ ".config/spotify" ];
 
-        steam.dir = [
+        steam.persist.plaintext = [
           ".steam"
           ".local/share/Steam"
         ];
 
-        # sublime music persists any downloaded albums here.
-        # it doesn't obey a conventional ~/Music/{Artist}/{Album}/{Track} notation, so no symlinking
-        # config (e.g. server connection details) is persisted in ~/.config/sublime-music/config.json
-        #   possible to pass config as a CLI arg (sublime-music -c config.json)
-        # { pkg = sublime-music; dir = [ ".local/share/sublime-music" ]; }
-        sublime-music-mobile.dir = [ ".local/share/sublime-music" ];
+        tdesktop.persist.private = [ ".local/share/TelegramDesktop" ];
 
-        tdesktop.private = [ ".local/share/TelegramDesktop" ];
-
-        tokodon.private = [ ".cache/KDE/tokodon" ];
+        tokodon.persist.private = [ ".cache/KDE/tokodon" ];
 
         # hardenedMalloc solves a crash at startup
         # TODO 2023/02/02: is this safe to remove yet?
@@ -384,15 +370,12 @@ in
           useHardenedMalloc = false;
         };
 
-        # vlc remembers play position in ~/.config/vlc/vlc-qt-interface.conf
-        vlc.dir = [ ".config/vlc" ];
+        whalebird.persist.private = [ ".config/Whalebird" ];
 
-        whalebird.private = [ ".config/Whalebird" ];
-
-        yarn.dir = [ ".cache/yarn" ];
+        yarn.persist.plaintext = [ ".cache/yarn" ];
 
         # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
-        zecwallet-lite.private = [ ".zcash" ];
+        zecwallet-lite.persist.private = [ ".zcash" ];
       }
     ];
 

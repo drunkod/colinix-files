@@ -1,8 +1,8 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   inherit (builtins) map;
-  inherit (lib) concatMapStrings optionalString;
+  inherit (lib) concatMapStrings mkIf optionalString;
   # this structure roughly mirrors home-manager's `programs.neovim.plugins` option
   plugins = with pkgs.vimPlugins; [
     # docs: surround-nvim: https://github.com/ur4ltz/surround.nvim/
@@ -72,9 +72,9 @@ let
 in
 {
   # private because there could be sensitive things in the swap
-  sane.user.persist.private = [ ".cache/vim-swap" ];
+  sane.programs.neovim.persist.private = [ ".cache/vim-swap" ];
 
-  programs.neovim = {
+  programs.neovim = mkIf config.sane.programs.neovim.enabled {
     # neovim: https://github.com/neovim/neovim
     enable = true;
     viAlias = true;

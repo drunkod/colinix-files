@@ -3,8 +3,8 @@
   imports = [
     ./aerc.nix
     ./firefox.nix
-    ./gfeeds.nix
     ./git.nix
+    ./gnome-feeds.nix
     ./gpodder.nix
     ./keyring.nix
     ./kitty

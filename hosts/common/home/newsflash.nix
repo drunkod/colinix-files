@@ -6,7 +6,10 @@ let
   all-feeds = config.sane.feeds;
   wanted-feeds = feeds.filterByFormat ["text" "image"] all-feeds;
 in {
-  sane.user.fs.".config/newsflashFeeds.opml" = sane-lib.fs.wantedText (
-    feeds.feedsToOpml wanted-feeds
-  );
+  sane.programs.newsflash = {
+    persist.plaintext = [ ".local/share/news-flash" ];
+    fs.".config/newsflashFeeds.opml" = sane-lib.fs.wantedText (
+      feeds.feedsToOpml wanted-feeds
+    );
+  };
 }

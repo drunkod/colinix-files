@@ -126,6 +126,7 @@ in
         package = null;
         suggestedPrograms = [
           "guiApps"
+          "splatmoji"  # used by us, but 'enabling' it gets us persistence & cfg
           "swaylock"
           "swayidle"
           "wl-clipboard"

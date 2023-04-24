@@ -6,7 +6,7 @@ let
   all-feeds = config.sane.feeds;
   wanted-feeds = feeds.filterByFormat ["text" "image"] all-feeds;
 in {
-  sane.user.fs.".config/org.gabmus.gfeeds.json" = sane-lib.fs.wantedText (
+  sane.programs.gnome-feeds.fs.".config/org.gabmus.gfeeds.json" = sane-lib.fs.wantedText (
     builtins.toJSON {
       # feed format is a map from URL to a dict,
       #   with dict["tags"] a list of string tags.

@@ -77,15 +77,17 @@ let
         type = types.bool;
         default = true;
       };
-      dir = mkOption {
-        type = types.listOf types.str;
-        default = [];
-        description = "list of home-relative paths to persist for this package";
-      };
-      private = mkOption {
-        type = types.listOf types.str;
-        default = [];
-        description = "list of home-relative paths to persist (in encrypted format) for this package";
+      persist = {
+        plaintext = mkOption {
+          type = types.listOf types.str;
+          default = [];
+          description = "list of home-relative paths to persist for this package";
+        };
+        private = mkOption {
+          type = types.listOf types.str;
+          default = [];
+          description = "list of home-relative paths to persist (in encrypted format) for this package";
+        };
       };
       fs = mkOption {
         type = types.attrs;
@@ -118,9 +120,7 @@ let
 
     # conditionally persist relevant user dirs and create files
     sane.users = mapAttrs (user: en: optionalAttrs en {
-      persist.plaintext = p.dir;
-      persist.private = p.private;
-      fs = p.fs;
+      inherit (p) fs persist;
     }) p.enableFor.user;
   }) cfg;
 in
