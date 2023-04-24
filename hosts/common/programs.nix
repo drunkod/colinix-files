@@ -100,6 +100,7 @@ let
       fwupd
       gh  # MS GitHub cli
       ghostscript  # TODO: imagemagick wrapper should add gs to PATH
+      git  # needed as a user package, for config.
       gnupg
       gocryptfs
       gopass
@@ -122,6 +123,7 @@ let
       # ponymix
       pulsemixer
       python3
+      ripgrep  # needed as a user package, for config.
       rsync
       # python3Packages.eyeD3  # music tagging
       sane-scripts
@@ -244,9 +246,9 @@ let
   };
 
   # define -- but don't enable -- the packages in some attrset.
-  # use `mkDefault` for the package here so we can customize some of them further down this file
   declarePkgs = pkgsAsAttrs: mapAttrs (_n: p: {
-    package = mkDefault p;
+    # no need to actually define the package here: it's defaulted
+    # package = mkDefault p;
   }) pkgsAsAttrs;
 in
 {
