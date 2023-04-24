@@ -99,7 +99,6 @@ let
       flashrom
       fwupd
       gh  # MS GitHub cli
-      ghostscript  # TODO: imagemagick wrapper should add gs to PATH
       git  # needed as a user package, for config.
       gnupg
       gocryptfs
@@ -302,9 +301,6 @@ in
       }
       {
         # nontrivial package definitions
-        imagemagick.package = pkgs.imagemagick.override {
-          ghostscriptSupport = true;
-        };
 
         dino.persist.private = [ ".local/share/dino" ];
 
@@ -323,9 +319,18 @@ in
         # TODO: we can populate gh's stuff statically; it even lets us use the same oauth across machines
         gh.persist.private = [ ".config/gh" ];
 
+        ghostscript = {};  # used by imagemagick
+
         # XXX: we preserve the whole thing because if we only preserve gPodder/Downloads
         #   then startup is SLOW during feed import, and we might end up with zombie eps in the dl dir.
         gpodder-configured.persist.plaintext = [ "gPodder" ];
+
+        imagemagick = {
+          package = pkgs.imagemagick.override {
+            ghostscriptSupport = true;
+          };
+          suggestedPrograms = [ "ghostscript" ];
+        };
 
         # jellyfin stores things in a bunch of directories: this one persists auth info.
         # it *might* be possible to populate this externally (it's Qt stuff), but likely to
