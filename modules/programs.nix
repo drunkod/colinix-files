@@ -1,4 +1,4 @@
-{ config, lib, pkgs, sane-lib, ... }:
+{ config, lib, options, pkgs, sane-lib, ... }:
 let
   inherit (builtins) any attrValues elem map;
   inherit (lib)
@@ -87,6 +87,11 @@ let
         default = [];
         description = "list of home-relative paths to persist (in encrypted format) for this package";
       };
+      fs = mkOption {
+        type = types.attrs;
+        default = {};
+        description = "files to populate when this program is enabled";
+      };
     };
 
     config = {
@@ -105,14 +110,17 @@ let
     environment.systemPackages = optional
       (p.package != null && p.enableFor.system)
       p.package;
+
     # conditionally add to user(s) PATH
     users.users = mapAttrs (user: en: {
       packages = optional (p.package != null && en) p.package;
     }) p.enableFor.user;
-    # conditionally persist relevant user dirs
+
+    # conditionally persist relevant user dirs and create files
     sane.users = mapAttrs (user: en: optionalAttrs en {
       persist.plaintext = p.dir;
       persist.private = p.private;
+      fs = p.fs;
     }) p.enableFor.user;
   }) cfg;
 in
