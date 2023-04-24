@@ -74,7 +74,7 @@ let
           # not sure if/where that lack of suid causes problems.
           umount = true;
         };
-        prologue = "bin/sane-resholve-prologue";
+        prologue = ./resholve-prologue;
 
         # list of programs which *can* or *cannot* exec their arguments
         execer = with pkgs; [
