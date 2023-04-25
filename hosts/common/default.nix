@@ -11,7 +11,7 @@
     ./machine-id.nix
     ./net.nix
     ./persist.nix
-    ./programs.nix
+    ./programs
     ./secrets.nix
     ./ssh.nix
     ./users.nix
