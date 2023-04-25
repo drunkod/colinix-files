@@ -267,66 +267,67 @@ in
     # the configuration of which specific package set `pkgs.cross` refers to happens elsewhere;
     # here we just define them all.
 
-    nixpkgs.config.perlPackageOverrides = pkgs: (with pkgs; with pkgs.perlPackages; {
-      # these are the upstream nixpkgs perl modules, but with `nativeBuildInputs = [ perl ]`
-      # to fix cross compilation errors
-      # TODO: try this PR: https://github.com/NixOS/nixpkgs/pull/225640
-      ModuleBuild = buildPerlPackage {
-        pname = "Module-Build";
-        version = "0.4231";
-        src = fetchurl {
-          url = "mirror://cpan/authors/id/L/LE/LEONT/Module-Build-0.4231.tar.gz";
-          hash = "sha256-fg9MaSwXQMGshOoU1+o9i8eYsvsmwJh3Ip4E9DCytxc=";
-        };
-        # support cross-compilation by removing unnecessary File::Temp version check
-        # postPatch = lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
-        #   sed -i '/File::Temp/d' Build.PL
-        # '';
-        nativeBuildInputs = [ perl ];
-        meta = {
-          description = "Build and install Perl modules";
-          license = with lib.licenses; [ artistic1 gpl1Plus ];
-          mainProgram = "config_data";
-        };
-      };
-      FileBaseDir = buildPerlModule {
-        version = "0.08";
-        pname = "File-BaseDir";
-        src = fetchurl {
-          url = "mirror://cpan/authors/id/K/KI/KIMRYAN/File-BaseDir-0.08.tar.gz";
-          hash = "sha256-wGX80+LyKudpk3vMlxuR+AKU1QCfrBQL+6g799NTBeM=";
-        };
-        configurePhase = ''
-          runHook preConfigure
-          perl Build.PL PREFIX="$out" prefix="$out"
-        '';
-        nativeBuildInputs = [ perl ];
-        propagatedBuildInputs = [ IPCSystemSimple ];
-        buildInputs = [ FileWhich ];
-        meta = {
-          description = "Use the Freedesktop.org base directory specification";
-          license = with lib.licenses; [ artistic1 gpl1Plus ];
-        };
-      };
-      # fixes: "FAILED IPython/terminal/tests/test_debug_magic.py::test_debug_magic_passes_through_generators - pexpect.exceptions.TIMEOUT: Timeout exceeded."
-      Testutf8 = buildPerlPackage {
-        pname = "Test-utf8";
-        version = "1.02";
-        src = fetchurl {
-          url = "mirror://cpan/authors/id/M/MA/MARKF/Test-utf8-1.02.tar.gz";
-          hash = "sha256-34LwnFlAgwslpJ8cgWL6JNNx5gKIDt742aTUv9Zri9c=";
-        };
-        nativeBuildInputs = [ perl ];
-        meta = {
-          description = "Handy utf8 tests";
-          homepage = "https://github.com/2shortplanks/Test-utf8/tree";
-          license = with lib.licenses; [ artistic1 gpl1Plus ];
-        };
-      };
-      # inherit (pkgs.emulated.perl.pkgs)
-      #   Testutf8
-      # ;
-    });
+    # nixpkgs.config.perlPackageOverrides = pkgs': (with pkgs'; with pkgs'.perlPackages; {
+    #   # these are the upstream nixpkgs perl modules, but with `nativeBuildInputs = [ perl ]`
+    #   # to fix cross compilation errors
+    #   # see <nixpkgs:pkgs/top-level/perl-packages.nix>
+    #   # TODO: try this PR: https://github.com/NixOS/nixpkgs/pull/225640
+    #   ModuleBuild = buildPerlPackage {
+    #     pname = "Module-Build";
+    #     version = "0.4231";
+    #     src = pkgs.fetchurl {
+    #       url = "mirror://cpan/authors/id/L/LE/LEONT/Module-Build-0.4231.tar.gz";
+    #       hash = "sha256-fg9MaSwXQMGshOoU1+o9i8eYsvsmwJh3Ip4E9DCytxc=";
+    #     };
+    #     # support cross-compilation by removing unnecessary File::Temp version check
+    #     # postPatch = lib.optionalString (pkgs.stdenv.hostPlatform != pkgs.stdenv.buildPlatform) ''
+    #     #   sed -i '/File::Temp/d' Build.PL
+    #     # '';
+    #     nativeBuildInputs = [ perl ];
+    #     meta = {
+    #       description = "Build and install Perl modules";
+    #       license = with lib.licenses; [ artistic1 gpl1Plus ];
+    #       mainProgram = "config_data";
+    #     };
+    #   };
+    #   FileBaseDir = buildPerlModule {
+    #     version = "0.08";
+    #     pname = "File-BaseDir";
+    #     src = pkgs.fetchurl {
+    #       url = "mirror://cpan/authors/id/K/KI/KIMRYAN/File-BaseDir-0.08.tar.gz";
+    #       hash = "sha256-wGX80+LyKudpk3vMlxuR+AKU1QCfrBQL+6g799NTBeM=";
+    #     };
+    #     configurePhase = ''
+    #       runHook preConfigure
+    #       perl Build.PL PREFIX="$out" prefix="$out"
+    #     '';
+    #     nativeBuildInputs = [ perl ];
+    #     propagatedBuildInputs = [ IPCSystemSimple ];
+    #     buildInputs = [ FileWhich ];
+    #     meta = {
+    #       description = "Use the Freedesktop.org base directory specification";
+    #       license = with lib.licenses; [ artistic1 gpl1Plus ];
+    #     };
+    #   };
+    #   # fixes: "FAILED IPython/terminal/tests/test_debug_magic.py::test_debug_magic_passes_through_generators - pexpect.exceptions.TIMEOUT: Timeout exceeded."
+    #   Testutf8 = buildPerlPackage {
+    #     pname = "Test-utf8";
+    #     version = "1.02";
+    #     src = pkgs.fetchurl {
+    #       url = "mirror://cpan/authors/id/M/MA/MARKF/Test-utf8-1.02.tar.gz";
+    #       hash = "sha256-34LwnFlAgwslpJ8cgWL6JNNx5gKIDt742aTUv9Zri9c=";
+    #     };
+    #     nativeBuildInputs = [ perl ];
+    #     meta = {
+    #       description = "Handy utf8 tests";
+    #       homepage = "https://github.com/2shortplanks/Test-utf8/tree";
+    #       license = with lib.licenses; [ artistic1 gpl1Plus ];
+    #     };
+    #   };
+    #   # inherit (pkgs.emulated.perl.pkgs)
+    #   #   Testutf8
+    #   # ;
+    # });
     # XXX: replaceStdenv only affects non-cross stages
     # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
     nixpkgs.overlays = crossOnlyUniversalOverlays ++ [
@@ -411,10 +412,11 @@ in
             # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
             # hdf5  # configure: error: cannot run test program while cross compiling
             # http2
+            ibus
             jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
             # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
             # libsForQt5  # qtbase  # make: g++: No such file or directory
-            # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
+            perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
             # qgnomeplatform
             # qtbase
             qt5  # qt5.qtx11extras fails, but we can't selectively emulate it
@@ -889,17 +891,20 @@ in
           i2p = mvToNativeInputs [ next.ant next.gettext ] prev.i2p;
 
           # ibus = (prev.ibus.override {
-          #   # fixes: "configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0"
-          #   inherit (emulated) stdenv;
-          ibus = prev.ibus.overrideAttrs (upstream: {
-            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
-              next.glib  # fixes: ImportError: /nix/store/fi1rsalr11xg00dqwgzbf91jpl3zwygi-gobject-introspection-aarch64-unknown-linux-gnu-1.74.0/lib/gobject-introspection/giscanner/_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
-              next.buildPackages.gobject-introspection  # fixes "_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
-            ];
-            buildInputs = lib.remove next.gobject-introspection upstream.buildInputs ++ [
-              next.vala  # fixes: "Package `ibus-1.0' not found in specified Vala API directories or GObject-Introspection GIR directories"
-            ];
-          });
+          #   inherit (emulated)
+          #     stdenv # fixes: "configure: error: cannot run test program while cross compiling"
+          #     gobject-introspection # "cannot open shared object ..."
+          #   ;
+          # });
+          # .overrideAttrs (upstream: {
+          #   nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
+          #     next.glib  # fixes: ImportError: /nix/store/fi1rsalr11xg00dqwgzbf91jpl3zwygi-gobject-introspection-aarch64-unknown-linux-gnu-1.74.0/lib/gobject-introspection/giscanner/_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+          #     next.buildPackages.gobject-introspection  # fixes "_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
+          #   ];
+          #   buildInputs = lib.remove next.gobject-introspection upstream.buildInputs ++ [
+          #     next.vala  # fixes: "Package `ibus-1.0' not found in specified Vala API directories or GObject-Introspection GIR directories"
+          #   ];
+          # });
 
           # fixes "./autogen.sh: line 26: gtkdocize: not found"
           iio-sensor-proxy = mvToNativeInputs [ next.glib next.gtk-doc ] prev.iio-sensor-proxy;
@@ -916,19 +921,19 @@ in
               openjdk8-bootstrap = useEmulatedStdenv prev.javaPackages.compiler.openjdk8-bootstrap;
               # fixes "configure: error: Could not find required tool for WHICH"
               openjdk8 = useEmulatedStdenv prev.javaPackages.compiler.openjdk8;
-              openjdk19 = (
-                # fixes "configure: error: Could not find required tool for ZIPEXE"
-                # new failure: "checking for cc... [not found]"
-                (mvToNativeInputs
-                  [ next.zip ]
-                  (useEmulatedStdenv prev.javaPackages.compiler.openjdk19)
-                ).overrideAttrs (_upstream: {
-                  # avoid building `support/demos`, which segfaults
-                  buildFlags = [ "product-images" ];
-                  doCheck = false;  # pre-emptive
-                })
-              );
-              # openjdk19 = emulated.javaPackages.compiler.openjdk19;
+              # openjdk19 = (
+              #   # fixes "configure: error: Could not find required tool for ZIPEXE"
+              #   # new failure: "checking for cc... [not found]"
+              #   (mvToNativeInputs
+              #     [ next.zip ]
+              #     (useEmulatedStdenv prev.javaPackages.compiler.openjdk19)
+              #   ).overrideAttrs (_upstream: {
+              #     # avoid building `support/demos`, which segfaults
+              #     buildFlags = [ "product-images" ];
+              #     doCheck = false;  # pre-emptive
+              #   })
+              # );
+              openjdk19 = emulated.javaPackages.compiler.openjdk19;
             };
           };
 
@@ -1174,6 +1179,10 @@ in
                   py-next.setuptools
                 ];
               });
+
+              cryptography = py-prev.cryptography.override {
+                inherit (emulated) rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+              };
 
               defcon = py-prev.defcon.overridePythonAttrs (orig: {
                 nativeBuildInputs = orig.nativeBuildInputs ++ orig.nativeCheckInputs;

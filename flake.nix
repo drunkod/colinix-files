@@ -43,8 +43,8 @@
     #   - use `staging` if no staging-next branch has been cut.
     #
     # <https://github.com/nixos/nixpkgs/tree/nixos-unstable>
-    nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=staging-next";
+    # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=staging-next";
     # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=staging";
 
     mobile-nixos = {
