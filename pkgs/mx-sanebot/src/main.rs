@@ -1,4 +1,7 @@
+mod msg_handler;
+
 use std::env;
+
 use matrix_sdk::{
     config::SyncSettings,
     room::Room,
@@ -10,26 +13,35 @@ use matrix_sdk::{
 };
 use tokio::time::{sleep, Duration};
 
+use msg_handler::MessageHandler;
+
 async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room) {
     println!("received event");
     if let Room::Joined(room) = room {
         let text_content = match event.content.msgtype {
             MessageType::Text(t) => t,
-            _ => return,
+            _ => return, // not of interest
         };
 
-        if text_content.body.contains("!ping") {
-            let content = RoomMessageEventContent::text_plain("pong");
+        let sender = event.sender;
+        let msg = text_content.body;
+        println!("message from {sender}: {msg}\n");
 
-            println!("sending");
-
-            // send our message to the room we found the "!ping" command in
-            // the last parameter is an optional transaction id which we don't
-            // care about.
-            room.send(content, None).await.unwrap();
-
-            println!("message sent");
+        if sender.as_str() == "@sanebot:uninsane.org" {
+            return; // don't respond to myself!
         }
+
+        let resp = MessageHandler.on_msg(&msg);
+        println!("response: {}", resp);
+
+        let resp_content = RoomMessageEventContent::text_plain(&resp);
+
+        // send our message to the room we found the "!ping" command in
+        // the last parameter is an optional transaction id which we don't
+        // care about.
+        room.send(resp_content, None).await.unwrap();
+
+        println!("response sent");
     }
 }
 
