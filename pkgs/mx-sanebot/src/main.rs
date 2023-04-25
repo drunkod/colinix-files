@@ -2,20 +2,30 @@ mod msg_handler;
 
 use std::env;
 
+use futures::StreamExt as _;
 use matrix_sdk::{
     config::SyncSettings,
     room::Room,
-    ruma::events::room::member::StrippedRoomMemberEvent,
-    ruma::events::room::message::{
-        MessageType, OriginalSyncRoomMessageEvent, RoomMessageEventContent,
-    },
     Client,
+};
+use matrix_sdk::ruma::RoomId;
+use matrix_sdk::ruma::events::{
+    AnySyncMessageLikeEvent,
+    AnySyncTimelineEvent,
+    SyncMessageLikeEvent,
+};
+use matrix_sdk::ruma::events::room::member::StrippedRoomMemberEvent;
+use matrix_sdk::ruma::events::room::message::{
+    MessageType,
+    RoomMessageEventContent,
 };
 use tokio::time::{sleep, Duration};
 
 use msg_handler::MessageHandler;
 
+#[derive(Clone)]
 struct Runner {
+    // this is actually a *handle* to the client (Arc).
     client: Client,
 }
 
@@ -54,48 +64,68 @@ impl Runner {
         // initial sync will be skipped in favor of loading state from the store
         let response = self.client.sync_once(SyncSettings::default()).await.unwrap();
         println!("sync'd");
+
+        let settings = SyncSettings::default().token(response.next_batch);
+        let mut sync_stream = Box::pin(
+            self.client.sync_stream(settings)
+            .await
+        );
+        while let Some(Ok(response)) = sync_stream.next().await {
+            for (room_id, room) in &response.rooms.join {
+                for e in &room.timeline.events {
+                    if let Ok(event) = e.event.deserialize() {
+                        self.handle_event(room_id, event).await;
+                    }
+                }
+            }
+        }
+
         // add our CommandBot to be notified of incoming messages, we do this after the
         // initial sync to avoid responding to messages before the bot was running.
-        self.client.add_event_handler(on_room_message);
+        // self.client.add_event_handler(on_room_message);
 
-        // since we called `sync_once` before we entered our sync loop we must pass
-        // that sync token to `sync`
-        let settings = SyncSettings::default().token(response.next_batch);
-        // this keeps state from the server streaming in to CommandBot via the
-        // EventHandler trait
-        self.client.sync(settings).await?;
+        // // since we called `sync_once` before we entered our sync loop we must pass
+        // // that sync token to `sync`
+        // let settings = SyncSettings::default().token(response.next_batch);
+        // // this keeps state from the server streaming in to CommandBot via the
+        // // EventHandler trait
+        // self.client.sync(settings).await?;
 
         Ok(())
     }
-}
 
-async fn on_room_message(event: OriginalSyncRoomMessageEvent, client: Client, room: Room) {
-    println!("received event");
-    if let Room::Joined(room) = room {
-        let text_content = match event.content.msgtype {
-            MessageType::Text(t) => t,
-            _ => return, // not of interest
-        };
-
-        let sender = event.sender;
-        let msg = text_content.body;
-        println!("message from {sender}: {msg}\n");
-
-        if client.user_id() == Some(sender.as_ref()) {
-            return; // don't respond to myself!
+    async fn handle_event(&self, room_id: &RoomId, event: AnySyncTimelineEvent) {
+        println!("Considering event {:?}", event);
+        let sender = event.sender();
+        if Some(sender) == self.client.user_id() {
+            return; // don't react to self
         }
 
-        let resp = MessageHandler.on_msg(&msg);
-        println!("response: {}", resp);
+        match event {
+            AnySyncTimelineEvent::MessageLike(ref msg_like) => match msg_like {
+                AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(room_msg)) => match room_msg.content.msgtype {
+                    MessageType::Text(ref text_msg) => {
+                        let body = &text_msg.body;
+                        println!("message from {sender}: {body}\n");
+                        let resp = MessageHandler.on_msg(&body);
+                        println!("response: {resp}");
 
-        let resp_content = RoomMessageEventContent::text_plain(&resp);
-
-        // send our message to the room we found the "!ping" command in
-        // the last parameter is an optional transaction id which we don't
-        // care about.
-        room.send(resp_content, None).await.unwrap();
-
-        println!("response sent");
+                        let room = self.client.get_joined_room(room_id).unwrap();
+                        let resp_content = RoomMessageEventContent::text_plain(&resp);
+                        room.send(resp_content, None).await.unwrap();
+                    },
+                    ref other => {
+                        println!("dropping RoomMessage event {other:?}");
+                    },
+                },
+                other => {
+                    println!("dropping MessageLike event {other:?}");
+                },
+            },
+            AnySyncTimelineEvent::State(state) => {
+                println!("dropping State event {state:?}");
+            },
+        }
     }
 }
 
