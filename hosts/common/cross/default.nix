@@ -412,6 +412,7 @@ in
             # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
             # hdf5  # configure: error: cannot run test program while cross compiling
             # http2
+            ibus
             jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
             # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
             # libsForQt5  # qtbase  # make: g++: No such file or directory
@@ -890,17 +891,20 @@ in
           i2p = mvToNativeInputs [ next.ant next.gettext ] prev.i2p;
 
           # ibus = (prev.ibus.override {
-          #   # fixes: "configure.ac:152: error: possibly undefined macro: AM_PATH_GLIB_2_0"
-          #   inherit (emulated) stdenv;
-          ibus = prev.ibus.overrideAttrs (upstream: {
-            nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
-              next.glib  # fixes: ImportError: /nix/store/fi1rsalr11xg00dqwgzbf91jpl3zwygi-gobject-introspection-aarch64-unknown-linux-gnu-1.74.0/lib/gobject-introspection/giscanner/_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
-              next.buildPackages.gobject-introspection  # fixes "_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
-            ];
-            buildInputs = lib.remove next.gobject-introspection upstream.buildInputs ++ [
-              next.vala  # fixes: "Package `ibus-1.0' not found in specified Vala API directories or GObject-Introspection GIR directories"
-            ];
-          });
+          #   inherit (emulated)
+          #     stdenv # fixes: "configure: error: cannot run test program while cross compiling"
+          #     gobject-introspection # "cannot open shared object ..."
+          #   ;
+          # });
+          # .overrideAttrs (upstream: {
+          #   nativeBuildInputs = upstream.nativeBuildInputs or [] ++ [
+          #     next.glib  # fixes: ImportError: /nix/store/fi1rsalr11xg00dqwgzbf91jpl3zwygi-gobject-introspection-aarch64-unknown-linux-gnu-1.74.0/lib/gobject-introspection/giscanner/_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+          #     next.buildPackages.gobject-introspection  # fixes "_giscanner.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory"
+          #   ];
+          #   buildInputs = lib.remove next.gobject-introspection upstream.buildInputs ++ [
+          #     next.vala  # fixes: "Package `ibus-1.0' not found in specified Vala API directories or GObject-Introspection GIR directories"
+          #   ];
+          # });
 
           # fixes "./autogen.sh: line 26: gtkdocize: not found"
           iio-sensor-proxy = mvToNativeInputs [ next.glib next.gtk-doc ] prev.iio-sensor-proxy;
@@ -917,19 +921,19 @@ in
               openjdk8-bootstrap = useEmulatedStdenv prev.javaPackages.compiler.openjdk8-bootstrap;
               # fixes "configure: error: Could not find required tool for WHICH"
               openjdk8 = useEmulatedStdenv prev.javaPackages.compiler.openjdk8;
-              openjdk19 = (
-                # fixes "configure: error: Could not find required tool for ZIPEXE"
-                # new failure: "checking for cc... [not found]"
-                (mvToNativeInputs
-                  [ next.zip ]
-                  (useEmulatedStdenv prev.javaPackages.compiler.openjdk19)
-                ).overrideAttrs (_upstream: {
-                  # avoid building `support/demos`, which segfaults
-                  buildFlags = [ "product-images" ];
-                  doCheck = false;  # pre-emptive
-                })
-              );
-              # openjdk19 = emulated.javaPackages.compiler.openjdk19;
+              # openjdk19 = (
+              #   # fixes "configure: error: Could not find required tool for ZIPEXE"
+              #   # new failure: "checking for cc... [not found]"
+              #   (mvToNativeInputs
+              #     [ next.zip ]
+              #     (useEmulatedStdenv prev.javaPackages.compiler.openjdk19)
+              #   ).overrideAttrs (_upstream: {
+              #     # avoid building `support/demos`, which segfaults
+              #     buildFlags = [ "product-images" ];
+              #     doCheck = false;  # pre-emptive
+              #   })
+              # );
+              openjdk19 = emulated.javaPackages.compiler.openjdk19;
             };
           };
 
@@ -1175,6 +1179,10 @@ in
                   py-next.setuptools
                 ];
               });
+
+              cryptography = py-prev.cryptography.override {
+                inherit (emulated) rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+              };
 
               defcon = py-prev.defcon.overridePythonAttrs (orig: {
                 nativeBuildInputs = orig.nativeBuildInputs ++ orig.nativeCheckInputs;
