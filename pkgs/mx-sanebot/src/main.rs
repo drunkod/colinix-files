@@ -15,7 +15,61 @@ use tokio::time::{sleep, Duration};
 
 use msg_handler::MessageHandler;
 
-async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room) {
+struct Runner {
+    client: Client,
+}
+
+impl Runner {
+    async fn login(
+        homeserver: &str,
+        username: &str,
+        password: &str,
+    ) -> anyhow::Result<Self> {
+        // TODO: look into caching the messages somewhere on disk (sled; indexeddb)
+        let client = Client::builder()
+            .homeserver_url(homeserver)
+            .sled_store("/home/colin/mx-sanebot", None)?
+            .build()
+            .await?;
+        println!("client built");
+        client.login_username(&username, &password).initial_device_display_name("sanebot")
+            .initial_device_display_name("sanebot")
+            .send()
+            .await?;
+
+        println!("logged in as {username}");
+
+        Ok(Runner { client })
+    }
+
+    async fn event_loop(&self) -> anyhow::Result<()> {
+        // Now, we want our client to react to invites. Invites sent us stripped member
+        // state events so we want to react to them. We add the event handler before
+        // the sync, so this happens also for older messages. All rooms we've
+        // already entered won't have stripped states anymore and thus won't fire
+        self.client.add_event_handler(on_stripped_state_member);
+
+        // An initial sync to set up state and so our bot doesn't respond to old
+        // messages. If the `StateStore` finds saved state in the location given the
+        // initial sync will be skipped in favor of loading state from the store
+        let response = self.client.sync_once(SyncSettings::default()).await.unwrap();
+        println!("sync'd");
+        // add our CommandBot to be notified of incoming messages, we do this after the
+        // initial sync to avoid responding to messages before the bot was running.
+        self.client.add_event_handler(on_room_message);
+
+        // since we called `sync_once` before we entered our sync loop we must pass
+        // that sync token to `sync`
+        let settings = SyncSettings::default().token(response.next_batch);
+        // this keeps state from the server streaming in to CommandBot via the
+        // EventHandler trait
+        self.client.sync(settings).await?;
+
+        Ok(())
+    }
+}
+
+async fn on_room_message(event: OriginalSyncRoomMessageEvent, client: Client, room: Room) {
     println!("received event");
     if let Room::Joined(room) = room {
         let text_content = match event.content.msgtype {
@@ -27,7 +81,7 @@ async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room) {
         let msg = text_content.body;
         println!("message from {sender}: {msg}\n");
 
-        if sender.as_str() == "@sanebot:uninsane.org" {
+        if client.user_id() == Some(sender.as_ref()) {
             return; // don't respond to myself!
         }
 
@@ -86,54 +140,12 @@ async fn on_stripped_state_member(
     }
 }
 
-async fn login_and_sync(
-    homeserver_url: &str,
-    username: &str,
-    password: &str,
-) -> anyhow::Result<()> {
-    // TODO: look into caching the messages somewhere on disk (sled; indexeddb)
-    let client = Client::builder()
-        .homeserver_url(homeserver_url)
-        .sled_store("/home/colin/mx-sanebot", None)?
-        .build()
-        .await?;
-    println!("client built");
-    client.login_username(&username, &password).initial_device_display_name("sanebot")
-        .initial_device_display_name("sanebot")
-        .send()
-        .await?;
-
-    println!("logged in as {username}");
-
-    // Now, we want our client to react to invites. Invites sent us stripped member
-    // state events so we want to react to them. We add the event handler before
-    // the sync, so this happens also for older messages. All rooms we've
-    // already entered won't have stripped states anymore and thus won't fire
-    client.add_event_handler(on_stripped_state_member);
-
-    // An initial sync to set up state and so our bot doesn't respond to old
-    // messages. If the `StateStore` finds saved state in the location given the
-    // initial sync will be skipped in favor of loading state from the store
-    let response = client.sync_once(SyncSettings::default()).await.unwrap();
-    println!("sync'd");
-    // add our CommandBot to be notified of incoming messages, we do this after the
-    // initial sync to avoid responding to messages before the bot was running.
-    client.add_event_handler(on_room_message);
-
-    // since we called `sync_once` before we entered our sync loop we must pass
-    // that sync token to `sync`
-    let settings = SyncSettings::default().token(response.next_batch);
-    // this keeps state from the server streaming in to CommandBot via the
-    // EventHandler trait
-    client.sync(settings).await?;
-
-    Ok(())
-}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let password = env::var("SANEBOT_PASSWORD").unwrap_or("password".into());
-    let result = login_and_sync("https://uninsane.org", "sanebot", &*password).await;
-    println!("done");
+    let runner = Runner::login("https://uninsane.org", "sanebot", &*password).await?;
+    let result = runner.event_loop().await;
+    println!("exiting");
     result
 }
