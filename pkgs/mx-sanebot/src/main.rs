@@ -80,17 +80,6 @@ impl Runner {
             }
         }
 
-        // add our CommandBot to be notified of incoming messages, we do this after the
-        // initial sync to avoid responding to messages before the bot was running.
-        // self.client.add_event_handler(on_room_message);
-
-        // // since we called `sync_once` before we entered our sync loop we must pass
-        // // that sync token to `sync`
-        // let settings = SyncSettings::default().token(response.next_batch);
-        // // this keeps state from the server streaming in to CommandBot via the
-        // // EventHandler trait
-        // self.client.sync(settings).await?;
-
         Ok(())
     }
 
