@@ -282,18 +282,18 @@
         };
 
       templates = {
-        python-data = {
+        env.python-data = {
           # initialize with:
-          # - `nix flake init -t '/home/colin/dev/nixos/#python-data'`
+          # - `nix flake init -t '/home/colin/dev/nixos/#env.python-data'`
           # then enter with:
           # - `nix develop`
-          path = ./templates/python-data;
+          path = ./templates/env/python-data;
           description = "python environment for data processing";
         };
-        rust = {
+        pkgs.rust-inline = {
           # initialize with:
-          # - `nix flake init -t '/home/colin/dev/nixos/#rust'`
-          path = ./templates/rust;
+          # - `nix flake init -t '/home/colin/dev/nixos/#pkgs.rust-inline'`
+          path = ./templates/pkgs/rust-inline;
           description = "rust package and development environment";
         };
       };
