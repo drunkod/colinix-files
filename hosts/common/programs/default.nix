@@ -261,6 +261,7 @@ in
     ./mpv.nix
     ./neovim.nix
     ./newsflash.nix
+    ./offlineimap.nix
   ];
 
   config = {
