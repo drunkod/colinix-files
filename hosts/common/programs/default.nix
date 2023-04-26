@@ -259,6 +259,7 @@ in
     ./gpodder.nix
     ./libreoffice.nix
     ./mpv.nix
+    ./neovim.nix
   ];
 
   config = {
