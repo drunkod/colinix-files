@@ -4,7 +4,6 @@
     ./firefox.nix
     ./keyring.nix
     ./kitty
-    ./libreoffice.nix
     ./mime.nix
     ./mpv.nix
     ./neovim.nix
