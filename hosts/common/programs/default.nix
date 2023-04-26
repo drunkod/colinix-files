@@ -264,6 +264,7 @@ in
     ./offlineimap.nix
     ./ripgrep.nix
     ./splatmoji.nix
+    ./sublime-music.nix
   ];
 
   config = {
