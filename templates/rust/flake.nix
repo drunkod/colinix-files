@@ -12,10 +12,9 @@
         inherit system;
       };
       nativeBuildInputs = with pkgs; [
-        pkg-config
+        # pkg-config
       ];
       buildInputs = with pkgs; [
-        openssl
       ];
     in rec {
       packages = {
