@@ -254,6 +254,7 @@ in
 
   imports = [
     ./aerc.nix
+    ./git.nix
   ];
 
   config = {

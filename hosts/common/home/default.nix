@@ -2,7 +2,6 @@
 {
   imports = [
     ./firefox.nix
-    ./git.nix
     ./gnome-feeds.nix
     ./gpodder.nix
     ./keyring.nix
