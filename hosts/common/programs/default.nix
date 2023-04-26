@@ -140,6 +140,7 @@ let
       # yarn
       # youtube-dl
       yt-dlp
+      zsh
     ;
   };
 
