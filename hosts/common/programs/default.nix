@@ -263,6 +263,7 @@ in
     ./newsflash.nix
     ./offlineimap.nix
     ./ripgrep.nix
+    ./splatmoji.nix
   ];
 
   config = {

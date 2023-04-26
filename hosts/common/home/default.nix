@@ -5,7 +5,6 @@
     ./keyring.nix
     ./kitty
     ./mime.nix
-    ./splatmoji.nix
     ./ssh.nix
     ./sublime-music.nix
     ./vlc.nix
