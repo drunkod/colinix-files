@@ -251,6 +251,11 @@ let
   }) pkgsAsAttrs;
 in
 {
+
+  imports = [
+    ./aerc.nix
+  ];
+
   config = {
     sane.programs = mkMerge [
       (declarePkgs consolePkgs)

@@ -1,7 +1,6 @@
 { ... }:
 {
   imports = [
-    ./aerc.nix
     ./firefox.nix
     ./git.nix
     ./gnome-feeds.nix
