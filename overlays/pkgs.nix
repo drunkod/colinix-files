@@ -40,6 +40,8 @@
 
       #### TEMPORARY: PACKAGES WAITING TO BE UPSTREAMED
 
+      cargo-docset = callPackage ../pkgs/cargo-docset { };
+
       pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
         (py-final: py-prev: {
           feedsearch-crawler = py-final.callPackage ../pkgs/feedsearch-crawler { };
