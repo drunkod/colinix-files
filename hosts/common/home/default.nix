@@ -5,7 +5,6 @@
     ./keyring.nix
     ./kitty
     ./mime.nix
-    ./newsflash.nix
     ./offlineimap.nix
     ./ripgrep.nix
     ./splatmoji.nix

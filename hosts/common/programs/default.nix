@@ -260,6 +260,7 @@ in
     ./libreoffice.nix
     ./mpv.nix
     ./neovim.nix
+    ./newsflash.nix
   ];
 
   config = {
