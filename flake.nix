@@ -294,7 +294,13 @@
           # initialize with:
           # - `nix flake init -t '/home/colin/dev/nixos/#pkgs.rust-inline'`
           path = ./templates/pkgs/rust-inline;
-          description = "rust package and development environment";
+          description = "rust package and development environment (inline rust sources)";
+        };
+        pkgs.rust = {
+          # initialize with:
+          # - `nix flake init -t '/home/colin/dev/nixos/#pkgs.rust'`
+          path = ./templates/pkgs/rust;
+          description = "rust package fit to ship in nixpkgs";
         };
       };
     };
