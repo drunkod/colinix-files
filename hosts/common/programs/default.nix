@@ -234,6 +234,7 @@ let
       signal-desktop
       spotify
       tor-browser-bundle-bin
+      zeal-qt5  # programming docs viewer. TODO: switch to zeal-qt6
       zecwallet-lite
     ;
   };
@@ -401,6 +402,11 @@ in
         whalebird.persist.private = [ ".config/Whalebird" ];
 
         yarn.persist.plaintext = [ ".cache/yarn" ];
+
+        zeal-qt5.persist.plaintext = [
+          ".cache/Zeal"
+          ".local/share/Zeal"
+        ];
 
         # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
         zecwallet-lite.persist.private = [ ".zcash" ];
