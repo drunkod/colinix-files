@@ -262,6 +262,7 @@ in
     ./neovim.nix
     ./newsflash.nix
     ./offlineimap.nix
+    ./ripgrep.nix
   ];
 
   config = {
