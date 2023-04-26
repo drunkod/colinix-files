@@ -148,7 +148,9 @@ let
         mapAttrs'
           (homePath: src: {
             # TODO: user the user's *actual* home directory, don't guess.
-            name = "/home/${user}/${homePath}";
+            # XXX: name CAN'T START WITH '/', else sops creates the directories funny.
+            # TODO: report this upstream.
+            name = "home/${user}/${homePath}";
             value = {
               owner = user;
               sopsFile = src;
