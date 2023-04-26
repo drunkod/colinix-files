@@ -2,10 +2,12 @@
 let
   inherit (builtins) any attrValues elem map;
   inherit (lib)
+    concatMapAttrs
     filterAttrs
     hasAttrByPath
     getAttrFromPath
     mapAttrs
+    mapAttrs'
     mapAttrsToList
     mkDefault
     mkIf
@@ -94,6 +96,14 @@ let
         default = {};
         description = "files to populate when this program is enabled";
       };
+      secrets = mkOption {
+        type = types.attrsOf types.path;
+        default = {};
+        description = ''
+          fs paths to link to some decrypted secret.
+          the secret will have same owner as the user under which the program is enabled.
+        '';
+      };
     };
 
     config = {
@@ -120,8 +130,35 @@ let
 
     # conditionally persist relevant user dirs and create files
     sane.users = mapAttrs (user: en: optionalAttrs en {
-      inherit (p) fs persist;
+      inherit (p) persist;
+      fs = mkMerge [
+        p.fs
+        (mapAttrs
+          # link every secret into the fs
+          # TODO: user the user's *actual* home directory, don't guess.
+          (homePath: _src: sane-lib.fs.wantedSymlinkTo "/run/secrets/home/${user}/${homePath}")
+          p.secrets
+        )
+      ];
     }) p.enableFor.user;
+
+    # make secrets available for each user
+    sops.secrets = concatMapAttrs
+      (user: en: optionalAttrs en (
+        mapAttrs'
+          (homePath: src: {
+            # TODO: user the user's *actual* home directory, don't guess.
+            name = "/home/${user}/${homePath}";
+            value = {
+              owner = user;
+              sopsFile = src;
+              format = "binary";
+            };
+          })
+          p.secrets
+      ))
+      p.enableFor.user;
+
   }) cfg;
 in
 {
@@ -139,6 +176,7 @@ in
         environment.systemPackages = f.environment.systemPackages;
         users.users = f.users.users;
         sane.users = f.sane.users;
+        sops.secrets = f.sops.secrets;
       };
     in mkMerge [
       (take (sane-lib.mkTypedMerge take configs))
