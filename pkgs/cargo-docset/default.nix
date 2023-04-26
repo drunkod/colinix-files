@@ -1,6 +1,5 @@
 { lib
 , fetchFromGitHub
-, pkg-config
 , rustPlatform
 , sqlite
 }:
@@ -17,10 +16,6 @@ rustPlatform.buildRustPackage rec {
   };
 
   cargoHash = "sha256-YHrSvfHfQ7kbVeCOgggYf3E7gHq+RhVKZrzP8LqX5I0=";
-
-  nativeBuildInputs = [
-    pkg-config
-  ];
 
   buildInputs = [
     sqlite
