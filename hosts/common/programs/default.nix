@@ -265,6 +265,7 @@ in
     ./ripgrep.nix
     ./splatmoji.nix
     ./sublime-music.nix
+    ./vlc.nix
   ];
 
   config = {
