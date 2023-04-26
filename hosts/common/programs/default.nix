@@ -255,6 +255,7 @@ in
   imports = [
     ./aerc.nix
     ./git.nix
+    ./gnome-feeds.nix
   ];
 
   config = {

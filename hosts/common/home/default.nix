@@ -2,7 +2,6 @@
 {
   imports = [
     ./firefox.nix
-    ./gnome-feeds.nix
     ./gpodder.nix
     ./keyring.nix
     ./kitty
