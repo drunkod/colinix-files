@@ -256,6 +256,7 @@ in
     ./aerc.nix
     ./git.nix
     ./gnome-feeds.nix
+    ./gpodder.nix
   ];
 
   config = {
