@@ -257,6 +257,7 @@ in
     ./git.nix
     ./gnome-feeds.nix
     ./gpodder.nix
+    ./kitty
     ./libreoffice.nix
     ./mpv.nix
     ./neovim.nix
