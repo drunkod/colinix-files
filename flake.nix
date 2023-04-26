@@ -290,6 +290,12 @@
           path = ./templates/python-data;
           description = "python environment for data processing";
         };
+        rust = {
+          # initialize with:
+          # - `nix flake init -t '/home/colin/dev/nixos/#rust'`
+          path = ./templates/rust;
+          description = "rust package and development environment";
+        };
       };
     };
 }
