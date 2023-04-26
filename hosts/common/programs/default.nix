@@ -258,6 +258,7 @@ in
     ./gnome-feeds.nix
     ./gpodder.nix
     ./libreoffice.nix
+    ./mpv.nix
   ];
 
   config = {
