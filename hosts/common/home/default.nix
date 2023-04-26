@@ -6,6 +6,5 @@
     ./mime.nix
     ./ssh.nix
     ./xdg-dirs.nix
-    ./zsh
   ];
 }

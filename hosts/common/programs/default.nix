@@ -268,6 +268,7 @@ in
     ./splatmoji.nix
     ./sublime-music.nix
     ./vlc.nix
+    ./zsh
   ];
 
   config = {
