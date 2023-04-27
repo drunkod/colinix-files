@@ -15,6 +15,6 @@
       packages.mx-sanebot = pkgs.callPackage ./default.nix { };
       defaultPackage = packages.mx-sanebot;
 
-      devShells.default = ./shell.nix { inherit pkgs; };
+      devShells.default = import ./shell.nix { inherit pkgs; };
     });
 }

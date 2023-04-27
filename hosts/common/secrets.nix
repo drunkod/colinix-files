@@ -52,6 +52,11 @@
     sopsFile = ../../secrets/universal.yaml;
     owner = config.users.users.colin.name;
   };
+  sops.secrets."mx-sanebot-env" = {
+    sopsFile = ../../secrets/universal/mx-sanebot-env.bin;
+    format = "binary";
+    owner = config.users.users.colin.name;
+  };
   sops.secrets."router_passwd" = {
     sopsFile = ../../secrets/universal.yaml;
   };

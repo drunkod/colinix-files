@@ -9,4 +9,6 @@ edition = "2021"
 anyhow = "1.0"
 futures = "0.3"
 matrix-sdk = "0.6.2"
+ruma = "*"  # matrix-sdk dep
+ruma-client-api = "*"  # ruma dep
 tokio = { version = "1.20.1", features = ["macros", "rt-multi-thread"] }
