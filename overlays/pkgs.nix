@@ -2,6 +2,7 @@
   with next;
   let
     sane = rec {
+      sane-lib = import ../modules/lib next;
       #### my own, non-upstreamable packages:
       static-nix-shell = callPackages ../pkgs/static-nix-shell { };
       sane-scripts = callPackage ../pkgs/sane-scripts { };

@@ -3,26 +3,20 @@
 , gpodder
 , makeWrapper
 , python3
+, static-nix-shell
 , symlinkJoin
 }:
 
 let
-  pyEnv = python3.withPackages (_ps: [ gnome-feeds.listparser ]);
-  remove-extra = stdenv.mkDerivation {
+  remove-extra = static-nix-shell.mkPython3Bin {
     pname = "gpodder-remove-extra";
-    version = "0.1.0";
-
     src = ./.;
-
-    patchPhase = ''
-      substituteInPlace ./remove_extra.py \
-        --replace "#!/usr/bin/env nix-shell" "#!${pyEnv.interpreter}"
-    '';
-
-    installPhase = ''
-      mkdir -p $out/bin
-      mv remove_extra.py $out/bin/gpodder-remove-extra
-    '';
+    pyPkgs = _ps: {
+      "gnome-feeds.listparser" = gnome-feeds.listparser;
+    };
+    pkgs = {
+      inherit gpodder;
+    };
   };
 in
 # we use a symlinkJoin so that we can inherit the .desktop and icon files from the original gPodder
