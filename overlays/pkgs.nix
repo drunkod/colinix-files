@@ -6,6 +6,7 @@
       #### my own, non-upstreamable packages:
       static-nix-shell = callPackages ../pkgs/static-nix-shell { };
       sane-scripts = callPackage ../pkgs/sane-scripts { };
+      mx-sanebot = callPackage ../pkgs/mx-sanebot { };
       feeds = recurseIntoAttrs (callPackage ../pkgs/feeds { });
       tow-boot-pinephone = callPackage ../pkgs/tow-boot-pinephone { };
       tow-boot-rpi4 = callPackage ../pkgs/tow-boot-rpi4 { };
