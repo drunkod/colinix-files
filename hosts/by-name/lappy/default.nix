@@ -19,6 +19,7 @@
     "desktopGuiApps"
     "stepmania"
   ];
+  sane.programs.mx-sanebot.enableFor.system = true;  # for the docs
 
   sops.secrets.colin-passwd = {
     sopsFile = ../../../secrets/lappy.yaml;

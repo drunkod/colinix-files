@@ -14,9 +14,14 @@ rustPlatform.buildRustPackage {
   nativeBuildInputs = [ pkg-config ] ++ lib.optional (cargo-docset != null) cargo-docset;
   buildInputs = [ openssl ];
 
-  # to build dash/zeal docs:
-  # `cargo-docset`
-  # `cp -r -rcp target/docset/mx-sanebot.docset ~/.local/share/Zeal/Zeal/docsets/`
+  postBuild = ''
+    cargo-docset docset
+  '';
+
+  postInstall = ''
+    mkdir -p $out/share/docset
+    cp -R target/docset/* $out/share/docset/
+  '';
 
   # enables debug builds, if we want: https://github.com/NixOS/nixpkgs/issues/60919.
   hardeningDisable = [ "fortify" ];
