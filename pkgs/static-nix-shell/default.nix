@@ -1,5 +1,6 @@
 { pkgs
 , lib
+, makeWrapper
 , python3
 , sane-lib
 , stdenv
@@ -55,12 +56,17 @@ in {
             '#!nix-shell -i python3 -p "python3.withPackages (ps: [ ${pyPkgsStr} ])"${pkgsStr}' \
             '# nix deps evaluated statically'
       '';
-      runtimeDependencies = pkgsEnv;
+      nativeBuildInputs = [ makeWrapper ];
       installPhase = ''
         mkdir -p $out/bin
         mv ${srcPath} $out/bin/${srcPath}
+
         # ensure that all nix-shell references were substituted
         ! grep nix-shell $out/bin/${srcPath}
+
+        # add runtime dependencies to PATH
+        wrapProgram $out/bin/${srcPath} \
+          --suffix PATH : ${lib.makeBinPath pkgsEnv }
       '';
     } // (removeAttrs attrs [ "pkgs" "pyPkgs" "srcPath" ])
   );
