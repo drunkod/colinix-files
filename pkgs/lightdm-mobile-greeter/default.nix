@@ -33,7 +33,13 @@ rustPlatform.buildRustPackage rec {
     rev = "f3511ec71a4a1f491d759711e0bcf031e335ea70";
     hash = "sha256-U5chzm3q3vycgX1HSLf6sk6M3YoJ4CHGLKRg4ViIhu8=";
   };
-  cargoHash = "sha256-2NMXR+D/CnDhUToQmMwK2Cb2l+4/N9BrCz/lt1NZ6Wk=";
+  # cargoHash = "sha256-2NMXR+D/CnDhUToQmMwK2Cb2l+4/N9BrCz/lt1NZ6Wk=";
+  cargoLock = {
+    lockFile = "${src}/Cargo.lock";
+    outputHashes = {
+      "light-dm-sys-0.0.1" = "sha256-91MZhbO/Or0QOt0yVAUhtorpMBBzElFg6U59mF7WB0k=";
+    };
+  };
 
   buildInputs = [
     gtk3
