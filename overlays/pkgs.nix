@@ -50,7 +50,7 @@
         })
       ];
 
-      kaiteki = callPackage ../pkgs/kaiteki { };
+      # XXX: needs rework before it can build: kaiteki = callPackage ../pkgs/kaiteki { };
       lightdm-mobile-greeter = callPackage ../pkgs/lightdm-mobile-greeter { };
       browserpass-extension = callPackage ../pkgs/browserpass-extension { };
       gopass-native-messaging-host = callPackage ../pkgs/gopass-native-messaging-host { };
