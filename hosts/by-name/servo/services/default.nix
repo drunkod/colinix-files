@@ -14,6 +14,7 @@
     ./jellyfin.nix
     ./kiwix-serve.nix
     ./komga.nix
+    ./lemmy.nix
     ./matrix
     ./navidrome.nix
     ./nixserve.nix

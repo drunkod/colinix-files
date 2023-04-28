@@ -36,6 +36,8 @@
   sane.ids.calibre-web.gid = 2406;
   sane.ids.komga.uid = 2407;
   sane.ids.komga.gid = 2407;
+  sane.ids.lemmy.uid = 2408;
+  sane.ids.lemmy.gid = 2408;
 
   sane.ids.colin.uid = 1000;
   sane.ids.guest.uid = 1100;
