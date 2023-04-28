@@ -1358,6 +1358,8 @@ dependencies = [
  "anyhow",
  "futures",
  "matrix-sdk",
+ "ruma",
+ "ruma-client-api",
  "tokio",
 ]
 

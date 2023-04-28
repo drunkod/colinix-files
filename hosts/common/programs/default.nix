@@ -242,6 +242,7 @@ let
   # packages not part of any package set
   otherPkgs = {
     inherit (pkgs)
+      mx-sanebot
       stepmania
     ;
   };
@@ -270,6 +271,7 @@ in
     ./sublime-music.nix
     ./vlc.nix
     ./web-browser.nix
+    ./zeal.nix
     ./zsh
   ];
 
@@ -402,11 +404,6 @@ in
         whalebird.persist.private = [ ".config/Whalebird" ];
 
         yarn.persist.plaintext = [ ".cache/yarn" ];
-
-        zeal-qt5.persist.plaintext = [
-          ".cache/Zeal"
-          ".local/share/Zeal"
-        ];
 
         # zcash coins. safe to delete, just slow to regenerate (10-60 minutes)
         zecwallet-lite.persist.private = [ ".zcash" ];
