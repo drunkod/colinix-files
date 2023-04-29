@@ -186,27 +186,28 @@ impl From<tt::Request> for Request {
     }
 }
 
+fn exec_stdout(program: &str, args: &[&str]) -> Option<String> {
+    process::Command::new(program)
+        .args(args)
+        .output()
+        .ok()
+        .and_then(|output|
+            str::from_utf8(&output.stdout).ok().map(ToOwned::to_owned)
+        )
+}
+
 impl Request {
     fn evaluate(self) -> Response {
         match self {
             Request::Help => Response::Help,
             Request::Bt => Response::Bt(
-                process::Command::new("sane-bt-show")
-                    .output()
-                    .ok()
-                    .and_then(|output|
-                        str::from_utf8(&output.stdout).ok().map(ToOwned::to_owned)
-                    ).unwrap_or_else(||
+                exec_stdout("sane-bt-show", &[])
+                    .unwrap_or_else(||
                         "failed to retrieve torrent status".to_owned())
             ),
             Request::BtSearch(phrase) => Response::BtSearch(
-                process::Command::new("sane-bt-search")
-                    .args([&*phrase])
-                    .output()
-                    .ok()
-                    .and_then(|output|
-                        str::from_utf8(&output.stdout).ok().map(ToOwned::to_owned)
-                    ).unwrap_or_else(||
+                exec_stdout("sane-bt-search", &[&*phrase])
+                    .unwrap_or_else(||
                         "failed to complete torrent search".to_owned())
             ),
         }
