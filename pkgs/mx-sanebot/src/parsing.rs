@@ -1,9 +1,15 @@
+use std::fmt;
+
 /// for internal use.
 /// parses only if the parser has no more bytes to yield.
 struct Eof;
 
 /// literal byte (character).
 pub struct Lit<const BYTE: u8>;
+
+/// parses without consuming any bytes from the parser.
+/// used to construct strictly optional constructs.
+pub struct Nul;
 
 /// the two-item sequence of A followed by B.
 pub struct Then<A, B>(pub A, pub B);
@@ -12,6 +18,23 @@ pub struct Then<A, B>(pub A, pub B);
 pub enum Either<A, B> {
     A(A),
     B(B),
+}
+
+/// parse A if possible, but don't error if it isn't present.
+pub type Maybe<A> = Either<A, Nul>;
+
+/// exists because Rust doesn't allow recursive type *aliases*.
+pub struct OneOrMore<A>(Then<
+    A,
+    Maybe<Box<OneOrMore<A>>>
+>);
+
+// case-sensitive u8 character.
+#[macro_export]
+macro_rules! lit {
+    ($BYTE:literal) => {
+        Lit<{ $BYTE as u8 }>
+    }
 }
 
 // case-insensitive u8 character.
@@ -72,10 +95,28 @@ impl Parse for Eof {
     }
 }
 
+impl Parse for Nul {
+    fn consume<P: Parser>(p: P) -> PResult<P, Self> {
+        Ok((Self, p))
+    }
+}
+
+impl fmt::Display for Nul {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "")
+    }
+}
+
 impl<const BYTE: u8> Parse for Lit<BYTE> {
     fn consume<P: Parser>(p: P) -> PResult<P, Self> {
         let (_, p) = p.expect_byte(Some(BYTE))?;
         Ok((Self, p))
+    }
+}
+
+impl<const BYTE: u8> fmt::Display for Lit<BYTE> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", BYTE as char)
     }
 }
 
@@ -84,6 +125,12 @@ impl<A: Parse, B: Parse> Parse for Then<A, B> {
         let (a, p) = p.expect()?;
         let (b, p) = p.expect()?;
         Ok((Self(a, b), p))
+    }
+}
+
+impl<A: fmt::Display, B: fmt::Display> fmt::Display for Then<A, B> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}{}", self.0, self.1)
     }
 }
 
@@ -98,6 +145,39 @@ impl<A: Parse, B: Parse> Parse for Either<A, B> {
             Err(p) => p,
         };
         Err(p)
+    }
+}
+
+impl<A: fmt::Display, B: fmt::Display> fmt::Display for Either<A, B> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::A(a) => write!(f, "{}", a),
+            Self::B(b) => write!(f, "{}", b),
+        }
+    }
+}
+
+impl<T: Parse> Parse for Box<T> {
+    fn consume<P: Parser>(p: P) -> PResult<P, Self> {
+        match T::consume(p) {
+            Ok((t, p)) => Ok((Box::new(t), p)),
+            Err(p) => Err(p),
+        }
+    }
+}
+
+impl<T: Parse> Parse for OneOrMore<T> {
+    fn consume<P: Parser>(p: P) -> PResult<P, Self> {
+        match p.expect() {
+            Ok((t, p)) => Ok((Self(t), p)),
+            Err(p) => Err(p),
+        }
+    }
+}
+
+impl<T: fmt::Display> fmt::Display for OneOrMore<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 
