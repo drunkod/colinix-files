@@ -3,6 +3,9 @@ use std::fmt;
 use std::process;
 use std::str;
 
+use serde_json;
+use serde::Deserialize;
+
 use super::parsing::{self, Parser};
 
 
@@ -200,24 +203,36 @@ impl Request {
     fn evaluate(self) -> Response {
         match self {
             Request::Help => Response::Help,
-            Request::Bt => Response::Bt(
-                exec_stdout("sane-bt-show", &[])
-                    .unwrap_or_else(||
-                        "failed to retrieve torrent status".to_owned())
-            ),
-            Request::BtSearch(phrase) => Response::BtSearch(
-                exec_stdout("sane-bt-search", &[&*phrase])
-                    .unwrap_or_else(||
-                        "failed to complete torrent search".to_owned())
-            ),
+            Request::Bt => match exec_stdout("sane-bt-show", &[]) {
+                Some(m) => Response::Bt(m),
+                None => Response::Error("failed to execute sane-bt-show".to_owned()),
+            },
+            Request::BtSearch(phrase) => match exec_stdout("sane-bt-search", &[&*phrase, "--json"]) {
+                Some(r) => match serde_json::from_str(&r) {
+                    Ok(torrents) => Response::BtSearch(torrents),
+                    Err(e) => Response::Error(format!("failed to decode sane-bt-search response: {e}\nresponse: {r}")),
+                },
+                None => Response::Error("failed to execute sane-bt-search".to_owned()),
+            },
         }
     }
 }
 
+#[derive(Deserialize)]
+pub struct Torrent {
+    seeders: u32,
+    pub_date: String, // YYYY-MM-DD
+    size: u64,
+    tracker: String,
+    title: String,
+    magnet: String,
+}
+
 pub enum Response {
+    Error(String),
     Help,
     Bt(String),
-    BtSearch(String),
+    BtSearch(Vec<Torrent>),
 }
 
 impl Response {
@@ -233,7 +248,42 @@ impl Response {
                 </ul>
                 "#.to_owned()
             ),
-            // not yet implemented
+            Response::BtSearch(torrents) => Some({
+                let fmt_torrents = torrents.into_iter().map(|t| {
+                    let Torrent {
+                        seeders,
+                        pub_date,
+                        size,
+                        tracker,
+                        title,
+                        magnet,
+                    } = t;
+                    let mib = size >> 20;
+                    format!(r#"
+                        <tr>
+                            <th>{seeders}</th>
+                            <th>{pub_date}</th>
+                            <th>{mib}<th>
+                            <th>{tracker}</th>
+                            <th>{title}</th>
+                            <th>{magnet}</th>
+                        </tr>
+                    "#)
+                }).collect::<String>();
+                format!(r#"
+                <table>
+                    <tr>
+                        <th>Seeders</th>
+                        <th>Date</th>
+                        <th>Size (MiB)</th>
+                        <th>Tracker</th>
+                        <th>Title</th>
+                        <th>URL</th>
+                    </tr>
+                    {fmt_torrents}
+                </table>
+                "#)
+            }),
             _ => None,
         }
     }
@@ -242,6 +292,7 @@ impl Response {
 impl fmt::Display for Response {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Response::Error(e) => write!(f, "{}", e)?,
             Response::Help => {
                 write!(f, "commands:\n")?;
                 write!(f, "  !help => show this message\n")?;
@@ -249,7 +300,7 @@ impl fmt::Display for Response {
                 write!(f, "  !bt search <phrase> => search for torrents\n")?;
             },
             Response::Bt(stdout) => write!(f, "{}", stdout)?,
-            Response::BtSearch(stdout) => write!(f, "{}", stdout)?,
+            Response::BtSearch(torrents) => write!(f, "{} torrents", torrents.len())?,
         }
         Ok(())
     }

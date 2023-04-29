@@ -1360,6 +1360,8 @@ dependencies = [
  "matrix-sdk",
  "ruma",
  "ruma-client-api",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 
