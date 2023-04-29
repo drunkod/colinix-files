@@ -210,7 +210,7 @@ impl Request {
             Request::BtSearch(phrase) => match exec_stdout("sane-bt-search", &[&*phrase, "--json"]) {
                 Some(r) => match serde_json::from_str(&r) {
                     Ok(torrents) => Response::BtSearch(torrents),
-                    Err(e) => Response::Error(format!("failed to decode sane-bt-search response: {e}\nresponse: {r}")),
+                    Err(e) => Response::Error(format!("failed to decode sane-bt-search response: {e}")),
                 },
                 None => Response::Error("failed to execute sane-bt-search".to_owned()),
             },
@@ -263,7 +263,7 @@ impl Response {
                         <tr>
                             <th>{seeders}</th>
                             <th>{pub_date}</th>
-                            <th>{mib}<th>
+                            <th>{mib}</th>
                             <th>{tracker}</th>
                             <th>{title}</th>
                             <th>{magnet}</th>
