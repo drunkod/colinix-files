@@ -151,10 +151,9 @@ impl MessageHandler {
     /// parse any message directed to me, and return text to present to the user who messaged me.
     /// the message passed here may or may not be a "valid" request.
     /// if invalid, expect an error message or help message, still meant for the user.
-    pub fn on_msg(&self, msg: &str) -> String {
+    pub fn on_msg(&self, msg: &str) -> Response {
         let req = self.parse_msg(msg).unwrap_or(Request::Help);
-        let resp = req.evaluate();
-        resp.to_string()
+        req.evaluate()
     }
 
     fn parse_msg(&self, msg: &str) -> Result<Request, ()> {
@@ -214,10 +213,29 @@ impl Request {
     }
 }
 
-enum Response {
+pub enum Response {
     Help,
     Bt(String),
     BtSearch(String),
+}
+
+impl Response {
+    pub fn html(&self) -> Option<String> {
+        match self {
+            Response::Help => Some(
+                r#"
+                commands:
+                <ul>
+                    <li><code>!help</code> => show this message</li>
+                    <li><code>!bt</code> => show torrent statuses</li>
+                    <li><code>!bt search &lt;phrase&gt;</code> => search for torrents</li>
+                </ul>
+                "#.to_owned()
+            ),
+            // not yet implemented
+            _ => None,
+        }
+    }
 }
 
 impl fmt::Display for Response {
@@ -235,3 +253,4 @@ impl fmt::Display for Response {
         Ok(())
     }
 }
+

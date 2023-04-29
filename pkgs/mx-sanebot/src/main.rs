@@ -49,7 +49,7 @@ enum Event {
 #[derive(Debug)]
 enum Action {
     AcceptInvite(OwnedRoomId),
-    SendMessage(OwnedRoomId, String),
+    SendMessage(OwnedRoomId, String /* text */, Option<String> /* html */),
 }
 
 impl Runner {
@@ -184,7 +184,7 @@ impl Runner {
             Event::Invitation(room_id) => Action::AcceptInvite(room_id),
             Event::Message(room_id, _sender_id, body) => {
                 let resp = MessageHandler.on_msg(&body);
-                Action::SendMessage(room_id, resp)
+                Action::SendMessage(room_id, resp.to_string(), resp.html())
             }
         }
     }
@@ -221,10 +221,13 @@ impl Runner {
                     println!("Successfully joined room {}", room.room_id());
                 });
             }
-            Action::SendMessage(room_id, msg) => {
+            Action::SendMessage(room_id, text, html) => {
 
                 let room = self.client.get_joined_room(&room_id).unwrap();
-                let resp_content = RoomMessageEventContent::text_plain(&msg);
+                let resp_content = match html {
+                    None => RoomMessageEventContent::text_plain(&text),
+                    Some(html) => RoomMessageEventContent::text_html(&text, &html),
+                };
                 room.send(resp_content, None).await.unwrap();
             }
         }
