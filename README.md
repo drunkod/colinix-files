@@ -1,80 +1,94 @@
-to deploy:
+## What's Here
 
-```sh
-nixos-rebuild --flake ".#servo" {build,switch}
-```
+this is the top-level repo from which i configure/deploy all my NixOS machines:
+- desktop
+- laptop
+- server
+- mobile phone
 
-if the target is the same as the host, nix will grab the hostname automatically:
+i enjoy a monorepo approach. this repo references nixpkgs, a couple 3rd party
+nix modules like `sops`, the sources for <https://uninsane.org>, and that's
+about it. custom derivations and modules (some of which i try to upstream) live
+directly here; even the sources for those packages is often kept here too.
 
-```sh
-nixos-rebuild --flake . {build,switch}
-```
+## Layout
+- `hosts/`
+    - the bulk of config which isn't factored with external use in mind.
+    - that is, if you were to add this repo to a flake.nix for your own use,
+      you won't likely be depending on anything in this directory.
+- `modules/`
+    - config which is gated behind `enable` flags, in similar style to nixpkgs'
+      `nixos/` directory.
+    - if you depend on this repo, it's most likely for something in this directory.
+- `nixpatches/`
+    - literally, diffs i apply atop upstream nixpkgs before performing further eval.
+- `overlays/`
+    - exposed via the `overlays` output in `flake.nix`.
+    - predominantly a list of `callPackage` directives.
+- `pkgs/`
+    - derivations for things not yet packaged in nixpkgs.
+    - derivations for things from nixpkgs which i need to `override` for some reason.
+    - inline code for wholly custom packages (e.g. `pkgs/sane-scripts/` for CLI tools
+      that are highly specific to my setup).
+- `scripts/`
+    - scripts which are referenced by other things in this repo.
+    - these aren't generally user-facing, but they're factored out so that they can
+      be invoked directly when i need to debug.
+- `secrets/`
+    - encrypted keys, API tokens, anything which one or more of my machines needs
+      read access to but shouldn't be world-readable.
+    - not much to see here
+- `templates/`
+    - exposed via the `templates` output in `flake.nix`.
+    - used to instantiate short-lived environments.
+    - used to auto-fill the boiler-plate portions of new packages.
 
-more options (like building packages defined in this repo):
 
-```sh
-nix flake show
-```
+## Key Points of Interest
 
+i.e. you might find value in using these in your own config:
 
-## secrets
+- `modules/fs/`
+    - use this to statically define leafs and nodes anywhere in the filesystem,
+      not just inside `/nix/store`.
+    - e.g. specify that `/var/www` should be:
+        - owned by a specific user/group
+        - set to a specific mode
+        - symlinked to some other path
+        - populated with some statically-defined data
+        - populated according to some script
+        - created as a dependency of some service (e.g. `nginx`)
+    - values defined here are applied neither at evaluation time _nor_ at activation time.
+        - rather, they become systemd services.
+        - systemd manages dependencies
+        - e.g. link `/var/www -> /mnt/my-drive/www` only _after_ `/mnt/my-drive/www` appears)
+    - this is akin to using Home Manager's file API -- the part which lets you
+      statically define `~/.config` files -- just with a different philosophy.
+- `modules/persist/`
+    - my alternative to the Impermanence module.
+    - this builds atop `modules/fs/` to achieve things stock impermanence can't:
+        - persist things to encrypted storage which is unlocked at login time (pam_mount).
+        - "persist" cache directories -- to free up RAM -- but auto-wipe them on mount
+          and encrypt them to ephemeral keys so they're unreadable post shutdown/unmount.
+- `modules/programs.nix`
+    - like nixpkgs' `programs` options, but allows both system-wide or per-user deployment.
+    - allows `fs` and `persist` config values to be gated behind program deployment:
+        - e.g. `/home/<user>/.mozilla/firefox` is persisted only for users who
+          `sane.programs.firefox.enableFor.user."<user>" = true;`
+- `modules/users.nix`
+    - convenience layer atop the above modules so that you can just write
+      `fs.".config/git"` instead of `fs."/home/colin/.config/git"`
 
-i use [sops](https://github.com/Mic92/sops-nix) for secrets.
-see `hosts/common/secrets.nix` for some tips.
+some things in here could easily find broader use. if you would find benefit in
+them being factored out of my config, message me and we could work to make that happen.
 
-## building images
-
-to build a distributable image (GPT-formatted image with rootfs and /boot partition):
-```sh
-nix build ./#imgs.lappy
-```
-this can then be `dd`'d onto a disk and directly booted from a EFI system.
-there's some post-processing to do before running a rebuild on the deployed system (deploying ssh keys, optionally changing fs UUIDs, etc).
-refer to flake.nix for more details.
-
-## remote deployment
-
-some of my systems support cross compilation (i.e. building from x86-64 for an aarch64 host without using emulation).
-- `nixos-rebuild --flake '.#cross-moby' build`
-- `sudo nix sign-paths -r -k /run/secrets/nix_serve_privkey $(readlink ./result)`
-- `nixos-rebuild --flake '.#cross-moby' switch --target-host colin@moby --use-remote-sudo`
-
-## building packages
-
-build anything with
-```
-nix build .#<pkgname>
-```
-
-specifically, i pass the full package closure to the `legacyPackages` flake output. that includes both my own packages and upstream packages.
-
-on the other hand the `packages` output contains only my own packages.
-
-in addition, my packages are placed into both the global scope and a `sane` scope.
-so use the scoped path when you want to be explicit.
-```
-nix build sane.linux-megous
-```
-
-to build a package precisely how a specific host would see it (in case the host's config customizes it):
-```
-nix build '.#host-pkgs.moby-cross.xdg-utils'
-```
-
-## using this repo in your own config
+## Using This Repo In Your Own Config
 
 this should be a pretty "standard" flake. just reference it, and import either
 - `nixosModules.sane` (for the modules)
 - `overlays.pkgs` (for the packages)
 
-`nixosModules.sane` corresponds to everything in the `modules/` directory.
-it's a mix of broad and narrow scope options.
-e.g. `sane.fs` is a completely standalone thing,
-whereas `sane.web-browser` is highly personalized and doesn't *really* make sense to export.
-regardless of scope, i do try to ensure that everything in `modules/` is hidden behind some enable flag
-so that the disorganization isn't that critical.
-
-## contact
+## Contact
 
 if you want to contact me for questions, or collaborate to split something useful into a shared repo, etc,
 you can reach me via any method listed [here](https://uninsane.org/about).
