@@ -3,6 +3,41 @@ use std::fmt;
 use std::process;
 use std::str;
 
+use super::parsing;
+
+
+mod tt {
+    pub(super) use super::parsing::{
+        Either,
+        Lit,
+        Then,
+    };
+
+    // grammar:
+    // REQUEST = <!> (HELP | BT | BT-ADD)
+    // HELP = <help>
+    // BT = <bt>
+    // BT-ADD = <bt-add> MAYBE_ARGS
+    // MAYBE_ARGS = [SPACE [ARGS]]
+    // ARGS = ARG MAYBE_ARGS
+    // ARG = (not SPACE) [ARG]
+    pub(super) type Request = Then<Bang, Either<Help, Bt>>;
+
+    pub(super) type Bang = Lit<{ '!' as u8 }>;
+
+    pub(super) type Help = Then<
+        Lit<{ 'H' as u8 }>, Then<
+        Lit<{ 'E' as u8 }>, Then<
+        Lit<{ 'L' as u8 }>,
+        Lit<{ 'P' as u8 }>,
+    >>>;
+
+    pub(super) type Bt = Then<
+        Lit<{ 'B' as u8 }>,
+        Lit<{ 'T' as u8 }>,
+    >;
+}
+
 pub struct MessageHandler;
 
 impl MessageHandler {
@@ -29,6 +64,15 @@ impl MessageHandler {
 enum Request {
     Help,
     Bt,
+}
+
+impl From<tt::Request> for Request {
+    fn from(t: tt::Request) -> Self {
+        match t {
+            tt::Then(_bang, tt::Either::A(_help)) => Self::Help,
+            tt::Then(_bang, tt::Either::B(_bt)) => Self::Bt,
+        }
+    }
 }
 
 impl Request {
