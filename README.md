@@ -6,10 +6,14 @@ this is the top-level repo from which i configure/deploy all my NixOS machines:
 - server
 - mobile phone
 
-i enjoy a monorepo approach. this repo references nixpkgs, a couple 3rd party
-nix modules like `sops`, the sources for <https://uninsane.org>, and that's
+i enjoy a monorepo approach. this repo references [nixpkgs][nixpkgs], a couple 3rd party
+nix modules like [sops][sops], the sources for [uninsane.org][uninsane-org], and that's
 about it. custom derivations and modules (some of which i try to upstream) live
 directly here; even the sources for those packages is often kept here too.
+
+[nixpkgs]: https://github.com/NixOS/nixpkgs
+[sops]: https://github.com/Mic92/sops-nix
+[uninsane-org]: https://uninsane.org
 
 ## Layout
 - `hosts/`
@@ -62,7 +66,7 @@ i.e. you might find value in using these in your own config:
         - rather, they become systemd services.
         - systemd manages dependencies
         - e.g. link `/var/www -> /mnt/my-drive/www` only _after_ `/mnt/my-drive/www` appears)
-    - this is akin to using Home Manager's file API -- the part which lets you
+    - this is akin to using [Home Manager's][home-manager] file API -- the part which lets you
       statically define `~/.config` files -- just with a different philosophy.
 - `modules/persist/`
     - my alternative to the Impermanence module.
@@ -81,6 +85,8 @@ i.e. you might find value in using these in your own config:
 
 some things in here could easily find broader use. if you would find benefit in
 them being factored out of my config, message me and we could work to make that happen.
+
+[home-manager]: https://github.com/nix-community/home-manager
 
 ## Using This Repo In Your Own Config
 
