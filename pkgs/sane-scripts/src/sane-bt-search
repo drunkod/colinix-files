@@ -10,6 +10,7 @@ returns select results and magnet links
 
 from dataclasses import dataclass
 from datetime import datetime
+import json
 import natsort
 import requests
 import sys
@@ -48,6 +49,16 @@ class Torrent:
             pub_date = datetime.fromisoformat(pub_date).astimezone()
             return Torrent(seeders, pub_date, size, tracker, title, magnet)
 
+    def to_dict(self) -> dict:
+        return dict(
+            seeders=self.seeders,
+            pub_date=self.pub_date.strftime("%Y-%m-%d"),
+            size=self.size,
+            tracker=self.tracker,
+            title=self.title,
+            magnet=self.magnet,
+        )
+
 class Client:
     def __init__(self):
         self.apikey = open("/run/secrets/jackett_apikey").read()
@@ -57,10 +68,7 @@ class Client:
         url = f"{SERVICE}/{endpoint}"
         params = params.copy()
         params.update(apikey=self.apikey, _=str(int(time.time())))
-        print(url)
-        print(params)
         resp = requests.get(url, params=params)
-        print(resp)
         return resp.json()
 
     def query(self, q: str) -> list:
@@ -77,6 +85,7 @@ def parse_args(args: list) -> dict:
     options = dict(
         full=False,
         query="",
+        json=False,
     )
     while args:
         arg = args[0]
@@ -99,9 +108,13 @@ def main(args: list):
     num_listings = 100 if options["full"] else 5
     client = Client()
     res = client.query(query)
-    print(f"found {len(res)} result(s)")
-    for r in res[:num_listings]:
-        print(r)
+    if options["json"]:
+        dumpable = [t.to_dict() for t in res[:num_listings]]
+        print(json.dumps(dumpable))
+    else:
+        print(f"found {len(res)} result(s)")
+        for r in res[:num_listings]:
+            print(r)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
