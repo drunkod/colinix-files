@@ -15,7 +15,12 @@ pub enum Either<A, B> {
 }
 
 // case-insensitive u8 character.
-// type ILit<const BYTE: u8> = Either<Lit<{ BYTE.to_ascii_lowercase() }>, Lit<{ BYTE.to_ascii_uppercase() }>>;
+#[macro_export]
+macro_rules! ilit {
+    ($BYTE:literal) => {
+        Either<Lit<{ ($BYTE as u8).to_ascii_lowercase() }>, Lit<{ ($BYTE as u8).to_ascii_uppercase() }>>
+    }
+}
 
 
 pub type PResult<P, C> = std::result::Result<(C, P), P>;
@@ -33,6 +38,25 @@ pub trait Parser: Sized {
         match self.expect::<Then<C, Eof>>() {
             Ok((Then(c, _eof), _p)) => Ok(c),
             Err(_p) => Err(()),
+        }
+    }
+}
+
+impl<'a> Parser for &'a [u8] {
+    fn expect_byte(self, b: Option<u8>) -> PResult<Self, ()> {
+        match (b, self.split_first()) {
+            // expected the correct character
+            (Some(exp), Some((first, rest))) if *first == exp => Ok( ((), rest) ),
+            // expected EOF, got EOF
+            (None, None) => Ok( ((), self)),
+            _ => Err(self),
+        }
+    }
+    fn expect<C: Parse>(self) -> PResult<Self, C> {
+        match C::consume(self.clone()) {
+            Ok(res) => Ok(res),
+            // rewind the parser should we fail
+            Err(_p) => Err(self),
         }
     }
 }

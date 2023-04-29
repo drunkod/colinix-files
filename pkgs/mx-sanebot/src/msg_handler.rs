@@ -3,7 +3,7 @@ use std::fmt;
 use std::process;
 use std::str;
 
-use super::parsing;
+use super::parsing::{self, Parser};
 
 
 mod tt {
@@ -12,6 +12,7 @@ mod tt {
         Lit,
         Then,
     };
+    use crate::ilit;
 
     // grammar:
     // REQUEST = <!> (HELP | BT | BT-ADD)
@@ -26,15 +27,15 @@ mod tt {
     pub(super) type Bang = Lit<{ '!' as u8 }>;
 
     pub(super) type Help = Then<
-        Lit<{ 'H' as u8 }>, Then<
-        Lit<{ 'E' as u8 }>, Then<
-        Lit<{ 'L' as u8 }>,
-        Lit<{ 'P' as u8 }>,
+        ilit!('H'), Then<
+        ilit!('E'), Then<
+        ilit!('L'),
+        ilit!('P'),
     >>>;
 
     pub(super) type Bt = Then<
-        Lit<{ 'B' as u8 }>,
-        Lit<{ 'T' as u8 }>,
+        ilit!('B'),
+        ilit!('T'),
     >;
 }
 
@@ -51,11 +52,9 @@ impl MessageHandler {
     }
 
     fn parse_msg(&self, msg: &str) -> Result<Request, ()> {
-        let msg = msg.trim();
-        match msg {
-            "!help" => Ok(Request::Help),
-            "!bt" => Ok(Request::Bt),
-            _ => Err(())
+        match msg.as_bytes().parse_all::<tt::Request>() {
+            Ok(req) => Ok(req.into()),
+            Err(_) => Err(()),
         }
     }
 }
