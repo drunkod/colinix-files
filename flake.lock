@@ -134,11 +134,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1681952179,
-        "narHash": "sha256-GfI682y7LJXj6p0kcYIyzVKFNKtkEbxvMGu5VjSPeN4=",
+        "lastModified": 1682815555,
+        "narHash": "sha256-mu4axnbR6cSgnNBGrSydxmKlKWrnHLKlpNmmbqD2V9E=",
         "ref": "refs/heads/master",
-        "rev": "3b9ce28b7a65d516eedddac67a224493399e5b1e",
-        "revCount": 190,
+        "rev": "da209f34ce34eb6b8c4d2b3256a02eb23ad9f655",
+        "revCount": 191,
         "type": "git",
         "url": "https://git.uninsane.org/colin/uninsane"
       },
