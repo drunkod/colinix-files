@@ -38,6 +38,8 @@
     hash = "sha256-RbQzAtFTr7Nrk2YBcHpKQMYoPlFMVSXNl96B/lkKluQ=";
   })
 
+  ./2023-04-29-lemmy.patch
+
   # 2023-04-20: perl: fix modules for compatibility with miniperl
   # (fetchpatch {
   #   url = "https://github.com/NixOS/nixpkgs/pull/225640.diff";

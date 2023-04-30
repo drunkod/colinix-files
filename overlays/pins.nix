@@ -18,4 +18,14 @@
   # chromium can take 4 hours to build from source, with no signs of progress.
   # disable it if you're in a rush.
   # chromium = next.emptyDirectory;
+
+  # lemmy-server = prev.lemmy-server.overrideAttrs (upstream: {
+  #   patches = upstream.patches or [] ++ [
+  #     (next.fetchpatch {
+  #       # "Fix docker federation setup (#2706)"
+  #       url = "https://github.com/LemmyNet/lemmy/commit/2891856b486ad9397bca1c9839255d73be66361.diff";
+  #       hash = "sha256-qgRvBO2y7pmOWdteu4uiZNi8hs0VazOV+L5Z0wu60/E=";
+  #     })
+  #   ];
+  # });
 })

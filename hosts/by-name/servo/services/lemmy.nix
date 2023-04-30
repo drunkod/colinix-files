@@ -21,6 +21,7 @@ in {
     DynamicUser = mkForce false;
     User = "lemmy";
     Group = "lemmy";
+    Environment = [ "RUST_BACKTRACE=full" ];
   };
   users.groups.lemmy = {};
   users.users.lemmy = {
