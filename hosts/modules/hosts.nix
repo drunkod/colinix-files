@@ -85,7 +85,7 @@ in
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1N/IT3nQYUD+dBlU1sTEEVMxfOyMkrrDeyHcYgnJvw";
       wg-home.pubkey = "I7XIR1hm8bIzAtcAvbhWOwIAabGkuEvbWH/3kyIB1yA=";
       wg-home.ip = "10.0.10.48";
-      lan-ip = "192.168.15.28";
+      lan-ip = "192.168.15.21";
     };
 
     sane.hosts.by-name."servo" = {
