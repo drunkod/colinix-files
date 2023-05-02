@@ -1,4 +1,4 @@
-{ lib, utils, ... }:
+{ lib, ... }:
 
 {
   imports = [
@@ -15,7 +15,7 @@
   ];
 
   _module.args =  {
-    sane-lib = import ./lib { inherit lib utils; };
+    sane-lib = import ./lib { inherit lib; };
     sane-data = import ./data { inherit lib; };
   };
 }
