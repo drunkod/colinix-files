@@ -77,7 +77,7 @@ in
       ssh.host_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSJnqmVl9/SYQ0btvGb0REwwWY8wkdkGXQZfn/1geEc";
       wg-home.pubkey = "FTUWGw2p4/cEcrrIE86PWVnqctbv8OYpw8Gt3+dC/lk=";
       wg-home.ip = "10.0.10.20";
-      lan-ip = "192.168.15.13";
+      lan-ip = "192.168.15.8";
     };
 
     sane.hosts.by-name."moby" = {
