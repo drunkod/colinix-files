@@ -1,5 +1,9 @@
 { pkgs ? import <nixpkgs> {}, lib ? pkgs.lib, unpatched ? pkgs }:
 let
+
+  pythonPackagesOverlay = py-final: py-prev: import ./python-packages {
+    inherit (py-final) callPackage;
+  };
   # this scope ensures that my packages can all take each other as inputs,
   # even when evaluated bare (i.e. outside of an overlay)
   sane = lib.makeScope pkgs.newScope (self: with self; {
@@ -58,10 +62,12 @@ let
 
     ### PYTHON PACKAGES
     pythonPackagesExtensions = (unpatched.pythonPackagesExtensions or []) ++ [
-      (py-final: py-prev: import ./python-packages { inherit (py-final) callPackage; })
+      pythonPackagesOverlay
     ];
     # when this scope's applied as an overlay pythonPackagesExtensions is propagated as desired.
     # but when freestanding (e.g. NUR), it never gets plumbed into the outer pkgs, so we have to do that explicitly.
-    pythonInterpreters = unpatched.pythonInterpreters.override { inherit pythonPackagesExtensions; };
+    python3 = unpatched.python3.override {
+      packageOverrides = pythonPackagesOverlay;
+    };
   });
 in sane.packages sane
