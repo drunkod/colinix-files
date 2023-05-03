@@ -35,7 +35,8 @@ rustPlatform.buildRustPackage rec {
   };
   # cargoHash = "sha256-2NMXR+D/CnDhUToQmMwK2Cb2l+4/N9BrCz/lt1NZ6Wk=";
   cargoLock = {
-    lockFile = "${src}/Cargo.lock";
+    lockFile = ./Cargo.lock;
+    # lockFile = "${src}/Cargo.lock";
     outputHashes = {
       "light-dm-sys-0.0.1" = "sha256-91MZhbO/Or0QOt0yVAUhtorpMBBzElFg6U59mF7WB0k=";
     };
