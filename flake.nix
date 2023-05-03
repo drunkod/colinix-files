@@ -241,9 +241,12 @@
             (! elem name [ "feeds" "pythonPackagesExtensions" ])
             && (allPkgs.lib.meta.availableOn allPkgs.stdenv.hostPlatform pkg)
           )
-          (allPkgs.sane // {
-            inherit (allPkgs) uninsane-dot-org;
-          })
+          (
+            # expose sane packages and chosen inputs (uninsane.org)
+            (import ./pkgs { pkgs = allPkgs; }) // {
+              inherit (allPkgs) uninsane-dot-org;
+            }
+          )
         )
         # self.legacyPackages;
         { inherit (self.legacyPackages) x86_64-linux; }

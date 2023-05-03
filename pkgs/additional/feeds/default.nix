@@ -1,15 +1,15 @@
 { lib
 , callPackage
 , python3
+, sane-data
 , static-nix-shell
 , writeShellScript
 }:
 
 let
   # TODO: dependency-inject this.
-  sane-data = import ../../modules/data { inherit lib; };
   template = callPackage ./template.nix;
-  feed-pkgs = lib.mapAttrs
+  feed-pkgs' = lib.mapAttrs
     (name: feed-details: template {
       feedName = name;
       jsonPath = "modules/data/feeds/sources/${name}/default.json";
@@ -18,9 +18,9 @@ let
     sane-data.feeds;
   update-scripts = lib.mapAttrsToList
     (name: feed: builtins.concatStringsSep " " feed.passthru.updateScript)
-    feed-pkgs;
+    feed-pkgs';
 in rec {  # TODO: make this a scope
-  inherit feed-pkgs;
+  feed-pkgs = lib.recurseIntoAttrs feed-pkgs';
   update = static-nix-shell.mkPython3Bin {
     pname = "update";
     src = ./.;
@@ -49,10 +49,9 @@ in rec {  # TODO: make this a scope
       ${update}/bin/update.py "$name" "$json_path"
       cat "$json_path"
     '';
-  passthru = {
-    updateScript = writeShellScript
-      "feeds-update"
-      (builtins.concatStringsSep "\n" update-scripts);
-    initFeedScript = init-feed;
-  };
+
+  updateScript = writeShellScript
+    "feeds-update"
+    (builtins.concatStringsSep "\n" update-scripts);
+  initFeedScript = init-feed;
 }
