@@ -2,14 +2,12 @@
 , lib
 , makeWrapper
 , python3
-, sane-lib
 , stdenv
 }:
 
 let
-  inherit (builtins) attrNames attrValues concatStringsSep map typeOf;
+  inherit (builtins) attrNames attrValues concatStringsSep foldl' map typeOf;
   inherit (lib) concatMapAttrs;
-  inherit (sane-lib) mapToAttrs;
   pkgs' = pkgs;
 in {
   # transform a file which uses `#!/usr/bin/env nix-shell` shebang with a `python3` interpreter
@@ -28,10 +26,9 @@ in {
       #   <value> = package to provide
       pkgsToAttrs = prefix: pkgSet: expr: ({
         "lambda" = expr: pkgsToAttrs prefix pkgSet (expr pkgSet);
-        "list" = expr: mapToAttrs (pname: {
-          name = prefix + pname;
-          value = pkgSet."${pname}";
-        }) expr;
+        "list" = expr: foldl' (acc: pname: acc // {
+          "${prefix + pname}" = pkgSet."${pname}";
+        }) {} expr;
         "set" = expr: expr;
       })."${typeOf expr}" expr;
       pyEnv = python3.withPackages (ps: attrValues (

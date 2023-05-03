@@ -241,9 +241,12 @@
             (! elem name [ "feeds" "pythonPackagesExtensions" ])
             && (allPkgs.lib.meta.availableOn allPkgs.stdenv.hostPlatform pkg)
           )
-          (allPkgs.sane // {
-            inherit (allPkgs) uninsane-dot-org;
-          })
+          (
+            # expose sane packages and chosen inputs (uninsane.org)
+            (import ./pkgs { pkgs = allPkgs; }) // {
+              inherit (allPkgs) uninsane-dot-org;
+            }
+          )
         )
         # self.legacyPackages;
         { inherit (self.legacyPackages) x86_64-linux; }
@@ -260,13 +263,13 @@
         in {
           update-feeds = {
             type = "app";
-            program = "${pkgs.feeds.passthru.updateScript}";
+            program = "${pkgs.feeds.updateScript}";
           };
 
           init-feed = {
             # use like `nix run '.#init-feed' uninsane.org`
             type = "app";
-            program = "${pkgs.feeds.passthru.initFeedScript}";
+            program = "${pkgs.feeds.initFeedScript}";
           };
 
           deploy-moby-test = {

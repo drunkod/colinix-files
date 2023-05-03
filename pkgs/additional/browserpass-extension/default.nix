@@ -27,8 +27,13 @@ let
   };
   browserpass-extension-yarn-modules = mkYarnModules {
     inherit pname version;
-    packageJSON = "${src}/src/package.json";
-    yarnLock = "${src}/src/yarn.lock";
+    packageJSON = ./package.json;
+    yarnLock = ./yarn.lock;
+    # yarnNix is auto-generated. to update: leave unset, then query the package deps and copy it out of the store.
+    yarnNix = ./yarn.nix;
+    # the following also works, but because it's IFD it's not allowed by some users, like NUR.
+    # packageJSON = "${src}/src/package.json";
+    # yarnLock = "${src}/src/yarn.lock";
   };
   extid = "browserpass@maximbaz.com";
 in stdenv.mkDerivation {
