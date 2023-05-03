@@ -1,5 +1,6 @@
-# docs: https://nixos.wiki/wiki/Matrix
-# docs: https://nixos.org/manual/nixos/stable/index.html#module-services-matrix-synapse
+# docs: <https://nixos.wiki/wiki/Matrix>
+# docs: <https://nixos.org/manual/nixos/stable/index.html#module-services-matrix-synapse>
+# example config: <https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml>
 { config, lib, pkgs, ... }:
 
 {
@@ -40,6 +41,9 @@
       ];
     }
   ];
+
+  services.matrix-synapse.settings.x_forwarded = true;  # because we proxy matrix behind nginx
+  services.matrix-synapse.settings.max_upload_size = "100M";  # default is "50M"
 
   services.matrix-synapse.settings.admin_contact = "admin.matrix@uninsane.org";
   services.matrix-synapse.settings.registrations_require_3pid = [ "email" ];
@@ -94,6 +98,10 @@
 
     locations."/" = {
       proxyPass = "http://127.0.0.1:8008";
+      extraConfig = ''
+        # allow uploading large files (matrix enforces a separate limit, downstream)
+        client_max_body_size  512m;
+      '';
     };
     # redirect browsers to the web client.
     # i don't think native matrix clients ever fetch the root.
