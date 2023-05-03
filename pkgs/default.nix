@@ -58,7 +58,7 @@ let
 
     ### PYTHON PACKAGES
     pythonPackagesExtensions = (unpatched.pythonPackagesExtensions or []) ++ [
-      (py-final: py-prev: import ./python-packages { inherit (py-prev) callPackage; })
+      (py-final: py-prev: import ./python-packages { inherit (py-final) callPackage; })
     ];
   });
 in sane.packages sane
