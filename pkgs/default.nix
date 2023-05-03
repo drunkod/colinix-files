@@ -60,5 +60,8 @@ let
     pythonPackagesExtensions = (unpatched.pythonPackagesExtensions or []) ++ [
       (py-final: py-prev: import ./python-packages { inherit (py-final) callPackage; })
     ];
+    # when this scope's applied as an overlay pythonPackagesExtensions is propagated as desired.
+    # but when freestanding (e.g. NUR), it never gets plumbed into the outer pkgs, so we have to do that explicitly.
+    pythonInterpreters = unpatched.pythonInterpreters.override { inherit pythonPackagesExtensions; };
   });
 in sane.packages sane
