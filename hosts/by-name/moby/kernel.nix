@@ -44,68 +44,6 @@ let
       "sha256-6ywm3dQQ5JYl60CLKarxlSUukwi4QzqctCj3tVgzFbo="
     )
   ];
-
-  # pinephone uses the linux dtb at arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-  # - this includes sun50i-a64.dtsi
-  # - and sun50i-a64-cpu-opp.dtsi
-  # - no need to touch the allwinner-h6 stuff: that's the SBC pine product
-  # - i think it's safe to ignore sun9i stuff, but i don't know what it is
-  kernelConfig = with lib.kernel; {
-    # NB: nix adds the CONFIG_ prefix to each of these.
-    # if you add the prefix yourself nix will IGNORE YOUR CONFIG.
-    RTL8723CS = module;
-    BT_HCIUART_3WIRE = yes;
-    BT_HCIUART_RTL = yes;
-    RTL8XXXU_UNTESTED = yes;
-    BT_BNEP_MC_FILTER = yes;
-    BT_BNEP_PROTO_FILTER = yes;
-    BT_HS = yes;
-    BT_LE = yes;
-    # relevant configs inherited from nixos defaults (or above additions):
-    # CONFIG_BT=m
-    # CONFIG_BT_BREDR=y
-    # CONFIG_BT_RFCOMM=m
-    # CONFIG_BT_RFCOMM_TTY=y
-    # CONFIG_BT_BNEP=m
-    # CONFIG_BT_HIDP=m
-    # CONFIG_BT_RTL=m
-    # CONFIG_BT_HCIBTUSB=m
-    # CONFIG_BT_HCIBTUSB_BCM=y
-    # CONFIG_BT_HCIBTUSB_RTL=y
-    # CONFIG_BT_HCIUART=m
-    # CONFIG_BT_HCIUART_SERDEV=y
-    # CONFIG_BT_HCIUART_H4=y
-    # CONFIG_BT_HCIUART_LL=y
-    # CONFIG_RTL_CARDS=m
-    # CONFIG_RTLWIFI=m
-    # CONFIG_RTLWIFI_PCI=m
-    # CONFIG_RTLWIFI_USB=m
-    # CONFIG_RTLWIFI_DEBUG=y
-    # CONFIG_RTL8723_COMMON=m
-    # CONFIG_RTLBTCOEXIST=m
-    # CONFIG_RTL8XXXU=m
-    # CONFIG_RTLLIB=m
-    # consider adding (from mobile-nixos):
-    # maybe: CONFIG_BT_HCIUART_3WIRE=y
-    # maybe: CONFIG_BT_HCIUART_RTL=y
-    # maybe: CONFIG_RTL8XXXU_UNTESTED=y
-    # consider adding (from manjaro):
-    # CONFIG_BT_6LOWPAN=m  (not listed as option in nixos kernel)
-    # these are referenced in the rtl8723 source, but not known to config (and not in mobile-nixos config
-    # maybe: CONFIG_RTL_ODM_WLAN_DRIVER
-    # maybe: CONFIG_RTL_TRIBAND_SUPPORT
-    # maybe: CONFIG_SDIO_HCI
-    # maybe: CONFIG_USB_HCI
-  };
-
-  # create a kernelPatch which overrides nixos' defconfig with extra options
-  patchDefconfig = config: {
-    # defconfig options. this method comes from here:
-    # - https://discourse.nixos.org/t/the-correct-way-to-override-the-latest-kernel-config/533/9
-    name = "sane-moby-defconfig";
-    patch = null;
-    extraStructuredConfig = config;
-  };
 in
 {
   # use Megi's kernel:
@@ -115,22 +53,6 @@ in
   # - ambient light sensor causes screen brightness to be shakey
   # - phosh greeter may not appear after wake from sleep
   boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux-megous;
-
-  boot.kernelPatches = [
-    (patchDefconfig (kernelConfig //
-      (with lib.kernel; {
-        # disabling the sun5i_eink driver avoids this compilation error:
-        # CC [M]  drivers/video/fbdev/sun5i-eink-neon.o
-        # aarch64-unknown-linux-gnu-gcc: error: unrecognized command line option '-mfloat-abi=softfp'
-        # aarch64-unknown-linux-gnu-gcc: error: unrecognized command line option '-mfpu=neon'
-        # make[3]: *** [../scripts/Makefile.build:289: drivers/video/fbdev/sun5i-eink-neon.o] Error 1
-        FB_SUN5I_EINK = no;
-        # used by the pinephone pro, but fails to compile with:
-        # ../drivers/media/i2c/ov8858.c:1834:27: error: implicit declaration of function 'compat_ptr'
-        VIDEO_OV8858 = no;
-      })
-    ))
-  ];
 
   # alternatively, use nixos' kernel and add the stuff we want:
   # # cross-compilation optimization:
