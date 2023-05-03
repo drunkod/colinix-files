@@ -1,12 +1,12 @@
-{ lib, ... }@moduleArgs:
+{ lib, ... }:
 
 let
 sane-lib = rec {
-  feeds = import ./feeds.nix moduleArgs;
-  fs = import ./fs.nix moduleArgs;
-  merge = import ./merge.nix ({ inherit sane-lib; } // moduleArgs);
-  path = import ./path.nix moduleArgs;
-  types = import ./types.nix moduleArgs;
+  feeds = import ./feeds.nix { inherit lib; };
+  fs = import ./fs.nix { inherit lib; };
+  merge = import ./merge.nix { inherit lib sane-lib; };
+  path = import ./path.nix { inherit lib; };
+  types = import ./types.nix { inherit lib; };
 
   # re-exports
   inherit (merge) mkTypedMerge;

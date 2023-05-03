@@ -1,8 +1,18 @@
-{ lib, buildPackages, fetchFromGitHub, perl, buildLinux, nixosTests, modDirVersionArg ? null, ... } @ args:
+{ lib
+, buildLinux
+, buildPackages
+, fetchFromGitHub
+, kernelPatches
+, modDirVersionArg ? null
+, nixosTests
+, perl
+, ...
+} @ args:
 
 with lib;
 
 let
+  kernelPatches' = kernelPatches;
   base = "6.2.0";
   # set to empty if not a release candidate
   rc = "-rc5";
@@ -14,6 +24,11 @@ in buildLinux (args // rec {
 
   # branchVersion needs to be x.y
   extraMeta.branch = versions.majorMinor version;
+
+  kernelPatches = [
+    kernelPatches'.bridge_stp_helper
+    kernelPatches'.request_key_helper
+  ];
 
   src = fetchFromGitHub {
     # HOW TO UPDATE:

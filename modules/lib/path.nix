@@ -1,4 +1,4 @@
-{ lib, utils, ... }:
+{ lib, ... }:
 
 let path = rec {
 
