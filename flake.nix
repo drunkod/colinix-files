@@ -263,13 +263,13 @@
         in {
           update-feeds = {
             type = "app";
-            program = "${pkgs.feeds.passthru.updateScript}";
+            program = "${pkgs.feeds.updateScript}";
           };
 
           init-feed = {
             # use like `nix run '.#init-feed' uninsane.org`
             type = "app";
-            program = "${pkgs.feeds.passthru.initFeedScript}";
+            program = "${pkgs.feeds.initFeedScript}";
           };
 
           deploy-moby-test = {
