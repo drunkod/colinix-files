@@ -1,5 +1,5 @@
 { lib
-, cargo-docset ? null
+, cargoDocsetHook ? null
 , openssl
 , pkg-config
 , rustPlatform
@@ -11,17 +11,8 @@ rustPlatform.buildRustPackage {
   src = ./.;
   cargoLock.lockFile = ./Cargo.lock;
 
-  nativeBuildInputs = [ pkg-config ] ++ lib.optional (cargo-docset != null) cargo-docset;
+  nativeBuildInputs = [ pkg-config ] ++ lib.optional (cargoDocsetHook != null) cargoDocsetHook;
   buildInputs = [ openssl ];
-
-  postBuild = ''
-    cargo-docset docset
-  '';
-
-  postInstall = ''
-    mkdir -p $out/share/docset
-    cp -R target/docset/* $out/share/docset/
-  '';
 
   # enables debug builds, if we want: https://github.com/NixOS/nixpkgs/issues/60919.
   hardeningDisable = [ "fortify" ];

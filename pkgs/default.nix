@@ -14,6 +14,7 @@ let
     bootpart-uefi-x86_64 = callPackage ./additional/bootpart-uefi-x86_64 { };
     browserpass-extension = callPackage ./additional/browserpass-extension { };
     cargo-docset = callPackage ./additional/cargo-docset { };
+    cargoDocsetHook = callPackage ./additional/cargo-docset/hook.nix { };
     feeds = lib.recurseIntoAttrs (callPackage ./additional/feeds { });
     gopass-native-messaging-host = callPackage ./additional/gopass-native-messaging-host { };
     gpodder-configured = callPackage ./additional/gpodder-configured { };
