@@ -12,6 +12,7 @@
 with lib;
 
 let
+  kernelPatches' = kernelPatches;
   base = "6.2.0";
   # set to empty if not a release candidate
   rc = "-rc5";
@@ -25,8 +26,8 @@ in buildLinux (args // rec {
   extraMeta.branch = versions.majorMinor version;
 
   kernelPatches = [
-    kernelPatches.bridge_stp_helper
-    kernelPatches.request_key_helper
+    kernelPatches'.bridge_stp_helper
+    kernelPatches'.request_key_helper
   ];
 
   src = fetchFromGitHub {
