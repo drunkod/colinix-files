@@ -1,5 +1,6 @@
 { lib
-, cargoDocsetHook ? null
+, cargoDocsetHook ? emptyDirectory
+, emptyDirectory
 , openssl
 , pkg-config
 , rustPlatform
@@ -11,7 +12,7 @@ rustPlatform.buildRustPackage {
   src = ./.;
   cargoLock.lockFile = ./Cargo.lock;
 
-  nativeBuildInputs = [ pkg-config ] ++ lib.optional (cargoDocsetHook != null) cargoDocsetHook;
+  nativeBuildInputs = [ pkg-config cargoDocsetHook ];
   buildInputs = [ openssl ];
 
   # enables debug builds, if we want: https://github.com/NixOS/nixpkgs/issues/60919.
