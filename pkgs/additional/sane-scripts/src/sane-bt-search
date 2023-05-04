@@ -21,6 +21,22 @@ ENDPOINTS = dict(
     results="api/v2.0/indexers/all/results"
 )
 
+epoch = datetime(1970, 1, 1)
+
+def try_parse_time(t: str):
+    try:
+        return datetime.fromisoformat(t)
+    except ValueError: pass
+
+    if len(t) > len('YYYY-MM-DD'):
+        # sometimes these timestamps are encoded with e.g. too many digits in the milliseconds field.
+        # so just keep chomping until we get something that parses as a timestamp
+        return try_parse_time(t[:-1])
+
+def parse_time(t: str) -> datetime:
+    return try_parse_time(t).astimezone() or epoch
+
+
 @dataclass(eq=True, order=True, unsafe_hash=True)
 class Torrent:
     seeders: int
@@ -46,7 +62,7 @@ class Torrent:
         title = d.get("Title")
         magnet = d.get("MagnetUri")
         if seeders is not None and pub_date is not None and title is not None and magnet is not None:
-            pub_date = datetime.fromisoformat(pub_date).astimezone()
+            pub_date = parse_time(pub_date)
             return Torrent(seeders, pub_date, size, tracker, title, magnet)
 
     def to_dict(self) -> dict:
