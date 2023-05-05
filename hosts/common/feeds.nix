@@ -142,7 +142,7 @@ let
     (fromDb "ascii.textfiles.com" // tech)  # Jason Scott
     (fromDb "xn--gckvb8fzb.com" // tech)
     (fromDb "mg.lol" // tech)
-    (fromDb "drewdevault.com" // tech)
+    # (fromDb "drewdevault.com" // tech)
     ## Ken Shirriff
     (fromDb "righto.com" // tech)
     ## shared blog by a few NixOS devs, notably onny
