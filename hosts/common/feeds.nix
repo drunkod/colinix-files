@@ -208,6 +208,7 @@ let
     ## Sean Carroll
     (fromDb "preposterousuniverse.com" // rat)
     (mkSubstack "eliqian" // rat // weekly)
+    (mkText "https://acoup.blog/feed" // rat // weekly)
 
     ## mostly dating topics. not advice, or humor, but looking through a social lens
     (fromDb "putanumonit.com" // rat)
