@@ -56,7 +56,9 @@ in [
   ./2023-04-29-lemmy.patch
 
   (fetchpatch' {
+    # cargo-docset: init at 0.3.1
     saneCommit = "5a09e84c6159ce545029483384580708bc04c08f";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/231188";
     hash = "sha256-Z1HOps3w/WvxAiyUAHWszKqwS9EwA6rf4XfgPGp+2sQ=";
   })
 
