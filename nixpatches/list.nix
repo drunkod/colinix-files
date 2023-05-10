@@ -1,15 +1,25 @@
 { fetchpatch, fetchurl }:
 let
-  sane = { commit, hash ? null }: fetchpatch ({
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/${commit}.diff";
-  } // (if hash != null then { inherit hash; } else {}));
+  fetchpatch' = {
+    saneCommit ? null,
+    prUrl ? null,
+    hash ? null
+  }:
+    let
+      url = if prUrl != null then
+        # prUrl takes precedence over any specific commit
+        "${prUrl}.diff"
+      else
+        "https://git.uninsane.org/colin/nixpkgs/commit/${saneCommit}.diff"
+      ;
+    in fetchpatch ({ inherit url; } // (if hash != null then { inherit hash; } else {}));
 in [
 
   # splatmoji: init at 1.2.0
-  (fetchpatch {
-    # https://github.com/NixOS/nixpkgs/pull/211874
-    url = "https://git.uninsane.org/colin/nixpkgs/commit/75149039b6eaf57d8a92164e90aab20eb5d89196.diff";
-    hash = "sha256-IvsIcd2wPdz4b/7FMrDrcVlIZjFecCQ9uiL0Umprbx0=";
+  (fetchpatch' {
+    saneCommit = "75149039b6eaf57d8a92164e90aab20eb5d89196";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/211874";
+    hash = "sha256-fftctCx1N/P7yLTRxsHYLHbX+gV/lFpWrWCTtZ2L1Cw=";
   })
 
   # (fetchpatch {
@@ -38,15 +48,15 @@ in [
   # ./2023-03-04-ccache-cross-fix.patch
 
   # 2023-04-11: bambu-studio: init at unstable-2023-01-11
-  (fetchpatch {
-    url = "https://github.com/NixOS/nixpkgs/pull/206495.diff";
+  (fetchpatch' {
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/206495";
     hash = "sha256-RbQzAtFTr7Nrk2YBcHpKQMYoPlFMVSXNl96B/lkKluQ=";
   })
 
   ./2023-04-29-lemmy.patch
 
-  (sane {
-    commit = "5a09e84c6159ce545029483384580708bc04c08f";
+  (fetchpatch' {
+    saneCommit = "5a09e84c6159ce545029483384580708bc04c08f";
     hash = "sha256-Z1HOps3w/WvxAiyUAHWszKqwS9EwA6rf4XfgPGp+2sQ=";
   })
 
