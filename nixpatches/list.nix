@@ -1,4 +1,9 @@
-{ fetchpatch, fetchurl }: [
+{ fetchpatch, fetchurl }:
+let
+  sane = { commit, hash ? null }: fetchpatch ({
+    url = "https://git.uninsane.org/colin/nixpkgs/commit/${commit}.diff";
+  } // (if hash != null then { inherit hash; } else {}));
+in [
 
   # splatmoji: init at 1.2.0
   (fetchpatch {
@@ -39,6 +44,11 @@
   })
 
   ./2023-04-29-lemmy.patch
+
+  (sane {
+    commit = "5a09e84c6159ce545029483384580708bc04c08f";
+    hash = "sha256-Z1HOps3w/WvxAiyUAHWszKqwS9EwA6rf4XfgPGp+2sQ=";
+  })
 
   # 2023-04-20: perl: fix modules for compatibility with miniperl
   # (fetchpatch {
