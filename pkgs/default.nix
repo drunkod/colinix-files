@@ -13,7 +13,7 @@ let
     ### ADDITIONAL PACKAGES
     bootpart-uefi-x86_64 = callPackage ./additional/bootpart-uefi-x86_64 { };
     browserpass-extension = callPackage ./additional/browserpass-extension { };
-    cargoDocset = callPackage ./additional/cargo-docset { };
+    cargo-docset = callPackage ./additional/cargo-docset { };
     cargoDocsetHook = callPackage ./additional/cargo-docset/hook.nix { };
     feeds = lib.recurseIntoAttrs (callPackage ./additional/feeds { });
     gopass-native-messaging-host = callPackage ./additional/gopass-native-messaging-host { };
