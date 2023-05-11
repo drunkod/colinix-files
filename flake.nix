@@ -116,10 +116,12 @@
                   self.overlays.pkgs
                   # self.overlays.optimizations
                 ];
-                nixpkgs.hostPlatform = target;
+              }
+              ({ lib, ... }: {
+                nixpkgs.hostPlatform = lib.mkDefault target;
                 # nixpkgs.buildPlatform = local;  # set by instantiate.nix instead
                 # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
-              }
+              })
             ];
           });
     in {
