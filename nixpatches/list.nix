@@ -53,6 +53,12 @@ in [
     hash = "sha256-RbQzAtFTr7Nrk2YBcHpKQMYoPlFMVSXNl96B/lkKluQ=";
   })
 
+  # update to newer lemmy-server.
+  # should be removable when > 0.17.2 releases?
+  # removing this now causes:
+  #   INFO lemmy_server::code_migrations: No Local Site found, creating it.
+  #   Error: LemmyError { message: None, inner: duplicate key value violates unique constraint "local_site_site_id_key", context: "SpanTrace" }
+  # though perhaps this error doesn't occur on fresh databases (idk).
   ./2023-04-29-lemmy.patch
 
   (fetchpatch' {
