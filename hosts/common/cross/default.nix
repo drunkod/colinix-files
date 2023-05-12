@@ -246,6 +246,7 @@ let
     buildInputs = lib.subtractLists buildInputs (upstream.buildInputs or []);
     nativeBuildInputs = lib.subtractLists nativeBuildInputs (upstream.nativeBuildInputs or []);
   });
+  rmNativeBuildInputs = nativeBuildInputs: rmInputs { inherit nativeBuildInputs; };
   # move items from buildInputs into nativeBuildInputs, or vice-versa.
   # arguments represent the final location of specific inputs.
   mvInputs = { buildInputs ? [], nativeBuildInputs ? [] }: pkg:
@@ -510,15 +511,6 @@ in
           #         inherit (self) apacheHttpd;
           #       };
           #     };
-
-          # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225977
-          aprutil = prev.aprutil.overrideAttrs (upstream: {
-            # nixpkgs patches the ldb version only for the package itself, but derivative packages (serf -> subversion) inherit the wrong -ldb-6.9 flag.
-            postConfigure = upstream.postConfigure + lib.optionalString (next.stdenv.buildPlatform != next.stdenv.hostPlatform) ''
-              substituteInPlace apu-1-config \
-                --replace "-ldb-6.9" "-ldb"
-            '';
-          });
 
           blueman = prev.blueman.overrideAttrs (orig: {
             # configure: error: ifconfig or ip not found, install net-tools or iproute2
@@ -960,7 +952,7 @@ in
               ./kitty-no-docs.patch
             ];
           });
-          libgweather = (prev.libgweather.override {
+          libgweather = rmNativeBuildInputs [ next.glib ] (prev.libgweather.override {
             # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
             #   but presumably that's just a different way to emulate it.
             # the python gobject-introspection stuff is a tangled mess that's impossible to debug:
@@ -978,14 +970,6 @@ in
           #   # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
           #   buildInputs = upstream.buildInputs ++ [ next.vala ];
           # });
-
-          # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225977
-          libqmi = prev.libqmi.overrideAttrs (upstream: {
-            # fixes "failed to produce output devdoc"; nixpkgs only builds that output conditionally
-            outputs = [ "out" "dev" ] ++ lib.optionals (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform) [
-              "devdoc"
-            ];
-          });
 
           libsForQt5 = prev.libsForQt5.overrideScope' (self: super: {
             qgpgme = super.qgpgme.overrideAttrs (orig: {
@@ -1032,8 +1016,13 @@ in
           # fixes "properties/gresource.xml: Permission denied"
           #   - by providing glib-compile-resources
           networkmanager-openvpn = mvToNativeInputs [ next.glib ] prev.networkmanager-openvpn;
-          # fixes "gdbus-codegen: command not found"
-          networkmanager-sstp = mvToNativeInputs [ next.glib ] prev.networkmanager-sstp;
+          networkmanager-sstp = (
+            # fixes "gdbus-codegen: command not found"
+            mvToNativeInputs [ next.glib ] (
+              # fixes gtk4-builder-tool wrong format
+              addNativeInputs [ next.gtk4.dev ] prev.networkmanager-sstp
+            )
+          );
           networkmanager-vpnc = mvToNativeInputs [ next.glib ] prev.networkmanager-vpnc;
           # fixes "properties/gresource.xml: Permission denied"
           #   - by providing glib-compile-resources
@@ -1127,10 +1116,6 @@ in
           #   # buildInputs = lib.remove next.gpgme upstream.buildInputs;
           #   nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.gpgme ];
           # });
-
-          # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225977
-          # fixes: "perl: command not found"
-          pam_mount = mvToNativeInputs [ next.perl ] prev.pam_mount;
 
           # phoc = prev.phoc.override {
           #   # fixes "Program wayland-scanner found: NO"
@@ -1316,10 +1301,6 @@ in
           #   inherit (emulated) stdenv;
           # };
 
-          # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225977
-          # fixes "sh: line 1: ar: command not found"
-          serf = addNativeInputs [ next.bintools ] prev.serf;
-
           spandsp = prev.spandsp.overrideAttrs (upstream: {
             configureFlags = upstream.configureFlags or [] ++ [
               # fixes runtime error: "undefined symbol: rpl_realloc"
@@ -1381,14 +1362,6 @@ in
               wrapGAppsHook  # introduces a competing gtk3 at link-time, unless emulated
             ;
           };
-          # TODO(REMOVE AFTER MERGE): https://github.com/NixOS/nixpkgs/pull/225977
-          subversion = prev.subversion.overrideAttrs (upstream: {
-            configureFlags = upstream.configureFlags ++ [
-              # configure can't find APR and APR-util, unclear why (are they not placed on PATH?)
-              "--with-apr=${next.apr.dev}/bin/apr-1-config"
-              "--with-apr-util=${next.aprutil.dev}/bin/apu-1-config"
-            ];
-          });
 
           # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
           sysprof = mvToNativeInputs [ next.glib ] (

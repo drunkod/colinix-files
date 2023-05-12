@@ -61,7 +61,6 @@ let
       tree
       usbutils
       wget
-      wireshark
     ;
   };
   sysadminExtraPkgs = {
@@ -213,11 +212,12 @@ let
       kdenlive
       kid3  # audio tagging
       krita
-      libreoffice-fresh  # XXX colin: maybe don't want this on mobile
+      libreoffice-fresh
       mumble
       obsidian
       slic3r
       steam
+      wireshark  # could maybe ship the cli as sysadmin pkg
     ;
   };
   x86GuiPkgs = {

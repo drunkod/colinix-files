@@ -31,6 +31,7 @@
   };
 
   sane.user.persist.plaintext = [
+    # TODO: make this just generally conditional upon pulse being enabled?
     ".config/pulse"  # persist pulseaudio volume
   ];
 
