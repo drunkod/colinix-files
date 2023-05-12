@@ -11,7 +11,7 @@ in {
     settings.hostname = "lemmy.uninsane.org";
     settings.federation.enabled = true;
     # federation.debug forces outbound federation queries to be run synchronously
-    settings.federation.debug = true;
+    # settings.federation.debug = true;
     settings.port = backendPort;
     # settings.database.host = "localhost";
     # defaults
