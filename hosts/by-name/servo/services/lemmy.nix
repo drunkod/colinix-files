@@ -66,7 +66,7 @@ in {
       # see <LemmyNet/lemmy-ansible:templates/nginx.conf>
       "/" = {
         # "frontend general requests"
-        # proxyPass = "$proxpass";
+        proxyPass = "$proxpass";
         extraConfig = ''
           set $proxpass "${ui}";
           # if ($http_accept = "application/activity+json") {
@@ -80,12 +80,10 @@ in {
           if ($http_accept ~ "^application/.*$") {
             set $proxpass "${backend}";
           }
-          # XXX: POST redirection occurs in docker/nginx.conf but not docker/federation/nginx.conf
+          # XXX: POST redirection occurs in lemmy-ansible and docker/nginx.conf but not docker/federation/nginx.conf
           if ($request_method = POST) {
             set $proxpass "${backend}";
           }
-
-          proxy_pass $proxpass;
 
           # Cuts off the trailing slash on URLs to make them valid
           rewrite ^(.+)/+$ $1 permanent;
