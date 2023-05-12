@@ -125,6 +125,7 @@ let
     (fromDb "profectusmag.com" // uncat)
     (fromDb "semiaccurate.com" // tech)
     (mkText "https://linuxphoneapps.org/blog/atom.xml" // tech // infrequent)
+    (fromDb "tuxphones.com" // tech)
     (fromDb "spectrum.ieee.org" // tech)
     (fromDb "theregister.com" // tech)
     (fromDb "thisweek.gnome.org" // tech)
