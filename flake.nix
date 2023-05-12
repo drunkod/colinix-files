@@ -118,7 +118,7 @@
                 ];
               }
               ({ lib, ... }: {
-                nixpkgs.hostPlatform = lib.mkDefault target;
+                nixpkgs.hostPlatform.system = target;
                 # nixpkgs.buildPlatform = local;  # set by instantiate.nix instead
                 # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
               })
