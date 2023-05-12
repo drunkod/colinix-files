@@ -69,17 +69,17 @@ in {
         proxyPass = "$proxpass";
         extraConfig = ''
           set $proxpass "${ui}";
-          # if ($http_accept = "application/activity+json") {
-          #   set $proxpass "${backend}";
-          # }
-          # if ($http_accept = "application/ld+json; profile=\"https://www.w3.org/ns/activitystreams\"") {
-          #   set $proxpass "${backend}";
-          # }
-
-          # XXX: lemmy-ansible nginx uses this maximally broad redirection
-          if ($http_accept ~ "^application/.*$") {
+          if ($http_accept = "application/activity+json") {
             set $proxpass "${backend}";
           }
+          if ($http_accept = "application/ld+json; profile=\"https://www.w3.org/ns/activitystreams\"") {
+            set $proxpass "${backend}";
+          }
+
+          # XXX: lemmy-ansible nginx uses this maximally broad redirection
+          # if ($http_accept ~ "^application/.*$") {
+          #   set $proxpass "${backend}";
+          # }
           # XXX: POST redirection occurs in lemmy-ansible and docker/nginx.conf but not docker/federation/nginx.conf
           if ($request_method = POST) {
             set $proxpass "${backend}";
