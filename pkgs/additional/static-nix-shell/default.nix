@@ -19,22 +19,22 @@ let
     }) {} expr;
     "set" = expr: expr;
   })."${typeOf expr}" expr;
-in {
-  mkBash = { pname, pkgs ? {}, srcPath ? pname, ...}@attrs:
-    let
-      pkgsAsAttrs = pkgsToAttrs "" pkgs' pkgs;
-      pkgsEnv = attrValues pkgsAsAttrs;
-      pkgsStr = concatStringsSep "" (map
-        (pname: " -p ${pname}")
-        (attrNames pkgsAsAttrs)
-      );
-    in stdenv.mkDerivation ({
+in rec {
+  # transform a file which uses `#!/usr/bin/env nix-shell` shebang
+  # into a derivation that can be built statically.
+  #
+  # pkgs may take the following form:
+  # - [ "pkgNameA" "pkgNameB" ... ]
+  # - { pkgNameA = pkgValueA; pkgNameB = pkgValueB; ... }
+  # - ps: <evaluate to one of the above exprs>
+  mkShell = { pname, interpreter, interpreterName, pkgsEnv, pkgsStr, srcPath ? pname, ...}@attrs:
+    stdenv.mkDerivation ({
       version = "0.1.0";  # default version
       patchPhase = ''
         substituteInPlace ${srcPath} \
-          --replace '#!/usr/bin/env nix-shell' '#!${pkgs'.bash}/bin/bash' \
+          --replace '#!/usr/bin/env nix-shell' '#!${interpreter}' \
           --replace \
-            '#!nix-shell -i bash -p ${pkgsStr}' \
+            '#!nix-shell -i ${interpreterName}${pkgsStr}' \
             '# nix deps evaluated statically'
       '';
       nativeBuildInputs = [ makeWrapper ];
@@ -49,18 +49,27 @@ in {
         wrapProgram $out/bin/${srcPath} \
           --suffix PATH : ${lib.makeBinPath pkgsEnv }
       '';
-    } // (removeAttrs attrs [ "pkgs" "pyPkgs" "srcPath" ])
+    } // (removeAttrs attrs [ "interpreter" "interpreterName" "pkgsEnv" "pkgsStr" "srcPath" ])
   );
 
-  # transform a file which uses `#!/usr/bin/env nix-shell` shebang with a `python3` interpreter
-  # into a derivation that can be built statically.
-  #
-  # pkgs and pyPkgs may take the following form:
-  # - [ "pkgNameA" "pkgNameB" ... ]
-  # - { pkgNameA = pkgValueA; pkgNameB = pkgValueB; ... }
-  # - ps: <evaluate to one of the above exprs>
-  #
-  # for pyPkgs, names are assumed to be relative to `"ps"` if specified in list form.
+  # `mkShell` specialization for `nix-shell -i bash` scripts.
+  mkBash = { pname, pkgs ? {}, srcPath ? pname, ...}@attrs:
+    let
+      pkgsAsAttrs = pkgsToAttrs "" pkgs' pkgs;
+      pkgsEnv = attrValues pkgsAsAttrs;
+      pkgsStr = concatStringsSep "" (map
+        (pname: " -p ${pname}")
+        (attrNames pkgsAsAttrs)
+      );
+    in mkShell ({
+      inherit pkgsEnv pkgsStr;
+      interpreter = "${pkgs'.bash}/bin/bash";
+      interpreterName = "bash";
+    } // (removeAttrs attrs [ "pkgs" ])
+  );
+
+  # `mkShell` specialization for invocations of `nix-shell -p "python3.withPackages (...)"`
+  # pyPkgs argument is parsed the same as pkgs, except that names are assumed to be relative to `"ps"` if specified in list form.
   mkPython3Bin = { pname, pkgs ? {}, pyPkgs ? {}, srcPath ? pname, ... }@attrs:
     let
       pyEnv = python3.withPackages (ps: attrValues (
@@ -76,27 +85,11 @@ in {
         (pname: " -p ${pname}")
         (attrNames pkgsAsAttrs)
       );
-    in stdenv.mkDerivation ({
-      version = "0.1.0";  # default version
-      patchPhase = ''
-        substituteInPlace ${srcPath} \
-          --replace '#!/usr/bin/env nix-shell' '#!${pyEnv.interpreter}' \
-          --replace \
-            '#!nix-shell -i python3 -p "python3.withPackages (ps: [ ${pyPkgsStr} ])"${pkgsStr}' \
-            '# nix deps evaluated statically'
-      '';
-      nativeBuildInputs = [ makeWrapper ];
-      installPhase = ''
-        mkdir -p $out/bin
-        mv ${srcPath} $out/bin/${srcPath}
-
-        # ensure that all nix-shell references were substituted
-        ! grep nix-shell $out/bin/${srcPath}
-
-        # add runtime dependencies to PATH
-        wrapProgram $out/bin/${srcPath} \
-          --suffix PATH : ${lib.makeBinPath pkgsEnv }
-      '';
-    } // (removeAttrs attrs [ "pkgs" "pyPkgs" "srcPath" ])
+    in mkShell ({
+      inherit pkgsEnv;
+      pkgsStr = " -p \"python3.withPackages (ps: [ ${pyPkgsStr} ])\"${pkgsStr}";
+      interpreter = pyEnv.interpreter;
+      interpreterName = "python3";
+    } // (removeAttrs attrs [ "pkgs" "pyPkgs" ])
   );
 }
