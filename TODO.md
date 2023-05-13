@@ -15,6 +15,11 @@
     - at least, only give them access to the portion of the fs they *need*.
     - Android takes approach of giving each app its own user: could hack that in here.
 
+### perf
+- why does nixos-rebuild switch take 5 minutes when net is flakey?
+    - something to do with systemd services restarting/stalling
+    - maybe wireguard & its refresh operation, specifically?
+
 
 ## new features:
 - add a FTP-accessible file share to servo
