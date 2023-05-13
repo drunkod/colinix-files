@@ -27,7 +27,21 @@ in rec {
   # - [ "pkgNameA" "pkgNameB" ... ]
   # - { pkgNameA = pkgValueA; pkgNameB = pkgValueB; ... }
   # - ps: <evaluate to one of the above exprs>
-  mkShell = { pname, interpreter, interpreterName, pkgsEnv, pkgsStr, srcPath ? pname, ...}@attrs:
+  mkShell = {
+    pname,
+    interpreter,
+    interpreterName ? lib.last (builtins.split "/" interpreter),
+    pkgsEnv,
+    pkgExprs,
+    srcPath ? pname,
+    ...
+  }@attrs:
+  let
+    pkgsStr = concatStringsSep "" (map
+      (pname: " -p ${pname}")
+      pkgExprs
+    );
+  in
     stdenv.mkDerivation ({
       version = "0.1.0";  # default version
       patchPhase = ''
@@ -43,13 +57,13 @@ in rec {
         mv ${srcPath} $out/bin/${srcPath}
 
         # ensure that all nix-shell references were substituted
-        ! grep nix-shell $out/bin/${srcPath}
+        (! grep nix-shell $out/bin/${srcPath}) || exit 1
 
         # add runtime dependencies to PATH
         wrapProgram $out/bin/${srcPath} \
           --suffix PATH : ${lib.makeBinPath pkgsEnv }
       '';
-    } // (removeAttrs attrs [ "interpreter" "interpreterName" "pkgsEnv" "pkgsStr" "srcPath" ])
+    } // (removeAttrs attrs [ "interpreter" "interpreterName" "pkgsEnv" "pkgExprs" "srcPath" ])
   );
 
   # `mkShell` specialization for `nix-shell -i bash` scripts.
@@ -57,14 +71,10 @@ in rec {
     let
       pkgsAsAttrs = pkgsToAttrs "" pkgs' pkgs;
       pkgsEnv = attrValues pkgsAsAttrs;
-      pkgsStr = concatStringsSep "" (map
-        (pname: " -p ${pname}")
-        (attrNames pkgsAsAttrs)
-      );
+      pkgExprs = attrNames pkgsAsAttrs;
     in mkShell ({
-      inherit pkgsEnv pkgsStr;
+      inherit pkgsEnv pkgExprs;
       interpreter = "${pkgs'.bash}/bin/bash";
-      interpreterName = "bash";
     } // (removeAttrs attrs [ "pkgs" ])
   );
 
@@ -81,13 +91,11 @@ in rec {
 
       pkgsAsAttrs = pkgsToAttrs "" pkgs' pkgs;
       pkgsEnv = attrValues pkgsAsAttrs;
-      pkgsStr = concatStringsSep "" (map
-        (pname: " -p ${pname}")
-        (attrNames pkgsAsAttrs)
-      );
+      pkgExprs = [
+        "\"python3.withPackages (ps: [ ${pyPkgsStr} ])\""
+      ] ++ (attrNames pkgsAsAttrs);
     in mkShell ({
-      inherit pkgsEnv;
-      pkgsStr = " -p \"python3.withPackages (ps: [ ${pyPkgsStr} ])\"${pkgsStr}";
+      inherit pkgsEnv pkgExprs;
       interpreter = pyEnv.interpreter;
       interpreterName = "python3";
     } // (removeAttrs attrs [ "pkgs" "pyPkgs" ])
