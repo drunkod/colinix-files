@@ -108,10 +108,16 @@ let
   };
 
   py-scripts = {
+    # anything added to this attrset gets symlink-joined into into `sane-scripts`
     bt-search = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-search";
       src = ./src;
       pyPkgs = [ "natsort" "requests" ];
+    };
+    bt-rm = static-nix-shell.mkBash {
+      pname = "sane-bt-rm";
+      src = ./src;
+      pkgs = [ "transmission" ];
     };
     date-math = static-nix-shell.mkPython3Bin {
       pname = "sane-date-math";
