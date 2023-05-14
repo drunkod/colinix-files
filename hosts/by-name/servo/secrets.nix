@@ -2,7 +2,7 @@
 
 {
   sops.secrets."ddns_afraid" = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../secrets/servo/ddns_afraid.env.bin;
   };
   sops.secrets."ddns_he" = {
     sopsFile = ../../../secrets/servo/ddns_he.env.bin;

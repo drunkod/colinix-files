@@ -1,1 +1,3 @@
 - ddns_he.env.bin: Hurricane Electric (he.net) passphrase
+- ddns_afraid.env.bin: freedns.afraid.org API key
+    - viewable: <https://freedns.afraid.org/dynamic/>
