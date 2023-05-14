@@ -1,9 +1,8 @@
 ## refactoring:
 ### sops/secrets
-- move every secret into its own file.
-- define SOPS secrets by crawling the ./secrets directory instead of manually defining them.
-- see about removing the sops activation script and just using systemd scripts instead.
-    - maybe this fixes the multiple "building the system configuration..." messages during nixos-rebuild switch?
+- attach secrets to the thing they're used by (sane.programs)
+- rework secrets to leverage `sane.fs`
+- remove sops activation script as it's covered by my systemd sane.fs impl
 
 ### roles
 - allow any host to take the role of `uninsane.org`
