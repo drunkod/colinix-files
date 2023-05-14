@@ -29,7 +29,8 @@
   };
 
   sops.secrets."mediawiki_pw" = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../secrets/servo/mediawiki_pw.bin;
+    format = "binary";
   };
 
   sops.secrets."nix_serve_privkey" = {
