@@ -13,7 +13,7 @@
   };
 
   sops.secrets."duplicity_passphrase" = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../secrets/servo/duplicity_passphrase.env.bin;
   };
 
   sops.secrets."freshrss_passwd" = {
