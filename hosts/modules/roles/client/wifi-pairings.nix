@@ -9,7 +9,7 @@
       generated.script.script = builtins.readFile ../../../../scripts/install-iwd + ''
         touch "/var/lib/iwd/.secrets.psk.stamp"
       '';
-      generated.script.scriptArgs = [ "/run/secrets/iwd" "/var/lib/iwd" ];
+      generated.script.scriptArgs = [ "/run/secrets/net" "/var/lib/iwd" ];
     };
   };
 }
