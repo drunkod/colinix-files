@@ -62,7 +62,8 @@
     sopsFile = ../../secrets/universal.yaml;
   };
   sops.secrets."transmission_passwd" = {
-    sopsFile = ../../secrets/universal.yaml;
+    sopsFile = ../../secrets/universal/transmission_passwd.bin;
+    format = "binary";
   };
   sops.secrets."wg_ovpnd_us_privkey" = {
     sopsFile = ../../secrets/universal.yaml;
