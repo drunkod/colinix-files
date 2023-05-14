@@ -59,7 +59,8 @@
     owner = config.users.users.colin.name;
   };
   sops.secrets."router_passwd" = {
-    sopsFile = ../../secrets/universal.yaml;
+    sopsFile = ../../secrets/universal/router_passwd.bin;
+    format = "binary";
   };
   sops.secrets."transmission_passwd" = {
     sopsFile = ../../secrets/universal/transmission_passwd.bin;
