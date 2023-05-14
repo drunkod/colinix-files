@@ -5,7 +5,7 @@
     sopsFile = ../../../secrets/servo.yaml;
   };
   sops.secrets."ddns_he" = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../secrets/servo/ddns_he.env.bin;
   };
 
   sops.secrets."dovecot_passwd" = {
