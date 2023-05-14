@@ -4,13 +4,27 @@
     ./fs.nix
   ];
 
+  sops.secrets.colin-passwd = {
+    sopsFile = ../../../secrets/desko/colin-passwd.bin;
+    format = "binary";
+    neededForUsers = true;
+  };
+  sops.secrets.duplicity_passphrase = {
+    sopsFile = ../../../secrets/desko/duplicity_passphrase.env.bin;
+    format = "binary";
+  };
+  sops.secrets.nix_serve_privkey = {
+    sopsFile = ../../../secrets/desko/nix_serve_privkey.bin;
+    format = "binary";
+  };
+
   sane.roles.build-machine.enable = true;
   sane.roles.client = true;
   sane.roles.dev-machine = true;
   sane.services.wg-home.enable = true;
   sane.services.wg-home.ip = config.sane.hosts.by-name."desko".wg-home.ip;
   sane.services.duplicity.enable = true;
-  sane.services.nixserve.sopsFile = ../../../secrets/desko.yaml;
+  sane.services.nixserve.secretKeyFile = config.sops.secrets.nix_serve_privkey.path;
 
   sane.gui.sway.enable = true;
   sane.programs.iphoneUtils.enableFor.user.colin = true;
@@ -22,11 +36,6 @@
 
   # needed to use libimobiledevice/ifuse, for iphone sync
   services.usbmuxd.enable = true;
-
-  sops.secrets.colin-passwd = {
-    sopsFile = ../../../secrets/desko.yaml;
-    neededForUsers = true;
-  };
 
   # don't enable wifi by default: it messes with connectivity.
   systemd.services.iwd.enable = false;
@@ -43,10 +52,6 @@
     extraConfig = ''
       ALLOW_USERS = "colin";
     '';
-  };
-
-  sops.secrets.duplicity_passphrase = {
-    sopsFile = ../../../secrets/desko.yaml;
   };
 
   programs.steam = {

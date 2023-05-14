@@ -32,6 +32,10 @@
     sopsFile = ../../../secrets/servo.yaml;
   };
 
+  sops.secrets."nix_serve_privkey" = {
+    sopsFile = ../../../secrets/servo.yaml;
+  };
+
   sops.secrets."pleroma_secrets" = {
     sopsFile = ../../../secrets/servo.yaml;
   };

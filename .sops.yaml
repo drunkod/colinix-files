@@ -26,7 +26,7 @@ creation_rules:
       - *user_lappy_colin
       - *user_servo_colin
       - *host_servo
-  - path_regex: secrets/desko.yaml$
+  - path_regex: secrets/desko*
     key_groups:
     - age:
       - *user_desko_colin

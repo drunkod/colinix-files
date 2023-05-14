@@ -1,0 +1,2 @@
+- nix_serve_privkey.bin:
+    - generate with `nix-store --generate-binary-cache-key desko cache-priv-key.pem cache-pub-key.pem`
