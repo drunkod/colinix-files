@@ -49,7 +49,8 @@
   # TODO: glob these?
 
   sops.secrets."jackett_apikey" = {
-    sopsFile = ../../secrets/universal.yaml;
+    sopsFile = ../../secrets/universal/jackett_apikey.bin;
+    format = "binary";
     owner = config.users.users.colin.name;
   };
   sops.secrets."mx-sanebot-env" = {
