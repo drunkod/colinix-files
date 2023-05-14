@@ -38,7 +38,7 @@
   };
 
   sops.secrets."pleroma_secrets" = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../secrets/servo/pleroma_secrets.bin;
   };
 
   sops.secrets."wg_ovpns_privkey" = {
