@@ -67,16 +67,20 @@
     format = "binary";
   };
   sops.secrets."wg_ovpnd_us_privkey" = {
-    sopsFile = ../../secrets/universal.yaml;
+    sopsFile = ../../secrets/universal/wg/ovpnd_us_privkey.bin;
+    format = "binary";
   };
   sops.secrets."wg_ovpnd_us-atl_privkey" = {
-    sopsFile = ../../secrets/universal.yaml;
+    sopsFile = ../../secrets/universal/wg/ovpnd_us-atl_privkey.bin;
+    format = "binary";
   };
   sops.secrets."wg_ovpnd_us-mi_privkey" = {
-    sopsFile = ../../secrets/universal.yaml;
+    sopsFile = ../../secrets/universal/wg/ovpnd_us-mi_privkey.bin;
+    format = "binary";
   };
   sops.secrets."wg_ovpnd_ukr_privkey" = {
-    sopsFile = ../../secrets/universal.yaml;
+    sopsFile = ../../secrets/universal/wg/ovpnd_ukr_privkey.bin;
+    format = "binary";
   };
 
   sops.secrets."snippets" = {
