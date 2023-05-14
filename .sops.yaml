@@ -38,7 +38,7 @@ creation_rules:
       - *user_lappy_colin
       - *user_desko_colin
       - *host_lappy
-  - path_regex: secrets/moby.yaml$
+  - path_regex: secrets/moby*
     key_groups:
     - age:
       - *user_desko_colin
