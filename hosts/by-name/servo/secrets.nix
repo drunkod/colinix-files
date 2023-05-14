@@ -34,7 +34,7 @@
   };
 
   sops.secrets."nix_serve_privkey" = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../secrets/servo/nix_serve_privkey.bin;
   };
 
   sops.secrets."pleroma_secrets" = {
