@@ -22,7 +22,8 @@
   ];
 
   sops.secrets.colin-passwd = {
-    sopsFile = ../../../secrets/lappy.yaml;
+    sopsFile = ../../../secrets/lappy/colin-passwd.bin;
+    format = "binary";
     neededForUsers = true;
   };
 
