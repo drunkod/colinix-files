@@ -1,3 +1,7 @@
 - ddns_he.env.bin: Hurricane Electric (he.net) passphrase
 - ddns_afraid.env.bin: freedns.afraid.org API key
     - viewable: <https://freedns.afraid.org/dynamic/>
+- wg_ovpns_privkey.bin: wireguard private key for OVPN
+    - to generate:
+        - wg genkey > wg0.private
+        - wg pubkey < wg0.private > wg0.public

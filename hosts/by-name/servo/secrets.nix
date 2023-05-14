@@ -42,6 +42,6 @@
   };
 
   sops.secrets."wg_ovpns_privkey" = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../secrets/servo/wg_ovpns_privkey.bin;
   };
 }
