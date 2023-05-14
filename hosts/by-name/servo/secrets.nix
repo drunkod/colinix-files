@@ -17,7 +17,7 @@
   };
 
   sops.secrets."freshrss_passwd" = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../secrets/servo/freshrss_passwd.bin;
   };
 
   sops.secrets."matrix_synapse_secrets" = {
