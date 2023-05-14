@@ -3,21 +3,26 @@
 {
   sops.secrets."ddns_afraid" = {
     sopsFile = ../../../secrets/servo/ddns_afraid.env.bin;
+    format = "binary";
   };
   sops.secrets."ddns_he" = {
     sopsFile = ../../../secrets/servo/ddns_he.env.bin;
+    format = "binary";
   };
 
   sops.secrets."dovecot_passwd" = {
     sopsFile = ../../../secrets/servo/dovecot_passwd.bin;
+    format = "binary";
   };
 
   sops.secrets."duplicity_passphrase" = {
     sopsFile = ../../../secrets/servo/duplicity_passphrase.env.bin;
+    format = "binary";
   };
 
   sops.secrets."freshrss_passwd" = {
     sopsFile = ../../../secrets/servo/freshrss_passwd.bin;
+    format = "binary";
   };
 
   sops.secrets."matrix_synapse_secrets" = {
@@ -36,13 +41,16 @@
 
   sops.secrets."nix_serve_privkey" = {
     sopsFile = ../../../secrets/servo/nix_serve_privkey.bin;
+    format = "binary";
   };
 
   sops.secrets."pleroma_secrets" = {
     sopsFile = ../../../secrets/servo/pleroma_secrets.bin;
+    format = "binary";
   };
 
   sops.secrets."wg_ovpns_privkey" = {
     sopsFile = ../../../secrets/servo/wg_ovpns_privkey.bin;
+    format = "binary";
   };
 }
