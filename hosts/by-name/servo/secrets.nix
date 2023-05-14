@@ -21,7 +21,8 @@
   };
 
   sops.secrets."matrix_synapse_secrets" = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../secrets/servo/matrix_synapse_secrets.yaml.bin;
+    format = "binary";
   };
   sops.secrets."mautrix_signal_env" = {
     sopsFile = ../../../secrets/servo/mautrix_signal_env.bin;

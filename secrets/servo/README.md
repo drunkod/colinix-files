@@ -4,6 +4,8 @@
 - dovecot_passwd: auth for mail accounts
     - passwd file looks like /etc/passwd
     - generate pw hash with: `nix run nixpkgs.apacheHttpd -c htpasswd -nbB "" "my passwd"`
+- matrix_synapse_secrets:
+    - for the smtp_pass; the rest isn't sensitive
 - nix_serve_privkey.bin:
     - generate with nix-store --generate-binary-cache-key nixcache.uninsane.org cache-priv-key.pem cache-pub-key.pem
     - pubkey: nixcache.uninsane.org:r3WILM6+QrkmsLgqVQcEdibFD7Q/4gyzD9dGT33GP70=
