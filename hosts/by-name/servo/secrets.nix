@@ -9,7 +9,7 @@
   };
 
   sops.secrets."dovecot_passwd" = {
-    sopsFile = ../../../secrets/servo.yaml;
+    sopsFile = ../../../secrets/servo/dovecot_passwd.bin;
   };
 
   sops.secrets."duplicity_passphrase" = {

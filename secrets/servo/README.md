@@ -1,6 +1,9 @@
 - ddns_he.env.bin: Hurricane Electric (he.net) passphrase
 - ddns_afraid.env.bin: freedns.afraid.org API key
     - viewable: <https://freedns.afraid.org/dynamic/>
+- dovecot_passwd: auth for mail accounts
+    - passwd file looks like /etc/passwd
+    - generate pw hash with: `nix run nixpkgs.apacheHttpd -c htpasswd -nbB "" "my passwd"`
 - wg_ovpns_privkey.bin: wireguard private key for OVPN
     - to generate:
         - wg genkey > wg0.private
