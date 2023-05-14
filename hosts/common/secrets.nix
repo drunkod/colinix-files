@@ -29,10 +29,6 @@
   #   $ cat /run/secrets/example_key
 
   # sops.age.sshKeyPaths = [ "/home/colin/.ssh/id_ed25519_dec" ];
-  # This will add secrets.yaml to the nix store
-  # You can avoid this by adding a string to the full path instead, i.e.
-  # sops.defaultSopsFile = "/root/.sops/secrets/example.yaml";
-  sops.defaultSopsFile = ../../secrets/universal.yaml;
   sops.gnupg.sshKeyPaths = [];  # disable RSA key import
   # This is using an age key that is expected to already be in the filesystem
   # sops.age.keyFile = "/home/colin/.ssh/age.pub";
@@ -45,105 +41,105 @@
   # };
   # sops.secrets."myservice/my_subdir/my_secret" = {};
 
-  ## universal secrets
+  ## secrets exposed to all hosts
   # TODO: glob these?
 
   sops.secrets."jackett_apikey" = {
-    sopsFile = ../../secrets/universal/jackett_apikey.bin;
+    sopsFile = ../../secrets/common/jackett_apikey.bin;
     format = "binary";
     owner = config.users.users.colin.name;
   };
   sops.secrets."mx-sanebot-env" = {
-    sopsFile = ../../secrets/universal/mx-sanebot-env.bin;
+    sopsFile = ../../secrets/common/mx-sanebot-env.bin;
     format = "binary";
     owner = config.users.users.colin.name;
   };
   sops.secrets."router_passwd" = {
-    sopsFile = ../../secrets/universal/router_passwd.bin;
+    sopsFile = ../../secrets/common/router_passwd.bin;
     format = "binary";
   };
   sops.secrets."transmission_passwd" = {
-    sopsFile = ../../secrets/universal/transmission_passwd.bin;
+    sopsFile = ../../secrets/common/transmission_passwd.bin;
     format = "binary";
   };
   sops.secrets."wg_ovpnd_us_privkey" = {
-    sopsFile = ../../secrets/universal/wg/ovpnd_us_privkey.bin;
+    sopsFile = ../../secrets/common/wg/ovpnd_us_privkey.bin;
     format = "binary";
   };
   sops.secrets."wg_ovpnd_us-atl_privkey" = {
-    sopsFile = ../../secrets/universal/wg/ovpnd_us-atl_privkey.bin;
+    sopsFile = ../../secrets/common/wg/ovpnd_us-atl_privkey.bin;
     format = "binary";
   };
   sops.secrets."wg_ovpnd_us-mi_privkey" = {
-    sopsFile = ../../secrets/universal/wg/ovpnd_us-mi_privkey.bin;
+    sopsFile = ../../secrets/common/wg/ovpnd_us-mi_privkey.bin;
     format = "binary";
   };
   sops.secrets."wg_ovpnd_ukr_privkey" = {
-    sopsFile = ../../secrets/universal/wg/ovpnd_ukr_privkey.bin;
+    sopsFile = ../../secrets/common/wg/ovpnd_ukr_privkey.bin;
     format = "binary";
   };
 
   sops.secrets."snippets" = {
-    sopsFile = ../../secrets/universal/snippets.bin;
+    sopsFile = ../../secrets/common/snippets.bin;
     format = "binary";
     owner = config.users.users.colin.name;
   };
 
   sops.secrets."bt/car" = {
-    sopsFile = ../../secrets/universal/bt/car.bin;
+    sopsFile = ../../secrets/common/bt/car.bin;
     format = "binary";
   };
   sops.secrets."bt/earbuds" = {
-    sopsFile = ../../secrets/universal/bt/earbuds.bin;
+    sopsFile = ../../secrets/common/bt/earbuds.bin;
     format = "binary";
   };
   sops.secrets."bt/portable-speaker" = {
-    sopsFile = ../../secrets/universal/bt/portable-speaker.bin;
+    sopsFile = ../../secrets/common/bt/portable-speaker.bin;
     format = "binary";
   };
 
   sops.secrets."iwd/calyx-roomie.psk" = {
-    sopsFile = ../../secrets/universal/net/calyx-roomie.psk.bin;
+    sopsFile = ../../secrets/common/net/calyx-roomie.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/community-university.psk" = {
-    sopsFile = ../../secrets/universal/net/community-university.psk.bin;
+    sopsFile = ../../secrets/common/net/community-university.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/friend-libertarian-dod.psk" = {
-    sopsFile = ../../secrets/universal/net/friend-libertarian-dod.psk.bin;
+    sopsFile = ../../secrets/common/net/friend-libertarian-dod.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/friend-rationalist-empathist.psk" = {
-    sopsFile = ../../secrets/universal/net/friend-rationalist-empathist.psk.bin;
+    sopsFile = ../../secrets/common/net/friend-rationalist-empathist.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/home-shared.psk" = {
-    sopsFile = ../../secrets/universal/net/home-shared.psk.bin;
+    sopsFile = ../../secrets/common/net/home-shared.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/makespace-south.psk" = {
-    sopsFile = ../../secrets/universal/net/makespace-south.psk.bin;
+    sopsFile = ../../secrets/common/net/makespace-south.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/archive-2023-02-home-bedroom.psk" = {
-    sopsFile = ../../secrets/universal/net/archive/2023-02-home-bedroom.psk.bin;
+    sopsFile = ../../secrets/common/net/archive/2023-02-home-bedroom.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/archive-2023-02-home-shared-24G.psk" = {
-    sopsFile = ../../secrets/universal/net/archive/2023-02-home-shared-24G.psk.bin;
+    sopsFile = ../../secrets/common/net/archive/2023-02-home-shared-24G.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/archive-2023-02-home-shared.psk" = {
-    sopsFile = ../../secrets/universal/net/archive/2023-02-home-shared.psk.bin;
+    sopsFile = ../../secrets/common/net/archive/2023-02-home-shared.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/iphone" = {
-    sopsFile = ../../secrets/universal/net/iphone.psk.bin;
+    sopsFile = ../../secrets/common/net/iphone.psk.bin;
     format = "binary";
   };
   sops.secrets."iwd/parents" = {
-    sopsFile = ../../secrets/universal/net/parents.psk.bin;
+    sopsFile = ../../secrets/common/net/parents.psk.bin;
     format = "binary";
   };
 }
