@@ -4,19 +4,7 @@
     ./fs.nix
   ];
 
-  sops.secrets.colin-passwd = {
-    sopsFile = ../../../secrets/desko/colin-passwd.bin;
-    format = "binary";
-    neededForUsers = true;
-  };
-  sops.secrets.duplicity_passphrase = {
-    sopsFile = ../../../secrets/desko/duplicity_passphrase.env.bin;
-    format = "binary";
-  };
-  sops.secrets.nix_serve_privkey = {
-    sopsFile = ../../../secrets/desko/nix_serve_privkey.bin;
-    format = "binary";
-  };
+  sops.secrets.colin-passwd.neededForUsers = true;
 
   sane.roles.build-machine.enable = true;
   sane.roles.client = true;

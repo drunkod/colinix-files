@@ -4,7 +4,6 @@
   imports = [
     ./fs.nix
     ./net.nix
-    ./secrets.nix
     ./services
   ];
 

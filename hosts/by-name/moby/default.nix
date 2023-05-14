@@ -15,11 +15,7 @@
   users.users.colin.initialPassword = "147147";
   services.getty.autologinUser = "root";  # allows for emergency maintenance?
 
-  sops.secrets.colin-passwd = {
-    sopsFile = ../../../secrets/moby/colin-passwd.bin;
-    format = "binary";
-    neededForUsers = true;
-  };
+  sops.secrets.colin-passwd.neededForUsers = true;
 
   sane.programs.web-browser.config = {
     # compromise impermanence for the sake of usability

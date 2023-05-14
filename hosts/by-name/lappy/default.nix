@@ -21,11 +21,7 @@
     "stepmania"
   ];
 
-  sops.secrets.colin-passwd = {
-    sopsFile = ../../../secrets/lappy/colin-passwd.bin;
-    format = "binary";
-    neededForUsers = true;
-  };
+  sops.secrets.colin-passwd.neededForUsers = true;
 
   # default config: https://man.archlinux.org/man/snapper-configs.5
   # defaults to something like:
