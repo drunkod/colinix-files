@@ -8,6 +8,12 @@
 - allow any host to take the role of `uninsane.org`
     - will make it easier to test new services?
 
+### upstreaming
+- upstream lemmy nginx integration
+- add updateScripts to all my packages in nixpkgs
+- fix lightdm-mobile-greeter for newer libhandy
+- fix or abandon Whalebird
+
 
 ## improvements:
 ### security/resilience
