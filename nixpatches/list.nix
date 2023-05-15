@@ -68,6 +68,12 @@ in [
     hash = "sha256-Z1HOps3w/WvxAiyUAHWszKqwS9EwA6rf4XfgPGp+2sQ=";
   })
 
+  (fetchpatch' {
+    # kiwix-tools: 3.4.0 -> 3.5.0
+    saneCommit = "146f2449a19101ee202aa578a2b1d7377779890b";
+    hash = "sha256-Tqr8Ri8X2dDljDmWmjAQDRJGNenSFhrY/wr24h2JAh0=";
+  })
+
   # 2023-04-20: perl: fix modules for compatibility with miniperl
   # (fetchpatch {
   #   url = "https://github.com/NixOS/nixpkgs/pull/225640.diff";
