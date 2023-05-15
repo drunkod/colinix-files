@@ -8,6 +8,7 @@
 - allow any host to take the role of `uninsane.org`
     - will make it easier to test new services?
 
+
 ## improvements:
 ### security/resilience
 - validate duplicity backups!
@@ -18,6 +19,11 @@
     - Android takes approach of giving each app its own user: could hack that in here.
 - canaries for important services
     - e.g. daily email checks; daily backup checks
+
+### user experience
+- firefox/librewolf: don't show browserpass/sponsorblock/metamask "first run" on every boot
+- moby: improve gPodder launch time
+- find a nice desktop ActivityPub client
 
 ### perf
 - why does nixos-rebuild switch take 5 minutes when net is flakey?
