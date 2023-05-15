@@ -76,10 +76,31 @@ in [
   })
 
   (fetchpatch' {
-    # phosh-mobile-settings: 0.23.1 -> 0.27.0
-    saneCommit = "f03b1052d1d6d49c9a4b7d6f47cc3c7e56d7e489";
-    hash = "sha256-pH/45Gx1Hn5nhINciLxZ4rVr31tiekfW5+MyYe81cJU=";
+    # feedbackd: 0.1.0 -> 0.2.0
+    saneCommit = "a0186a5782708a640cd6eaad6e9742b9cccebe9d";
+    hash = "sha256-f8he7pQow4fZkTVVqU/A5KgovZA7m7MccRQNTnDxw5o=";
   })
+  (fetchpatch' {
+    # phoc: 0.25.0 -> 0.27.0
+    # TODO: move wayland-scanner & glib to nativeBuildInputs
+    saneCommit = "12e89c9d26b7a1a79f6b8b2f11fce0dd8f4d5197";
+    hash = "sha256-IJNBVr2xAwQW4SAJvq4XQYW4D5tevvd9zRrgXYmm38g=";
+  })
+  (fetchpatch' {
+    # phosh: 0.25.1 -> 0.27.0
+    saneCommit = "c8fa213c7cb357c0ca0d5bea66278362a47caeb8";
+    hash = "sha256-I8IZ8fjJstmcIXEN622/A1w2uHDACwXFl1WbXTWOyi4=";
+  })
+
+  # (fetchpatch' {
+  #   # phosh-mobile-settings: 0.23.1 -> 0.27.0
+  #   # branch: pr/sane/phosh-mobile-settings-0.27.0
+  #   # TODO: fix feedback section
+  #   # > Settings schema 'org.gtk.gtk4.Settings.FileChooser' is not installed
+  #   # ^ is that provided by nautilus?
+  #   saneCommit = "8952f79699d3b0d72d9f6efb022e826175b143a6";
+  #   hash = "sha256-myKKMt5cZhC0mfPhEsNjwKjaIYICj5LBJqV01HghYUg=";
+  # })
 
   # 2023-04-20: perl: fix modules for compatibility with miniperl
   # (fetchpatch {
