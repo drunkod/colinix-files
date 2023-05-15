@@ -74,6 +74,12 @@ in [
     hash = "sha256-Tqr8Ri8X2dDljDmWmjAQDRJGNenSFhrY/wr24h2JAh0=";
   })
 
+  (fetchpatch' {
+    # phosh-mobile-settings: 0.23.1 -> 0.27.0
+    saneCommit = "f03b1052d1d6d49c9a4b7d6f47cc3c7e56d7e489";
+    hash = "sha256-pH/45Gx1Hn5nhINciLxZ4rVr31tiekfW5+MyYe81cJU=";
+  })
+
   # 2023-04-20: perl: fix modules for compatibility with miniperl
   # (fetchpatch {
   #   url = "https://github.com/NixOS/nixpkgs/pull/225640.diff";
