@@ -65,9 +65,10 @@ in
           "swaylock"
           "swayidle"
           "wl-clipboard"
+          "blueberry"  # GUI bluetooth manager
           "mako"  # notification daemon
           # # "pavucontrol"
-          "gnome.gnome-bluetooth"
+          # "gnome.gnome-bluetooth"  # XXX(2023/05/14): broken
           "gnome.gnome-control-center"
           "sway-contrib.grimshot"
         ];
@@ -83,6 +84,7 @@ in
           swaylock
           swayidle
           wl-clipboard
+          blueberry
           mako
           "gnome.gnome-bluetooth"
           "gnome.gnome-control-center"
