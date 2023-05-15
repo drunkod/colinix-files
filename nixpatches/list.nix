@@ -84,6 +84,14 @@ in [
   #   # phoc: 0.25.0 -> 0.27.0
   #   # TODO: move wayland-scanner & glib to nativeBuildInputs
   #   # TODO: once i press power button to screen blank, power doesn't reactivate phoc
+  #   # sus commits:
+  #   # - all lie between 0.25.0 .. 0.26.0
+  #   # - 25d65b9e6ebde26087be6414e41cf516599c3469  2023/03/12 phosh-private: Forward key release as well
+  #   # idle inhibit 2023/03/14
+  #   #   - 20e7b26af16e9d9c22cba4550f922b90b80b6df6
+  #   #   - b081ef963154c7c94a6ab33376a712b3efe17545
+  #   # screen blank fix  (NOPE: this one is OK)
+  #   #   - 37542bb80be8a7746d2ccda0c02048dd92fac7af  2023/03/11
   #   saneCommit = "12e89c9d26b7a1a79f6b8b2f11fce0dd8f4d5197";
   #   hash = "sha256-IJNBVr2xAwQW4SAJvq4XQYW4D5tevvd9zRrgXYmm38g=";
   # })

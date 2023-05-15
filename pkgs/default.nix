@@ -68,6 +68,8 @@ let
 
     lemmy-server = callPackage ./patched/lemmy-server { inherit (unpatched) lemmy-server; };
 
+    phoc = callPackage ./patched/phoc { inherit (unpatched) phoc; };
+
 
     ### PYTHON PACKAGES
     pythonPackagesExtensions = (unpatched.pythonPackagesExtensions or []) ++ [
