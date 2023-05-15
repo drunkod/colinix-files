@@ -228,7 +228,7 @@ let
       # gnome.zenity # for kaiteki (it will use qarma, kdialog, or zenity)
       # gpt2tc  # XXX: unreliable mirror
 
-      logseq
+      # logseq  # Personal Knowledge Management
       losslesscut-bin
       makemkv
       monero-gui
