@@ -224,7 +224,7 @@ in
           screenshot-cmd = "${pkgs.sway-contrib.grimshot}/bin/grimshot copy area";
           # "bookmarking"/snippets inspired by Luke Smith:
           # - <https://www.youtube.com/watch?v=d_11QaTlf1I>
-          snip-file = ./snippets.txt;
+          snip-file = ../snippets.txt;
           # TODO: querying sops here breaks encapsulation
           list-snips = "cat ${snip-file} ${config.sops.secrets.snippets.path}";
           strip-comments = "${sed} 's/ #.*$//'";

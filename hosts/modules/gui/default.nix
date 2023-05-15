@@ -10,6 +10,6 @@ in
     ./phosh.nix
     ./plasma.nix
     ./plasma-mobile.nix
-    ./sway.nix
+    ./sway
   ];
 }
