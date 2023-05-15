@@ -80,17 +80,20 @@ in [
     saneCommit = "a0186a5782708a640cd6eaad6e9742b9cccebe9d";
     hash = "sha256-f8he7pQow4fZkTVVqU/A5KgovZA7m7MccRQNTnDxw5o=";
   })
-  (fetchpatch' {
-    # phoc: 0.25.0 -> 0.27.0
-    # TODO: move wayland-scanner & glib to nativeBuildInputs
-    saneCommit = "12e89c9d26b7a1a79f6b8b2f11fce0dd8f4d5197";
-    hash = "sha256-IJNBVr2xAwQW4SAJvq4XQYW4D5tevvd9zRrgXYmm38g=";
-  })
-  (fetchpatch' {
-    # phosh: 0.25.1 -> 0.27.0
-    saneCommit = "c8fa213c7cb357c0ca0d5bea66278362a47caeb8";
-    hash = "sha256-I8IZ8fjJstmcIXEN622/A1w2uHDACwXFl1WbXTWOyi4=";
-  })
+  # (fetchpatch' {
+  #   # phoc: 0.25.0 -> 0.27.0
+  #   # TODO: move wayland-scanner & glib to nativeBuildInputs
+  #   # TODO: once i press power button to screen blank, power doesn't reactivate phoc
+  #   saneCommit = "12e89c9d26b7a1a79f6b8b2f11fce0dd8f4d5197";
+  #   hash = "sha256-IJNBVr2xAwQW4SAJvq4XQYW4D5tevvd9zRrgXYmm38g=";
+  # })
+  # (fetchpatch' {
+  #   # phosh: 0.25.1 -> 0.27.0
+  #   # TODO: fix Calls:
+  #   # > Failed to get emergency contacts: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.gnome.Calls was not provided by any .service files
+  #   saneCommit = "c8fa213c7cb357c0ca0d5bea66278362a47caeb8";
+  #   hash = "sha256-I8IZ8fjJstmcIXEN622/A1w2uHDACwXFl1WbXTWOyi4=";
+  # })
 
   # (fetchpatch' {
   #   # phosh-mobile-settings: 0.23.1 -> 0.27.0
