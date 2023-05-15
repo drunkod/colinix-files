@@ -23,7 +23,12 @@
 ### user experience
 - firefox/librewolf: don't show browserpass/sponsorblock/metamask "first run" on every boot
 - moby: improve gPodder launch time
+- moby: replace jellyfin-desktop with jellyfin-vue?
+    - allows (maybe) to cache media for offline use
+    - "newer" jellyfin client
+    - not packaged for nix
 - find a nice desktop ActivityPub client
+- package Nix/NixOS docs for Zeal
 
 ### perf
 - why does nixos-rebuild switch take 5 minutes when net is flakey?
