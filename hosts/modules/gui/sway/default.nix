@@ -4,9 +4,6 @@
 with lib;
 let
   cfg = config.sane.gui.sway;
-  waybar-config = import ./waybar-config.nix pkgs;
-  # waybar-config-text = lib.generators.toJSON {} waybar-config;
-  waybar-config-text = (pkgs.formats.json {}).generate "waybar-config.json" waybar-config;
 
   # bare sway launcher
   sway-launcher = pkgs.writeShellScriptBin "sway-launcher" ''
@@ -144,34 +141,18 @@ in
         enable = true;
         wrapperFeatures.gtk = true;
       };
-      sane.user.fs.".config/sway/config" = sane-lib.fs.wantedText (import ./sway-config.nix {
-        inherit config pkgs;
-      });
+      sane.user.fs.".config/sway/config" = sane-lib.fs.wantedText
+        (import ./sway-config.nix { inherit config pkgs; });
 
-      sane.user.fs.".config/waybar/config" = sane-lib.fs.wantedSymlinkTo waybar-config-text;
+      sane.user.fs.".config/waybar/config" =
+        let
+          waybar-config = import ./waybar-config.nix { inherit pkgs; };
+        in sane-lib.fs.wantedSymlinkTo (
+          (pkgs.formats.json {}).generate "waybar-config.json" waybar-config
+        );
 
-      # style docs: https://github.com/Alexays/Waybar/wiki/Styling
-      sane.user.fs.".config/waybar/style.css" = sane-lib.fs.wantedText (builtins.readFile ./waybar-style.css);
-      # style = ''
-      #   * {
-      #     border: none;
-      #     border-radius: 0;
-      #     font-family: Source Code Pro;
-      #   }
-      #   window#waybar {
-      #     background: #16191C;
-      #     color: #AAB2BF;
-      #   }
-      #   #workspaces button {
-      #     padding: 0 5px;
-      #   }
-      #   .custom-spotify {
-      #     padding: 0 10px;
-      #     margin: 0 4px;
-      #     background-color: #1DB954;
-      #     color: black;
-      #   }
-      # '';
+      sane.user.fs.".config/waybar/style.css" = sane-lib.fs.wantedText
+        (builtins.readFile ./waybar-style.css);
     })
   ];
 }

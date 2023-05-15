@@ -1,6 +1,6 @@
 # docs: https://github.com/Alexays/Waybar/wiki/Configuration
 # format specifiers: https://fmt.dev/latest/syntax.html#syntax
-pkgs:
+{ pkgs }:
 [
   { # TOP BAR
     layer = "top";
