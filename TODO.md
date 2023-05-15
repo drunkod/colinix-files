@@ -12,6 +12,7 @@
 - upstream lemmy nginx integration
 - add updateScripts to all my packages in nixpkgs
 - fix lightdm-mobile-greeter for newer libhandy
+- port zecwallet-lite to a from-source build
 - fix or abandon Whalebird
 
 
