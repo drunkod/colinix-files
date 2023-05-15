@@ -42,6 +42,12 @@
     - trying to auto-mount servo?
     - something to do with systemd services restarting/stalling
     - maybe wireguard & its refresh operation, specifically?
+- fix OOM for large builds like webkitgtk
+    - these use significant /tmp space.
+    - either place /tmp on encrypted-cleared-at-boot storage
+        - which probably causes each CPU load for the encryption
+    - **or set up encrypted swap**
+        - encrypted swap could remove the need for my encrypted-cleared-at-boot stuff
 
 
 ## new features:
