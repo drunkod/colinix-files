@@ -1,3 +1,8 @@
+# docs:
+# - <repo:LemmyNet/lemmy:docker/federation/nginx.conf>
+# - <repo:LemmyNet/lemmy:docker/nginx.conf>
+# - <repo:LemmyNet/lemmy-ansible:templates/nginx.conf>
+
 { config, lib, ... }:
 let
   inherit (builtins) toString;
@@ -15,6 +20,7 @@ in {
     settings.port = backendPort;
     ui.port = uiPort;
     database.createLocally = true;
+    nginx.enable = true;
   };
 
   systemd.services.lemmy.serviceConfig = {
@@ -46,53 +52,6 @@ in {
   services.nginx.virtualHosts."lemmy.uninsane.org" = {
     forceSSL = true;
     enableACME = true;
-    locations = let
-      ui = "http://127.0.0.1:${toString uiPort}";
-      backend = "http://127.0.0.1:${toString backendPort}";
-    in {
-      # see <LemmyNet/lemmy:docker/federation/nginx.conf>
-      # see <LemmyNet/lemmy:docker/nginx.conf>
-      # see <LemmyNet/lemmy-ansible:templates/nginx.conf>
-      "/" = {
-        # "frontend general requests"
-        proxyPass = "$proxpass";
-        extraConfig = ''
-          set $proxpass "${ui}";
-          if ($http_accept = "application/activity+json") {
-            set $proxpass "${backend}";
-          }
-          if ($http_accept = "application/ld+json; profile=\"https://www.w3.org/ns/activitystreams\"") {
-            set $proxpass "${backend}";
-          }
-
-          # XXX: lemmy-ansible nginx uses this maximally broad redirection
-          # if ($http_accept ~ "^application/.*$") {
-          #   set $proxpass "${backend}";
-          # }
-          # XXX: POST redirection occurs in lemmy-ansible and docker/nginx.conf but not docker/federation/nginx.conf
-          if ($request_method = POST) {
-            set $proxpass "${backend}";
-          }
-
-          # Cuts off the trailing slash on URLs to make them valid
-          rewrite ^(.+)/+$ $1 permanent;
-
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header Host $host;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        '';
-      };
-      "~ ^/(api|pictrs|feeds|nodeinfo|.well-known)" = {
-        # "backend"
-        proxyPass = backend;
-        proxyWebsockets = true;
-        extraConfig = ''
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header Host $host;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        '';
-      };
-    };
   };
 
   sane.services.trust-dns.zones."uninsane.org".inet.CNAME."lemmy" = "native";

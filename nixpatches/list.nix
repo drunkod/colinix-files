@@ -76,6 +76,12 @@ in [
   })
 
   (fetchpatch' {
+    # nixos/lemmy: support nginx
+    saneCommit = "4c86db6dcb78795ac9bb514d9c779fd591070b23";
+    hash = "sha256-G7jGhSPUp9BMxh2yTzo0KUUVabMJeZ28YTA+0iPldRI=";
+  })
+
+  (fetchpatch' {
     # feedbackd: 0.1.0 -> 0.2.0
     saneCommit = "a0186a5782708a640cd6eaad6e9742b9cccebe9d";
     hash = "sha256-f8he7pQow4fZkTVVqU/A5KgovZA7m7MccRQNTnDxw5o=";
