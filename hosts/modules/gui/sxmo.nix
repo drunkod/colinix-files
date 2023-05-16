@@ -36,14 +36,51 @@ in
       hardware.bluetooth.enable = true;
       services.blueman.enable = true;
 
-      services.xserver.windowManager.session = [{
-        name = "sxmo";
-        desktopNames = [ "sxmo" ];
-        start = ''
-          ${pkgs.sxmo-utils}/bin/sxmo_xinit.sh &
-          waitPID=$!
-        '';
-      }];
+      # sxmo internally uses doas instead of sudo
+      security.doas.enable = true;
+      security.doas.wheelNeedsPassword = false;
+
+      # services.xserver.windowManager.session = [{
+      #   name = "sxmo";
+      #   desktopNames = [ "sxmo" ];
+      #   start = ''
+      #     ${pkgs.sxmo-utils}/bin/sxmo_xinit.sh &
+      #     waitPID=$!
+      #   '';
+      # }];
+      # services.xserver.enable = true;
+
+      # services.greetd = {
+      #   enable = true;
+      #   settings = {
+      #     default_session = {
+      #       command = "${pkgs.sxmo-utils}/bin/sxmo_winit.sh";
+      #       user = "colin";
+      #     };
+      #   };
+      # };
+
+      services.xserver.enable = true;
+      services.xserver.displayManager.lightdm.enable = true;
+      services.xserver.displayManager.lightdm.greeters.gtk.enable = true;
+      services.xserver.displayManager.lightdm.extraSeatDefaults = ''
+        user-session = swmo
+      '';
+      services.xserver.displayManager.sessionPackages = [ pkgs.sxmo-utils ];
+
+      environment.systemPackages = with pkgs; [
+        gojq
+        inotify-tools
+        libnotify
+        superd
+        sway
+        sxmo-utils
+        xdg-user-dirs
+      ];
+      environment.sessionVariables.XDG_DATA_DIRS = [
+        # TODO: only need the share/sxmo directly linked
+        "${pkgs.sxmo-utils}/share"
+      ];
     })
   ];
 }

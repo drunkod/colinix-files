@@ -11,5 +11,6 @@ in
     ./plasma.nix
     ./plasma-mobile.nix
     ./sway
+    ./sxmo.nix
   ];
 }
