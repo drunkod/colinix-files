@@ -24,6 +24,7 @@ let
     sane-scripts = callPackage ./additional/sane-scripts { };
     static-nix-shell = callPackage ./additional/static-nix-shell { };
     sublime-music-mobile = callPackage ./additional/sublime-music-mobile { };
+    sxmo-utils = callPackage ./additional/sxmo-utils { };
     tow-boot-pinephone = callPackage ./additional/tow-boot-pinephone { };
 
     # packages i haven't used for a while, may or may not still work
