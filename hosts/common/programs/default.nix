@@ -171,7 +171,7 @@ let
       "gnome.gnome-system-monitor"
       # "gnome.gnome-terminal"  # works on phosh
       "gnome.gnome-weather"
-      gpodder-configured
+      gpodder
       gthumb
       jellyfin-media-player
       # lollypop
