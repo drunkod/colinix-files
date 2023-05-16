@@ -1166,7 +1166,7 @@ in
               });
 
               cryptography = py-prev.cryptography.override {
-                inherit (emulated) rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+                inherit (emulated) cargo rustc rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
               };
 
               defcon = py-prev.defcon.overridePythonAttrs (orig: {
