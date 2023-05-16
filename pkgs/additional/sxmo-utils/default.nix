@@ -6,16 +6,22 @@
 
 stdenv.mkDerivation rec {
   pname = "sxmo-utils";
-  version = "1.13.0";
+  version = "1.14.1";
 
   src = fetchgit {
     url = "https://git.sr.ht/~mil/sxmo-utils";
     rev = version;
-    hash = "sha256-HNkajPC/spozxRlaP0iMWvOAfriRjl2wo1wdcbVCrkU=";
+    hash = "sha256-UcJid1fi3Mgu32dCqlI9RQYnu5d07MMwW3eEYuYVBw4=";
   };
+
+  patches = [
+    ./0001-group-differs-from-user.patch
+    ./0002-ensure-log-dir.patch
+  ];
 
   postPatch = ''
     sed -i 's@/usr/lib/udev/rules\.d@/etc/udev/rules.d@' Makefile
+    sed -i "s@/etc/profile\.d/sxmo_init.sh@$out/etc/profile.d/sxmo_init.sh@" scripts/core/*.sh
   '';
 
   installFlags = [
@@ -24,7 +30,10 @@ stdenv.mkDerivation rec {
     "PREFIX="
   ];
 
-  passthru.updateScript = gitUpdater { };
+  passthru = {
+    providedSessions = [ "sxmo" "swmo" ];
+    updateScript = gitUpdater { };
+  };
 
   meta = {
     homepage = "https://git.sr.ht/~mil/sxmo-utils";
