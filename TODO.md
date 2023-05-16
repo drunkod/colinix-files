@@ -36,9 +36,10 @@
     - not packaged for nix
 - find a nice desktop ActivityPub client
 - package Nix/NixOS docs for Zeal
-- install [doc-browser](https://github.com/qwfy/doc-browser)
+    - install [doc-browser](https://github.com/qwfy/doc-browser)
     - this supports both dash (zeal) *and* the datasets from <https://devdocs.io> (which includes nix!)
-- install [devhelp](https://wiki.gnome.org/Apps/Devhelp)  (gnome)
+    - install [devhelp](https://wiki.gnome.org/Apps/Devhelp)  (gnome)
+- auto-mount servo
 
 ### perf
 - why does nixos-rebuild switch take 5 minutes when net is flakey?
