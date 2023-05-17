@@ -1286,15 +1286,15 @@ in
             # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
             inherit (emulated) stdenv;
           };
-          samba = prev.samba.overrideAttrs (_upstream: {
-            # we get "cannot find C preprocessor: aarch64-unknown-linux-gnu-cpp", but ONLY when building with the ccache stdenv.
-            # this solves that, but `CPP` must be a *single* path -- not an expression.
-            # i do not understand how the original error arises, as my ccacheStdenv should match the API of the base stdenv (except for cpp being a symlink??).
-            # but oh well, this fixes it.
-            CPP = next.buildPackages.writeShellScript "cpp" ''
-              exec ${lib.getBin next.stdenv.cc}/bin/${next.stdenv.cc.targetPrefix}cc -E $@;
-            '';
-          });
+          # samba = prev.samba.overrideAttrs (_upstream: {
+          #   # we get "cannot find C preprocessor: aarch64-unknown-linux-gnu-cpp", but ONLY when building with the ccache stdenv.
+          #   # this solves that, but `CPP` must be a *single* path -- not an expression.
+          #   # i do not understand how the original error arises, as my ccacheStdenv should match the API of the base stdenv (except for cpp being a symlink??).
+          #   # but oh well, this fixes it.
+          #   CPP = next.buildPackages.writeShellScript "cpp" ''
+          #     exec ${lib.getBin next.stdenv.cc}/bin/${next.stdenv.cc.targetPrefix}cc -E $@;
+          #   '';
+          # });
           # sequoia = prev.sequoia.override {
           #   # fails to fix original error
           #   inherit (emulated) stdenv;
