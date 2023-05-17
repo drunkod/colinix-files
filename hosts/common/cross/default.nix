@@ -25,6 +25,7 @@
 # - scoped:   `nix build '.#host-pkgs.moby-cross.gnome.mutter'`
 # - python:   `nix build '.#host-pkgs.moby-cross.python310Packages.pandas'`
 # - perl:     `nix build '.#host-pkgs.moby-cross.perl536Packages.ModuleBuild'`
+# - haskell:  `nix build '.#host-pkgs.moby-cross.haskellPackages.xml-conduit`
 # - qt:       `nix build '.#host-pkgs.moby-cross.qt5.qtbase'`
 # - qt:       `nix build '.#host-pkgs.moby-cross.libsForQt5.phonon'`
 # most of these can be built in a nixpkgs source root like:
@@ -825,22 +826,6 @@ in
             };
           });
 
-          gocryptfs = prev.gocryptfs.override {
-            # fixes "error: hash mismatch in fixed-output derivation" (vendorSha256)
-            inherit (emulated) buildGoModule;  # equivalent to stdenv
-          };
-          # gocryptfs = prev.gocryptfs.override {
-          #   # fixes "error: hash mismatch in fixed-output derivation" (vendorSha256)
-          #   # new error: "go: inconsistent vendoring in /build/source:"
-          #   # - "github.com/hanwen/go-fuse/v2@v2.1.1-0.20211219085202-934a183ed914: is explicitly required in go.mod, but not marked as explicit in vendor/modules.txt"
-          #   # - ...
-          #   buildGoModule = args: next.buildGoModule (args // {
-          #     vendorSha256 = {
-          #       x86_64-linux = args.vendorSha256;
-          #       aarch64-linux = "sha256-9famtUjkeAtzxfXzmWVum/pyaNp89Aqnfd+mWE7KjaI=";
-          #     }."${next.stdenv.system}";
-          #   });
-          # };
           gpodder = prev.gpodder.overridePythonAttrs (upstream: {
             # fix gobject-introspection overrides import that otherwise fails on launch
             nativeBuildInputs = upstream.nativeBuildInputs ++ [
@@ -874,6 +859,20 @@ in
             # fixes "meson.build:312:2: ERROR: Assert failed: http required but libxml-2.0 not found"
             buildInputs = upstream.buildInputs ++ [ next.libxml2 ];
           });
+
+          haskell = prev.haskell // {
+            packageOverrides = self: super:
+            let
+              super' = super // (prev.haskell.packageOverrides self super);
+            in
+              {
+                xml-conduit = super'.xml-conduit.overrideAttrs (upstream: {
+                  # fails even when compiles on build platform:
+                  # - `nix build '.#host-pkgs.moby.buildPackages.haskellPackages.xml-conduit'`
+                  doCheck = false;
+                });
+              };
+          };
 
           # hdf5 = prev.hdf5.override {
           #   inherit (emulated) stdenv;
@@ -1355,6 +1354,8 @@ in
           squeekboard = prev.squeekboard.override {
             inherit (emulated)
               rustPlatform  # fixes original "'rust' compiler binary not defined in cross or native file"
+              rustc
+              cargo
               stdenv  # fixes "gcc: error: unrecognized command line option '-m64'"
               glib  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/jzh15bi6zablx3d9s928w3lgqy6and91-glib-2.74.3/lib/libgio-2.0.so"
               wayland  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/ni0vb1pnaznx85378i3h9xhw9cay68g5-wayland-1.21.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
