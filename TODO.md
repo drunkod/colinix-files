@@ -63,3 +63,4 @@
     - just /var/www?
 - migrate MAME cabinet to nix
     - boot it from PXE from servo?
+- enable IPv6
