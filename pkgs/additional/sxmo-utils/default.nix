@@ -1,5 +1,4 @@
 { stdenv
-, callPackage
 , fetchgit
 , gitUpdater
 , lib
@@ -37,7 +36,6 @@ stdenv.mkDerivation rec {
   passthru = {
     providedSessions = [ "sxmo" "swmo" ];
     updateScript = gitUpdater { };
-    hooks = callPackage ./hooks.nix { };
   };
 
   meta = {
