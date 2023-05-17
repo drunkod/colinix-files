@@ -35,6 +35,7 @@ in
       extraGroups = [
         "dialout"  # required for modem access (moby)
         "feedbackd"
+        "input"  # for /dev/input/<xyz>: sxmo
         "networkmanager"
         "nixbuild"
         "video"  # phosh/mobile. XXX colin: unsure if necessary
