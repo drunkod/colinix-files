@@ -1,5 +1,32 @@
 # this work derives from noneucat's sxmo service/packages, found via NUR
 # - <repo:nix-community/nur-combined:repos/noneucat/modules/pinephone/sxmo.nix>
+#
+# sxmo documentation:
+# - <repo:anjan/sxmo-docs-next>
+#
+# sxmo technical overview:
+# - inputs
+#   - dwm: handles vol/power buttons; hardcoded in config.h
+#   - lisgd: handles gestures
+# - startup
+#   - daemon based (lisgsd, idle_locker, statusbar_periodics)
+#   - auto-started at login
+#   - managable by `sxmo_daemons.sh`
+#     - list available daemons: `sxmo_daemons.sh list`
+#     - query if a daemon is active: `sxmo_daemons.sh running <my-daemon>`
+#     - start daemon: `sxmo_daemons.sh start <my-daemon>`
+# - user hooks:
+#   - live in ~/.config/sxmo/hooks/
+# - logs:
+#   - live in ~/.local/state/sxmo.log
+#   - `journalctl --user --boot`  (lightm redirects the sxmo session stdout => systemd)
+#
+# - default components:
+#   - DE:                  sway (if wayland), dwm (if X)
+#   - menus:               bemenu (if wayland), dmenu (if X)
+#   - gestures:            lisgd
+#   - on-screen keyboard:  wvkbd (if wayland), svkbd (if X)
+#
 { lib, config, pkgs, ... }:
 
 with lib;
@@ -69,9 +96,11 @@ in
       services.xserver.displayManager.sessionPackages = [ pkgs.sxmo-utils ];
 
       environment.systemPackages = with pkgs; [
+        bemenu
         gojq
         inotify-tools
         libnotify
+        lisgd
         superd
         sway
         sxmo-utils
