@@ -1,3 +1,6 @@
+## BUGS:
+- fix nur evaluation
+
 ## REFACTORING:
 ### sops/secrets
 - attach secrets to the thing they're used by (sane.programs)
