@@ -4,8 +4,6 @@
     ./fs.nix
   ];
 
-  sane.yggdrasil.enable = true;
-
   sane.roles.client = true;
   sane.roles.dev-machine = true;
   sane.services.wg-home.enable = true;

@@ -6,7 +6,6 @@
     ./fs.nix
     ./hardware.nix
     ./home
-    ./i2p.nix
     ./ids.nix
     ./machine-id.nix
     ./net.nix

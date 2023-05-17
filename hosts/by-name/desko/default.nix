@@ -7,6 +7,7 @@
   sops.secrets.colin-passwd.neededForUsers = true;
 
   sane.roles.build-machine.enable = true;
+  sane.roles.ac = true;
   sane.roles.client = true;
   sane.roles.dev-machine = true;
   sane.services.wg-home.enable = true;

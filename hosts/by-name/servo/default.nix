@@ -14,6 +14,7 @@
     signaldctl.enableFor.user.colin = true;
   };
 
+  sane.roles.ac = true;
   sane.roles.build-machine.enable = true;
   sane.roles.build-machine.emulation = false;
   sane.zsh.showDeadlines = false;  # ~/knowledge doesn't always exist
