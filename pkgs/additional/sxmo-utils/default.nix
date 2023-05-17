@@ -25,6 +25,7 @@ stdenv.mkDerivation rec {
     sed -i 's@/usr/lib/udev/rules\.d@/etc/udev/rules.d@' Makefile
     sed -i "s@/etc/profile\.d/sxmo_init.sh@$out/etc/profile.d/sxmo_init.sh@" scripts/core/*.sh
     sed -i "s@/usr/bin/@@g" scripts/core/sxmo_version.sh
+    sed -i 's:ExecStart=/usr/bin/:ExecStart=/usr/bin/env :' configs/superd/services/*.service
   '';
 
   installFlags = [
