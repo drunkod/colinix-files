@@ -134,6 +134,8 @@ in
       '';
       services.xserver.displayManager.sessionPackages = [ pkgs.sxmo-utils ];
 
+      fonts.fonts = [ pkgs.nerdfonts ];
+
       environment.systemPackages = with pkgs; [
         bemenu
         gojq
