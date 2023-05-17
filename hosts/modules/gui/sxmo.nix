@@ -143,10 +143,12 @@ in
       '';
       services.xserver.displayManager.sessionPackages = [ pkgs.sxmo-utils ];
 
+      # TODO: not all of these fonts seem to be mapped to the correct icon
       fonts.fonts = [ pkgs.nerdfonts ];
 
       environment.systemPackages = with pkgs; [
         bemenu
+        conky
         gojq
         inotify-tools
         libnotify
@@ -155,9 +157,11 @@ in
         superd
         sway
         sxmo-utils
+        wob
+        xdg-user-dirs
+
         cfg.deviceHooks
         cfg.hooks
-        xdg-user-dirs
       ] ++ lib.optionals (cfg.terminal != null) [ pkgs."${cfg.terminal}" ];
       environment.sessionVariables = {
         XDG_DATA_DIRS = [
