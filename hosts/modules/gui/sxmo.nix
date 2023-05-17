@@ -146,6 +146,16 @@ in
       # TODO: not all of these fonts seem to be mapped to the correct icon
       fonts.fonts = [ pkgs.nerdfonts ];
 
+      # i believe sxmo recomments a different audio stack
+      # administer with pw-cli, pw-mon, pw-top commands
+      services.pipewire = {
+        enable = true;
+        alsa.enable = true;
+        alsa.support32Bit = true;  # ??
+        pulse.enable = true;
+      };
+      systemd.user.services."pipewire".wantedBy = [ "graphical-session.target" ];
+
       environment.systemPackages = with pkgs; [
         bemenu
         conky
