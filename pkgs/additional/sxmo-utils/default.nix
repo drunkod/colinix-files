@@ -17,11 +17,13 @@ stdenv.mkDerivation rec {
   patches = [
     ./0001-group-differs-from-user.patch
     ./0002-ensure-log-dir.patch
+    ./0003-fix-xkb-paths.patch
   ];
 
   postPatch = ''
     sed -i 's@/usr/lib/udev/rules\.d@/etc/udev/rules.d@' Makefile
     sed -i "s@/etc/profile\.d/sxmo_init.sh@$out/etc/profile.d/sxmo_init.sh@" scripts/core/*.sh
+    sed -i "s@/usr/bin/@@g" scripts/core/sxmo_version.sh
   '';
 
   installFlags = [
