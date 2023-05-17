@@ -2,7 +2,16 @@
 # - <repo:nix-community/nur-combined:repos/noneucat/modules/pinephone/sxmo.nix>
 # other nix works:
 # - <https://github.com/wentam/sxmo-nix>
+#   - implements sxmo atop tinydm (also packaged by wentam)
+#   - wentam cleans up sxmo-utils to be sealed. also patches to use systemd poweroff, etc
+#   - packages a handful of anjan and proycon utilities
+#   - packages <https://gitlab.com/kop316/mmsd/>
+#   - packages <https://gitlab.com/kop316/vvmd/>
 # - <https://github.com/chuangzhu/nixpkgs-sxmo>
+#   - implements sxmo as a direct systemd service -- apparently no DM
+#   - packages sxmo-utils
+#     - injects PATH into each script
+# - perhaps sxmo-utils is best packaged via the `resholve` shell solver?
 #
 # sxmo documentation:
 # - <repo:anjan/sxmo-docs-next>
