@@ -44,6 +44,7 @@
     - install [devhelp](https://wiki.gnome.org/Apps/Devhelp)  (gnome)
 - auto-mount servo
 - have xdg-open parse `<repo:...> URIs (or adjust them so that it _can_ parse)
+- `sane.programs`: auto-populate defaults with everything from `pkgs`
 
 ### perf
 - why does nixos-rebuild switch take 5 minutes when net is flakey?
