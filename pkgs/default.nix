@@ -18,6 +18,7 @@ let
     feeds = lib.recurseIntoAttrs (callPackage ./additional/feeds { });
     gopass-native-messaging-host = callPackage ./additional/gopass-native-messaging-host { };
     gpodder-configured = callPackage ./additional/gpodder-configured { };
+    hare-ev = callPackage ./additional/hare-ev { };
     hare-json = callPackage ./additional/hare-json { };
     lightdm-mobile-greeter = callPackage ./additional/lightdm-mobile-greeter { };
     linux-megous = callPackage ./additional/linux-megous { };
