@@ -81,10 +81,12 @@ in
       '';
     };
     sane.gui.sxmo.terminal = mkOption {
-      type = types.nullOr (types.enum [ "foot" "st" "vte" ]);
-      default = "st";
+      # type = types.nullOr (types.enum [ "foot" "st" "vte" ]);
+      type = types.nullOr types.string;
+      default = "kitty";
       description = ''
-        name of terminal to use for sxmo_terminal.sh
+        name of terminal to use for sxmo_terminal.sh.
+        foot, st, and vte have special integrations in sxmo, but any will work.
       '';
     };
   };
