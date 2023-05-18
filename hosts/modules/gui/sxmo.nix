@@ -184,6 +184,9 @@ in
         ];
         # XXX: make sure the user is part of the `input` group!
         SXMO_LISGD_INPUT_DEVICE = "/dev/input/by-id/usb-Wacom_Co._Ltd._Pen_and_multitouch_sensor-event-if00";
+        # these identifiers are from `swaymsg -t get_inputs`
+        SXMO_VOLUME_BUTTON = "1:1:AT_Translated_Set_2_keyboard";
+        SXMO_POWER_BUTTON = "0:1:Power_Button";
         # sxmo tries to determine device type from /proc/device-tree/compatible,
         # but that doesn't seem to exist on NixOS?  (or maybe it just doesn't exist
         # on non-aarch64 builds).
