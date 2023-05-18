@@ -11,6 +11,7 @@ let
     sane-lib = import ../modules/lib pkgs;
 
     ### ADDITIONAL PACKAGES
+    bonsai = callPackage ./additional/bonsai { };
     bootpart-uefi-x86_64 = callPackage ./additional/bootpart-uefi-x86_64 { };
     browserpass-extension = callPackage ./additional/browserpass-extension { };
     cargoDocsetHook = callPackage ./additional/cargo-docset/hook.nix { };

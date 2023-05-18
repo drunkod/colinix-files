@@ -307,6 +307,12 @@
           path = ./templates/pkgs/rust;
           description = "rust package fit to ship in nixpkgs";
         };
+        pkgs.make = {
+          # initialize with:
+          # - `nix flake init -t '/home/colin/dev/nixos/#pkgs.make'`
+          path = ./templates/pkgs/make;
+          description = "default Makefile-based derivation";
+        };
       };
     };
 }
