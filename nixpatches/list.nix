@@ -125,28 +125,11 @@ in [
   #   hash = "sha256-MNG8C0OgdPnFQ8SF2loiEhXJuP2z4n9pkXr8Zh4X7QU=";
   # })
 
-  # # kaiteki: init at 2022-09-03
-  # vendorHash changes too frequently (might not be reproducible).
-  # using local package defn until stabilized
-  # (fetchpatch {
-  #   url = "https://git.uninsane.org/colin/nixpkgs/commit/e2c7f5f4870fcb0e5405e9001b39a64c516852d4.diff";
-  #   # url = "https://github.com/NixOS/nixpkgs/pull/193169.diff";
-  #   sha256 = "sha256-UWnfS+stVpUZ3Sfaym9XtVBlwvHWJVMaW7cYIcf3M5Q=";
-  # })
-
   (fetchpatch' {
     # 2023-02-18: conky: 1.13.1 -> 1.18.0
     prUrl = "https://github.com/NixOS/nixpkgs/pull/217224";
     hash = "sha256-+g3XhmBt/udhbBDiVyfWnfXKvZTvDurlvPblQ9HYp3s=";
   })
-
-
-  # Fix mk flutter app
-  # closed (not merged). updates fluffychat 1.2.0 -> 1.6.1, but unstable hashing
-  # (fetchpatch {
-  #   url = "https://github.com/NixOS/nixpkgs/pull/186839.diff";
-  #   sha256 = "sha256-NdIfie+eTy4V1vgqiiRPtWdnxZ5ZHsvCMfkEDUv9SC8=";
-  # })
 
   # for raspberry pi: allow building u-boot for rpi 4{,00}
   # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
@@ -154,7 +137,4 @@ in [
   ./02-rpi4-uboot.patch
 
   # ./07-duplicity-rich-url.patch
-
-  # enable aarch64 support for flutter's dart package
-  # ./10-flutter-arm64.patch
 ]
