@@ -403,6 +403,7 @@ in
           # packages which don't cross compile
           inherit (emulated)
             # adwaita-qt6  # although qtbase cross-compiles with minor change, qtModule's qtbase can't
+            # conky  # needs to be able to build lua
             # duplicity  # python3.10-s3transfer
             # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
             # gnome-tour
@@ -549,6 +550,30 @@ in
             nativeBuildInputs = upstream.nativeBuildInputs ++ lib.optionals (!prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) [
               next.mesonEmulatorHook
             ];
+          });
+
+          # conky = (prev.conky.override {
+          #     curlSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
+          #     # docbook2x dependency doesn't cross compile
+          #     docsSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
+          #     journalSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
+          #     # tries to invoke `toluapp`, which would likely compile to wrong platform?
+          #     luaSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
+          #     ncursesSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
+          #     wirelessSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
+          #     x11Support = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
+          #     # lua = emulated.lua5_3_compat;
+          #   }
+          # ).overrideAttrs (upstream: {
+          #   nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.git ];
+          #   buildInputs = [ next.lua5_4_compat ];
+          #   cmakeFlags = upstream.cmakeFlags ++ ["-DLUA_INCLUDE_DIR=/tmp/"];
+          # });
+          conky = ((useEmulatedStdenv prev.conky).override {
+            # docbook2x dependency doesn't cross compile
+            docsSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
+          }).overrideAttrs (upstream: {
+            nativeBuildInputs = upstream.nativeBuildInputs ++ [ next.git ];
           });
 
           dante = prev.dante.override {

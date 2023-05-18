@@ -134,6 +134,12 @@ in [
   #   sha256 = "sha256-UWnfS+stVpUZ3Sfaym9XtVBlwvHWJVMaW7cYIcf3M5Q=";
   # })
 
+  (fetchpatch' {
+    # 2023-02-18: conky: 1.13.1 -> 1.18.0
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/217224";
+    hash = "sha256-+g3XhmBt/udhbBDiVyfWnfXKvZTvDurlvPblQ9HYp3s=";
+  })
+
 
   # Fix mk flutter app
   # closed (not merged). updates fluffychat 1.2.0 -> 1.6.1, but unstable hashing
