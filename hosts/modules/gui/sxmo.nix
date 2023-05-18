@@ -157,7 +157,9 @@ in
       systemd.user.services."pipewire".wantedBy = [ "graphical-session.target" ];
 
       environment.systemPackages = with pkgs; [
+        bc
         bemenu
+        bonsai
         conky
         gojq
         inotify-tools
