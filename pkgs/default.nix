@@ -1,14 +1,22 @@
-{ pkgs ? import <nixpkgs> {}, lib ? pkgs.lib, unpatched ? pkgs }:
+# this supports being used as an overlay or in a standalone context
+# - if overlay, invoke as `(final: prev: import ./. { inherit final; pkgs = prev; })`
+# - if standalone: `import ./. { inherit pkgs; }`
+#
+# using the correct invocation is critical if any packages mentioned here are
+# additionally patched elsewhere
+#
+{ pkgs ? import <nixpkgs> {}, final ? null }:
 let
+  lib = pkgs.lib;
+  unpatched = pkgs;
 
   pythonPackagesOverlay = py-final: py-prev: import ./python-packages {
     inherit (py-final) callPackage;
   };
-  # this scope ensures that my packages can all take each other as inputs,
-  # even when evaluated bare (i.e. outside of an overlay)
-  sane = lib.makeScope pkgs.newScope (self: with self; {
+  final' = if final != null then final else (pkgs // sane);
+  sane = with final'; {
     sane-data = import ../modules/data { inherit lib; };
-    sane-lib = import ../modules/lib pkgs;
+    sane-lib = import ../modules/lib final';
 
     ### ADDITIONAL PACKAGES
     bonsai = callPackage ./additional/bonsai { };
@@ -84,5 +92,5 @@ let
     python3 = unpatched.python3.override {
       packageOverrides = pythonPackagesOverlay;
     };
-  });
-in sane.packages sane
+  };
+in sane

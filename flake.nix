@@ -92,38 +92,31 @@
         nixpkgs = nixpkgs-unpatched;
       };
 
-      nixpkgsCompiledBy = local: nixpkgs.legacyPackages."${local}";
+      nixpkgsCompiledBy = system: nixpkgs.legacyPackages."${system}";
 
-      evalHost = { name, local, target }:
-        let
-          # XXX: we'd prefer to use `nixosSystem = (nixpkgsCompiledBy target).nixos`
-          # but it doesn't propagate config to the underlying pkgs, meaning it doesn't let you use
-          # non-free packages even after setting nixpkgs.allowUnfree.
-          # XXX: patch using the target -- not local -- otherwise the target will
-          # need to emulate the host in order to rebuild!
-          nixosSystem = import ((nixpkgsCompiledBy target).path + "/nixos/lib/eval-config.nix");
-        in
-          (nixosSystem {
-            modules = [
-              (import ./hosts/instantiate.nix { localSystem = local; hostName = name; })
-              self.nixosModules.default
-              self.nixosModules.passthru
-              {
-                nixpkgs.overlays = [
-                  self.overlays.disable-flakey-tests
-                  self.overlays.passthru
-                  self.overlays.pins
-                  self.overlays.pkgs
-                  # self.overlays.optimizations
-                ];
-              }
-              ({ lib, ... }: {
-                nixpkgs.hostPlatform.system = target;
-                # nixpkgs.buildPlatform = local;  # set by instantiate.nix instead
-                # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
-              })
+      evalHost = { name, local, target }: nixpkgs.lib.nixosSystem {
+        system = target;
+        modules = [
+          (import ./hosts/instantiate.nix { localSystem = local; hostName = name; })
+          self.nixosModules.default
+          self.nixosModules.passthru
+          {
+            nixpkgs.overlays = [
+              self.overlays.disable-flakey-tests
+              self.overlays.passthru
+              self.overlays.pins
+              self.overlays.pkgs
+              # self.overlays.optimizations
             ];
-          });
+          }
+          ({ lib, ... }: {
+            # TODO: does the earlier `system` arg to nixosSystem make its way here?
+            nixpkgs.hostPlatform.system = target;
+            # nixpkgs.buildPlatform = local;  # set by instantiate.nix instead
+            # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
+          })
+        ];
+      };
     in {
       nixosConfigurations =
         let

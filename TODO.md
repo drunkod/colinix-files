@@ -1,4 +1,7 @@
-## refactoring:
+## BUGS:
+- fix nur evaluation
+
+## REFACTORING:
 ### sops/secrets
 - attach secrets to the thing they're used by (sane.programs)
 - rework secrets to leverage `sane.fs`
@@ -16,7 +19,7 @@
 - fix or abandon Whalebird
 
 
-## improvements:
+## IMPROVEMENTS:
 ### security/resilience
 - validate duplicity backups!
 - encrypt more ~ dirs (~/archives, ~/records, ..?)
@@ -36,6 +39,12 @@
     - not packaged for nix
 - find a nice desktop ActivityPub client
 - package Nix/NixOS docs for Zeal
+    - install [doc-browser](https://github.com/qwfy/doc-browser)
+    - this supports both dash (zeal) *and* the datasets from <https://devdocs.io> (which includes nix!)
+    - install [devhelp](https://wiki.gnome.org/Apps/Devhelp)  (gnome)
+- auto-mount servo
+- have xdg-open parse `<repo:...> URIs (or adjust them so that it _can_ parse)
+- `sane.programs`: auto-populate defaults with everything from `pkgs`
 
 ### perf
 - why does nixos-rebuild switch take 5 minutes when net is flakey?
@@ -50,8 +59,9 @@
         - encrypted swap could remove the need for my encrypted-cleared-at-boot stuff
 
 
-## new features:
+## NEW FEATURES:
 - add a FTP-accessible file share to servo
     - just /var/www?
 - migrate MAME cabinet to nix
     - boot it from PXE from servo?
+- enable IPv6

@@ -7,11 +7,11 @@ let
 
   # bare sway launcher
   sway-launcher = pkgs.writeShellScriptBin "sway-launcher" ''
-    ${pkgs.sway}/bin/sway --debug > /tmp/sway.log 2>&1
+    ${pkgs.sway}/bin/sway --debug > /var/log/sway/sway.log 2>&1
   '';
   # start sway and have it construct the gtkgreeter
   sway-as-greeter = pkgs.writeShellScriptBin "sway-as-greeter" ''
-    ${pkgs.sway}/bin/sway --debug --config ${sway-config-into-gtkgreet} > /tmp/sway-as-greeter.log 2>&1
+    ${pkgs.sway}/bin/sway --debug --config ${sway-config-into-gtkgreet} > /var/log/sway/sway-as-greeter.log 2>&1
   '';
   # (config file for the above)
   sway-config-into-gtkgreet = pkgs.writeText "greetd-sway-config" ''
@@ -136,6 +136,11 @@ in
       # bluez can't connect to audio devices unless pipewire is running.
       # a system service can't depend on a user service, so just launch it at graphical-session
       systemd.user.services."pipewire".wantedBy = [ "graphical-session.target" ];
+
+      sane.fs."/var/log/sway" = {
+        dir.acl.mode = "0777";
+        wantedBeforeBy = [ "greetd.service" "display-manager.service" ];
+      };
 
       programs.sway = {
         enable = true;

@@ -25,6 +25,7 @@
 # - scoped:   `nix build '.#host-pkgs.moby-cross.gnome.mutter'`
 # - python:   `nix build '.#host-pkgs.moby-cross.python310Packages.pandas'`
 # - perl:     `nix build '.#host-pkgs.moby-cross.perl536Packages.ModuleBuild'`
+# - haskell:  `nix build '.#host-pkgs.moby-cross.haskellPackages.xml-conduit`
 # - qt:       `nix build '.#host-pkgs.moby-cross.qt5.qtbase'`
 # - qt:       `nix build '.#host-pkgs.moby-cross.libsForQt5.phonon'`
 # most of these can be built in a nixpkgs source root like:
@@ -413,7 +414,7 @@ in
             # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
             # hdf5  # configure: error: cannot run test program while cross compiling
             # http2
-            ibus
+            ibus  # "error: cannot run test program while cross compiling"
             jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
             # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
             # libsForQt5  # qtbase  # make: g++: No such file or directory
@@ -825,22 +826,6 @@ in
             };
           });
 
-          gocryptfs = prev.gocryptfs.override {
-            # fixes "error: hash mismatch in fixed-output derivation" (vendorSha256)
-            inherit (emulated) buildGoModule;  # equivalent to stdenv
-          };
-          # gocryptfs = prev.gocryptfs.override {
-          #   # fixes "error: hash mismatch in fixed-output derivation" (vendorSha256)
-          #   # new error: "go: inconsistent vendoring in /build/source:"
-          #   # - "github.com/hanwen/go-fuse/v2@v2.1.1-0.20211219085202-934a183ed914: is explicitly required in go.mod, but not marked as explicit in vendor/modules.txt"
-          #   # - ...
-          #   buildGoModule = args: next.buildGoModule (args // {
-          #     vendorSha256 = {
-          #       x86_64-linux = args.vendorSha256;
-          #       aarch64-linux = "sha256-9famtUjkeAtzxfXzmWVum/pyaNp89Aqnfd+mWE7KjaI=";
-          #     }."${next.stdenv.system}";
-          #   });
-          # };
           gpodder = prev.gpodder.overridePythonAttrs (upstream: {
             # fix gobject-introspection overrides import that otherwise fails on launch
             nativeBuildInputs = upstream.nativeBuildInputs ++ [
@@ -874,6 +859,20 @@ in
             # fixes "meson.build:312:2: ERROR: Assert failed: http required but libxml-2.0 not found"
             buildInputs = upstream.buildInputs ++ [ next.libxml2 ];
           });
+
+          haskell = prev.haskell // {
+            packageOverrides = self: super:
+            let
+              super' = super // (prev.haskell.packageOverrides self super);
+            in
+              {
+                xml-conduit = super'.xml-conduit.overrideAttrs (upstream: {
+                  # fails even when compiles on build platform:
+                  # - `nix build '.#host-pkgs.moby.buildPackages.haskellPackages.xml-conduit'`
+                  doCheck = false;
+                });
+              };
+          };
 
           # hdf5 = prev.hdf5.override {
           #   inherit (emulated) stdenv;
@@ -1166,7 +1165,7 @@ in
               });
 
               cryptography = py-prev.cryptography.override {
-                inherit (emulated) rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+                inherit (emulated) cargo rustc rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
               };
 
               defcon = py-prev.defcon.overridePythonAttrs (orig: {
@@ -1287,15 +1286,15 @@ in
             # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
             inherit (emulated) stdenv;
           };
-          samba = prev.samba.overrideAttrs (_upstream: {
-            # we get "cannot find C preprocessor: aarch64-unknown-linux-gnu-cpp", but ONLY when building with the ccache stdenv.
-            # this solves that, but `CPP` must be a *single* path -- not an expression.
-            # i do not understand how the original error arises, as my ccacheStdenv should match the API of the base stdenv (except for cpp being a symlink??).
-            # but oh well, this fixes it.
-            CPP = next.buildPackages.writeShellScript "cpp" ''
-              exec ${lib.getBin next.stdenv.cc}/bin/${next.stdenv.cc.targetPrefix}cc -E $@;
-            '';
-          });
+          # samba = prev.samba.overrideAttrs (_upstream: {
+          #   # we get "cannot find C preprocessor: aarch64-unknown-linux-gnu-cpp", but ONLY when building with the ccache stdenv.
+          #   # this solves that, but `CPP` must be a *single* path -- not an expression.
+          #   # i do not understand how the original error arises, as my ccacheStdenv should match the API of the base stdenv (except for cpp being a symlink??).
+          #   # but oh well, this fixes it.
+          #   CPP = next.buildPackages.writeShellScript "cpp" ''
+          #     exec ${lib.getBin next.stdenv.cc}/bin/${next.stdenv.cc.targetPrefix}cc -E $@;
+          #   '';
+          # });
           # sequoia = prev.sequoia.override {
           #   # fails to fix original error
           #   inherit (emulated) stdenv;
@@ -1355,6 +1354,8 @@ in
           squeekboard = prev.squeekboard.override {
             inherit (emulated)
               rustPlatform  # fixes original "'rust' compiler binary not defined in cross or native file"
+              rustc
+              cargo
               stdenv  # fixes "gcc: error: unrecognized command line option '-m64'"
               glib  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/jzh15bi6zablx3d9s928w3lgqy6and91-glib-2.74.3/lib/libgio-2.0.so"
               wayland  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/ni0vb1pnaznx85378i3h9xhw9cay68g5-wayland-1.21.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
