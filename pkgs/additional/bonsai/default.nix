@@ -3,6 +3,8 @@
 , fetchFromSourcehut
 , gitUpdater
 , hare
+, hare-ev
+, hare-json
 }:
 
 stdenv.mkDerivation rec {
@@ -18,6 +20,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     hare
+    hare-ev
+    hare-json
   ];
 
   preConfigure = ''
@@ -36,6 +40,5 @@ stdenv.mkDerivation rec {
     license = licenses.agpl3;
     maintainers = with maintainers; [ colinsane ];
     platforms = platforms.linux;
-    broken = true;  # needs hare-json. see: <https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/40949/diffs>
   };
 }
