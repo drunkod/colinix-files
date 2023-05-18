@@ -15,7 +15,7 @@ in
     };
     sane.services.nixserve.secretKeyFile = mkOption {
       type = types.path;
-      description = "path to file that contains the nix_serv_privkey secret (should not be in the store)";
+      description = "path to file that contains the nix_serve_privkey secret (should not be in the store)";
     };
   };
 
