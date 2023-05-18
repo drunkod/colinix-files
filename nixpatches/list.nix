@@ -77,8 +77,8 @@ in [
 
   (fetchpatch' {
     # nixos/lemmy: support nginx
-    saneCommit = "4c86db6dcb78795ac9bb514d9c779fd591070b23";
-    hash = "sha256-G7jGhSPUp9BMxh2yTzo0KUUVabMJeZ28YTA+0iPldRI=";
+    saneCommit = "f716a40d5d08e89d3760bee0ccc3a20017f4fecb";
+    hash = "sha256-G+k5ObeFm7ZVLVbhu6MAHX6MeOgzJuMcKiTN3rnCPDs=";
   })
 
   (fetchpatch' {
