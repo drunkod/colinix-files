@@ -25,6 +25,9 @@ stdenv.mkDerivation rec {
     sed -i "s@/etc/profile\.d/sxmo_init.sh@$out/etc/profile.d/sxmo_init.sh@" scripts/core/*.sh
     sed -i "s@/usr/bin/@@g" scripts/core/sxmo_version.sh
     sed -i 's:ExecStart=/usr/bin/:ExecStart=/usr/bin/env :' configs/superd/services/*.service
+
+    # on devices where volume is part of the primary keyboard, we want to avoid overwriting the default map
+    cp ${./en_us_105.xkb} configs/xkb/xkb_mobile_normal_buttons
   '';
 
   installFlags = [
