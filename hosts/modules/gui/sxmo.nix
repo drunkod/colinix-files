@@ -165,6 +165,7 @@ in
         conky
         gojq
         inotify-tools
+        jq
         libnotify
         lisgd
         mako
