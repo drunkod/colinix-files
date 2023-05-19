@@ -208,7 +208,7 @@ in
       services.greetd = lib.mkIf (cfg.greeter == "sway") {
         enable = true;
         # borrowed from gui/sway
-        settings.default_settings.command =
+        settings.default_session.command =
         let
           # start sway and have it construct the gtkgreeter
           sway-as-greeter = pkgs.writeShellScriptBin "sway-as-greeter" ''
