@@ -222,7 +222,7 @@ in
           gtkgreet-launcher = pkgs.writeShellScript "gtkgreet-launcher" ''
             # NB: the "command" field here is run in the user's shell.
             # so that command must exist on the specific user's path who is logging in. it doesn't need to exist system-wide.
-            ${pkgs.greetd.gtkgreet}/bin/gtkgreet --layer-shell --command sway-launcher
+            ${pkgs.greetd.gtkgreet}/bin/gtkgreet --layer-shell --command sxmo_winit.sh
           '';
         in "${sway-as-greeter}/bin/sway-as-greeter";
       };
