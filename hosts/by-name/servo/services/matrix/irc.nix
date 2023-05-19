@@ -132,6 +132,11 @@ in
           # notable channels:
           # - #merveilles
         };
+        "irc.libera.chat" = ircServer {
+          name = "libera";
+          # notable channels:
+          # - #hare
+        };
         "irc.myanonamouse.net" = ircServer {
           name = "MyAnonamouse";
           additionalAddresses = [ "irc2.myanonamouse.net" ];
