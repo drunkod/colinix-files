@@ -43,7 +43,7 @@
 #   - gestures:            lisgd
 #   - on-screen keyboard:  wvkbd (if wayland), svkbd (if X)
 #
-{ lib, config, pkgs, ... }:
+{ lib, config, pkgs, sane-lib, ... }:
 
 with lib;
 let
@@ -188,8 +188,11 @@ in
         SXMO_LISGD_INPUT_DEVICE = "/dev/input/by-id/usb-Wacom_Co._Ltd._Pen_and_multitouch_sensor-event-if00";
         # these identifiers are from `swaymsg -t get_inputs`
         SXMO_VOLUME_BUTTON = "1:1:AT_Translated_Set_2_keyboard";
+        # SXMO_VOLUME_BUTTON = "none";
         SXMO_POWER_BUTTON = "0:1:Power_Button";
+        # SXMO_POWER_BUTTON = "none";
         SXMO_DISABLE_LEDS = "1";
+        SXMO_UNLOCK_IDLE_TIME = "120";  # default
         # sxmo tries to determine device type from /proc/device-tree/compatible,
         # but that doesn't seem to exist on NixOS?  (or maybe it just doesn't exist
         # on non-aarch64 builds).
@@ -206,6 +209,8 @@ in
       } // lib.optionalAttrs (cfg.terminal != null) {
         TERMCMD = lib.mkDefault (if cfg.terminal == "vte" then "vte-2.91" else cfg.terminal);
       };
+
+      sane.user.fs.".cache/sxmo/sxmo.noidle" = sane-lib.fs.wantedText "";
     })
   ];
 }
