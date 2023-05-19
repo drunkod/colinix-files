@@ -29,7 +29,8 @@
   services.snapper.configs.nix = {
     # TODO: for the impermanent setup, we'd prefer to just do /nix/persist,
     # but that also requires setting up the persist dir as a subvol
-    subvolume = "/nix";
+    SUBVOLUME = "/nix";
+    ALLOW_USERS = [ "colin" ];
   };
 
   # TODO: only here for debugging
