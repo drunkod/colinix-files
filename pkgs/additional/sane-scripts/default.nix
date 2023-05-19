@@ -49,7 +49,6 @@ let
           sops
           sudo
           systemd
-          transmission
           util-linux
           which
         ];
@@ -123,6 +122,11 @@ let
       pname = "sane-bt-search";
       src = ./src;
       pyPkgs = [ "natsort" "requests" ];
+    };
+    bt-show = static-nix-shell.mkBash {
+      pname = "sane-bt-show";
+      src = ./src;
+      pkgs = [ "transmission" ];
     };
     date-math = static-nix-shell.mkPython3Bin {
       pname = "sane-date-math";
