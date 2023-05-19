@@ -188,6 +188,7 @@ in
         # these identifiers are from `swaymsg -t get_inputs`
         SXMO_VOLUME_BUTTON = "1:1:AT_Translated_Set_2_keyboard";
         SXMO_POWER_BUTTON = "0:1:Power_Button";
+        SXMO_DISABLE_LEDS = "1";
         # sxmo tries to determine device type from /proc/device-tree/compatible,
         # but that doesn't seem to exist on NixOS?  (or maybe it just doesn't exist
         # on non-aarch64 builds).
