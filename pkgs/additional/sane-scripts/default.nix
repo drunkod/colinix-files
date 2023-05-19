@@ -27,7 +27,6 @@ let
           "bin"
           coreutils-full
           curl
-          duplicity
           file
           findutils
           git
@@ -53,7 +52,6 @@ let
           which
         ];
         keep = {
-          "/run/secrets/duplicity_passphrase" = true;
           # we write here: keep it
           "/tmp/rmlint.sh" = true;
           # intentionally escapes (into user code)
@@ -77,7 +75,6 @@ let
 
         # list of programs which *can* or *cannot* exec their arguments
         execer = with pkgs; [
-          "cannot:${duplicity}/bin/duplicity"
           "cannot:${git}/bin/git"
           "cannot:${gocryptfs}/bin/gocryptfs"
           "cannot:${ifuse}/bin/ifuse"
@@ -89,7 +86,6 @@ let
           "cannot:${sops}/bin/sops"
           "cannot:${ssh-to-age}/bin/ssh-to-age"
           "cannot:${systemd}/bin/systemctl"
-          "cannot:${transmission}/bin/transmission-remote"
         ];
       };
     };
@@ -108,6 +104,16 @@ let
 
   py-scripts = {
     # anything added to this attrset gets symlink-joined into `sane-scripts`
+    backup-ls = static-nix-shell.mkBash {
+      pname = "sane-backup-ls";
+      src = ./src;
+      pkgs = [ "duplicity" ];
+    };
+    backup-restore = static-nix-shell.mkBash {
+      pname = "sane-backup-restore";
+      src = ./src;
+      pkgs = [ "duplicity" ];
+    };
     bt-add = static-nix-shell.mkBash {
       pname = "sane-bt-add";
       src = ./src;
