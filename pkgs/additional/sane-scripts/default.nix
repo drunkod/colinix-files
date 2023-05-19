@@ -108,16 +108,21 @@ let
   };
 
   py-scripts = {
-    # anything added to this attrset gets symlink-joined into into `sane-scripts`
-    bt-search = static-nix-shell.mkPython3Bin {
-      pname = "sane-bt-search";
+    # anything added to this attrset gets symlink-joined into `sane-scripts`
+    bt-add = static-nix-shell.mkBash {
+      pname = "sane-bt-add";
       src = ./src;
-      pyPkgs = [ "natsort" "requests" ];
+      pkgs = [ "transmission" ];
     };
     bt-rm = static-nix-shell.mkBash {
       pname = "sane-bt-rm";
       src = ./src;
       pkgs = [ "transmission" ];
+    };
+    bt-search = static-nix-shell.mkPython3Bin {
+      pname = "sane-bt-search";
+      src = ./src;
+      pyPkgs = [ "natsort" "requests" ];
     };
     date-math = static-nix-shell.mkPython3Bin {
       pname = "sane-date-math";
