@@ -67,7 +67,7 @@ in
         which is called by sxmo at key moments to proide user programmability.
       '';
     };
-    sane.gui.sxmo.deviceHooks = mkOption {
+    sane.gui.sxmo.deviceHooks.package = mkOption {
       type = types.package;
       default = pkgs.runCommand "sxmo-device-hooks" { } ''
         mkdir -p $out
@@ -87,6 +87,14 @@ in
       description = ''
         name of terminal to use for sxmo_terminal.sh.
         foot, st, and vte have special integrations in sxmo, but any will work.
+      '';
+    };
+    sane.gui.sxmo.settings = mkOption {
+      type = types.attrsOf types.string;
+      default = {};
+      description = ''
+        environment variables used to configure sxmo.
+        e.g. SXMO_UNLOCK_IDLE_TIME or SXMO_VOLUME_BUTTON.
       '';
     };
   };
@@ -188,31 +196,9 @@ in
           # TODO: only need the share/sxmo directly linked
           "${pkgs.sxmo-utils}/share"
         ];
-        # XXX: make sure the user is part of the `input` group!
-        SXMO_LISGD_INPUT_DEVICE = "/dev/input/by-id/usb-Wacom_Co._Ltd._Pen_and_multitouch_sensor-event-if00";
-        # these identifiers are from `swaymsg -t get_inputs`
-        SXMO_VOLUME_BUTTON = "1:1:AT_Translated_Set_2_keyboard";
-        # SXMO_VOLUME_BUTTON = "none";
-        SXMO_POWER_BUTTON = "0:1:Power_Button";
-        # SXMO_POWER_BUTTON = "none";
-        SXMO_DISABLE_LEDS = "1";
-        SXMO_UNLOCK_IDLE_TIME = "120";  # default
-        # sxmo tries to determine device type from /proc/device-tree/compatible,
-        # but that doesn't seem to exist on NixOS?  (or maybe it just doesn't exist
-        # on non-aarch64 builds).
-        # the device type informs (at least):
-        # - SXMO_WIFI_MODULE
-        # - SXMO_RTW_SCAN_INTERVAL
-        # - SXMO_SYS_FILES
-        # - SXMO_TOUCHSCREEN_ID
-        # - SXMO_MONITOR
-        # - SXMO_ALSA_CONTROL_NAME
-        # - SXMO_SWAY_SCALE
-        # see <repo:mil/sxmo-utils:scripts/deviceprofiles>
-        # SXMO_DEVICE_NAME = "pine64,pinephone-1.2";
       } // lib.optionalAttrs (cfg.terminal != null) {
         TERMCMD = lib.mkDefault (if cfg.terminal == "vte" then "vte-2.91" else cfg.terminal);
-      };
+      } // cfg.settings;
 
       sane.user.fs.".cache/sxmo/sxmo.noidle" = sane-lib.fs.wantedText "";
     })

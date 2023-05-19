@@ -2,6 +2,7 @@
 {
   imports = [
     ./fs.nix
+    ./polyfill.nix
   ];
 
   sane.roles.client = true;
