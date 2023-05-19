@@ -176,9 +176,13 @@ in
         wob
         xdg-user-dirs
 
+        # X11 only?
+        xdotool
+
         cfg.deviceHooks
         cfg.hooks
       ] ++ lib.optionals (cfg.terminal != null) [ pkgs."${cfg.terminal}" ];
+
       environment.sessionVariables = {
         XDG_DATA_DIRS = [
           # TODO: only need the share/sxmo directly linked
