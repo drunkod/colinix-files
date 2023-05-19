@@ -69,13 +69,6 @@ in [
   })
 
   (fetchpatch' {
-    # kiwix-tools: 3.4.0 -> 3.5.0
-    saneCommit = "146f2449a19101ee202aa578a2b1d7377779890b";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/232020";
-    hash = "sha256-Tqr8Ri8X2dDljDmWmjAQDRJGNenSFhrY/wr24h2JAh0=";
-  })
-
-  (fetchpatch' {
     # nixos/lemmy: support nginx
     saneCommit = "4c86db6dcb78795ac9bb514d9c779fd591070b23";
     hash = "sha256-G7jGhSPUp9BMxh2yTzo0KUUVabMJeZ28YTA+0iPldRI=";

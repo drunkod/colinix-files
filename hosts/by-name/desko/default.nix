@@ -36,11 +36,9 @@
   services.snapper.configs.nix = {
     # TODO: for the impermanent setup, we'd prefer to just do /nix/persist,
     # but that also requires setting up the persist dir as a subvol
-    subvolume = "/nix";
+    SUBVOLUME = "/nix";
     # TODO: ALLOW_USERS doesn't seem to work. still need `sudo snapper -c nix list`
-    extraConfig = ''
-      ALLOW_USERS = "colin";
-    '';
+    ALLOW_USERS = [ "colin" ];
   };
 
   programs.steam = {
