@@ -171,6 +171,7 @@ in
         mako
         superd
         sway
+        swayidle
         sxmo-utils
         wob
         xdg-user-dirs
