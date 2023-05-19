@@ -45,15 +45,23 @@
 #
 { lib, config, pkgs, sane-lib, ... }:
 
-with lib;
 let
   cfg = config.sane.gui.sxmo;
 in
 {
-  options = {
+  options = with lib; {
     sane.gui.sxmo.enable = mkOption {
       default = false;
       type = types.bool;
+    };
+    sane.gui.sxmo.greeter = mkOption {
+      type = types.enum [ "lightdm-mobile" "sway" ];
+      default = "lightdm-mobile";
+      description = ''
+        which greeter to use.
+        "lightdm-mobile" => keypad style greeter. can only enter digits 0-9 as password.
+        "sway" => layered sway greeter. behaves as if you booted to swaylock.
+      '';
     };
     sane.gui.sxmo.hooks = mkOption {
       type = types.package;
@@ -67,7 +75,7 @@ in
         which is called by sxmo at key moments to proide user programmability.
       '';
     };
-    sane.gui.sxmo.deviceHooks.package = mkOption {
+    sane.gui.sxmo.deviceHooks = mkOption {
       type = types.package;
       default = pkgs.runCommand "sxmo-device-hooks" { } ''
         mkdir -p $out
@@ -99,7 +107,7 @@ in
     };
   };
 
-  config = mkMerge [
+  config = lib.mkMerge [
     {
       sane.programs.sxmoApps = {
         package = null;
@@ -109,7 +117,7 @@ in
       };
     }
 
-    (mkIf cfg.enable {
+    (lib.mkIf cfg.enable {
       sane.programs.sxmoApps.enableFor.user.colin = true;
 
       # TODO: probably need to enable pipewire
@@ -125,34 +133,6 @@ in
       security.doas.enable = true;
       security.doas.wheelNeedsPassword = false;
 
-      # services.xserver.windowManager.session = [{
-      #   name = "sxmo";
-      #   desktopNames = [ "sxmo" ];
-      #   start = ''
-      #     ${pkgs.sxmo-utils}/bin/sxmo_xinit.sh &
-      #     waitPID=$!
-      #   '';
-      # }];
-      # services.xserver.enable = true;
-
-      # services.greetd = {
-      #   enable = true;
-      #   settings = {
-      #     default_session = {
-      #       command = "${pkgs.sxmo-utils}/bin/sxmo_winit.sh";
-      #       user = "colin";
-      #     };
-      #   };
-      # };
-
-      services.xserver.enable = true;
-      services.xserver.displayManager.lightdm.enable = true;
-      services.xserver.displayManager.lightdm.greeters.gtk.enable = true;
-      services.xserver.displayManager.lightdm.extraSeatDefaults = ''
-        user-session = swmo
-      '';
-      services.xserver.displayManager.sessionPackages = [ pkgs.sxmo-utils ];
-
       # TODO: not all of these fonts seem to be mapped to the correct icon
       fonts.fonts = [ pkgs.nerdfonts ];
 
@@ -166,6 +146,7 @@ in
       };
       systemd.user.services."pipewire".wantedBy = [ "graphical-session.target" ];
 
+      # TODO: could use `displayManager.sessionPackages`?
       environment.systemPackages = with pkgs; [
         bc
         bemenu
@@ -201,6 +182,75 @@ in
       } // cfg.settings;
 
       sane.user.fs.".cache/sxmo/sxmo.noidle" = sane-lib.fs.wantedText "";
+
+
+      ## greeter
+
+      services.xserver = lib.mkIf (cfg.greeter == "lightdm-mobile") {
+        enable = true;
+
+        displayManager.lightdm.enable = true;
+        displayManager.lightdm.greeters.mobile.enable = true;
+        displayManager.lightdm.extraSeatDefaults = ''
+          user-session = swmo
+        '';
+
+        # taken from gui/phosh:
+        # NB: setting defaultSession has the critical side-effect that it lets org.freedesktop.AccountsService
+        # know that our user exists. this ensures lightdm succeeds when calling /org/freedesktop/AccountsServices ListCachedUsers
+        # lightdm greeters get the login users from lightdm which gets it from org.freedesktop.Accounts.ListCachedUsers.
+        # this requires the user we want to login as to be cached.
+        displayManager.job.preStart = ''
+          ${pkgs.systemd}/bin/busctl call org.freedesktop.Accounts /org/freedesktop/Accounts org.freedesktop.Accounts CacheUser s colin
+        '';
+      };
+
+      services.greetd = lib.mkIf (cfg.greeter == "sway") {
+        enable = true;
+        # borrowed from gui/sway
+        settings.default_settings.command =
+        let
+          # start sway and have it construct the gtkgreeter
+          sway-as-greeter = pkgs.writeShellScriptBin "sway-as-greeter" ''
+            ${pkgs.sway}/bin/sway --debug --config ${sway-config-into-gtkgreet} > /var/log/sway/sway-as-greeter.log 2>&1
+          '';
+          # (config file for the above)
+          sway-config-into-gtkgreet = pkgs.writeText "greetd-sway-config" ''
+            exec "${gtkgreet-launcher}"
+          '';
+          # gtkgreet which launches a layered sway instance
+          gtkgreet-launcher = pkgs.writeShellScript "gtkgreet-launcher" ''
+            # NB: the "command" field here is run in the user's shell.
+            # so that command must exist on the specific user's path who is logging in. it doesn't need to exist system-wide.
+            ${pkgs.greetd.gtkgreet}/bin/gtkgreet --layer-shell --command sway-launcher
+          '';
+        in "${sway-as-greeter}/bin/sway-as-greeter";
+      };
+
+      sane.fs."/var/log/sway" = lib.mkIf (cfg.greeter == "sway") {
+        dir.acl.mode = "0777";
+        wantedBeforeBy = [ "greetd.service" "display-manager.service" ];
+      };
+
+      # services.xserver.windowManager.session = [{
+      #   name = "sxmo";
+      #   desktopNames = [ "sxmo" ];
+      #   start = ''
+      #     ${pkgs.sxmo-utils}/bin/sxmo_xinit.sh &
+      #     waitPID=$!
+      #   '';
+      # }];
+      # services.xserver.enable = true;
+
+      # services.greetd = {
+      #   enable = true;
+      #   settings = {
+      #     default_session = {
+      #       command = "${pkgs.sxmo-utils}/bin/sxmo_winit.sh";
+      #       user = "colin";
+      #     };
+      #   };
+      # };
     })
   ];
 }
