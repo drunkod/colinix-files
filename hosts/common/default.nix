@@ -27,6 +27,7 @@
   sane.fs."/var/lib/private".dir.acl.mode = "0700";
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowBroken = true;  # NIXPKGS_ALLOW_BROKEN
 
   # time.timeZone = "America/Los_Angeles";
   time.timeZone = "Etc/UTC";  # DST is too confusing for me => use a stable timezone
