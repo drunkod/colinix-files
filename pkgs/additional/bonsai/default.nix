@@ -18,14 +18,6 @@ stdenv.mkDerivation rec {
     hash = "sha256-jOtFUpl2/Aa7f8JMZf6g63ayFOi+Ci+i7Ac63k63znc=";
   };
 
-  patches = [
-    ./0001-cross-compile.patch
-  ];
-
-  postPatch = lib.optionalString stdenv.isAarch64 ''
-    sed -i 's/hare build/hare build -t aarch64/g' Makefile
-  '';
-
   nativeBuildInputs = [
     hare
     hare-ev
