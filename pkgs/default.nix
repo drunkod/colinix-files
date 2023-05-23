@@ -13,9 +13,9 @@ let
   pythonPackagesOverlay = py-final: py-prev: import ./python-packages {
     inherit (py-final) callPackage;
   };
-  final' = if final != null then final else (pkgs // sane);
+  final' = if final != null then final else pkgs.appendOverlays [(_: _: sane)];
   sane = with final'; {
-    sane-data = import ../modules/data { inherit lib; };
+    sane-data = import ../modules/data { inherit lib sane-lib; };
     sane-lib = import ../modules/lib final';
 
     ### ADDITIONAL PACKAGES
