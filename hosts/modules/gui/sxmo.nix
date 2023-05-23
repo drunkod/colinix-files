@@ -195,6 +195,10 @@ in
           user-session = swmo
         '';
 
+        displayManager.sessionPackages = with pkgs; [
+          sxmo-utils  # this gets share/wayland-sessions/swmo.desktop linked
+        ];
+
         # taken from gui/phosh:
         # NB: setting defaultSession has the critical side-effect that it lets org.freedesktop.AccountsService
         # know that our user exists. this ensures lightdm succeeds when calling /org/freedesktop/AccountsServices ListCachedUsers
@@ -231,6 +235,9 @@ in
         dir.acl.mode = "0777";
         wantedBeforeBy = [ "greetd.service" "display-manager.service" ];
       };
+
+      # lightdm-mobile-greeter: "The name org.a11y.Bus was not provided by any .service files"
+      services.gnome.at-spi2-core.enable = true;
 
       # services.xserver.windowManager.session = [{
       #   name = "sxmo";
