@@ -120,6 +120,9 @@ in
     (lib.mkIf cfg.enable {
       sane.programs.sxmoApps.enableFor.user.colin = true;
 
+      # some programs (e.g. fractal/nheko) **require** a "Secret Service Provider"
+      services.gnome.gnome-keyring.enable = true;
+
       # TODO: probably need to enable pipewire
 
       networking.useDHCP = false;
