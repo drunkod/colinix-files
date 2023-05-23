@@ -4,6 +4,7 @@
     ./firmware.nix
     ./fs.nix
     ./kernel.nix
+    ./polyfill.nix
   ];
 
   sane.roles.client = true;
