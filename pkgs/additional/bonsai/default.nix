@@ -34,33 +34,12 @@ stdenv.mkDerivation rec {
 
   preConfigure = ''
     export HARECACHE=$(mktemp -d)
-    # export AR=/bin/foob
-    # export AR=$${binutils-unwrapped}/bin/ar
-    # export AR="$${coreutils}/bin/echo --"
-    # export ARFLAGS="--"
     # FIX "ar: invalid option -- '/'" bug in older versions of hare.
     # should be safe to remove once updated past 2023/05/22-ish.
     export ARFLAGS="-csr"
   '';
 
-  # makeFlags = [
-  #   ''HAREFLAGS="-t aarch64"''
-  #   ''QBEFlags="-t arm64"''
-  #   # "ARCH=aarch64"
-  #   "all"
-  # ];
-
-  installFlags = [
-    "PREFIX="
-    "DESTDIR=$(out)"
-    # ''HAREFLAGS="-t aarch64"''
-    # ''QBEFlags="-t arm64"''
-  ];
-
-  # ARCH = "aarch64";
-  # HAREFLAGS = "-t aarch64";
-  # QBEFLAGS = "-t arm64";
-  # AARCH64_AR = "/bin/foob";
+  installFlags = [ "PREFIX=" "DESTDIR=$(out)" ];
 
   passthru.updateScript = gitUpdater {
     rev-prefix = "v";
