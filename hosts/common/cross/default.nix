@@ -403,6 +403,7 @@ in
           # packages which don't cross compile
           inherit (emulated)
             # adwaita-qt6  # although qtbase cross-compiles with minor change, qtModule's qtbase can't
+            # bonsai
             # conky  # needs to be able to build lua
             # duplicity  # python3.10-s3transfer
             # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
@@ -412,6 +413,7 @@ in
             # though if we make the members overridable maybe we can get away with emulating only stdenv.
             gnustep  # gnustep.base: "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings."
             # grpc
+            hare
             # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
             # hdf5  # configure: error: cannot run test program while cross compiling
             # http2

@@ -124,6 +124,18 @@ in [
     hash = "sha256-+g3XhmBt/udhbBDiVyfWnfXKvZTvDurlvPblQ9HYp3s=";
   })
 
+  (fetchpatch' {
+    # harec: support pkgsCross cross-compilation
+    saneCommit = "6f77961e94fe736b2f9963dd9c6411b36f8bb9c5";
+    hash = "sha256-3QmV7ihPBEdLDGfJQBN+J/A3DpzpGFjzggsXLbr3hOE=";
+  })
+
+  (fetchpatch' {
+    # hare: hack in aarch64 support
+    saneCommit = "c147f81f374706aa286ac153668bbed8a44b1ad1";
+    hash = "sha256-X9l4Gabr8iIcnoVGyePOHid5NCk5mp2USDrmn5dwGLQ=";
+  })
+
   # for raspberry pi: allow building u-boot for rpi 4{,00}
   # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
   #   (it's a dupe of https://github.com/NixOS/nixpkgs/pull/112677 )
