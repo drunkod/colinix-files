@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
     export HARECACHE=$(mktemp -d)
     # FIX "ar: invalid option -- '/'" bug in older versions of hare.
     # should be safe to remove once updated past 2023/05/22-ish.
-    export ARFLAGS="-csr"
+    # export ARFLAGS="-csr"
   '';
 
   installFlags = [ "PREFIX=" "DESTDIR=$(out)" ];

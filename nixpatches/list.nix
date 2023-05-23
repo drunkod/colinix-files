@@ -131,9 +131,10 @@ in [
   })
 
   (fetchpatch' {
-    # hare: hack in aarch64 support
-    saneCommit = "c147f81f374706aa286ac153668bbed8a44b1ad1";
-    hash = "sha256-X9l4Gabr8iIcnoVGyePOHid5NCk5mp2USDrmn5dwGLQ=";
+    # hare: unstable-2023-03-15 -> unstable-2023-04-23
+    # TODO: remove aarch64 block & then ship upstream
+    saneCommit = "ef2a506dac3258c51733c1f09889b85ad356d0dd";
+    hash = "sha256-cYwen/8F0tK+g5rSuffDjNCOIIPbgzjDSaNyjtNW9ts=";
   })
 
   # for raspberry pi: allow building u-boot for rpi 4{,00}
