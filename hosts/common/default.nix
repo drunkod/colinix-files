@@ -1,7 +1,6 @@
 { lib, pkgs, ... }:
 {
   imports = [
-    ./cross
     ./feeds.nix
     ./fs.nix
     ./hardware.nix

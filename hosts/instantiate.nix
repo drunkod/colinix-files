@@ -15,5 +15,4 @@
 
   networking.hostName = hostName;
   nixpkgs.buildPlatform = lib.mkIf (localSystem != null) localSystem;
-  sane.cross.enablePatches = localSystem != null;
 }

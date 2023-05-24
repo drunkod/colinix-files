@@ -124,17 +124,22 @@ in [
     hash = "sha256-+g3XhmBt/udhbBDiVyfWnfXKvZTvDurlvPblQ9HYp3s=";
   })
 
-  (fetchpatch' {
-    # harec: support pkgsCross cross-compilation
-    saneCommit = "6f77961e94fe736b2f9963dd9c6411b36f8bb9c5";
-    hash = "sha256-3QmV7ihPBEdLDGfJQBN+J/A3DpzpGFjzggsXLbr3hOE=";
-  })
+  # (fetchpatch' {
+  #   # harec: support pkgsCross cross-compilation
+  #   saneCommit = "6f77961e94fe736b2f9963dd9c6411b36f8bb9c5";
+  #   hash = "sha256-3QmV7ihPBEdLDGfJQBN+J/A3DpzpGFjzggsXLbr3hOE=";
+  # })
 
   (fetchpatch' {
     # hare: unstable-2023-03-15 -> unstable-2023-04-23
-    # TODO: remove aarch64 block & then ship upstream
-    saneCommit = "ef2a506dac3258c51733c1f09889b85ad356d0dd";
-    hash = "sha256-cYwen/8F0tK+g5rSuffDjNCOIIPbgzjDSaNyjtNW9ts=";
+    saneCommit = "cdea9097fd6afb43751e42f1cd1b50e2bffb4d58";
+    hash = "sha256-33LoktURM81bLsfY3v+SHL30Qju9GyOMCXVbsGrgOjU=";
+  })
+
+  (fetchpatch' {
+    # harec: unstable-2023-02-18 -> unstable-2023-04-25
+    saneCommit = "5595e88de982474ba6cc9c4d7f4a7a246edb4980";
+    hash = "sha256-kKhygKpf3QqQR0kSxutKwZXbNcsSTp/z165h88J8/+g=";
   })
 
   # for raspberry pi: allow building u-boot for rpi 4{,00}
