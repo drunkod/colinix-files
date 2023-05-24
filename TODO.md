@@ -42,6 +42,10 @@
 - have xdg-open parse `<repo:...> URIs (or adjust them so that it _can_ parse)
 - `sane.programs`: auto-populate defaults with everything from `pkgs`
 - zsh: disable "command not found" corrections
+- sxmo: allow rotation to the upside-down position
+    - see: <repo:mil/sxmo-utils:scripts/core/sxmo_autorotate.sh>
+    - all orientations *except* upside down are supported
+- sxmo: launch with auto-rotation enabled
 
 ### perf
 - why does nixos-rebuild switch take 5 minutes when net is flakey?
