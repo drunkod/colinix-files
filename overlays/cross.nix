@@ -1145,4 +1145,14 @@ in {
     postInstall = "";
   });
   # XXX: aarch64 webp-pixbuf-loader wanted by gdk-pixbuf-loaders.cache.drv, wanted by aarch64 gnome-control-center
+
+  wvkbd = (
+    # "wayland-scanner: no such program"
+    mvToNativeInputs [ final.wayland-scanner ] prev.wvkbd
+  ).overrideAttrs (upstream: {
+    postPatch = upstream.postPatch or "" + ''
+      substituteInPlace Makefile \
+        --replace "pkg-config" "$PKG_CONFIG"
+    '';
+  });
 }
