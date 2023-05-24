@@ -52,8 +52,9 @@ let
     # ubootRaspberryPi4_64bit = callPackage ./additional/ubootRaspberryPi4_64bit { };
 
     # provided by nixpkgs patch or upstream PR
-    # cargo-docset = callPackage ./additional/cargo-docset { };
-    # splatmoji = callPackage ./additional/splatmoji { };
+    # i still conditionally callPackage these to make them available to external consumers (like NUR)
+    cargo-docset = unpatched.cargo-docset or (callPackage ./additional/cargo-docset { });
+    splatmoji = unpatched.splatmoji or (callPackage ./additional/splatmoji { });
 
 
     ### PATCHED PACKAGES
