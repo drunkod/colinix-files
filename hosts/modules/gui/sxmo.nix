@@ -97,6 +97,16 @@ in
         foot, st, and vte have special integrations in sxmo, but any will work.
       '';
     };
+    sane.gui.sxmo.keyboard = mkOption {
+      # type = types.nullOr (types.enum ["wvkbd"])
+      type = types.nullOr types.string;
+      default = "wvkbd";
+      description = ''
+        name of on-screen-keyboard to use for sxmo_keyboard.sh.
+        this sets the KEYBOARD environment variable.
+        see also: KEYBOARD_ARGS.
+      '';
+    };
     sane.gui.sxmo.settings = mkOption {
       type = types.attrsOf types.string;
       default = {};
@@ -166,6 +176,7 @@ in
         swayidle
         sxmo-utils
         wob
+        wvkbd
         xdg-user-dirs
 
         # X11 only?
@@ -173,7 +184,8 @@ in
 
         cfg.deviceHooks
         cfg.hooks
-      ] ++ lib.optionals (cfg.terminal != null) [ pkgs."${cfg.terminal}" ];
+      ] ++ lib.optionals (cfg.terminal != null) [ pkgs."${cfg.terminal}" ]
+        ++ lib.optionals (cfg.keyboard != null) [ pkgs."${cfg.keyboard}" ];
 
       environment.sessionVariables = {
         XDG_DATA_DIRS = [
@@ -182,6 +194,8 @@ in
         ];
       } // lib.optionalAttrs (cfg.terminal != null) {
         TERMCMD = lib.mkDefault (if cfg.terminal == "vte" then "vte-2.91" else cfg.terminal);
+      } // lib.optionalAttrs (cfg.keyboard != null) {
+        KEYBOARD = lib.mkDefault (if cfg.keyboard == "wvkbd" then "wvkbd-mobintl" else cfg.keyboard);
       } // cfg.settings;
 
       sane.user.fs.".cache/sxmo/sxmo.noidle" = sane-lib.fs.wantedText "";
