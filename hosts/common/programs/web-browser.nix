@@ -56,10 +56,26 @@ let
     nixExtensions = concatMap (ext: optional ext.enable ext.package) (attrValues cfg.addons);
 
     extraPolicies = {
+      FirefoxHome = {
+        Search = true;
+        Pocket = false;
+        Snippets = false;
+        TopSites = false;
+        Highlights = false;
+      };
       NoDefaultBookmarks = true;
+      OfferToSaveLogins = false;
+      OfferToSaveLoginsDefault = false;
+      PasswordManagerEnabled = false;
       SearchEngines = {
         Default = "DuckDuckGo";
       };
+      UserMessaging = {
+        ExtensionRecommendations = false;
+        SkipOnboarding = true;
+      };
+
+      # these were taken from Librewolf
       AppUpdateURL = "https://localhost";
       DisableAppUpdate = true;
       OverrideFirstRunPage = "";
@@ -88,6 +104,7 @@ let
       # };
       # NewTabPage = true;
     };
+    # extraPrefs = ...
   };
 
   addonOpts = types.submodule {
