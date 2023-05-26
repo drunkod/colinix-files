@@ -20,4 +20,8 @@
     General.RoamThreshold = "-52";  # default -70
     General.RoamThreshold5G = "-52";  # default -76
   };
+
+  networking.firewall.allowedUDPPorts = [
+    1900  # to received UPnP advertisements. required by sane-ip-check-upnp
+  ];
 }
