@@ -86,7 +86,7 @@ if __name__ == '__main__':
         print(e)
         sys.exit(1)
 
-    root_device, _wan = get_any_wan()
+    root_device, lan, _wan = get_any_wan()
     hostname = subprocess.check_output(["hostname"]).decode("utf-8").strip()
     for (proto, port) in forwards:
-        forward_port(root_device, proto, port, f"colin-{hostname}", duration=duration)
+        forward_port(root_device, proto, port, lan_ip=lan, reason=f"colin-{hostname}", duration=duration)
