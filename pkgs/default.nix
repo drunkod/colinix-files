@@ -25,6 +25,7 @@ let
     browserpass-extension = callPackage ./additional/browserpass-extension { };
     cargoDocsetHook = callPackage ./additional/cargo-docset/hook.nix { };
     feeds = lib.recurseIntoAttrs (callPackage ./additional/feeds { });
+    jellyfin-media-player-qt6 = callPackage ./additional/jellyfin-media-player-qt6 { };
     gopass-native-messaging-host = callPackage ./additional/gopass-native-messaging-host { };
     gpodder-configured = callPackage ./additional/gpodder-configured { };
     hare-ev = unpatched.hare-ev or (callPackage ./additional/hare-ev { });
