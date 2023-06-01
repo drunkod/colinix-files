@@ -79,9 +79,10 @@
 
   # inject specialized alsa configs via the environment.
   # specifically, this gets the pinephone headphones & internal earpiece working.
-  # see pkgs/patched/alsa-ucm-conf for more info
+  # see pkgs/patched/alsa-ucm-conf for more info.
+  # older code had me also setting `systemd.services.pulseaudio.environment.ALSA_CONFIG_UCM2`,
+  # but it seems safe to set this only globally, and not per-service.
   environment.variables.ALSA_CONFIG_UCM2 = "${pkgs.alsa-ucm-conf-sane}/share/alsa/ucm2";
-  systemd.services.pulseaudio.environment.ALSA_CONFIG_UCM2 = "${pkgs.alsa-ucm-conf-sane}/share/alsa/ucm2";
 
   hardware.opengl.driSupport = true;
 }
