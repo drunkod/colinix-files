@@ -39,6 +39,7 @@ let
           openssh
           openssl
           nix-shell-scripts.ip-check
+          nix-shell-scripts.mount-servo
           rmlint
           rsync
           ssh-to-age
@@ -183,6 +184,16 @@ let
     ip-reconnect = static-nix-shell.mkPython3Bin {
       pname = "sane-ip-reconnect";
       src = ./src;
+    };
+    mount-servo = static-nix-shell.mkBash {
+      pname = "sane-mount-servo";
+      src = ./src;
+      pkgs = [ "coreutils-full" ];
+    };
+    mount-servo-root = static-nix-shell.mkBash {
+      pname = "sane-mount-servo-root";
+      src = ./src;
+      pkgs = [ "coreutils-full" ];
     };
     reclaim-boot-space = static-nix-shell.mkPython3Bin {
       pname = "sane-reclaim-boot-space";
