@@ -38,7 +38,7 @@ let
           oath-toolkit
           openssh
           openssl
-          py-scripts.ip-check
+          nix-shell-scripts.ip-check
           rmlint
           rsync
           ssh-to-age
@@ -91,7 +91,7 @@ let
       let
         rmPy = builtins.concatStringsSep
           "\n"
-          (lib.mapAttrsToList (name: pkg: "rm ${pkg.pname}") py-scripts)
+          (lib.mapAttrsToList (name: pkg: "rm ${pkg.pname}") nix-shell-scripts)
         ;
       in ''
         # remove python library files, and python binaries  (those are packaged further below)
@@ -105,7 +105,7 @@ let
     '';
   };
 
-  py-scripts = {
+  nix-shell-scripts = {
     # anything added to this attrset gets symlink-joined into `sane-scripts`
     backup-ls = static-nix-shell.mkBash {
       pname = "sane-backup-ls";
@@ -180,19 +180,19 @@ let
         cp -R lib/* $out/bin/lib/
       '';
     };
-    reclaim-boot-space = static-nix-shell.mkPython3Bin {
-      pname = "sane-reclaim-boot-space";
-      src = ./src;
-    };
     ip-reconnect = static-nix-shell.mkPython3Bin {
       pname = "sane-ip-reconnect";
+      src = ./src;
+    };
+    reclaim-boot-space = static-nix-shell.mkPython3Bin {
+      pname = "sane-reclaim-boot-space";
       src = ./src;
     };
   };
 in
 symlinkJoin {
   name = "sane-scripts";
-  paths = [ shell-scripts ] ++ lib.attrValues py-scripts;
+  paths = [ shell-scripts ] ++ lib.attrValues nix-shell-scripts;
   meta = {
     description = "collection of scripts associated with uninsane systems";
     homepage = "https://git.uninsane.org";
