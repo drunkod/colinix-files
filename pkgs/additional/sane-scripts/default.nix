@@ -29,7 +29,6 @@ let
           curl
           file
           findutils
-          git
           gnugrep
           gnused
           gocryptfs
@@ -152,6 +151,11 @@ let
       pname = "sane-find-dotfiles";
       src = ./src;
       pkgs = [ "findutils" ];
+    };
+    git-init = static-nix-shell.mkBash {
+      pname = "sane-git-init";
+      src = ./src;
+      pkgs = [ "git" ];
     };
     ip-check-upnp = static-nix-shell.mkPython3Bin {
       pname = "sane-ip-check-upnp";
