@@ -140,6 +140,11 @@ let
       src = ./src;
       pkgs = [ "transmission" ];
     };
+    deadlines = static-nix-shell.mkBash {
+      pname = "sane-deadlines";
+      src = ./src;
+      pkgs = [ "coreutils-full" ];
+    };
     ip-check-upnp = static-nix-shell.mkPython3Bin {
       pname = "sane-ip-check-upnp";
       src = ./src;
