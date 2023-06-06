@@ -26,7 +26,6 @@ let
           # see: <https://github.com/abathur/resholve/issues/26>
           "bin"
           coreutils-full
-          curl
           file
           findutils
           gnugrep
@@ -39,6 +38,7 @@ let
           oath-toolkit
           openssh
           openssl
+          py-scripts.ip-check
           rmlint
           rsync
           ssh-to-age
@@ -156,6 +156,11 @@ let
       pname = "sane-git-init";
       src = ./src;
       pkgs = [ "git" ];
+    };
+    ip-check = static-nix-shell.mkBash {
+      pname = "sane-ip-check";
+      src = ./src;
+      pkgs = [ "curl" "gnugrep" ];
     };
     ip-check-upnp = static-nix-shell.mkPython3Bin {
       pname = "sane-ip-check-upnp";
