@@ -35,10 +35,8 @@ let
           gocryptfs
           ifuse
           inetutils
-          inotify-tools
           iwd
           jq
-          ncurses
           oath-toolkit
           openssh
           openssl
@@ -144,6 +142,11 @@ let
       pname = "sane-deadlines";
       src = ./src;
       pkgs = [ "coreutils-full" ];
+    };
+    dev-cargo-loop = static-nix-shell.mkBash {
+      pname = "sane-dev-cargo-loop";
+      src = ./src;
+      pkgs = [ "inotify-tools" "ncurses" ];
     };
     ip-check-upnp = static-nix-shell.mkPython3Bin {
       pname = "sane-ip-check-upnp";
