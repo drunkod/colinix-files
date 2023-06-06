@@ -148,6 +148,11 @@ let
       src = ./src;
       pkgs = [ "inotify-tools" "ncurses" ];
     };
+    find-dotfiles = static-nix-shell.mkBash {
+      pname = "sane-find-dotfiles";
+      src = ./src;
+      pkgs = [ "findutils" ];
+    };
     ip-check-upnp = static-nix-shell.mkPython3Bin {
       pname = "sane-ip-check-upnp";
       src = ./src;
