@@ -256,6 +256,11 @@ let
       src = ./src;
       pkgs = [ "inetutils" "systemd" ];
     };
+    ssl-dump = static-nix-shell.mkBash {
+      pname = "sane-ssl-dump";
+      src = ./src;
+      pkgs = [ "openssl" ];
+    };
   };
 in
 symlinkJoin {
