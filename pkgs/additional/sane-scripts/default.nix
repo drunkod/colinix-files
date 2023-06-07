@@ -261,6 +261,11 @@ let
       src = ./src;
       pkgs = [ "openssl" ];
     };
+    stop-all-servo = static-nix-shell.mkBash {
+      pname = "sane-stop-all-servo";
+      src = ./src;
+      pkgs = [ "systemd" ];
+    };
   };
 in
 symlinkJoin {
