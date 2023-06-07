@@ -286,6 +286,11 @@ let
       src = ./src;
       pkgs = [ "coreutils-full" "gnugrep" "gnused" "sane-scripts.ip-check" "systemd" ];
     };
+    vpn-up = static-nix-shell.mkBash {
+      pname = "sane-vpn-up";
+      src = ./src;
+      pkgs = [ "coreutils-full" "gnugrep" "gnused" "sane-scripts.ip-check" "systemd" ];
+    };
   };
 in
 symlinkJoin {
