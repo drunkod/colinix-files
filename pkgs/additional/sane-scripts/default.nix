@@ -229,6 +229,11 @@ let
       src = ./src;
       pkgs = [ "systemd" ];
     };
+    reclaim-disk-space = static-nix-shell.mkBash {
+      pname = "sane-reclaim-disk-space";
+      src = ./src;
+      pkgs = [ "nix" "rmlint" "util-linux" ];
+    };
     reclaim-boot-space = static-nix-shell.mkPython3Bin {
       pname = "sane-reclaim-boot-space";
       src = ./src;
