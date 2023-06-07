@@ -60,7 +60,7 @@
       zone-dir = "/var/lib/trust-dns";
       zone-wan = "${zone-dir}/wan/uninsane.org.zone";
       zone-lan = "${zone-dir}/lan/uninsane.org.zone";
-      zone-template = pkgs.writeText "uninsane.org.zone.in" config.sane.services.trust-dns.generatedZones."uninsane.org";
+      zone-template = config.sane.services.trust-dns.zones."uninsane.org".file;
     in pkgs.writeShellScriptBin "named" ''
       # compute wan/lan values
       mkdir -p ${zone-dir}/{ovpn,wan,lan}
