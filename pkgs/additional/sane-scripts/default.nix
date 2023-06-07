@@ -276,6 +276,11 @@ let
       src = ./src;
       pkgs = [ "coreutils-full" "ifuse" "rsync" ];
     };
+    sync-from-servo = static-nix-shell.mkBash {
+      pname = "sane-sync-from-servo";
+      src = ./src;
+      pkgs = [ "rsync" "sane-scripts.mount-servo" ];
+    };
   };
 in
 symlinkJoin {
