@@ -251,6 +251,11 @@ let
       src = ./src;
       pkgs = [ "coreutils-full" "findutils" "sops" ];
     };
+    shutdown = static-nix-shell.mkBash {
+      pname = "sane-shutdown";
+      src = ./src;
+      pkgs = [ "inetutils" "systemd" ];
+    };
   };
 in
 symlinkJoin {
