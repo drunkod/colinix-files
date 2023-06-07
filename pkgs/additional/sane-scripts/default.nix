@@ -195,6 +195,30 @@ let
       src = ./src;
       pkgs = [ "coreutils-full" ];
     };
+    private-change-passwd = static-nix-shell.mkBash {
+      pname = "sane-private-change-passwd";
+      src = ./src;
+      pkgs = [ "gocryptfs" "rsync" "sane-scripts.private-unlock" ];
+    };
+    private-do = static-nix-shell.mkBash {
+      pname = "sane-private-do";
+      src = ./src;
+      pkgs = [ "sane-scripts.private-unlock" ];
+    };
+    private-unlock = static-nix-shell.mkBash {
+      pname = "sane-private-unlock";
+      src = ./src;
+      pkgs = [ "gocryptfs" ];
+    };
+    private-lock = static-nix-shell.mkBash {
+      pname = "sane-private-lock";
+      src = ./src;
+    };
+    private-init = static-nix-shell.mkBash {
+      pname = "sane-private-init";
+      src = ./src;
+      pkgs = [ "gocryptfs" ];
+    };
     reclaim-boot-space = static-nix-shell.mkPython3Bin {
       pname = "sane-reclaim-boot-space";
       src = ./src;
@@ -204,6 +228,7 @@ in
 symlinkJoin {
   name = "sane-scripts";
   paths = [ shell-scripts ] ++ lib.attrValues nix-shell-scripts;
+  passthru = nix-shell-scripts;
   meta = {
     description = "collection of scripts associated with uninsane systems";
     homepage = "https://git.uninsane.org";
