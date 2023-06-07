@@ -291,6 +291,11 @@ let
       src = ./src;
       pkgs = [ "coreutils-full" "gnugrep" "gnused" "sane-scripts.ip-check" "systemd" ];
     };
+    which = static-nix-shell.mkBash {
+      pname = "sane-which";
+      src = ./src;
+      pkgs = [ "coreutils-full" "file" ];
+    };
   };
 in
 symlinkJoin {
