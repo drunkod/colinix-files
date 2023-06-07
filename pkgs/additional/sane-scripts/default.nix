@@ -35,7 +35,6 @@ let
           inetutils
           iwd
           jq
-          oath-toolkit
           openssh
           openssl
           nix-shell-scripts.ip-check
@@ -77,7 +76,6 @@ let
           "cannot:${gocryptfs}/bin/gocryptfs"
           "cannot:${ifuse}/bin/ifuse"
           "cannot:${iwd}/bin/iwctl"
-          "cannot:${oath-toolkit}/bin/oathtool"
           "cannot:${openssh}/bin/ssh-keygen"
           "cannot:${rmlint}/bin/rmlint"
           "cannot:${rsync}/bin/rsync"
@@ -237,6 +235,21 @@ let
     reclaim-boot-space = static-nix-shell.mkPython3Bin {
       pname = "sane-reclaim-boot-space";
       src = ./src;
+    };
+    secrets-dump = static-nix-shell.mkBash {
+      pname = "sane-secrets-dump";
+      src = ./src;
+      pkgs = [ "gnugrep" "sops" "oath-toolkit" ];
+    };
+    secrets-unlock = static-nix-shell.mkBash {
+      pname = "sane-secrets-unlock";
+      src = ./src;
+      pkgs = [ "coreutils-full" "openssh" "ssh-to-age" ];
+    };
+    secrets-update-keys = static-nix-shell.mkBash {
+      pname = "sane-secrets-update-keys";
+      src = ./src;
+      pkgs = [ "coreutils-full" "findutils" "sops" ];
     };
   };
 in
