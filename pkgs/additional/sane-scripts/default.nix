@@ -271,6 +271,11 @@ let
       src = ./src;
       pkgs = [ "coreutils-full" ];
     };
+    sync-from-iphone = static-nix-shell.mkZsh {
+      pname = "sane-sync-from-iphone";
+      src = ./src;
+      pkgs = [ "coreutils-full" "ifuse" "rsync" ];
+    };
   };
 in
 symlinkJoin {
