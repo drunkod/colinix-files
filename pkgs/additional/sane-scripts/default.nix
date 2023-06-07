@@ -219,6 +219,11 @@ let
       src = ./src;
       pkgs = [ "gocryptfs" ];
     };
+    rcp = static-nix-shell.mkBash {
+      pname = "sane-rcp";
+      src = ./src;
+      pkgs = [ "rsync" ];
+    };
     reclaim-boot-space = static-nix-shell.mkPython3Bin {
       pname = "sane-reclaim-boot-space";
       src = ./src;
