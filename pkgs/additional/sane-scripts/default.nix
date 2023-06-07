@@ -281,6 +281,11 @@ let
       src = ./src;
       pkgs = [ "rsync" "sane-scripts.mount-servo" ];
     };
+    vpn-down = static-nix-shell.mkBash {
+      pname = "sane-vpn-down";
+      src = ./src;
+      pkgs = [ "coreutils-full" "gnugrep" "gnused" "sane-scripts.ip-check" "systemd" ];
+    };
   };
 in
 symlinkJoin {
