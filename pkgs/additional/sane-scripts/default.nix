@@ -266,6 +266,11 @@ let
       src = ./src;
       pkgs = [ "systemd" ];
     };
+    sudo-redirect = static-nix-shell.mkBash {
+      pname = "sane-sudo-redirect";
+      src = ./src;
+      pkgs = [ "coreutils-full" ];
+    };
   };
 in
 symlinkJoin {
