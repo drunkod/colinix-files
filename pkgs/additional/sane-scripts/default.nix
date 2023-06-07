@@ -224,6 +224,11 @@ let
       src = ./src;
       pkgs = [ "rsync" ];
     };
+    reboot = static-nix-shell.mkBash {
+      pname = "sane-reboot";
+      src = ./src;
+      pkgs = [ "systemd" ];
+    };
     reclaim-boot-space = static-nix-shell.mkPython3Bin {
       pname = "sane-reclaim-boot-space";
       src = ./src;
