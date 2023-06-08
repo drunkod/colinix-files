@@ -82,11 +82,11 @@ in {
     ibus  # "error: cannot run test program while cross compiling"
     jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
     # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
-    libsForQt5  # if we emulate qt5, we're better off emulating libsForQt5 else qt complains about multiple versions of qtbase
+    # libsForQt5  # if we emulate qt5, we're better off emulating libsForQt5 else qt complains about multiple versions of qtbase
     perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
     # qgnomeplatform
     # qtbase
-    qt5  # qt5.qtbase, qt5.qtx11extras fails, but we can't selectively emulate them.
+    # qt5  # qt5.qtbase, qt5.qtx11extras fails, but we can't selectively emulate them.
     # qt6  # "You need to set QT_HOST_PATH to cross compile Qt."
     # sequoia  # "/nix/store/q8hg17w47f9xr014g36rdc2gi8fv02qc-clang-aarch64-unknown-linux-gnu-12.0.1-lib/lib/libclang.so.12: cannot open shared object file: No such file or directory"', /build/sequoia-0.27.0-vendor.tar.gz/bindgen/src/lib.rs:1975:31"
     # splatmoji
@@ -703,6 +703,12 @@ in {
   #     buildInputs = orig.buildInputs ++ [ final.extra-cmake-modules ];
   #   });
   # });
+  # libsForQt5 = prev.libsForQt5.overrideScope' (self: super: {
+  #   # emulate all the qt5 packages, but rework `libsForQt5.callPackage` and `mkDerivation`
+  #   # to use non-emulated stdenv by default.
+  #   mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
+  #   callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
+  # });
 
   # fixes: "ar: command not found"
   # `ar` is provided by bintools
@@ -973,6 +979,12 @@ in {
   #     inherit (emulated.qt5) qtModule;
   #   };
   # });
+  qt5 = emulated.qt5.overrideScope' (self: super: {
+    # emulate all the qt5 packages, but rework `libsForQt5.callPackage` and `mkDerivation`
+    # to use non-emulated stdenv by default.
+    mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
+    callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
+  });
   qt6 = prev.qt6.overrideScope' (self: super: {
     # # inherit (emulated.qt6) qtModule;
     # qtbase = super.qtbase.overrideAttrs (upstream: {
