@@ -656,6 +656,9 @@ in {
         ];
       };
     }));
+  jellyfin-media-player-qt6 = mvToBuildInputs
+    [ final.qt6.wrapQtAppsHook ]  # otherwise the result targets x86.  TODO: fix the hook in qt6 itself?
+    prev.jellyfin-media-player-qt6;
   # jellyfin-web = prev.jellyfin-web.override {
   #   # in node-dependencies-jellyfin-web: "node: command not found"
   #   inherit (emulated) stdenv;
