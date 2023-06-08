@@ -156,6 +156,9 @@ in [
   # qt6 qtwebengine: specify `python` as buildPackages
   ./2023-06-02-qt6-qtwebengine-cross.patch
 
+  # Jellyfin: don't build via `libsForQt5.callPackage`
+  ./2023-06-06-jellyfin-no-libsForQt5-callPackage.patch
+
   # for raspberry pi: allow building u-boot for rpi 4{,00}
   # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
   #   (it's a dupe of https://github.com/NixOS/nixpkgs/pull/112677 )
