@@ -52,10 +52,10 @@ in [
   # TODO: why doesn't this apply?
   # ./2023-03-04-ccache-cross-fix.patch
 
-  # 2023-04-11: bambu-studio: init at unstable-2023-01-11
+  # 2023-04-11: bambu-studio: init at 01.06.02.04
   (fetchpatch' {
     prUrl = "https://github.com/NixOS/nixpkgs/pull/206495";
-    hash = "sha256-RbQzAtFTr7Nrk2YBcHpKQMYoPlFMVSXNl96B/lkKluQ=";
+    hash = "sha256-jl6SZwSDhQTlpM5FyGaFU/svwTb1ySdKtvWMgsneq3A=";
   })
 
   # update to newer lemmy-server.
