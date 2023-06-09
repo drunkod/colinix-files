@@ -183,7 +183,7 @@ let
       jellyfin-media-player
       # lollypop
       # mpv
-      networkmanagerapplet
+      # networkmanagerapplet
       # newsflash
       nheko
       pavucontrol
