@@ -38,6 +38,7 @@
   # sane.programs.guiApps.enableFor.user.colin = false;
   sane.programs.sequoia.enableFor.user.colin = false;
   sane.programs.tuiApps.enableFor.user.colin = false;  # visidata, others, don't compile well
+  sane.programs.soundconverter.enableFor.user.colin = false;
 
   boot.loader.efi.canTouchEfiVariables = false;
   # /boot space is at a premium. default was 20.
