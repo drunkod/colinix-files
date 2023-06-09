@@ -90,8 +90,19 @@ let
     ;
   };
 
+  consoleMediaPkgs = {
+    inherit (pkgs)
+      ffmpeg
+      imagemagick
+      sox
+      yt-dlp
+    ;
+  };
   # TODO: split these into smaller groups.
-  # - transcoders (ffmpeg, imagemagick) only wanted on desko/lappy ("powerutils"?)
+  # - moby doesn't want a lot of these.
+  # - categories like
+  #   - dev?
+  #   - debugging?
   consolePkgs = {
     inherit (pkgs)
       alsaUtils  # for aplay, speaker-test
@@ -106,12 +117,10 @@ let
       gocryptfs
       gopass  # TODO: shouldn't be needed here
       gopass-jsonapi
-      imagemagick
       kitty  # TODO: move to GUI, but `ssh servo` from kitty sets `TERM=xterm-kitty` in the remove and breaks things
       libsecret  # for managing user keyrings
       lm_sensors  # for sensors-detect
       lshw
-      ffmpeg
       # memtester
       neovim
       # nettools
@@ -124,14 +133,13 @@ let
       # ponymix
       pulsemixer
       python3
-      ripgrep  # needed as a user package, for config.
+      ripgrep  # needed as a user package so that its user-level config file can be installed
       rsync
       # python3Packages.eyeD3  # music tagging
       sane-scripts
       sequoia
       snapper
       sops
-      sox
       speedtest-cli
       # ssh-to-age
       sudo
@@ -140,8 +148,6 @@ let
       wireguard-tools
       xdg-utils  # for xdg-open
       # yarn
-      # youtube-dl
-      yt-dlp
       zsh
     ;
   };
@@ -258,6 +264,7 @@ let
 in
 {
   sane.programs = lib.mkMerge [
+    (declarePkgs consoleMediaPkgs)
     (declarePkgs consolePkgs)
     (declarePkgs desktopGuiPkgs)
     (declarePkgs guiPkgs)
@@ -269,6 +276,10 @@ in
     (declarePkgs otherPkgs)
     {
       # link the various package sets into their own meta packages
+      consoleMediaUtils = {
+        package = null;
+        suggestedPrograms = attrNames consoleMediaPkgs;
+      };
       consoleUtils = {
         package = null;
         suggestedPrograms = attrNames consolePkgs;
