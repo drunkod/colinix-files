@@ -190,7 +190,7 @@ let
       # picard  # music tagging
       # "libsForQt5.plasmatube"  # Youtube player
       soundconverter
-      sublime-music
+      # sublime-music
       # tdesktop  # broken on phosh
       # tokodon
       vlc
