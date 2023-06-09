@@ -350,11 +350,6 @@ in
       # creds, widevine .so download. TODO: could easily manage these statically.
       spotify.persist.plaintext = [ ".config/spotify" ];
 
-      steam.persist.plaintext = [
-        ".steam"
-        ".local/share/Steam"
-      ];
-
       tdesktop.persist.private = [ ".local/share/TelegramDesktop" ];
 
       tokodon.persist.private = [ ".cache/KDE/tokodon" ];
