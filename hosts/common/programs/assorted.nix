@@ -150,7 +150,7 @@ let
     inherit (flattenedPkgs)
       # celluloid  # mpv frontend
       clinfo
-      emote
+      # emote
       evince  # works on phosh
 
       # { pkg = fluffychat-moby; persist.plaintext = [ ".local/share/chat.fluffy.fluffychat" ]; }  # TODO: ship normal fluffychat on non-moby?
@@ -170,7 +170,7 @@ let
       # "gnome.gnome-maps"  # works on phosh
       "gnome.nautilus"
       # gnome-podcasts
-      "gnome.gnome-system-monitor"
+      # "gnome.gnome-system-monitor"
       # "gnome.gnome-terminal"  # works on phosh
       # "gnome.gnome-weather"
       gpodder
