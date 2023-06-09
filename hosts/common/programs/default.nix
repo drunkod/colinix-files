@@ -264,6 +264,7 @@ in
     ./git.nix
     ./gnome-feeds.nix
     ./gpodder.nix
+    ./imagemagick.nix
     ./jellyfin-media-player.nix
     ./kitty
     ./libreoffice.nix
@@ -349,15 +350,6 @@ in
         # MS GitHub stores auth token in .config
         # TODO: we can populate gh's stuff statically; it even lets us use the same oauth across machines
         gh.persist.private = [ ".config/gh" ];
-
-        ghostscript = {};  # used by imagemagick
-
-        imagemagick = {
-          package = pkgs.imagemagick.override {
-            ghostscriptSupport = true;
-          };
-          suggestedPrograms = [ "ghostscript" ];
-        };
 
         # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
         # XXX: is it really safe to persist this? it doesn't have info that could de-anonymize if captured?
