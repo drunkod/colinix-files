@@ -188,7 +188,6 @@ let
       nheko
       pavucontrol
       # picard  # music tagging
-      playerctl
       # "libsForQt5.plasmatube"  # Youtube player
       soundconverter
       sublime-music
