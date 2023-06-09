@@ -170,7 +170,6 @@ let
       # { pkg = fractal-next; persist.private = [ ".local/share/fractal" ]; }
 
       # "gnome.cheese"
-      "gnome.dconf-editor"
       # gnome-feeds  # RSS reader (with claimed mobile support)
       "gnome.file-roller"
       # "gnome.gnome-maps"  # works on phosh
@@ -212,6 +211,7 @@ let
       font-manager
       gajim  # XMPP client
       gimp  # broken on phosh
+      "gnome.dconf-editor"
       "gnome.gnome-disk-utility"
       # "gnome.totem"  # video player, supposedly supports UPnP
       handbrake
