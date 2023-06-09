@@ -107,6 +107,7 @@ let
     inherit (pkgs)
       alsaUtils  # for aplay, speaker-test
       cdrtools
+      clinfo
       dmidecode
       efivar
       flashrom
@@ -155,7 +156,6 @@ let
   guiPkgs = {
     inherit (flattenedPkgs)
       # celluloid  # mpv frontend
-      clinfo
       # emote
       evince  # works on phosh
 
