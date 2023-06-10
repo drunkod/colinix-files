@@ -79,8 +79,9 @@ let
     (fromDb "feeds.transistor.fm/acquired" // tech)
     ## ACQ2 - more "Acquired" episodes
     (fromDb "acquiredlpbonussecretsecret.libsyn.com" // tech)
-    # The Intercept - Deconstructed; also available: <rss.acast.com/deconstructed>
-    (fromDb "rss.prod.firstlook.media/deconstructed/podcast.rss" // pol)
+    # The Intercept - Deconstructed
+    (fromDb "rss.acast.com/deconstructed")
+    # (fromDb "rss.prod.firstlook.media/deconstructed/podcast.rss" // pol)  #< possible URL rot
     ## The Daily
     (mkPod "https://feeds.simplecast.com/54nAGcIl" // pol // daily)
     # The Intercept - Intercepted; also available: <https://rss.acast.com/intercepted-with-jeremy-scahill>
