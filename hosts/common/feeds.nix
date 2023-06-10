@@ -84,8 +84,9 @@ let
     # (fromDb "rss.prod.firstlook.media/deconstructed/podcast.rss" // pol)  #< possible URL rot
     ## The Daily
     (mkPod "https://feeds.simplecast.com/54nAGcIl" // pol // daily)
-    # The Intercept - Intercepted; also available: <https://rss.acast.com/intercepted-with-jeremy-scahill>
-    (fromDb "rss.prod.firstlook.media/intercepted/podcast.rss" // pol)
+    # The Intercept - Intercepted
+    (fromDb "rss.acast.com/intercepted-with-jeremy-scahill")
+    # (fromDb "rss.prod.firstlook.media/intercepted/podcast.rss" // pol)  #< possible URL rot
     (fromDb "podcast.posttv.com/itunes/post-reports.xml" // pol)
     ## Eric Weinstein
     (fromDb "rss.art19.com/the-portal" // rat)
