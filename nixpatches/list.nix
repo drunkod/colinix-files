@@ -152,6 +152,17 @@ in [
   # Jellyfin: don't build via `libsForQt5.callPackage`
   ./2023-06-06-jellyfin-no-libsForQt5-callPackage.patch
 
+  # pin to a pre-0.17.3 release
+  # removing this and using stock 0.17.3 causes:
+  #   INFO lemmy_server::code_migrations: No Local Site found, creating it.
+  #   Error: LemmyError { message: None, inner: duplicate key value violates unique constraint "local_site_site_id_key", context: "SpanTrace" }
+  # more specifically, lemmy can't find the site because it receives an error from diesel:
+  #   Err(DeserializationError("Unrecognized enum variant"))
+  # this is likely some mis-ordered db migrations
+  # or perhaps the whole set of migrations here isn't being running right.
+  # related: <https://github.com/NixOS/nixpkgs/issues/236890#issuecomment-1585030861>
+  ./2023-06-10-lemmy-downgrade.patch
+
   # for raspberry pi: allow building u-boot for rpi 4{,00}
   # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
   #   (it's a dupe of https://github.com/NixOS/nixpkgs/pull/112677 )
