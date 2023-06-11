@@ -43,6 +43,8 @@
     - allows (maybe) to cache media for offline use
     - "newer" jellyfin client
     - not packaged for nix
+- moby/sxmo: display numerical vol percentage in topbar
+- moby/sxmo: include librewolf, jellyfin in `apps` menu
 - find a nice desktop ActivityPub client
 - package Nix/NixOS docs for Zeal
     - install [doc-browser](https://github.com/qwfy/doc-browser)
