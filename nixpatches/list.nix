@@ -58,14 +58,6 @@ in [
     hash = "sha256-jl6SZwSDhQTlpM5FyGaFU/svwTb1ySdKtvWMgsneq3A=";
   })
 
-  # update to newer lemmy-server.
-  # should be removable when > 0.17.2 releases?
-  # removing this now causes:
-  #   INFO lemmy_server::code_migrations: No Local Site found, creating it.
-  #   Error: LemmyError { message: None, inner: duplicate key value violates unique constraint "local_site_site_id_key", context: "SpanTrace" }
-  # though perhaps this error doesn't occur on fresh databases (idk).
-  ./2023-04-29-lemmy.patch
-
   (fetchpatch' {
     title = "cargo-docset: init at 0.3.1";
     saneCommit = "5a09e84c6159ce545029483384580708bc04c08f";
