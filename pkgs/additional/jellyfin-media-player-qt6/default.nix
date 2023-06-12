@@ -51,7 +51,6 @@
     ninja
     pkg-config
     python3
-
     qt6.wrapQtAppsHook  #< new: libsForQt5.callPackage implicitly adds the qt5 wrapQtAppsHook
   ];
 
