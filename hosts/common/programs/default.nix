@@ -10,6 +10,7 @@
     ./imagemagick.nix
     ./jellyfin-media-player.nix
     ./kitty
+    ./komikku.nix
     ./libreoffice.nix
     ./mpv.nix
     ./neovim.nix
