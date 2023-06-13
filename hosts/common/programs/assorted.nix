@@ -181,6 +181,7 @@ let
       gpodder
       gthumb
       jellyfin-media-player
+      komikku
       # lollypop
       # mpv
       # networkmanagerapplet
@@ -213,7 +214,6 @@ let
       "gnome.dconf-editor"
       "gnome.gnome-disk-utility"
       # "gnome.totem"  # video player, supposedly supports UPnP
-      komikku  # TODO: move to guiPkgs once built for moby
       handbrake
       hase
       inkscape
