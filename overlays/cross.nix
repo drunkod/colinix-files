@@ -679,6 +679,10 @@ in {
       ./kitty-no-docs.patch
     ];
   });
+  komikku = prev.komikku.override {
+    # GI_TYPELIB_PATH points to x86_64 types in the default build, only when using wrapGAppsHook4
+    wrapGAppsHook4 = final.wrapGAppsHook;
+  };
   libgweather = rmNativeBuildInputs [ final.glib ] (prev.libgweather.override {
     # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
     #   but presumably that's just a different way to emulate it.
