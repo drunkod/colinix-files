@@ -148,15 +148,21 @@ def parse_args(args: list) -> dict:
 def main(args: list):
     logging.basicConfig()
     options = parse_args(args)
+    verbose = options.pop("verbose")
+    query = options.pop("query")
+    full = options.pop("full")
+    top = options.pop("top")
+    json = options.pop("json")
 
-    if options["verbose"]:
+    assert options == {}, f"unexpected options: {options}"
+
+    if verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    query = options["query"]
-    num_listings = 1000 if options["full"] else int(options["top"])
+    num_listings = 1000 if full else int(top)
     client = Client()
     res = client.query(query)
-    if options["json"]:
+    if json:
         dumpable = [t.to_dict() for t in res[:num_listings]]
         print(json.dumps(dumpable))
     else:
