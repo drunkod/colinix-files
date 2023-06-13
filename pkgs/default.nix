@@ -27,6 +27,10 @@ let
     feeds = lib.recurseIntoAttrs (callPackage ./additional/feeds { });
     jellyfin-media-player-qt6 = callPackage ./additional/jellyfin-media-player-qt6 { };
     gopass-native-messaging-host = callPackage ./additional/gopass-native-messaging-host { };
+    gpodder-adaptive = callPackage ./additional/gpodder-adaptive { };
+    gpodder-adaptive-configured = callPackage ./additional/gpodder-configured {
+      gpodder = final.gpodder-adaptive;
+    };
     gpodder-configured = callPackage ./additional/gpodder-configured { };
     hare-ev = unpatched.hare-ev or (callPackage ./additional/hare-ev { });
     hare-json = unpatched.hare-json or (callPackage ./additional/hare-json { });
