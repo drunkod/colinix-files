@@ -43,6 +43,7 @@ let
     sublime-music-mobile = callPackage ./additional/sublime-music-mobile { };
     sxmo-utils = callPackage ./additional/sxmo-utils { };
     tow-boot-pinephone = callPackage ./additional/tow-boot-pinephone { };
+    zecwallet-light-cli = callPackage ./additional/zecwallet-light-cli { };
 
     # packages i haven't used for a while, may or may not still work
     # fluffychat-moby = callPackage ./additional/fluffychat-moby { };
