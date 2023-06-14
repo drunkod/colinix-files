@@ -175,6 +175,12 @@ in [
     hash = "sha256-QUR9eu5Ob4/iPMn2x0ACRsC7y0xVZ+vA7AXUjkF0p/s=";
   })
 
+  (fetchpatch' {
+    title = "sequoia: 0.28.0 -> 0.30.1";
+    saneCommit = "81c5d031c2269782c9c83133f52bf2deac73a5fa";
+    hash = "sha256-xXCQCC8BkE3I8FvjXrof5QsSAbXHEUJVOfN74zUYXus=";
+  })
+
   # for raspberry pi: allow building u-boot for rpi 4{,00}
   # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
   #   (it's a dupe of https://github.com/NixOS/nixpkgs/pull/112677 )
