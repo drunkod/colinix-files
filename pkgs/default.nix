@@ -79,6 +79,8 @@ let
 
     browserpass = callPackage ./patched/browserpass { inherit (unpatched) browserpass; };
 
+    cozy = callPackage ./patched/cozy { inherit (unpatched) cozy; };
+
     # mozilla keeps nerfing itself and removing configuration options
     firefox-unwrapped = callPackage ./patched/firefox-unwrapped { inherit (unpatched) firefox-unwrapped; };
 
