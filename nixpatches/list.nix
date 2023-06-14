@@ -177,8 +177,9 @@ in [
 
   (fetchpatch' {
     title = "sequoia: 0.28.0 -> 0.30.1";
-    saneCommit = "81c5d031c2269782c9c83133f52bf2deac73a5fa";
-    hash = "sha256-xXCQCC8BkE3I8FvjXrof5QsSAbXHEUJVOfN74zUYXus=";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/237698";
+    saneCommit = "71f47689d11e09b6ff70cbd4238e386b50d46899";
+    hash = "sha256-cadnRzZ0sjwdSc845zFtgYzLrsPGsZ9ShELibvQWLUU=";
   })
 
   # for raspberry pi: allow building u-boot for rpi 4{,00}
