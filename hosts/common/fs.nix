@@ -1,26 +1,36 @@
 { pkgs, sane-lib, ... }:
 
-let sshOpts = rec {
-  fsType = "fuse.sshfs";
-  optionsBase = [
-    "x-systemd.automount"
+let fsOpts = rec {
+  common = [
     "_netdev"
+    "noatime"
+    "x-systemd.requires=network-online.target"
+    "x-systemd.after=network-online.target"
+  ];
+  sshCommon = common ++ [
     "user"
     "identityfile=/home/colin/.ssh/id_ed25519"
     "allow_other"
     "default_permissions"
   ];
-  optionsColin = optionsBase ++ [
+  sshColin = sshCommon ++ [
     "transform_symlinks"
     "idmap=user"
     "uid=1000"
     "gid=100"
   ];
-
-  optionsRoot = optionsBase ++ [
+  sshRoot = sshCommon ++ [
     # we don't transform_symlinks because that breaks the validity of remote /nix stores
     "sftp_server=/run/wrappers/bin/sudo\\040/run/current-system/sw/libexec/sftp-server"
   ];
+  auto = [ "x-systemd.automount" ];
+  noauto = [ "noauto" ];
+  wg = [
+    "x-systemd.requires=wireguard-wg-home.service"
+    "x-systemd.after=wireguard-wg-home.service"
+  ];
+  # in the event of hunt NFS mounts, consider:
+  # - <https://unix.stackexchange.com/questions/31979/stop-broken-nfs-mounts-from-locking-a-directory>
 };
 in
 {
@@ -34,56 +44,50 @@ in
     device = "servo-hn:/";
     noCheck = true;
     fsType = "nfs";
-    options = [ "x-systemd.automount" ];
+    options = fsOpts.common ++ fsOpts.auto ++ fsOpts.wg;
   };
-  # fileSystems."/mnt/servo-nfs-lan" = {
-  #   device = "servo:/";
-  #   noCheck = true;
-  #   fsType = "nfs";
-  #   options = [ "x-systemd.automount" ];
-  # };
   # fileSystems."/mnt/servo-media-nfs" = {
-  #   device = "10.0.10.5:/media";
+  #   device = "servo-hn:/media";
   #   noCheck = true;
   #   fsType = "nfs";
-  #   options = [ "x-systemd.automount" ];
+  #   options = fsOpts.common ++ fsOpts.auto;
   # };
   sane.fs."/mnt/servo-media" = sane-lib.fs.wantedSymlinkTo "/mnt/servo-nfs/media";
 
   fileSystems."/mnt/servo-media-wan" = {
     device = "colin@uninsane.org:/var/lib/uninsane/media";
-    inherit (sshOpts) fsType;
-    options = sshOpts.optionsColin;
+    fsType = "fuse.sshfs";
+    options = fsOpts.sshColin ++ fsOpts.noauto;
     noCheck = true;
   };
   fileSystems."/mnt/servo-media-lan" = {
     device = "colin@servo:/var/lib/uninsane/media";
-    inherit (sshOpts) fsType;
-    options = sshOpts.optionsColin;
+    fsType = "fuse.sshfs";
+    options = fsOpts.sshColin ++ fsOpts.noauto;
     noCheck = true;
   };
   fileSystems."/mnt/servo-root-wan" = {
     device = "colin@uninsane.org:/";
-    inherit (sshOpts) fsType;
-    options = sshOpts.optionsRoot;
+    fsType = "fuse.sshfs";
+    options = fsOpts.sshRoot ++ fsOpts.noauto;
     noCheck = true;
   };
   fileSystems."/mnt/servo-root-lan" = {
     device = "colin@servo:/";
-    inherit (sshOpts) fsType;
-    options = sshOpts.optionsRoot;
+    fsType = "fuse.sshfs";
+    options = fsOpts.sshRoot ++ fsOpts.noauto;
     noCheck = true;
   };
   fileSystems."/mnt/desko-home" = {
     device = "colin@desko:/home/colin";
-    inherit (sshOpts) fsType;
-    options = sshOpts.optionsColin;
+    fsType = "fuse.sshfs";
+    options = fsOpts.sshColin ++ fsOpts.noauto;
     noCheck = true;
   };
   fileSystems."/mnt/desko-root" = {
     device = "colin@desko:/";
-    inherit (sshOpts) fsType;
-    options = sshOpts.optionsRoot;
+    fsType = "fuse.sshfs";
+    options = fsOpts.sshRoot ++ fsOpts.noauto;
     noCheck = true;
   };
 
