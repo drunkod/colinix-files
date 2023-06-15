@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, sane-lib, ... }:
 
 let sshOpts = rec {
   fsType = "fuse.sshfs";
@@ -48,6 +48,7 @@ in
   #   fsType = "nfs";
   #   options = [ "x-systemd.automount" ];
   # };
+  sane.fs."/mnt/servo-media" = sane-lib.fs.wantedSymlinkTo "/mnt/servo-nfs/media";
 
   fileSystems."/mnt/servo-media-wan" = {
     device = "colin@uninsane.org:/var/lib/uninsane/media";
