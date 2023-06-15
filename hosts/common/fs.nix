@@ -7,30 +7,48 @@ let fsOpts = rec {
     "x-systemd.requires=network-online.target"
     "x-systemd.after=network-online.target"
   ];
-  sshCommon = common ++ [
-    "user"
-    "identityfile=/home/colin/.ssh/id_ed25519"
-    "allow_other"
-    "default_permissions"
-  ];
-  sshColin = sshCommon ++ [
-    "transform_symlinks"
-    "idmap=user"
-    "uid=1000"
-    "gid=100"
-  ];
-  sshRoot = sshCommon ++ [
-    # we don't transform_symlinks because that breaks the validity of remote /nix stores
-    "sftp_server=/run/wrappers/bin/sudo\\040/run/current-system/sw/libexec/sftp-server"
-  ];
   auto = [ "x-systemd.automount" ];
   noauto = [ "noauto" ];
   wg = [
     "x-systemd.requires=wireguard-wg-home.service"
     "x-systemd.after=wireguard-wg-home.service"
   ];
+
+  ssh = common ++ [
+    "user"
+    "identityfile=/home/colin/.ssh/id_ed25519"
+    "allow_other"
+    "default_permissions"
+  ];
+  sshColin = ssh ++ [
+    "transform_symlinks"
+    "idmap=user"
+    "uid=1000"
+    "gid=100"
+  ];
+  sshRoot = ssh ++ [
+    # we don't transform_symlinks because that breaks the validity of remote /nix stores
+    "sftp_server=/run/wrappers/bin/sudo\\040/run/current-system/sw/libexec/sftp-server"
+  ];
   # in the event of hunt NFS mounts, consider:
   # - <https://unix.stackexchange.com/questions/31979/stop-broken-nfs-mounts-from-locking-a-directory>
+
+  # NFS options: <https://linux.die.net/man/5/nfs>
+  # actimeo=n  = how long (in seconds) to cache file/dir attributes (default: 3-60s)
+  # bg         = retry failed mounts in the background
+  # retry=n    = for how many minutes `mount` will retry NFS mount operation
+  # soft       = on "major timeout", report I/O error to userspace
+  # retrans=n  = how many times to retry a NFS request before giving userspace a "server not responding" error (default: 3)
+  # timeo=n    = number of *deciseconds* to wait for a response before retrying it (default: 600)
+  #              note: client uses a linear backup, so the second request will have double this timeout, then triple, etc.
+  nfs = common ++ [
+    # "actimeo=10"
+    # "bg"
+    "retrans=4"
+    "retry=0"
+    "soft"
+    "timeo=15"
+  ];
 };
 in
 {
@@ -44,7 +62,7 @@ in
     device = "servo-hn:/";
     noCheck = true;
     fsType = "nfs";
-    options = fsOpts.common ++ fsOpts.auto ++ fsOpts.wg;
+    options = fsOpts.nfs ++ fsOpts.auto ++ fsOpts.wg;
   };
   # fileSystems."/mnt/servo-media-nfs" = {
   #   device = "servo-hn:/media";
