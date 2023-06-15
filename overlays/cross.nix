@@ -517,7 +517,9 @@ in {
       super.nautilus
     ).override {
       # fixes -msse2, -mfpmath=sse flags
-      wrapGAppsHook4 = final.wrapGAppsHook;
+      # wrapGAppsHook4 = final.wrapGAppsHook;
+      # fixes -msse2, -mfpmath=ssh flags AND "Settings schema 'org.gtk.gtk4.Settings.FileChooser' is not installed"
+      wrapGAppsHook4 = emulated.wrapGAppsHook4;
     };
   });
 
