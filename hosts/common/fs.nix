@@ -1,3 +1,6 @@
+# docs
+# - x-systemd options: <https://www.freedesktop.org/software/systemd/man/systemd.mount.html>
+
 { pkgs, sane-lib, ... }:
 
 let fsOpts = rec {
@@ -6,9 +9,11 @@ let fsOpts = rec {
     "noatime"
     "x-systemd.requires=network-online.target"
     "x-systemd.after=network-online.target"
+    "x-systemd.mount-timeout=10s"  # how long to wait for mount **and** how long to wait for unmount
+    "nofail"  # don't fail remote-fs.target when this mount fails
   ];
   auto = [ "x-systemd.automount" ];
-  noauto = [ "noauto" ];
+  noauto = [ "noauto" ];  # don't mount as part of remote-fs.target
   wg = [
     "x-systemd.requires=wireguard-wg-home.service"
     "x-systemd.after=wireguard-wg-home.service"
@@ -43,7 +48,7 @@ let fsOpts = rec {
   #              note: client uses a linear backup, so the second request will have double this timeout, then triple, etc.
   nfs = common ++ [
     # "actimeo=10"
-    # "bg"
+    "bg"
     "retrans=4"
     "retry=0"
     "soft"
@@ -52,14 +57,14 @@ let fsOpts = rec {
 };
 in
 {
-  environment.pathsToLink = [
-    # needed to achieve superuser access for user-mounted filesystems (see optionsRoot above)
-    # we can only link whole directories here, even though we're only interested in pkgs.openssh
-    "/libexec"
-  ];
-
-  fileSystems."/mnt/servo-nfs" = {
-    device = "servo-hn:/";
+  # fileSystems."/mnt/servo-nfs" = {
+  #   device = "servo-hn:/";
+  #   noCheck = true;
+  #   fsType = "nfs";
+  #   options = fsOpts.nfs ++ fsOpts.auto ++ fsOpts.wg;
+  # };
+  fileSystems."/mnt/servo-nfs/media" = {
+    device = "servo-hn:/media";
     noCheck = true;
     fsType = "nfs";
     options = fsOpts.nfs ++ fsOpts.auto ++ fsOpts.wg;
@@ -108,6 +113,12 @@ in
     options = fsOpts.sshRoot ++ fsOpts.noauto;
     noCheck = true;
   };
+
+  environment.pathsToLink = [
+    # needed to achieve superuser access for user-mounted filesystems (see optionsRoot above)
+    # we can only link whole directories here, even though we're only interested in pkgs.openssh
+    "/libexec"
+  ];
 
   environment.systemPackages = [
     pkgs.sshfs-fuse
