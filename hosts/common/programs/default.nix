@@ -4,6 +4,7 @@
   imports = [
     ./aerc.nix
     ./assorted.nix
+    ./cozy.nix
     ./git.nix
     ./gnome-feeds.nix
     ./gpodder.nix
