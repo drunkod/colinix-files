@@ -49,14 +49,14 @@
   # - async, sync (default)
   # - no_subtree_check (default), subtree_check: verify not just that files requested by the client live
   #     in the expected fs, but also that they live under whatever subdirectory of that fs is exported.
+  # - no_root_squash, root_squash (default): map requests from uid 0 to user `nobody`.
   # - crossmnt:  reveal filesystems that are mounted under this endpoint
   # - fsid:  must be zero for the root export
   # - mountpoint[=/path]:  only export the directory if it's a mountpoint. used to avoid exporting failed mounts.
   #
   # 10.0.0.0/8 to export (readonly) both to LAN (unencrypted) and wg vpn (encrypted)
   services.nfs.server.exports = ''
-    /var/nfs/export 10.0.0.0/8(crossmnt,fsid=0,subtree_check)
-    /var/nfs/export/media 10.0.0.0/8(crossmnt,subtree_check)
+    /var/nfs/export 10.78.79.0/10(crossmnt,fsid=0,subtree_check) 10.0.10.0/24(rw,no_root_squash,crossmnt,fsid=0,subtree_check)
   '';
 
   fileSystems."/var/nfs/export/media" = {
