@@ -156,6 +156,7 @@ let
   guiPkgs = {
     inherit (flattenedPkgs)
       # celluloid  # mpv frontend
+      cozy  # audiobook player
       # emote
       evince  # works on phosh
 
