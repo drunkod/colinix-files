@@ -247,6 +247,14 @@ in {
     nativeBuildInputs = upstream.nativeBuildInputs ++ [ final.git ];
   });
 
+  cozy = prev.cozy.override {
+    cozy = prev.cozy.upstream.cozy.override {
+      # fixes runtime error: "Settings schema 'org.gtk.Settings.FileChooser' is not installed"
+      # otherwise gtk3+ schemas aren't added to XDG_DATA_DIRS
+      inherit (emulated) wrapGAppsHook;
+    };
+  };
+
   dante = prev.dante.override {
     # fixes: "configure: error: error: getaddrinfo() error value count too low"
     inherit (emulated) stdenv;

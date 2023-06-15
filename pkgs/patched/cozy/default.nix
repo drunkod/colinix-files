@@ -6,4 +6,5 @@
       hash = "sha256-Wk03NGVU7OsQu3AGILtRsQX2r+wPOt5U85cOWu4q6Uo=";
     })
   ];
+  passthru = (upstream.passthru or {}) // { upstream.cozy = cozy; };
 })
