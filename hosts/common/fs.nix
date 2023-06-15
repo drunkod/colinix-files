@@ -30,6 +30,25 @@ in
     "/libexec"
   ];
 
+  fileSystems."/mnt/servo-nfs" = {
+    device = "servo-hn:/";
+    noCheck = true;
+    fsType = "nfs";
+    options = [ "x-systemd.automount" ];
+  };
+  # fileSystems."/mnt/servo-nfs-lan" = {
+  #   device = "servo:/";
+  #   noCheck = true;
+  #   fsType = "nfs";
+  #   options = [ "x-systemd.automount" ];
+  # };
+  # fileSystems."/mnt/servo-media-nfs" = {
+  #   device = "10.0.10.5:/media";
+  #   noCheck = true;
+  #   fsType = "nfs";
+  #   options = [ "x-systemd.automount" ];
+  # };
+
   fileSystems."/mnt/servo-media-wan" = {
     device = "colin@uninsane.org:/var/lib/uninsane/media";
     inherit (sshOpts) fsType;
