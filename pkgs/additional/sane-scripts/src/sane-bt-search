@@ -2,10 +2,17 @@
 #!nix-shell -i python3 -p "python3.withPackages (ps: [ ps.natsort ps.requests ])"
 # vim: set filetype=python :
 """
-usage: sane-bt-search <query_string>
+usage: sane-bt-search [options] <query_string>
 
 searches Jackett for torrent files matching the title.
-returns select results and magnet links
+returns select results and magnet links.
+
+options:
+  --full     display all results
+  --help     show this help message and exit
+  --json     output one json document instead of a human-readable table
+  --top <n>  show the <n> top rated torrents (default: 5)
+  --verbose  show more information, useful for debugging/development
 """
 
 from dataclasses import dataclass
@@ -25,6 +32,15 @@ ENDPOINTS = dict(
 epoch = datetime(1970, 1, 1)
 
 logger = logging.getLogger(__name__)
+
+class BadCliArgs(Exception):
+    def __init__(self, msg: str = None):
+        helpstr = __doc__
+        if msg:
+            super().__init__(f"{msg}\n\n{helpstr}")
+        else:
+            super().__init__(helpstr)
+
 
 def try_parse_time(t: str):
     try:
@@ -124,10 +140,11 @@ class Client:
 
 def parse_args(args: list) -> dict:
     options = dict(
-        top="5",
         full=False,
-        query="",
+        help=False,
         json=False,
+        query="",
+        top="5",
         verbose=False,
     )
     while args:
@@ -148,13 +165,17 @@ def parse_args(args: list) -> dict:
 def main(args: list):
     logging.basicConfig()
     options = parse_args(args)
-    verbose = options.pop("verbose")
-    query = options.pop("query")
     full = options.pop("full")
-    top = options.pop("top")
+    help = options.pop("help")
     json = options.pop("json")
+    query = options.pop("query")
+    top = options.pop("top")
+    verbose = options.pop("verbose")
 
-    assert options == {}, f"unexpected options: {options}"
+    if options != {}:
+        raise BadCliArgs(f"unexpected options: {options}")
+    if help:
+        raise BadCliArgs()
 
     if verbose:
         logging.getLogger().setLevel(logging.DEBUG)
