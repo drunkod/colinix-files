@@ -693,6 +693,14 @@ in {
     # GI_TYPELIB_PATH points to x86_64 types in the default build, only when using wrapGAppsHook4
     wrapGAppsHook4 = final.wrapGAppsHook;
   };
+  koreader = (prev.koreader.override {
+    # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
+    inherit (emulated) luajit;
+  }).overrideAttrs (upstream: {
+    nativeBuildInputs = upstream.nativeBuildInputs ++ [
+      final.autoPatchelfHook
+    ];
+  });
   libgweather = rmNativeBuildInputs [ final.glib ] (prev.libgweather.override {
     # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
     #   but presumably that's just a different way to emulate it.
