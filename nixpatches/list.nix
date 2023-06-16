@@ -65,11 +65,6 @@ in [
     hash = "sha256-Z1HOps3w/WvxAiyUAHWszKqwS9EwA6rf4XfgPGp+2sQ=";
   })
 
-  (fetchpatch' {
-    title = "feedbackd: 0.1.0 -> 0.2.0";
-    saneCommit = "a0186a5782708a640cd6eaad6e9742b9cccebe9d";
-    hash = "sha256-f8he7pQow4fZkTVVqU/A5KgovZA7m7MccRQNTnDxw5o=";
-  })
   # (fetchpatch' {
   #   # phoc: 0.25.0 -> 0.27.0
   #   # TODO: move wayland-scanner & glib to nativeBuildInputs
@@ -161,18 +156,6 @@ in [
   #   saneCommit = "10d0ac11bc083cbcf0d6340950079b3888095abf";
   #   hash = "sha256-cu8L30ZiUJnWFGRR/SK917TC7TalzpGkurGkUAAxl54=";
   # })
-
-  # (fetchpatch' {
-  #   title = "gpodder: 3.10.21 -> 3.11.1";
-  #   saneCommit = "865f67ec1f1ed25a65ffb3afdf05fcb3979399e8";
-  #   hash = "sha256-QUR9eu5Ob4/iPMn2x0ACRsC7y0xVZ+vA7AXUjkF0p/s=";
-  # })
-
-  (fetchpatch' {
-    title = "gpodder: 3.10.21 -> 3.11.1";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/237526";
-    hash = "sha256-sSCAmmI5RI0WtcLqXIf8YgPw9Yw3tOD0kQJlE675ahs=";
-  })
 
   (fetchpatch' {
     title = "sequoia: 0.28.0 -> 0.30.1";
