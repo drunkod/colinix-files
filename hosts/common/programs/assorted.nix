@@ -183,6 +183,7 @@ let
       gthumb
       jellyfin-media-player
       komikku
+      koreader
       # lollypop
       # mpv
       # networkmanagerapplet

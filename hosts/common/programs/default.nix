@@ -12,6 +12,7 @@
     ./jellyfin-media-player.nix
     ./kitty
     ./komikku.nix
+    ./koreader.nix
     ./libreoffice.nix
     ./mpv.nix
     ./neovim.nix
