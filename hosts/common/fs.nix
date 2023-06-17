@@ -10,7 +10,6 @@ let fsOpts = rec {
     "x-systemd.requires=network-online.target"
     "x-systemd.after=network-online.target"
     "x-systemd.mount-timeout=10s"  # how long to wait for mount **and** how long to wait for unmount
-    "nofail"  # don't fail remote-fs.target when this mount fails
   ];
   auto = [ "x-systemd.automount" ];
   noauto = [ "noauto" ];  # don't mount as part of remote-fs.target
@@ -53,6 +52,7 @@ let fsOpts = rec {
     "retry=0"
     "soft"
     "timeo=15"
+    "nofail"  # don't fail remote-fs.target when this mount fails  (not an option for sshfs else would be common)
   ];
 };
 in
