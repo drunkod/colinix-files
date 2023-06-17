@@ -7,6 +7,7 @@
     ./email
     ./ejabberd.nix
     ./freshrss.nix
+    ./ftp.nix
     ./gitea.nix
     ./goaccess.nix
     ./ipfs.nix
