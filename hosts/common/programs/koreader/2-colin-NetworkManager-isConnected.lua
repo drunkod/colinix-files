@@ -17,6 +17,9 @@
 -- specifically, `os.execute` is not *expected* to return 0. it returns `true` on success:
 -- <https://www.lua.org/manual/5.3/manual.html#pdf-os.execute>
 -- this apparently changed from 5.1 -> 5.2
+--
+-- XXX: this same bug likely applies to `isCommand` and `runCommand` in <frontend/device/sdl/device.lua>
+-- - that would manifest as wikipedia links failing to open in external application (xdg-open)
 
 local logger = require("logger")
 logger.info("applying colin patch")
