@@ -15,6 +15,13 @@ options:
   --verbose  show more information, useful for debugging/development
 """
 
+# about Jackett
+# - source: <https://github.com/Jackett/Jackett>
+# - can be queried via APIs:
+#   - Torznab: <https://torznab.github.io/spec-1.3-draft/index.html>
+#   - TorrentPotato: <https://github.com/RuudBurger/CouchPotatoServer/wiki/Couchpotato-torrent-provider>
+#   - its own JSON-based API
+
 from dataclasses import dataclass
 from datetime import datetime
 import logging
@@ -27,6 +34,7 @@ import time
 SERVICE = "https://jackett.uninsane.org"
 ENDPOINTS = dict(
     results="api/v2.0/indexers/all/results"
+    # results_torznab="api/v2.0/indexers/all/results/torznab"
 )
 
 epoch = datetime(1970, 1, 1)
@@ -65,9 +73,15 @@ class Torrent:
     title: str
     magnet: "Optional[str]"
     http_dl_uri: "Optional[str]"  # probably a .torrent file but it COULD be a referral to a magnet:// URI
+    tracker_uri: "Optional[str]"
 
     def __str__(self) -> str:
-        return f"{self.seeders}[S]\t{self.pub_date}\t{self.mib}M\t{self.tracker}\t{self.title}\n\t{self.dl_uri}"
+        rows = []
+        rows.append(f"{self.seeders}[S]\t{self.pub_date}\t{self.mib}M\t{self.tracker}\t{self.title}")
+        if self.tracker_uri:
+            rows.append(f"\t{self.tracker_uri}")
+        rows.append(f"\t{self.dl_uri}")
+        return "\n".join(rows)
 
     @property
     def dl_uri(self) -> str:
@@ -92,6 +106,7 @@ class Torrent:
         title = d.get("Title")
         magnet = d.get("MagnetUri") or d.get("Guid")
         http_dl_uri = d.get("Link")
+        tracker_uri = d.get("Details")
 
         if magnet and not magnet.startswith("magnet:"):
             logger.info(f"invalid magnet: {magnet}")
@@ -104,9 +119,10 @@ class Torrent:
 
         if seeders is not None and pub_date is not None and title is not None and (magnet is not None or http_dl_uri is not None):
             pub_date = parse_time(pub_date)
-            return Torrent(seeders, pub_date, size, tracker, title, magnet, http_dl_uri)
+            return Torrent(seeders, pub_date, size, tracker, title, magnet, http_dl_uri, tracker_uri)
 
     def to_dict(self) -> dict:
+        # N.B.: not all fields: needs to be kept in sync with consumers like mx-sanebot
         return dict(
             seeders=self.seeders,
             pub_date=self.pub_date.strftime("%Y-%m-%d"),
