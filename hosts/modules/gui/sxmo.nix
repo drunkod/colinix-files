@@ -167,6 +167,7 @@ in
         conky
         gojq
         inotify-tools
+        j4-dmenu-desktop
         jq
         libnotify
         lisgd
