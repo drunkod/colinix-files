@@ -164,6 +164,12 @@ in [
     hash = "sha256-cadnRzZ0sjwdSc845zFtgYzLrsPGsZ9ShELibvQWLUU=";
   })
 
+  (fetchpatch' {
+    title = "koreader: 2023.04 -> 2023.05.1";
+    saneCommit = "a5c471bd263abe93e291239e0078ac4255a94262";
+    hash = "sha256-m++Vv/FK7cxONCz6n0MLO3CiKNrRH0ttFmoC1Xmba+A=";
+  })
+
   # for raspberry pi: allow building u-boot for rpi 4{,00}
   # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
   #   (it's a dupe of https://github.com/NixOS/nixpkgs/pull/112677 )
