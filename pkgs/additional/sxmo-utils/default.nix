@@ -3,16 +3,17 @@
 , gitUpdater
 , lib
 , rsync
+, scdoc
 }:
 
 stdenv.mkDerivation rec {
   pname = "sxmo-utils";
-  version = "1.14.1";
+  version = "1.14.2";
 
   src = fetchgit {
     url = "https://git.sr.ht/~mil/sxmo-utils";
     rev = version;
-    hash = "sha256-UcJid1fi3Mgu32dCqlI9RQYnu5d07MMwW3eEYuYVBw4=";
+    hash = "sha256-1bGCUhf/bt9I8BjG/G7sjYBzLh28iZSC20ml647a3J4=";
   };
 
   patches = [
@@ -38,6 +39,10 @@ stdenv.mkDerivation rec {
     #   - this provided map is the en_US 105 key map
     ${rsync}/bin/rsync -rlv ${./customization}/ ./
   '';
+
+  nativeBuildInputs = [
+    scdoc
+  ];
 
   installFlags = [
     "OPENRC=0"
