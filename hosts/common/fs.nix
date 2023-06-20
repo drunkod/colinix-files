@@ -83,36 +83,42 @@ in
     options = fsOpts.sshColin ++ fsOpts.noauto;
     noCheck = true;
   };
+  sane.fs."/mnt/servo-media-wan" = sane-lib.fs.wantedDir;
   fileSystems."/mnt/servo-media-lan" = {
     device = "colin@servo:/var/lib/uninsane/media";
     fsType = "fuse.sshfs";
     options = fsOpts.sshColin ++ fsOpts.noauto;
     noCheck = true;
   };
+  sane.fs."/mnt/servo-media-lan" = sane-lib.fs.wantedDir;
   fileSystems."/mnt/servo-root-wan" = {
     device = "colin@uninsane.org:/";
     fsType = "fuse.sshfs";
     options = fsOpts.sshRoot ++ fsOpts.noauto;
     noCheck = true;
   };
+  sane.fs."/mnt/servo-root-wan" = sane-lib.fs.wantedDir;
   fileSystems."/mnt/servo-root-lan" = {
     device = "colin@servo:/";
     fsType = "fuse.sshfs";
     options = fsOpts.sshRoot ++ fsOpts.noauto;
     noCheck = true;
   };
+  sane.fs."/mnt/servo-root-lan" = sane-lib.fs.wantedDir;
   fileSystems."/mnt/desko-home" = {
     device = "colin@desko:/home/colin";
     fsType = "fuse.sshfs";
     options = fsOpts.sshColin ++ fsOpts.noauto;
     noCheck = true;
   };
+  sane.fs."/mnt/desko-home" = sane-lib.fs.wantedDir;
   fileSystems."/mnt/desko-root" = {
     device = "colin@desko:/";
     fsType = "fuse.sshfs";
     options = fsOpts.sshRoot ++ fsOpts.noauto;
     noCheck = true;
   };
+  sane.fs."/mnt/desko-root" = sane-lib.fs.wantedDir;
 
   environment.pathsToLink = [
     # needed to achieve superuser access for user-mounted filesystems (see optionsRoot above)
