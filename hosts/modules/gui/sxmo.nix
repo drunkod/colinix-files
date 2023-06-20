@@ -115,6 +115,11 @@ in
         e.g. SXMO_UNLOCK_IDLE_TIME or SXMO_VOLUME_BUTTON.
       '';
     };
+    sane.gui.sxmo.noidle = mkOption {
+      type = types.bool;
+      default = false;
+      description = "inhibit lock-on-idle and screenoff-on-idle";
+    };
   };
 
   config = lib.mkMerge [
@@ -200,7 +205,7 @@ in
         KEYBOARD = lib.mkDefault (if cfg.keyboard == "wvkbd" then "wvkbd-mobintl" else cfg.keyboard);
       } // cfg.settings;
 
-      sane.user.fs.".cache/sxmo/sxmo.noidle" = sane-lib.fs.wantedText "";
+      sane.user.fs.".cache/sxmo/sxmo.noidle" = lib.mkIf cfg.noidle (sane-lib.fs.wantedText "");
 
 
       ## greeter
