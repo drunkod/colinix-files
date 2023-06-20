@@ -140,6 +140,7 @@ in
         package = null;
         suggestedPrograms = [
           "guiApps"
+          "sfeed"  # want this here so that the user's ~/.sfeed/sfeedrc gets created
         ];
       };
     }
@@ -197,6 +198,7 @@ in
         libnotify
         lisgd
         mako
+        sfeed
         superd
         sway
         swayidle
