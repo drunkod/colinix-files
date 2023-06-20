@@ -85,6 +85,7 @@ let
     inherit (pkgs)
       aerc  # email client
       offlineimap  # email mailox sync
+      sfeed  # RSS fetcher
       visidata  # TUI spreadsheet viewer/editor
       w3m
     ;

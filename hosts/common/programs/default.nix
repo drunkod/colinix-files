@@ -19,6 +19,7 @@
     ./newsflash.nix
     ./offlineimap.nix
     ./ripgrep.nix
+    ./sfeed.nix
     ./splatmoji.nix
     ./steam.nix
     ./sublime-music.nix
