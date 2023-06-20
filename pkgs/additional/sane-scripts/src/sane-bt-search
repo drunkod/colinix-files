@@ -112,11 +112,6 @@ class Torrent:
             logger.info(f"invalid magnet: {magnet}")
             magnet = None
 
-        # jackett returns bad DL URIs because it doesn't know its public URI
-        firewalled_host = "http://10.0.1.6:9117/"
-        if http_dl_uri and http_dl_uri.startswith(firewalled_host):
-            http_dl_uri = SERVICE + "/" + http_dl_uri[len(firewalled_host):]
-
         if seeders is not None and pub_date is not None and title is not None and (magnet is not None or http_dl_uri is not None):
             pub_date = parse_time(pub_date)
             return Torrent(seeders, pub_date, size, tracker, title, magnet, http_dl_uri, tracker_uri)
