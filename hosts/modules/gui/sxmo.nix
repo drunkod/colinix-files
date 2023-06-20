@@ -108,12 +108,24 @@ in
       '';
     };
     sane.gui.sxmo.settings = mkOption {
-      type = types.attrsOf types.str;
-      default = {};
       description = ''
         environment variables used to configure sxmo.
         e.g. SXMO_UNLOCK_IDLE_TIME or SXMO_VOLUME_BUTTON.
       '';
+      type = types.submodule {
+        freeformType = types.attrsOf types.str;
+        options =
+          let
+            mkSettingsOpt = default: description: mkOption {
+              inherit default description;
+              type = types.nullOr types.str;
+            };
+          in {
+            SXMO_BAR_SHOW_BAT_PER = mkSettingsOpt "1" "show battery percentage in statusbar";
+            SXMO_UNLOCK_IDLE_TIME = mkSettingsOpt "300" "how many seconds of inactivity before locking the screen";  # lock -> screenoff happens 8s later, not configurable
+          };
+      };
+      default = {};
     };
     sane.gui.sxmo.noidle = mkOption {
       type = types.bool;
@@ -130,6 +142,14 @@ in
           "guiApps"
         ];
       };
+    }
+
+    {
+      # TODO: lift to option declaration
+      sane.gui.sxmo.settings.TERMCMD = lib.mkIf (cfg.terminal != null)
+        (lib.mkDefault (if cfg.terminal == "vte" then "vte-2.91" else cfg.terminal));
+      sane.gui.sxmo.settings.KEYBOARD = lib.mkIf (cfg.keyboard != null)
+        (lib.mkDefault (if cfg.keyboard == "wvkbd" then "wvkbd-mobintl" else cfg.keyboard));
     }
 
     (lib.mkIf cfg.enable {
@@ -199,10 +219,6 @@ in
           # TODO: only need the share/sxmo directly linked
           "${pkgs.sxmo-utils}/share"
         ];
-      } // lib.optionalAttrs (cfg.terminal != null) {
-        TERMCMD = lib.mkDefault (if cfg.terminal == "vte" then "vte-2.91" else cfg.terminal);
-      } // lib.optionalAttrs (cfg.keyboard != null) {
-        KEYBOARD = lib.mkDefault (if cfg.keyboard == "wvkbd" then "wvkbd-mobintl" else cfg.keyboard);
       } // cfg.settings;
 
       sane.user.fs.".cache/sxmo/sxmo.noidle" = lib.mkIf cfg.noidle (sane-lib.fs.wantedText "");
