@@ -170,6 +170,13 @@ in [
     hash = "sha256-m++Vv/FK7cxONCz6n0MLO3CiKNrRH0ttFmoC1Xmba+A=";
   })
 
+  # (fetchpatch' {
+  #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
+  #   title = "matrix-appservice-irc: 0.38.0 -> 1.0.0";
+  #   saneCommit = "b168bf862d53535151b9142a15fbd53e18e688c5";
+  #   hash = "sha256-dDa2mrCJ416PIYsDH9ya/4aQdqtp4BwzIisa8HdVFxo=";
+  # })
+
   # for raspberry pi: allow building u-boot for rpi 4{,00}
   # TODO: remove after upstreamed: https://github.com/NixOS/nixpkgs/pull/176018
   #   (it's a dupe of https://github.com/NixOS/nixpkgs/pull/112677 )
