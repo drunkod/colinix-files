@@ -14,6 +14,7 @@ let
       version = "0.1.0";
       format = "setuptools";
       src = ./src/lib/bt;
+      propagatedBuildInputs = [ transmission ];
       pythonImportChecks = [
         "sane_bt"
       ];
@@ -23,7 +24,6 @@ let
       version = "0.1.0";
       format = "setuptools";
       src = ./src/lib/ssdp;
-      propagatedBuildInputs = [ transmission ];
       pythonImportChecks = [
         "sane_ssdp"
       ];
@@ -47,11 +47,13 @@ let
       pname = "sane-bt-add";
       src = ./src;
       pyPkgs = [ "sane-lib.bt" ];
+      pkgs = [ "sane-scripts.lib.bt.propagatedBuildInputs" ];
     };
     bt-rm = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-rm";
       src = ./src;
       pyPkgs = [ "sane-lib.bt" ];
+      pkgs = [ "sane-scripts.lib.bt.propagatedBuildInputs" ];
     };
     bt-search = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-search";
@@ -62,6 +64,7 @@ let
       pname = "sane-bt-show";
       src = ./src;
       pyPkgs = [ "sane-lib.bt" ];
+      pkgs = [ "sane-scripts.lib.bt.propagatedBuildInputs" ];
     };
     deadlines = static-nix-shell.mkBash {
       pname = "sane-deadlines";
