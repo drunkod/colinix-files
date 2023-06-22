@@ -1,15 +1,12 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i python3 -p "python3.withPackages (ps: [  ])" -p transmission
+#!nix-shell -i python3 -p "python3.withPackages (ps: [ ps.sane-lib.bt ])" -p transmission
 # vim: set filetype=python :
 
 # removes a torrent and trashes its data
 
 import argparse
-import sys
 
-sys.path.insert(0, ".")  # to import `lib`
-
-from lib.sane_torrent import TransmissionApi
+from sane_bt import TransmissionApi
 
 
 def main():

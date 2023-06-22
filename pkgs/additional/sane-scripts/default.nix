@@ -1,5 +1,5 @@
 { lib
-, pkgs
+, python3Packages
 , static-nix-shell
 , symlinkJoin
 }:
@@ -13,6 +13,19 @@ let
       cp -R lib/* $out/bin/lib/
     '';
   });
+
+  sane-lib = {
+    bt = python3Packages.buildPythonPackage {
+      pname = "sane-lib-bt";
+      version = "0.1.0";
+      format = "setuptools";
+      src = ./src/lib/bt;
+      pythonImportChecks = [
+        "sane_bt"
+      ];
+    };
+  };
+
   nix-shell-scripts = {
     # anything added to this attrset gets symlink-joined into `sane-scripts`
     # and is made available through `sane-scripts.passthru`
@@ -26,15 +39,17 @@ let
       src = ./src;
       pkgs = [ "duplicity" ];
     };
-    bt-add = pythonWithLib {
+    bt-add = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-add";
       src = ./src;
       pkgs = [ "transmission" ];
+      pyPkgs = [ "sane-lib.bt" ];
     };
     bt-rm = pythonWithLib {
       pname = "sane-bt-rm";
       src = ./src;
       pkgs = [ "transmission" ];
+      pyPkgs = [ "sane-lib.bt" ];
     };
     bt-search = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-search";
@@ -215,7 +230,9 @@ in
 symlinkJoin {
   name = "sane-scripts";
   paths = lib.attrValues nix-shell-scripts;
-  passthru = nix-shell-scripts;
+  passthru = nix-shell-scripts // {
+    lib = sane-lib;
+  };
   meta = {
     description = "collection of scripts associated with sane systems";
     homepage = "https://git.uninsane.org";
