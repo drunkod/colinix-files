@@ -5,15 +5,6 @@
 }:
 
 let
-  # for a python script that needs the lib/ directory
-  # TODO: would be better to package the lib directory as its own python library
-  pythonWithLib = args: static-nix-shell.mkPython3Bin (args // {
-    postInstall = args.postInstall or "" + ''
-      mkdir -p $out/bin/lib
-      cp -R lib/* $out/bin/lib/
-    '';
-  });
-
   sane-lib = {
     bt = python3Packages.buildPythonPackage {
       pname = "sane-lib-bt";
@@ -22,6 +13,15 @@ let
       src = ./src/lib/bt;
       pythonImportChecks = [
         "sane_bt"
+      ];
+    };
+    ssdp = python3Packages.buildPythonPackage {
+      pname = "sane-lib-ssdp";
+      version = "0.1.0";
+      format = "setuptools";
+      src = ./src/lib/ssdp;
+      pythonImportChecks = [
+        "sane_ssdp"
       ];
     };
   };
@@ -45,7 +45,7 @@ let
       pkgs = [ "transmission" ];
       pyPkgs = [ "sane-lib.bt" ];
     };
-    bt-rm = pythonWithLib {
+    bt-rm = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-rm";
       src = ./src;
       pkgs = [ "transmission" ];
@@ -90,19 +90,13 @@ let
       pname = "sane-ip-check-upnp";
       src = ./src;
       pkgs = [ "miniupnpc" ];
-      postInstall = ''
-        mkdir -p $out/bin/lib
-        cp -R lib/* $out/bin/lib/
-      '';
+      pyPkgs = [ "sane-lib.ssdp" ];
     };
     ip-port-forward = static-nix-shell.mkPython3Bin {
       pname = "sane-ip-port-forward";
       src = ./src;
       pkgs = [ "inetutils" "miniupnpc" ];
-      postInstall = ''
-        mkdir -p $out/bin/lib
-        cp -R lib/* $out/bin/lib/
-      '';
+      pyPkgs = [ "sane-lib.ssdp" ];
     };
     ip-reconnect = static-nix-shell.mkPython3Bin {
       pname = "sane-ip-reconnect";

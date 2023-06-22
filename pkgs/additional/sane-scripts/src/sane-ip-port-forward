@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i python3 -p "python3.withPackages (ps: [  ])" -p inetutils -p miniupnpc
+#!nix-shell -i python3 -p "python3.withPackages (ps: [ ps.sane-lib.ssdp ])" -p inetutils -p miniupnpc
 
 '''
 USAGE: sane-ip-port-forward [options] [proto:port[:desc]]*
