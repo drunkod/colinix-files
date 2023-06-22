@@ -18,7 +18,7 @@ let
       src = ./src;
       pkgs = [ "duplicity" ];
     };
-    bt-add = static-nix-shell.mkBash {
+    bt-add = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-add";
       src = ./src;
       pkgs = [ "transmission" ];

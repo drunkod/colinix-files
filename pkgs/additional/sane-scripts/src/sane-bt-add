@@ -1,94 +1,56 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i bash -p transmission
+#!nix-shell -i python3 -p "python3.withPackages (ps: [  ])" -p transmission
+# vim: set filetype=python :
 
-set -e
+import argparse
+import subprocess
+import sys
 
-endpoint=https://bt.uninsane.org/transmission/rpc
-PASS=$(sudo cat /run/secrets/transmission_passwd)
+sys.path.insert(0, ".")  # to import `lib`
 
-options=$(getopt -l help,prefix:,film,show:,book:,audiobook:,vn:,author: -- "" "${@}")
-eval "set -- ${options}"
+from lib.sane_torrent import MediaMeta
 
-type=
-title=
-author=
-prefix=
-while true; do
-  case "$1" in
-    (--help)
-      echo "add a .torrent or magnet:// file to be downloaded by and stored on my server"
-      echo "usage: sane-bt-add [options] <magnet:// URI or path/to.torrent>"
-      echo "options:"
-      echo "  --prefix <PathString>"
-      echo "  --film"
-      echo "  --show <ShowTitle>"
-      echo "  --book <BookTitle>"
-      echo "  --audiobook <BookTitle>"
-      echo "  --vn <VisualNovelTitle>"
-      echo "  --author <Author>"
-      echo ""
-      echo "the above options are used to construct the filesystem path where the torrent data will live"
-      echo "everything is relative to the root media directory (not /)"
-      exit
-    ;;
-    (--prefix)
-      shift
-      prefix="$1"
-      shift
-    ;;
-    (--film)
-      type=Videos/Film/
-      shift
-    ;;
-    (--show)
-      type=Videos/Shows/
-      shift
-      title="$1"/
-      shift
-    ;;
-    (--book)
-      type=Books/Books/
-      shift
-      title="$1"/
-      shift
-    ;;
-    (--audiobook)
-      type=Books/Audiobooks/
-      shift
-      title="$1"/
-      shift
-    ;;
-    (--vn)
-      type=Books/Visual/
-      shift
-      title="$1"/
-      shift
-    ;;
-    (--author)
-      shift
-      author="$1"/
-      shift
-    ;;
-    (--)
-      shift
-      if [ $# -eq 1 ]; then
-        break
-      fi
-    ;;
-    (*)
-      echo "invalid arguments"
-      exit 1
-    ;;
-  esac
-done
+def dry_check_call(args: list[str]):
+    print("not invoking because dry run: " + ' '.join(args))
 
-prefix=$prefix$type$author$title
-# positional ("non-option") parameters
-torrent="$1"
+class Executor:
+    ENDPOINT="https://bt.uninsane.org/transmission/rpc"
+    PASSFILE="/run/secrets/transmission_passwd"
 
-echo "saving to $prefix"
+    def __init__(self, check_call = subprocess.check_call):
+        self.check_call = check_call
 
-transmission-remote "$endpoint" \
-  --auth "colin:$PASS" \
-  --download-dir "/var/lib/uninsane/media/$prefix" \
-  --add "$torrent"
+    @property
+    def auth(self) -> str:
+        return open(self.PASSFILE, "r").read()
+
+    def add_torrent(self, meta: MediaMeta, torrent: str):
+        print(f"saving to {meta.fs_path()}")
+        self.call_transmission([
+            "--download-dir", meta.fs_path(),
+            "--add", torrent,
+        ])
+
+    def call_transmission(self, args: list[str]):
+        self.check_call([
+            "transmission-remote",
+            self.ENDPOINT,
+            "--auth", f"colin:{self.auth}",
+        ] + args)
+
+def main():
+    parser = argparse.ArgumentParser()
+    MediaMeta.add_arguments(parser)
+    parser.add_argument("--dry-run", action="store_true", help="only show what would be done; don't invoke transmission")
+    parser.add_argument("torrent", help="magnet: URI or file path to torrent")
+
+    args = parser.parse_args()
+    meta = MediaMeta.from_arguments(args)
+    dry_run = args.dry_run
+    torrent = args.torrent
+    executor = Executor(check_call = dry_check_call if dry_run else subprocess.check_call)
+
+    executor.add_torrent(meta, torrent)
+
+if __name__ == "__main__":
+    main()
