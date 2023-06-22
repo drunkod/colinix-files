@@ -3,8 +3,11 @@ from __future__ import annotations
 from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
 
+import logging
 import os.path
 import subprocess
+
+logger = logging.getLogger(__name__)
 
 @dataclass
 class MediaMeta:
@@ -87,19 +90,41 @@ class TransmissionApi:
         return open(self.PASSFILE, "r").read().strip()
 
     def add_torrent(self, meta: MediaMeta, torrent: str):
-        print(f"saving to {meta.fs_path()}")
-        self.call_transmission([
-            "--download-dir", meta.fs_path(),
-            "--add", torrent,
-        ])
+        self.call_transmission(
+            description=f"saving to {meta.fs_path()}",
+            args=[
+                "--download-dir", meta.fs_path(),
+                "--add", torrent,
+            ]
+        )
+
+    def move_torrent(self, meta: MediaMeta, torrent: str):
+        self.call_transmission(
+            description=f"moving {torrent} to {meta.fs_path()}",
+            args=[
+                "--torrent", torrent,
+                "--move", meta.fs_path()
+            ]
+        )
+
+    def add_or_move_torrent(self, meta: MediaMeta, torrent: str):
+        """
+        if "torrent" represents a magnet or file URI, then add else
+        else assume it's a transmission identifier and move it to the location specified by @p meta.
+        """
+        if torrent.isdigit():
+            self.move_torrent(meta, torrent)
+        else:
+            self.add_torrent(meta, torrent)
 
     def rm_torrent(self, torrent: str | int):
-        print(f"deleting {torrent}")
-        self.call_transmission([
-            "--torrent", torrent,
-            "--remove-and-delete"
-        ])
-
+        self.call_transmission(
+            description=f"deleting {torrent}",
+            args=[
+                "--torrent", torrent,
+                "--remove-and-delete"
+            ]
+        )
 
     def list_(self) -> str:
         return self.call_transmission([
@@ -108,11 +133,14 @@ class TransmissionApi:
 
     def info(self, torrent: str) -> str:
         return self.call_transmission([
-            "-t", torrent,
-            "-i"
+            "--torrent", torrent,
+            "--info"
         ])
 
-    def call_transmission(self, args: list[str]) -> str:
+    def call_transmission(self, args: list[str], description: str | None = None) -> str:
+        if description is not None:
+            logger.info(description)
+
         return self.check_output([
             "transmission-remote",
             self.ENDPOINT,

@@ -3,11 +3,15 @@
 # vim: set filetype=python :
 
 import argparse
+import logging
 
 from sane_bt import MediaMeta, TransmissionApi
 
 
 def main():
+    logging.basicConfig()
+    logging.getLogger().setLevel(logging.INFO)
+
     parser = argparse.ArgumentParser(description="instruct servo to download some torrent")
     TransmissionApi.add_arguments(parser)
     MediaMeta.add_arguments(parser)
@@ -18,7 +22,7 @@ def main():
     bt_api = TransmissionApi.from_arguments(args)
     torrent = args.torrent
 
-    bt_api.add_torrent(meta, torrent)
+    bt_api.add_or_move_torrent(meta, torrent)
 
 if __name__ == "__main__":
     main()
