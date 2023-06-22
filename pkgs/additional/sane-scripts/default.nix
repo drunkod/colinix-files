@@ -2,6 +2,7 @@
 , python3Packages
 , static-nix-shell
 , symlinkJoin
+, transmission
 }:
 
 let
@@ -22,6 +23,7 @@ let
       version = "0.1.0";
       format = "setuptools";
       src = ./src/lib/ssdp;
+      propagatedBuildInputs = [ transmission ];
       pythonImportChecks = [
         "sane_ssdp"
       ];
@@ -44,13 +46,11 @@ let
     bt-add = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-add";
       src = ./src;
-      pkgs = [ "transmission" ];
       pyPkgs = [ "sane-lib.bt" ];
     };
     bt-rm = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-rm";
       src = ./src;
-      pkgs = [ "transmission" ];
       pyPkgs = [ "sane-lib.bt" ];
     };
     bt-search = static-nix-shell.mkPython3Bin {
@@ -61,7 +61,6 @@ let
     bt-show = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-show";
       src = ./src;
-      pkgs = [ "transmission" ];
       pyPkgs = [ "sane-lib.bt" ];
     };
     deadlines = static-nix-shell.mkBash {
