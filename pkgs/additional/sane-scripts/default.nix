@@ -6,6 +6,8 @@
 
 let
   sane-lib = {
+    # TODO: we could simplify the lib/ folder structure
+    # by auto-generating the setup.py files in `postPatch`, below
     bt = python3Packages.buildPythonPackage {
       pname = "sane-lib-bt";
       version = "0.1.0";
