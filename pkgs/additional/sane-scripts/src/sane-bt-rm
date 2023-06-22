@@ -1,11 +1,27 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i bash -p transmission
+#!nix-shell -i python3 -p "python3.withPackages (ps: [  ])" -p transmission
+# vim: set filetype=python :
 
 # removes a torrent and trashes its data
-# usage: sane-bt-rm <torrent>
-# where <torrent> is a magnet URL, or an identifier from sane-bt-show (e.g. 132)
 
-endpoint=https://bt.uninsane.org/transmission/rpc
-PASS=$(sudo cat /run/secrets/transmission_passwd)
+import argparse
+import sys
 
-transmission-remote "$endpoint" --auth "colin:$PASS" --torrent "$1" --remove-and-delete
+sys.path.insert(0, ".")  # to import `lib`
+
+from lib.sane_torrent import TransmissionApi
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    TransmissionApi.add_arguments(parser)
+    parser.add_argument("torrent", help="numerical ID of the torrent in the transmission list (see sane-bt-show)")
+
+    args = parser.parse_args()
+    executor = TransmissionApi.from_arguments(args)
+    torrent = args.torrent
+
+    executor.rm_torrent(torrent)
+
+if __name__ == "__main__":
+    main()

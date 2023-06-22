@@ -3,52 +3,23 @@
 # vim: set filetype=python :
 
 import argparse
-import subprocess
 import sys
 
 sys.path.insert(0, ".")  # to import `lib`
 
-from lib.sane_torrent import MediaMeta
+from lib.sane_torrent import MediaMeta, TransmissionApi
 
-def dry_check_call(args: list[str]):
-    print("not invoking because dry run: " + ' '.join(args))
-
-class Executor:
-    ENDPOINT="https://bt.uninsane.org/transmission/rpc"
-    PASSFILE="/run/secrets/transmission_passwd"
-
-    def __init__(self, check_call = subprocess.check_call):
-        self.check_call = check_call
-
-    @property
-    def auth(self) -> str:
-        return open(self.PASSFILE, "r").read()
-
-    def add_torrent(self, meta: MediaMeta, torrent: str):
-        print(f"saving to {meta.fs_path()}")
-        self.call_transmission([
-            "--download-dir", meta.fs_path(),
-            "--add", torrent,
-        ])
-
-    def call_transmission(self, args: list[str]):
-        self.check_call([
-            "transmission-remote",
-            self.ENDPOINT,
-            "--auth", f"colin:{self.auth}",
-        ] + args)
 
 def main():
     parser = argparse.ArgumentParser()
+    TransmissionApi.add_arguments(parser)
     MediaMeta.add_arguments(parser)
-    parser.add_argument("--dry-run", action="store_true", help="only show what would be done; don't invoke transmission")
     parser.add_argument("torrent", help="magnet: URI or file path to torrent")
 
     args = parser.parse_args()
     meta = MediaMeta.from_arguments(args)
-    dry_run = args.dry_run
+    executor = TransmissionApi.from_arguments(args)
     torrent = args.torrent
-    executor = Executor(check_call = dry_check_call if dry_run else subprocess.check_call)
 
     executor.add_torrent(meta, torrent)
 

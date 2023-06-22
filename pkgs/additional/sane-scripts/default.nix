@@ -5,6 +5,14 @@
 }:
 
 let
+  # for a python script that needs the lib/ directory
+  # TODO: would be better to package the lib directory as its own python library
+  pythonWithLib = args: static-nix-shell.mkPython3Bin (args // {
+    postInstall = args.postInstall or "" + ''
+      mkdir -p $out/bin/lib
+      cp -R lib/* $out/bin/lib/
+    '';
+  });
   nix-shell-scripts = {
     # anything added to this attrset gets symlink-joined into `sane-scripts`
     # and is made available through `sane-scripts.passthru`
@@ -18,12 +26,12 @@ let
       src = ./src;
       pkgs = [ "duplicity" ];
     };
-    bt-add = static-nix-shell.mkPython3Bin {
+    bt-add = pythonWithLib {
       pname = "sane-bt-add";
       src = ./src;
       pkgs = [ "transmission" ];
     };
-    bt-rm = static-nix-shell.mkBash {
+    bt-rm = pythonWithLib {
       pname = "sane-bt-rm";
       src = ./src;
       pkgs = [ "transmission" ];
