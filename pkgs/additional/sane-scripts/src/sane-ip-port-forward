@@ -22,9 +22,7 @@ import logging
 import subprocess
 import sys
 
-sys.path.insert(0, ".")  # to import `lib`
-
-from lib.sane_ssdp import get_any_wan, forward_port
+from sane_ssdp import get_any_wan, forward_port
 
 class BadCliArgs(Exception):
     def __init__(self, msg: str = None):
