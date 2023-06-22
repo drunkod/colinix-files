@@ -9,14 +9,15 @@ from sane_bt import MediaMeta, TransmissionApi
 def main():
     parser = argparse.ArgumentParser()
     TransmissionApi.add_arguments(parser)
-    parser.add_argument("torrent", nargs="?", help="torrent id to show (acquire by first calling with no args)")
+    parser.add_argument("torrents", nargs="*", help="torrent id to show (acquire by first calling with no args)")
 
     args = parser.parse_args()
     bt_api = TransmissionApi.from_arguments(args)
-    torrent = args.torrent
+    torrents = args.torrents
 
-    if torrent:
-        print(bt_api.info(torrent))
+    if torrents:
+        for t in torrents:
+            print(bt_api.info(t))
     else:
         print(bt_api.list_())
 
