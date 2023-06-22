@@ -15,10 +15,10 @@ def main():
 
     args = parser.parse_args()
     meta = MediaMeta.from_arguments(args)
-    executor = TransmissionApi.from_arguments(args)
+    bt_api = TransmissionApi.from_arguments(args)
     torrent = args.torrent
 
-    executor.add_torrent(meta, torrent)
+    bt_api.add_torrent(meta, torrent)
 
 if __name__ == "__main__":
     main()
