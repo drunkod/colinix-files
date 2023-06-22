@@ -2,15 +2,13 @@
 #!nix-shell -i python3 -p "python3.withPackages (ps: [ ps.sane-lib.bt ])" -p transmission
 # vim: set filetype=python :
 
-# removes a torrent and trashes its data
-
 import argparse
 
 from sane_bt import TransmissionApi
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="remove a torrent and trash its data")
     TransmissionApi.add_arguments(parser)
     parser.add_argument("torrent", help="numerical ID of the torrent in the transmission list (see sane-bt-show)")
 

@@ -8,7 +8,7 @@ from sane_bt import MediaMeta, TransmissionApi
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="instruct servo to download some torrent")
     TransmissionApi.add_arguments(parser)
     MediaMeta.add_arguments(parser)
     parser.add_argument("torrent", help="magnet: URI or file path to torrent")

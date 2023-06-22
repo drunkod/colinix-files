@@ -7,7 +7,7 @@ import argparse
 from sane_bt import MediaMeta, TransmissionApi
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="show information about one or more torrents on servo")
     TransmissionApi.add_arguments(parser)
     parser.add_argument("torrents", nargs="*", help="torrent id to show (acquire by first calling with no args)")
 
