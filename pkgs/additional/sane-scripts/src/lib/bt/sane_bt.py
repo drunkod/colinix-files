@@ -63,15 +63,16 @@ class MediaMeta:
         return os.path.join(base, self.prefix or "", self.type_path, self.author or "", self.title or "")
 
 
-def dry_check_call(args: list[str]):
+def dry_check_output(args: list[str]) -> bytes:
     print("not invoking because dry run: " + ' '.join(args))
+    return b""
 
 class TransmissionApi:
     ENDPOINT="https://bt.uninsane.org/transmission/rpc"
     PASSFILE="/run/secrets/transmission_passwd"
 
-    def __init__(self, check_call = subprocess.check_call):
-        self.check_call = check_call
+    def __init__(self, check_output = subprocess.check_output):
+        self.check_output = check_output
 
     @staticmethod
     def add_arguments(parser: ArgumentParser):
@@ -79,7 +80,7 @@ class TransmissionApi:
 
     @staticmethod
     def from_arguments(args: Namespace) -> Self:
-        return TransmissionApi(check_call = dry_check_call if args.dry_run else subprocess.check_call)
+        return TransmissionApi(check_output = dry_check_output if args.dry_run else subprocess.check_output)
 
     @property
     def auth(self) -> str:
@@ -99,9 +100,21 @@ class TransmissionApi:
             "--remove-and-delete"
         ])
 
-    def call_transmission(self, args: list[str]):
-        self.check_call([
+
+    def list_(self) -> str:
+        return self.call_transmission([
+            "--list"
+        ])
+
+    def info(self, torrent: str) -> str:
+        return self.call_transmission([
+            "-t", torrent,
+            "-i"
+        ])
+
+    def call_transmission(self, args: list[str]) -> str:
+        return self.check_output([
             "transmission-remote",
             self.ENDPOINT,
             "--auth", f"colin:{self.auth}",
-        ] + args)
+        ] + args).decode("utf-8")

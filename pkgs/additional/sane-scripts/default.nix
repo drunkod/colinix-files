@@ -58,10 +58,11 @@ let
       src = ./src;
       pyPkgs = [ "natsort" "requests" ];
     };
-    bt-show = static-nix-shell.mkBash {
+    bt-show = static-nix-shell.mkPython3Bin {
       pname = "sane-bt-show";
       src = ./src;
       pkgs = [ "transmission" ];
+      pyPkgs = [ "sane-lib.bt" ];
     };
     deadlines = static-nix-shell.mkBash {
       pname = "sane-deadlines";
