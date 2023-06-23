@@ -58,13 +58,6 @@ in [
     hash = "sha256-jl6SZwSDhQTlpM5FyGaFU/svwTb1ySdKtvWMgsneq3A=";
   })
 
-  (fetchpatch' {
-    title = "cargo-docset: init at 0.3.1";
-    saneCommit = "5a09e84c6159ce545029483384580708bc04c08f";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/231188";
-    hash = "sha256-Z1HOps3w/WvxAiyUAHWszKqwS9EwA6rf4XfgPGp+2sQ=";
-  })
-
   # (fetchpatch' {
   #   # phoc: 0.25.0 -> 0.27.0
   #   # TODO: move wayland-scanner & glib to nativeBuildInputs
