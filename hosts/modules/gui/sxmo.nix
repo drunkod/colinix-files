@@ -250,6 +250,15 @@ in
         in "${sway-as-greeter}/bin/sway-as-greeter";
       };
 
+      systemd.services."sxmo-set-permissions" = {
+        description = "configure specific /sys and /dev nodes to be writable by sxmo scripts";
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.sxmo-utils}/bin/sxmo_setpermissions.sh";
+        };
+        wantedBy = [ "display-manager.service" ];
+      };
+
       sane.fs."/var/log/sway" = lib.mkIf (cfg.greeter == "sway") {
         dir.acl.mode = "0777";
         wantedBeforeBy = [ "greetd.service" "display-manager.service" ];
