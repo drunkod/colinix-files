@@ -66,30 +66,10 @@ in
     sane.gui.sxmo.package = mkOption {
       type = types.package;
       default = pkgs.sxmo-utils;
-    };
-    sane.gui.sxmo.hooks = mkOption {
-      type = types.package;
-      default = pkgs.runCommand "sxmo-hooks" { } ''
-        mkdir -p $out
-        ln -s ${cfg.package}/share/sxmo/default_hooks $out/bin
-      '';
       description = ''
-        hooks to make visible to sxmo.
-        a hook is a script generally of the name sxmo_hook_<thing>.sh
-        which is called by sxmo at key moments to proide user programmability.
-      '';
-    };
-    sane.gui.sxmo.deviceHooks = mkOption {
-      type = types.package;
-      default = pkgs.runCommand "sxmo-device-hooks" { } ''
-        mkdir -p $out
-        ln -s ${cfg.package}/share/sxmo/default_hooks/unknown $out/bin
-      '';
-      description = ''
-        device-specific hooks to make visible to sxmo.
-        this package supplies things like `sxmo_hook_inputhandler.sh`.
-        a hook is a script generally of the name sxmo_hook_<thing>.sh
-        which is called by sxmo at key moments to proide user programmability.
+        sxmo base scripts and hooks collection.
+        consider overriding the outputs under /share/sxmo/default_hooks
+        to insert your own user scripts.
       '';
     };
     sane.gui.sxmo.terminal = mkOption {
@@ -190,10 +170,8 @@ in
       systemd.user.services."pipewire".wantedBy = [ "graphical-session.target" ];
 
       # TODO: could use `displayManager.sessionPackages`?
-      environment.systemPackages = with pkgs; [
+      environment.systemPackages = [
         cfg.package
-        cfg.deviceHooks
-        cfg.hooks
       ] ++ lib.optionals (cfg.terminal != null) [ pkgs."${cfg.terminal}" ]
         ++ lib.optionals (cfg.keyboard != null) [ pkgs."${cfg.keyboard}" ];
 
