@@ -1,4 +1,4 @@
-{ sane-lib, ... }:
+{ pkgs, sane-lib, ... }:
 {
   sane.gui.sxmo = {
     settings = {
@@ -13,5 +13,13 @@
       DEFAULT_COUNTRY = "US";
       BROWSWER = "librewolf";
     };
+    package = pkgs.sxmo-utils.overrideAttrs (base: {
+      postPatch = (base.postPatch or "") + ''
+        cat <<EOF >> ./configs/default_hooks/sxmo_hook_start.sh
+        # rotate UI based on physical display angle by default
+        sxmo_daemons.sh start autorotate sxmo_autorotate.sh
+        EOF
+      '';
+    });
   };
 }

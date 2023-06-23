@@ -69,9 +69,12 @@ stdenv.mkDerivation rec {
     ./0002-ensure-log-dir.patch
     ./0003-fix-xkb-paths.patch
     ./0004-no-busybox.patch
+    # wanted to fix/silence some non-fatal errors
+    ./0005-system-audio.patch
 
-    # personal preferences:
+    # personal (but upstreamable) preferences:
     ./0104-full-auto-rotate.patch
+    ./0105-more-apps.patch
   ];
 
   postPatch = ''
@@ -79,16 +82,6 @@ stdenv.mkDerivation rec {
     sed -i "s@/etc/profile\.d/sxmo_init.sh@$out/etc/profile.d/sxmo_init.sh@" scripts/core/*.sh
     sed -i "s@/usr/bin/@@g" scripts/core/sxmo_version.sh
     sed -i 's:ExecStart=/usr/bin/:ExecStart=/usr/bin/env :' configs/superd/services/*.service
-
-    # apply customizations
-    # - xkb_mobile_normal_buttons:
-    #   - on devices where volume is part of the primary keyboard (e.g. thinkpad), we want to avoid overwriting the default map
-    #   - this provided map is the en_US 105 key map
-    ${rsync}/bin/rsync -rlv ${./customization}/ ./
-    # TODO: lift this to an override
-    # - i temporarily disable the xkb map override
-    #   - this is needed only on lappy; on moby it causes problems
-    # ${rsync}/bin/rsync -rlv ${./customization}/default_hooks/ ./default_hooks/
   '';
 
   nativeBuildInputs = [
