@@ -63,11 +63,15 @@ in
         "sway" => layered sway greeter. behaves as if you booted to swaylock.
       '';
     };
+    sane.gui.sxmo.package = mkOption {
+      type = types.package;
+      default = pkgs.sxmo-utils;
+    };
     sane.gui.sxmo.hooks = mkOption {
       type = types.package;
       default = pkgs.runCommand "sxmo-hooks" { } ''
         mkdir -p $out
-        ln -s ${pkgs.sxmo-utils}/share/sxmo/default_hooks $out/bin
+        ln -s ${cfg.package}/share/sxmo/default_hooks $out/bin
       '';
       description = ''
         hooks to make visible to sxmo.
@@ -79,7 +83,7 @@ in
       type = types.package;
       default = pkgs.runCommand "sxmo-device-hooks" { } ''
         mkdir -p $out
-        ln -s ${pkgs.sxmo-utils}/share/sxmo/default_hooks/unknown $out/bin
+        ln -s ${cfg.package}/share/sxmo/default_hooks/unknown $out/bin
       '';
       description = ''
         device-specific hooks to make visible to sxmo.
@@ -187,7 +191,7 @@ in
 
       # TODO: could use `displayManager.sessionPackages`?
       environment.systemPackages = with pkgs; [
-        sxmo-utils
+        cfg.package
         cfg.deviceHooks
         cfg.hooks
       ] ++ lib.optionals (cfg.terminal != null) [ pkgs."${cfg.terminal}" ]
@@ -196,7 +200,7 @@ in
       environment.sessionVariables = {
         XDG_DATA_DIRS = [
           # TODO: only need the share/sxmo directly linked
-          "${pkgs.sxmo-utils}/share"
+          "${cfg.package}/share"
         ];
       } // cfg.settings;
 
@@ -215,7 +219,7 @@ in
         '';
 
         displayManager.sessionPackages = with pkgs; [
-          sxmo-utils  # this gets share/wayland-sessions/swmo.desktop linked
+          cfg.package  # this gets share/wayland-sessions/swmo.desktop linked
         ];
 
         # taken from gui/phosh:
@@ -254,7 +258,7 @@ in
         description = "configure specific /sys and /dev nodes to be writable by sxmo scripts";
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${pkgs.sxmo-utils}/bin/sxmo_setpermissions.sh";
+          ExecStart = "${cfg.package}/bin/sxmo_setpermissions.sh";
         };
         wantedBy = [ "display-manager.service" ];
       };
@@ -271,7 +275,7 @@ in
       #   name = "sxmo";
       #   desktopNames = [ "sxmo" ];
       #   start = ''
-      #     ${pkgs.sxmo-utils}/bin/sxmo_xinit.sh &
+      #     ${cfg.package}/bin/sxmo_xinit.sh &
       #     waitPID=$!
       #   '';
       # }];
@@ -281,7 +285,7 @@ in
       #   enable = true;
       #   settings = {
       #     default_session = {
-      #       command = "${pkgs.sxmo-utils}/bin/sxmo_winit.sh";
+      #       command = "${cfg.package}/bin/sxmo_winit.sh";
       #       user = "colin";
       #     };
       #   };
