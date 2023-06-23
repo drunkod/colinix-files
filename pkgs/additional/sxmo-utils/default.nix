@@ -1,11 +1,58 @@
 { stdenv
+, bc
+, bemenu
+, bonsai
+, conky
 , fetchgit
 , gitUpdater
+, gojq
+, inotify-tools
+, j4-dmenu-desktop
+, jq
 , lib
+, libnotify
+, lisgd
+, makeWrapper
+, mako
+, pulseaudio
 , rsync
 , scdoc
+, sfeed
+, superd
+, sway
+, swayidle
+, wob
+, wvkbd
+, xdg-user-dirs
+, xdotool
 }:
 
+let
+  runtimeDeps = [
+    bc
+    bemenu
+    bonsai
+    conky
+    gojq
+    inotify-tools
+    j4-dmenu-desktop
+    jq
+    libnotify
+    lisgd
+    mako
+    pulseaudio
+    sfeed
+    superd
+    sway
+    swayidle
+    wob
+    wvkbd
+    xdg-user-dirs
+
+    # X11 only?
+    xdotool
+  ];
+in
 stdenv.mkDerivation rec {
   pname = "sxmo-utils";
   version = "1.14.2";
@@ -41,6 +88,7 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [
+    makeWrapper
     scdoc
   ];
 
@@ -49,6 +97,29 @@ stdenv.mkDerivation rec {
     "DESTDIR=$(out)"
     "PREFIX="
   ];
+
+  # we don't wrap sxmo_common.sh or sxmo_init.sh
+  # which is unfortunate, for non-sxmo-utils files that might source though.
+  # if that's a problem, could inject a PATH=... line into them with sed.
+  postInstall = ''
+    for f in \
+      $out/bin/*.sh \
+      $out/share/sxmo/default_hooks/desktop/sxmo_hook_*.sh \
+      $out/share/sxmo/default_hooks/one_button_e_reader/sxmo_hook_*.sh \
+      $out/share/sxmo/default_hooks/three_button_touchscreen/sxmo_hook_*.sh \
+      $out/share/sxmo/default_hooks/sxmo_hook_*.sh \
+    ; do
+      case $(basename $f) in
+        (sxmo_common.sh|sxmo_deviceprofile_*.sh|sxmo_hook_icons.sh|sxmo_init.sh)
+          # these are sourced by other scripts: don't wrap them else the `exec` in the wrapper breaks the outer script
+        ;;
+        (*)
+          wrapProgram "$f" \
+            --prefix PATH : "${lib.makeBinPath runtimeDeps}"
+        ;;
+      esac
+    done
+  '';
 
   passthru = {
     providedSessions = [ "sxmo" "swmo" ];

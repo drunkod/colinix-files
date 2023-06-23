@@ -187,33 +187,10 @@ in
 
       # TODO: could use `displayManager.sessionPackages`?
       environment.systemPackages = with pkgs; [
-        bc
-        bemenu
-        bonsai
-        conky
-        gojq
-        inotify-tools
-        j4-dmenu-desktop
-        jq
-        libnotify
-        lisgd
-        mako
-        sfeed
-        superd
-        sway
-        swayidle
         sxmo-utils
-        wob
-        wvkbd
-        xdg-user-dirs
-
-        # X11 only?
-        xdotool
-
         cfg.deviceHooks
         cfg.hooks
-      ] ++ lib.optionals (config.services.pipewire.pulse.enable) [ pulseaudio ]  # for pactl
-        ++ lib.optionals (cfg.terminal != null) [ pkgs."${cfg.terminal}" ]
+      ] ++ lib.optionals (cfg.terminal != null) [ pkgs."${cfg.terminal}" ]
         ++ lib.optionals (cfg.keyboard != null) [ pkgs."${cfg.keyboard}" ];
 
       environment.sessionVariables = {
