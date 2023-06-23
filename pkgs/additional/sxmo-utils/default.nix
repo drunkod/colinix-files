@@ -85,6 +85,10 @@ stdenv.mkDerivation rec {
     #   - on devices where volume is part of the primary keyboard (e.g. thinkpad), we want to avoid overwriting the default map
     #   - this provided map is the en_US 105 key map
     ${rsync}/bin/rsync -rlv ${./customization}/ ./
+    # TODO: lift this to an override
+    # - i temporarily disable the xkb map override
+    #   - this is needed only on lappy; on moby it causes problems
+    # ${rsync}/bin/rsync -rlv ${./customization}/default_hooks/ ./default_hooks/
   '';
 
   nativeBuildInputs = [
