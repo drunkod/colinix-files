@@ -14,6 +14,7 @@
 , lisgd
 , makeWrapper
 , mako
+, modemmanager
 , pulseaudio
 , rsync
 , scdoc
@@ -28,6 +29,7 @@
 }:
 
 let
+  # anything which any sxmo script or default hook in this package might invoke
   runtimeDeps = [
     bc
     bemenu
@@ -40,6 +42,7 @@ let
     libnotify
     lisgd
     mako
+    modemmanager
     pulseaudio
     sfeed
     superd
