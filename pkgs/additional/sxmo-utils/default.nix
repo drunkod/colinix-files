@@ -6,6 +6,7 @@
 , dbus
 , fetchgit
 , gitUpdater
+, gnugrep
 , gojq
 , inotify-tools
 , j4-dmenu-desktop
@@ -41,6 +42,7 @@ let
     conky
     dbus
     # dmenu  # or dmenu-wayland? only used on x11?
+    gnugrep
     gojq
     inotify-tools
     j4-dmenu-desktop
