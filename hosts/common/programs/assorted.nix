@@ -197,6 +197,7 @@ let
       # sublime-music
       # tdesktop  # broken on phosh
       # tokodon
+      tuba  # mastodon/pleroma client (stores pw in keyring)
       vlc
       # pleroma client (Electron). input is broken on phosh. TODO(2023/02/02): fix electron19 input (insecure)
       # whalebird
