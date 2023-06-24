@@ -1,6 +1,6 @@
 # doesn't actually *enable* anything,
 # but sets up any modules such that if they *were* enabled, they'll act as expected.
-{ ... }:
+{ pkgs, ... }:
 {
   sane.gui.sxmo = {
     greeter = "sway";
@@ -33,6 +33,6 @@
         # after volume-button navigation mode, restore full keyboard functionality
         cp ${./xkb_mobile_normal_buttons} ./configs/xkb/xkb_mobile_normal_buttons
       '';
-    })
+    });
   };
 }
