@@ -83,6 +83,7 @@ stdenv.mkDerivation rec {
     ./0004-no-busybox.patch
     # wanted to fix/silence some non-fatal errors
     ./0005-system-audio.patch
+    ./0006-block-suspend-any-mpris.patch
 
     # personal (but upstreamable) preferences:
     ./0104-full-auto-rotate.patch
