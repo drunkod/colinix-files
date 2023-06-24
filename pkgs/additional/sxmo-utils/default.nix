@@ -3,6 +3,7 @@
 , bemenu
 , bonsai
 , conky
+, dbus
 , fetchgit
 , gitUpdater
 , gojq
@@ -35,6 +36,7 @@ let
     bemenu
     bonsai
     conky
+    dbus
     gojq
     inotify-tools
     j4-dmenu-desktop
