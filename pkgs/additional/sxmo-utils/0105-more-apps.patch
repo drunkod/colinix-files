@@ -1,5 +1,5 @@
 diff --git a/configs/default_hooks/sxmo_hook_apps.sh b/configs/default_hooks/sxmo_hook_apps.sh
-index ba70a31..f1ce0d5 100755
+index ba70a31..491a3c2 100755
 --- a/configs/default_hooks/sxmo_hook_apps.sh
 +++ b/configs/default_hooks/sxmo_hook_apps.sh
 @@ -31,6 +31,7 @@ write_line_app audacity "$icon_mic Audacity" "audacity"
@@ -10,7 +10,7 @@ index ba70a31..f1ce0d5 100755
  write_line_app dino "$icon_msg Dino" "GDK_SCALE=1 dino"
  write_line_app dolphin "$icon_dir Dolphin" "dolphin"
  write_line_app emacs "$icon_edt Emacs (Terminal)" "sxmo_terminal.sh emacs -nw"
-@@ -62,8 +63,10 @@ write_line_app ii "$icon_msg Ii" "sxmo_terminal.sh ii"
+@@ -62,11 +63,14 @@ write_line_app ii "$icon_msg Ii" "sxmo_terminal.sh ii"
  write_line_app ipython "$icon_trm IPython" "sxmo_terminal.sh ipython"
  write_line_app kasts "$icon_rss Kasts" "kasts"
  write_line_app kmail "$icon_eml KMail" "kmail"
@@ -21,3 +21,15 @@ index ba70a31..f1ce0d5 100755
  write_line_app kwrite "$icon_edt Kwrite" "kwrite"
  write_line_app lagrange "$icon_glb Lagrange" "lagrange"
  write_line_app lf "$icon_dir Lf" "sxmo_terminal.sh lf"
++write_line_app librewolf "$icon_glb Librewolf" "librewolf"
+ write_line_app lollypop "$icon_mus Lollypop" "lollypop"
+ write_line_app luakit "$icon_glb Luakit" "luakit"
+ write_line_app marble "$icon_map Marble" "marble"
+@@ -105,6 +109,7 @@ write_line_app thunar "$icon_dir Thunar" "sxmo_terminal.sh thunar"
+ write_line_app thunderbird "$icon_eml Thunderbird" "thunderbird"
+ write_line_app com.github.bleakgrey.tootle "$icon_msg Tootle" "com.github.bleakgrey.tootle"
+ write_line_app totem "$icon_mvi Totem" "totem"
++write_line_app tuba "$icon_msg Tuba" "dev.geopjr.Tuba"
+ write_line_app tuir "$icon_red Tuir" "sxmo_terminal.sh tuir"
+ write_line_app tut "$icon_msg Tut" "sxmo_terminal.sh tut"
+ write_line_app waydroid "$icon_and Waydroid" "waydroid show-full-ui"
