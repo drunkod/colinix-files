@@ -61,6 +61,8 @@
     - these use significant /tmp space.
     - either place /tmp on encrypted-cleared-at-boot storage
         - which probably causes each CPU load for the encryption
+    - or have nix builds use a subdir of /tmp like /tmp/nix/...
+        - and place that on non-encrypted clear-on-boot (with very lax writeback/swappiness to minimize writes)
     - **or set up encrypted swap**
         - encrypted swap could remove the need for my encrypted-cleared-at-boot stuff
 
