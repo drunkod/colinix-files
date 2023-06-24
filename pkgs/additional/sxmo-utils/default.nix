@@ -16,6 +16,9 @@
 , makeWrapper
 , mako
 , modemmanager
+, nettools
+, playerctl
+, procps
 , pulseaudio
 , rsync
 , scdoc
@@ -37,6 +40,7 @@ let
     bonsai
     conky
     dbus
+    # dmenu  # or dmenu-wayland? only used on x11?
     gojq
     inotify-tools
     j4-dmenu-desktop
@@ -44,8 +48,11 @@ let
     libnotify
     lisgd
     mako
-    modemmanager
-    pulseaudio
+    modemmanager  # mmcli
+    nettools  # netstat
+    playerctl
+    procps  # pgrep
+    pulseaudio  # pactl
     sfeed
     superd
     sway
