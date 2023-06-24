@@ -1203,6 +1203,13 @@ in {
     # fixes "meson.build:183:0: ERROR: Can not run test applications in this cross environment."
     inherit (emulated) stdenv;
   };
+  tuba = (prev.tuba.override {
+    # fixes -msse2, -mfpmath=sse flags
+    wrapGAppsHook4 = final.wrapGAppsHook;
+  }).overrideAttrs (upstream: {
+    # error: Package `{libadwaita-1,gtksourceview-5,libsecret-1,gee-0.8}' not found in specified Vala API directories or GObject-Introspection GIR directories
+    buildInputs = upstream.buildInputs ++ [ final.vala ];
+  });
   # twitter-color-emoji = prev.twitter-color-emoji.override {
   #   # fails to fix original error
   #   inherit (emulated) stdenv;
