@@ -20,6 +20,13 @@ let
     );
 in [
 
+  # (fetchpatch' {
+  #   # XXX: doesn't cleanly apply; fetch `firefox-pmos-mobile` branch from my git instead
+  #   title = "firefox-pmos-mobile: init at -pmos-2.2.0";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/121356";
+  #   hash = "sha256-eDsR1cJC/IMmhJl5wERpTB1VGawcnMw/gck9sI64GtQ=";
+  # })
+
   # splatmoji: init at 1.2.0
   (fetchpatch' {
     saneCommit = "75149039b6eaf57d8a92164e90aab20eb5d89196";
