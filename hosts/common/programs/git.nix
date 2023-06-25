@@ -11,7 +11,10 @@ in
     user.name = "Colin";
     user.email = "colin@uninsane.org";
 
-    alias.co = "checkout";
+    alias.co   = "checkout";
+    alias.d    = "difftool";
+    alias.st   = "status";
+    alias.stat = "status";
 
     # difftastic docs:
     # - <https://difftastic.wilfred.me.uk/git.html>
