@@ -25,5 +25,7 @@ in
 
     # render dates as YYYY-MM-DD HH:MM:SS +TZ
     log.date = "iso";
+
+    stash.showPatch = true;
   };
 }
