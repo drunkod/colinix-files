@@ -20,7 +20,7 @@
     owner = "jellyfin";
     repo = "jellyfin-media-player";
     rev = "qt6";
-    hash = "sha256-saR/P2daqjF0G8N7BX6Rtsb1dWGjdf5MPDx1lhoioEw=";
+    hash = "sha256-CXuK6PLGOiBDbnLqXcr5sUtQmXksMc6X6GKVMEzmu30=";
   };
   # nixos ships two patches:
   # - the first fixes "web paths" and has *mostly* been upstreamed  (so skip and manually tweak a bit)
