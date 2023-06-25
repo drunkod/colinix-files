@@ -27,6 +27,17 @@ in [
   #   hash = "sha256-eDsR1cJC/IMmhJl5wERpTB1VGawcnMw/gck9sI64GtQ=";
   # })
 
+  (fetchpatch' {
+    saneCommit = "70c12451b783d6310ab90229728d63e8a903c8cb";
+    title = "firefox-pmos-mobile: init at -pmos-2.2.0";
+    hash = "sha256-o67YRjo31raaYhIpfqQP/tdjbXrjeLLhEr/qzqyPLgQ=";
+  })
+  (fetchpatch' {
+    saneCommit = "f0ed1651158c33504fbd2e04db497d5504dd8570";
+    title = "librewolf-pmos-mobile: init";
+    hash = "sha256-oQEM3EZfAOmfZzDu9faCqyOFZsdHYGn1mVBgkxt68Zg=";
+  })
+
   # splatmoji: init at 1.2.0
   (fetchpatch' {
     saneCommit = "75149039b6eaf57d8a92164e90aab20eb5d89196";
