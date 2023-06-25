@@ -154,7 +154,7 @@ in
       security.doas.enable = true;
       security.doas.wheelNeedsPassword = false;
 
-      # TODO: not all of these fonts seem to be mapped to the correct icon
+      # TODO: nerdfonts is 4GB. it accepts an option to ship only some fonts: probably want to use that.
       fonts.fonts = [ pkgs.nerdfonts ];
 
       # sxmo has first-class support only for pulseaudio and alsa -- not pipewire.
