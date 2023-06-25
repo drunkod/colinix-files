@@ -16,6 +16,7 @@
 , lisgd
 , makeWrapper
 , mako
+, mepo
 , modemmanager
 , nettools
 , playerctl
@@ -50,6 +51,7 @@ let
     libnotify
     lisgd
     mako
+    mepo  # mepo_ui_central_menu.sh
     modemmanager  # mmcli
     nettools  # netstat
     playerctl
