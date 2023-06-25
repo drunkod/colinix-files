@@ -49,6 +49,9 @@
     - install [devhelp](https://wiki.gnome.org/Apps/Devhelp)  (gnome)
 - have xdg-open parse `<repo:...> URIs (or adjust them so that it _can_ parse)
 - `sane.programs`: auto-populate defaults with everything from `pkgs`
+- `sane.persist`: auto-create parent dirs in ~/private
+  - currently if the application doesn't autocreate dirs leading to its destination, then ~/private storage fails
+  - this might be why librewolf on mobile is still amnesiac
 - zsh: disable "command not found" corrections
 - sane-bt-search: show details like 5.1 vs stereo, h264 vs h265
 
