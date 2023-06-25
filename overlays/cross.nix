@@ -83,6 +83,7 @@ in {
     jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
     # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
     # libsForQt5  # if we emulate qt5, we're better off emulating libsForQt5 else qt complains about multiple versions of qtbase
+    mepo  # /build/source/src/sdlshim.zig:1:20: error: C import failed
     perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
     # qgnomeplatform
     # qtbase
@@ -521,6 +522,11 @@ in {
       # fixes -msse2, -mfpmath=ssh flags AND "Settings schema 'org.gtk.gtk4.Settings.FileChooser' is not installed"
       wrapGAppsHook4 = emulated.wrapGAppsHook4;
     };
+
+    zenity = super.zenity.override {
+      # fixes -msse2, -mfpmath=sse flags
+      wrapGAppsHook4 = final.wrapGAppsHook;
+    };
   });
 
   gnome2 = prev.gnome2.overrideScope' (self: super: {
@@ -737,6 +743,33 @@ in {
   #   # to use non-emulated stdenv by default.
   #   mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
   #   callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
+  # });
+
+  # mepo = (prev.mepo.override {
+  #   inherit (emulated)
+  #     stdenv
+  #     SDL2
+  #     SDL2_gfx
+  #     SDL2_image
+  #     SDL2_ttf
+  #     zig
+  #   ;
+  # }).overrideAttrs (_upstream: {
+  #   doCheck = false;
+  #   # dontConfigure = true;
+  #   # dontBuild = true;
+  #   # preInstall = ''
+  #   #   export HOME=$TMPDIR
+  #   # '';
+  #   # installPhase = ''
+  #   #   runHook preInstall
+
+  #   #   zig build -Drelease-safe=true -Dtarget=aarch64-linux-gnu -Dcpu=baseline --prefix $out
+  #   #   install -d $out/share/man/man1
+  #   #   $out/bin/mepo -docman > $out/share/man/man1/mepo.1
+
+  #   #   runHook postInstall
+  #   # '';
   # });
 
   # fixes: "ar: command not found"

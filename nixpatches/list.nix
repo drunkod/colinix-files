@@ -170,6 +170,12 @@ in [
     hash = "sha256-m++Vv/FK7cxONCz6n0MLO3CiKNrRH0ttFmoC1Xmba+A=";
   })
 
+  (fetchpatch' {
+    title = "mepo: 1.1 -> 1.1.2";
+    saneCommit = "eee68d7146a6cd985481cdd8bca52ffb204de423";
+    hash = "sha256-0lNSgq8ahSvQDEpuF0lyblA8cB9ulv1zGasHo6lUWAU=";
+  })
+
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
   #   title = "matrix-appservice-irc: 0.38.0 -> 1.0.0";
