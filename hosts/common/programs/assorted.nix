@@ -186,6 +186,7 @@ let
       komikku
       koreader
       # lollypop
+      mepo  # maps viewer
       # mpv
       # networkmanagerapplet
       # newsflash

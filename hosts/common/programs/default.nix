@@ -14,6 +14,7 @@
     ./komikku.nix
     ./koreader
     ./libreoffice.nix
+    ./mepo.nix
     ./mpv.nix
     ./neovim.nix
     ./newsflash.nix
