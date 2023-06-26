@@ -1,5 +1,4 @@
 ## BUGS
-- fix NUR evaluation
 - why i need to manually restart `wireguard-wg-ovpns` on servo periodically
 	- else DNS fails
 
