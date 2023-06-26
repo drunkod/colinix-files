@@ -62,7 +62,6 @@ let
 
     # provided by nixpkgs patch or upstream PR
     # i still conditionally callPackage these to make them available to external consumers (like NUR)
-    cargo-docset = unpatched.cargo-docset or (callPackage ./additional/cargo-docset { });
     splatmoji = unpatched.splatmoji or (callPackage ./additional/splatmoji { });
 
 
