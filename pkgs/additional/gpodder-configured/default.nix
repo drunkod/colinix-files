@@ -15,13 +15,14 @@ let
       "gnome-feeds.listparser" = gnome-feeds.listparser;
     };
     pkgs = {
+      # important for this to explicitly use `gpodder` here, because it may be overriden/different from the toplevel `gpodder`!
       inherit gpodder;
     };
   };
 in
 # we use a symlinkJoin so that we can inherit the .desktop and icon files from the original gPodder
 (symlinkJoin {
-  name = "gpodder-configured";
+  name = "${gpodder.pname}-configured";
   paths = [ gpodder remove-extra ];
   nativeBuildInputs = [ makeWrapper ];
 
