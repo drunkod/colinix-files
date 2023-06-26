@@ -276,6 +276,22 @@
             type = "app";
             program = ''${deployScript "switch"}'';
           };
+
+          check-nur = {
+            # `nix run '.#check-nur'`
+            # validates that my repo can be included in the Nix User Repository
+            type = "app";
+            program = builtins.toString (pkgs.writeShellScript "check-nur" ''
+              cd ${./.}/integrations/nur
+              NIX_PATH= NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix-env -f . -qa \* --meta --xml \
+                --allowed-uris https://static.rust-lang.org \
+                --option restrict-eval true \
+                --option allow-import-from-derivation true \
+                --drv-path --show-trace \
+                -I nixpkgs=$(nix-instantiate --find-file nixpkgs) \
+                -I ../../
+            '');
+          };
         };
 
       templates = {
