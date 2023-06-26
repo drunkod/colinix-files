@@ -56,6 +56,11 @@ let
       '';
     }
     {
+      # source: <https://github.com/LnL7/vim-nix>
+      # fixes auto-indent (incl tab size) when editing .nix files
+      plugin = vim-nix;
+    }
+    {
       # docs: surround-nvim: https://github.com/ur4ltz/surround.nvim/
       # docs: vim-surround: https://github.com/tpope/vim-surround
       plugin = vim-surround;
