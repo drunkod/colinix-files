@@ -13,13 +13,9 @@ let
   # allow easy switching between firefox and librewolf with `defaultSettings`, below
   librewolfSettings = {
     browser = pkgs.librewolf-unwrapped;
-    # browser = pkgs.librewolf-unwrapped.overrideAttrs (drv: {
-    #   # this allows side-loading unsigned addons
-    #   MOZ_REQUIRE_SIGNING = false;
-    # });
     libName = "librewolf";
     dotDir = ".librewolf";
-    cacheDir = ".cache/librewolf";  # TODO: is it?
+    cacheDir = ".cache/librewolf";
     desktop = "librewolf.desktop";
   };
   firefoxSettings = {
@@ -72,7 +68,10 @@ let
       };
       UserMessaging = {
         ExtensionRecommendations = false;
+        FeatureRecommendations = false;
         SkipOnboarding = true;
+        UrlbarInterventions = false;
+        WhatsNew = false;
       };
 
       # these were taken from Librewolf
