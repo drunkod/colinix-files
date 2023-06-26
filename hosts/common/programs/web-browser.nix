@@ -13,6 +13,7 @@ let
   # allow easy switching between firefox and librewolf with `defaultSettings`, below
   librewolfSettings = {
     browser = pkgs.librewolf-unwrapped;
+    extraPrefsFiles = pkgs.librewolf-unwrapped.extraPrefsFiles ++ pkgs.librewolf-pmos-mobile.extraPrefsFiles;
     libName = "librewolf";
     dotDir = ".librewolf";
     cacheDir = ".cache/librewolf";
@@ -20,6 +21,7 @@ let
   };
   firefoxSettings = {
     browser = pkgs.firefox-esr-unwrapped;
+    extraPrefsFiles = pkgs.firefox-pmos-mobile.extraPrefsFiles;
     libName = "firefox";
     dotDir = ".mozilla/firefox";
     cacheDir = ".cache/mozilla";
@@ -43,8 +45,7 @@ let
   package = pkgs.wrapFirefox cfg.browser.browser {
     # inherit the default librewolf.cfg
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
-    inherit (cfg.browser) libName;
-    extraPrefsFiles = pkgs.librewolf-unwrapped.extraPrefsFiles ++ pkgs.librewolf-pmos-mobile.extraPrefsFiles;
+    inherit (cfg.browser) extraPrefsFiles libName;
 
     extraNativeMessagingHosts = optional cfg.addons.browserpass-extension.enable pkgs.browserpass;
     # extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
