@@ -30,7 +30,7 @@ let
     gopass-native-messaging-host = callPackage ./additional/gopass-native-messaging-host { };
     gpodder-adaptive = callPackage ./additional/gpodder-adaptive { };
     gpodder-adaptive-configured = callPackage ./additional/gpodder-configured {
-      gpodder = final.gpodder-adaptive;
+      gpodder = final'.gpodder-adaptive;
     };
     gpodder-configured = callPackage ./additional/gpodder-configured { };
     hare-ev = unpatched.hare-ev or (callPackage ./additional/hare-ev { });
