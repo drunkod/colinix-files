@@ -30,7 +30,7 @@ let
     };
   };
 
-  nix-shell-scripts = {
+  sane-bin = {
     # anything added to this attrset gets symlink-joined into `sane-scripts`
     # and is made available through `sane-scripts.passthru`
     backup-ls = static-nix-shell.mkBash {
@@ -228,8 +228,8 @@ let
 in
 symlinkJoin {
   name = "sane-scripts";
-  paths = lib.attrValues nix-shell-scripts;
-  passthru = nix-shell-scripts // {
+  paths = lib.attrValues sane-bin;
+  passthru = sane-bin // {
     lib = sane-lib;
   };
   meta = {
