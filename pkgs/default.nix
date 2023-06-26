@@ -10,8 +10,9 @@ let
   lib = pkgs.lib;
   unpatched = pkgs;
 
-  pythonPackagesOverlay = py-final: py-prev: import ./python-packages {
+  pythonPackagesOverlayFor = pkgs: py-final: py-prev: import ./python-packages {
     inherit (py-final) callPackage;
+    inherit pkgs;
   };
   final' = if final != null then final else pkgs.appendOverlays [(_: _: sane)];
   sane = with final'; {
@@ -103,12 +104,12 @@ let
 
     ### PYTHON PACKAGES
     pythonPackagesExtensions = (unpatched.pythonPackagesExtensions or []) ++ [
-      pythonPackagesOverlay
+      (pythonPackagesOverlayFor final')
     ];
     # when this scope's applied as an overlay pythonPackagesExtensions is propagated as desired.
     # but when freestanding (e.g. NUR), it never gets plumbed into the outer pkgs, so we have to do that explicitly.
     python3 = unpatched.python3.override {
-      packageOverrides = pythonPackagesOverlay;
+      packageOverrides = pythonPackagesOverlayFor final';
     };
   };
 in sane

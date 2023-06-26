@@ -1,5 +1,5 @@
-{ callPackage }:
+{ callPackage, pkgs }:
 {
   feedsearch-crawler = callPackage ./feedsearch-crawler { };
-  sane-lib = (callPackage ../additional/sane-scripts { }).lib;
+  sane-lib = pkgs.sane-scripts.lib;
 }
