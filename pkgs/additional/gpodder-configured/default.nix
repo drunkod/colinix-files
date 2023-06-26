@@ -30,7 +30,7 @@ in
   # a feedlist every time we run it.
   # repeat imports are deduplicated by url, even when offline.
   postBuild = ''
-    makeWrapper $out/bin/gpodder $out/bin/gpodder-configured \
+    wrapProgram $out/bin/gpodder \
       --run "$out/bin/gpodder-remove-extra ~/.config/gpodderFeeds.opml || true" \
       --run "$out/bin/gpo import ~/.config/gpodderFeeds.opml || true" \
 
@@ -41,6 +41,6 @@ in
   '';
 
   passthru = {
-    remove-extra = remove-extra;
+    inherit gpodder remove-extra;
   };
 })
