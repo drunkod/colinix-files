@@ -1,4 +1,4 @@
-{ fetchpatch, fetchurl }:
+{ fetchpatch2, fetchurl }:
 let
   fetchpatch' = {
     saneCommit ? null,
@@ -13,7 +13,7 @@ let
       else
         "https://git.uninsane.org/colin/nixpkgs/commit/${saneCommit}.diff"
       ;
-    in fetchpatch (
+    in fetchpatch2 (
       { inherit url; }
       // (if hash != null then { inherit hash; } else {})
       // (if title != null then { name = title; } else {})
