@@ -36,6 +36,7 @@
     - e.g. daily email checks; daily backup checks
 
 ### user experience
+- neovim: set up language server (lsp; rnix-lsp; nvim-lspconfig)
 - firefox/librewolf: don't show browserpass/sponsorblock/metamask "first run" on every boot
 - moby: improve gPodder launch time
 - moby: replace jellyfin-desktop with jellyfin-vue?
