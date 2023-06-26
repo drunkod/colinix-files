@@ -47,8 +47,8 @@ let
   package = pkgs.wrapFirefox cfg.browser.browser {
     # inherit the default librewolf.cfg
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
-    inherit (pkgs.librewolf-unwrapped) extraPrefsFiles;
     inherit (cfg.browser) libName;
+    extraPrefsFiles = pkgs.librewolf-unwrapped.extraPrefsFiles ++ pkgs.librewolf-pmos-mobile.extraPrefsFiles;
 
     extraNativeMessagingHosts = optional cfg.addons.browserpass-extension.enable pkgs.browserpass;
     # extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
