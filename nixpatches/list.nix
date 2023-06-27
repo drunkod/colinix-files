@@ -30,7 +30,7 @@ in [
   # (fetchpatch' {
   #   saneCommit = "70c12451b783d6310ab90229728d63e8a903c8cb";
   #   title = "firefox-pmos-mobile: init at -pmos-2.2.0";
-  #   hash = "sha256-o67YRjo31raaYhIpfqQP/tdjbXrjeLLhEr/qzqyPLgQ=";
+  #   hash = "sha256-mA22g3ZIERVctq8Uk5nuEsS1JprxA+3DvukJMDTOyso=";
   # })
   # (fetchpatch' {
   #   saneCommit = "ee19a28aa188bb87df836a4edc7b73355b8766eb";
