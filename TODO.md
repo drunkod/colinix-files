@@ -3,6 +3,9 @@
 	- else DNS fails
 
 ## REFACTORING:
+
+- remove unused `overlays/pins.nix`
+
 ### sops/secrets
 - attach secrets to the thing they're used by (sane.programs)
 - rework secrets to leverage `sane.fs`
