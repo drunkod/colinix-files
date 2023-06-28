@@ -1,8 +1,5 @@
-{ config, pkgs, lib, sane-lib, ... }:
+{ config, pkgs, lib, ... }:
 
-let
-  fs = sane-lib.fs;
-in
 {
   # docs: https://nixpkgs-manual-sphinx-markedown-example.netlify.app/generated/options-db.xml.html#users-users
   users.users.colin = {
@@ -53,43 +50,45 @@ in
 
   security.pam.mount.enable = true;
 
-  sane.users.colin.default = true;
-  # ensure ~ perms are known to sane.fs module.
-  # TODO: this is generic enough to be lifted up into sane.fs itself.
-  sane.fs."/home/colin".dir.acl = {
-    user = "colin";
-    group = config.users.users.colin.group;
-    mode = config.users.users.colin.homeMode;
+  sane.users.colin = {
+    default = true;
+    # ensure ~ perms are known to sane.fs module.
+    # TODO: this is generic enough to be lifted up into sane.fs itself.
+    fs."/".dir.acl = {
+      user = "colin";
+      group = config.users.users.colin.group;
+      mode = config.users.users.colin.homeMode;
+    };
+
+    persist.plaintext = [
+      "archive"
+      "dev"
+      # TODO: records should be private
+      "records"
+      "ref"
+      "tmp"
+      "use"
+      "Music"
+      "Pictures"
+      "Videos"
+
+      ".cache/nix"
+      ".cache/nix-index"
+
+      # ".cargo"
+      # ".rustup"
+    ];
+
+    # convenience
+    fs."knowledge".symlink.target = "private/knowledge";
+    fs."nixos".symlink.target = "dev/nixos";
+    fs."Books/servo".symlink.target = "/mnt/servo-media/Books";
+    fs."Videos/servo".symlink.target = "/mnt/servo-media/Videos";
+    fs."Videos/servo-incomplete".symlink.target = "/mnt/servo-media/incomplete";
+    fs."Music/servo".symlink.target = "/mnt/servo-media/Music";
+    fs."Pictures/servo-macros".symlink.target = "/mnt/servo-media/Pictures/macros";
+
+    # used by password managers, e.g. unix `pass`
+    fs.".password-store".symlink.target = "knowledge/secrets/accounts";
   };
-
-  sane.user.persist.plaintext = [
-    "archive"
-    "dev"
-    # TODO: records should be private
-    "records"
-    "ref"
-    "tmp"
-    "use"
-    "Music"
-    "Pictures"
-    "Videos"
-
-    ".cache/nix"
-    ".cache/nix-index"
-
-    # ".cargo"
-    # ".rustup"
-  ];
-
-  # convenience
-  sane.user.fs."knowledge" = fs.wantedSymlinkTo "private/knowledge";
-  sane.user.fs."nixos" = fs.wantedSymlinkTo "dev/nixos";
-  sane.user.fs."Books/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Books";
-  sane.user.fs."Videos/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Videos";
-  sane.user.fs."Videos/servo-incomplete" = fs.wantedSymlinkTo "/mnt/servo-media/incomplete";
-  sane.user.fs."Music/servo" = fs.wantedSymlinkTo "/mnt/servo-media/Music";
-  sane.user.fs."Pictures/servo-macros" = fs.wantedSymlinkTo "/mnt/servo-media/Pictures/macros";
-
-  # used by password managers, e.g. unix `pass`
-  sane.user.fs.".password-store" = fs.wantedSymlinkTo "knowledge/secrets/accounts";
 }
