@@ -9,6 +9,15 @@ in
       default = false;
       type = types.bool;
     };
+    sane.guest.authorizedKeys = mkOption {
+      default = [];
+      type = types.listOf types.str;
+      description = ''
+      list of "<key-type> <pubkey> <hostname>" keys.
+      e.g.
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPU5GlsSfbaarMvDA20bxpSZGWviEzXGD8gtrIowc1pX colin@desko
+      '';
+    };
   };
 
   config = {
@@ -21,9 +30,7 @@ in
       group = "users";
       initialPassword = lib.mkDefault "";
       shell = pkgs.zsh;
-      openssh.authorizedKeys.keys = [
-        # TODO: insert pubkeys that should be allowed in
-      ];
+      openssh.authorizedKeys.keys = cfg.authorizedKeys;
     };
 
     sane.persist.sys.plaintext = lib.mkIf cfg.enable [
