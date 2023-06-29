@@ -215,7 +215,7 @@ in [
     title = "nmap: lua5_3 -> lua5_4";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/240440";
     saneCommit = "a2a5c711e7c0ff43143fc58ec08853ec063f35b3";
-    hash = "sha256-YZycbNJfRFD/8bpnS/28ac1x1wWkEhjB3QaGBGAJkUM=";
+    hash = "sha256-LKDulOSQAM4FzyxqPqrdr1C2M3yLFpo5aAt7fhXRnrs=";
   })
 
   # (fetchpatch' {
