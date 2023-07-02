@@ -213,6 +213,7 @@ let
   desktopGuiPkgs = {
     inherit (flattenedPkgs)
       audacity
+      blanket  # ambient noise generator
       brave  # for the integrated wallet -- as a backup
       chromium
       dino
