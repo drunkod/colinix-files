@@ -94,6 +94,7 @@ in
 
     (mkIf cfg.enable {
       sane.programs.swayApps.enableFor.user.colin = true;
+      sane.gui.gtk.enable = lib.mkDefault true;
 
       # swap in these lines to use SDDM instead of `services.greetd`.
       # services.xserver.displayManager.sddm.enable = true;
