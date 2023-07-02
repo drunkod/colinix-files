@@ -3,7 +3,7 @@
 let
   install-bluetooth = pkgs.static-nix-shell.mkBash {
     pname = "install-bluetooth";
-    src = ../../../../scripts;
+    src = ./.;
     pkgs = [ "gnused" ];
   };
 in

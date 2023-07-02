@@ -3,7 +3,7 @@
 let
   install-iwd = pkgs.static-nix-shell.mkBash {
     pname = "install-iwd";
-    src = ../../../../scripts;
+    src = ./.;
     pkgs = [ "gnused" ];
   };
 in
