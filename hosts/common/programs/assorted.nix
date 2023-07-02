@@ -186,7 +186,6 @@ let
       # "gnome.gnome-weather"
       gpodder
       gthumb
-      jellyfin-media-player
       komikku
       koreader
       lemoa  # lemmy app
@@ -228,6 +227,7 @@ let
       handbrake
       hase
       inkscape
+      jellyfin-media-player
       kdenlive
       kid3  # audio tagging
       krita

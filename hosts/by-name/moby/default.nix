@@ -38,9 +38,8 @@
   # sane.programs.guiApps.enableFor.user.colin = false;
   sane.programs.sequoia.enableFor.user.colin = false;
   sane.programs.tuiApps.enableFor.user.colin = false;  # visidata, others, don't compile well
-  # disabled for faster deploys (gthumb depends on webkitgtk, particularly)
+  # disabled for faster deploys
   sane.programs.soundconverter.enableFor.user.colin = false;
-  sane.programs.jellyfin-media-player.enableFor.user.colin = false;
   # sane.programs.mpv.enableFor.user.colin = true;
 
   boot.loader.efi.canTouchEfiVariables = false;
