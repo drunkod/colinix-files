@@ -45,7 +45,6 @@
   boot.loader.efi.canTouchEfiVariables = false;
   # /boot space is at a premium. default was 20.
   # even 10 can be too much
-  # TODO: compress moby kernels!
   boot.loader.generic-extlinux-compatible.configurationLimit = 8;
   # mobile.bootloader.enable = false;
   # mobile.boot.stage-1.enable = false;
