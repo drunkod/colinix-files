@@ -47,11 +47,8 @@
 - neovim: set up language server (lsp; rnix-lsp; nvim-lspconfig)
 - firefox/librewolf: don't show browserpass/sponsorblock/metamask "first run" on every boot
 - moby: improve gPodder launch time
-- moby: replace jellyfin-desktop with jellyfin-vue?
-    - allows (maybe) to cache media for offline use
-    - "newer" jellyfin client
-    - not packaged for nix
-- moby/sxmo: display numerical vol percentage in topbar
+- moby: theme GTK apps (i.e. non-adwaita styles)
+  - especially, make the menubar collapsible
 - package Nix/NixOS docs for Zeal
     - install [doc-browser](https://github.com/qwfy/doc-browser)
     - this supports both dash (zeal) *and* the datasets from <https://devdocs.io> (which includes nix!)
