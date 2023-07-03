@@ -225,6 +225,19 @@ in
       {
         # expose the pkgs -- as available to the system -- as a build target.
         system.build.pkgs = pkgs;
+
+        sane.programs = lib.mkMerge [
+          # make a program for every (toplevel) package
+          (lib.mapAttrs (_pkgName: _pkg: {}) pkgs)
+
+          # do the same for programs in known groups
+          (lib.mapAttrs' (pkgName: _pkg: { name = "cacert.${pkgName}"; value = {}; }) pkgs.cacert)
+          (lib.mapAttrs' (pkgName: _pkg: { name = "gnome.${pkgName}"; value = {}; }) pkgs.gnome)
+          (lib.mapAttrs' (pkgName: _pkg: { name = "libsForQt5.${pkgName}"; value = {}; }) pkgs.libsForQt5)
+          (lib.mapAttrs' (pkgName: _pkg: { name = "plasma5Packages.${pkgName}"; value = {}; }) pkgs.plasma5Packages)
+          (lib.mapAttrs' (pkgName: _pkg: { name = "python3Packages.${pkgName}"; value = {}; }) pkgs.python3Packages)
+          (lib.mapAttrs' (pkgName: _pkg: { name = "sway-contrib.${pkgName}"; value = {}; }) pkgs.sway-contrib)
+        ];
       }
     ];
 }
