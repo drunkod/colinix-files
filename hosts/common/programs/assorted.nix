@@ -149,6 +149,7 @@
         # "celluloid"  # mpv frontend
         "cozy"  # audiobook player
         # "emote"
+        "epiphany"  # gnome's web browser
         "evince"  # works on phosh
         # "foliate"  # e-book reader
         # "gnome.cheese"
