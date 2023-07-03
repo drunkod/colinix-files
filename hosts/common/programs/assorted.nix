@@ -97,9 +97,9 @@
         # "ponymix"
         "pulsemixer"
         "python3"
+        # "python3Packages.eyeD3"  # music tagging
         "ripgrep"  # needed as a user package so that its user-level config file can be installed
         "rsync"
-        # "python3Packages.eyeD3"  # music tagging
         "sane-scripts"
         "sequoia"
         "snapper"
@@ -150,17 +150,7 @@
         "cozy"  # audiobook player
         # "emote"
         "evince"  # works on phosh
-
-        # { pkg = fluffychat-moby; persist.plaintext = [ ".local/share/chat.fluffy.fluffychat" ]; }  # TODO: ship normal fluffychat on non-moby?
-
         # "foliate"  # e-book reader
-
-        # XXX by default fractal stores its state in ~/.local/share/<UUID>.
-        # after logging in, manually change ~/.local/share/keyrings/... to point it to some predictable subdir.
-        # then reboot (so that libsecret daemon re-loads the keyring...?)
-        # { pkg = fractal-latest; persist.private = [ ".local/share/fractal" ]; }
-        # { pkg = fractal-next; persist.private = [ ".local/share/fractal" ]; }
-
         # "gnome.cheese"
         # "gnome-feeds"  # RSS reader (with claimed mobile support)
         "gnome.file-roller"
@@ -231,11 +221,9 @@
       package = null;
       suggestedPrograms = [
         "discord"
-
-        # "kaiteki"  # Pleroma client
         # "gnome.zenity" # for kaiteki (it will use qarma, kdialog, or zenity)
         # "gpt2tc"  # XXX: unreliable mirror
-
+        # "kaiteki"  # Pleroma client
         # "logseq"  # Personal Knowledge Management
         "losslesscut-bin"
         "makemkv"
@@ -271,6 +259,14 @@
     # mostly, it just keeps a LRU of previously-used emotes to optimize display order.
     # TODO: package [smile](https://github.com/mijorus/smile) for probably a better mobile experience.
     emote.persist.plaintext = [ ".local/share/Emote" ];
+
+    fluffychat-moby.persist.plaintext = [ ".local/share/chat.fluffy.fluffychat" ];
+
+    # XXX by default fractal stores its state in ~/.local/share/<UUID>.
+    # after logging in, manually change ~/.local/share/keyrings/... to point it to some predictable subdir.
+    # then reboot (so that libsecret daemon re-loads the keyring...?)
+    fractal-latest.persist.private = [ ".local/share/fractal" ];
+    fractal-next.persist.private = [ ".local/share/fractal" ];
 
     # MS GitHub stores auth token in .config
     # TODO: we can populate gh's stuff statically; it even lets us use the same oauth across machines
