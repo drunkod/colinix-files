@@ -24,7 +24,7 @@ let
   # {
   #   "${pkgName}" = {
   #     system = true|false;
-  #     users = {
+  #     user = {
   #       "${name}" = true|false;
   #     };
   #   };
@@ -34,13 +34,19 @@ let
   solveDefaultEnableFor = pkgSpecs: lib.foldlAttrs (
     acc: pname: pval: (
       # add "${enableName}".system |= areSuggestionsEnabled pval
-      # for each `enableName` in pvalsuggestedPackages
+      # for each `enableName` in pval.suggestedPrograms.
+      # do the same for `user` field.
       lib.foldl (acc': enableName: acc' // {
-        "${enableName}".system = (acc'."${enableName}" or { system = false; }).system
-          || (pval.enableFor.system && pval.enableSuggested);
+        "${enableName}" = let
+          super = acc'."${enableName}";
+        in {
+          system = super.system || (pval.enableFor.system && pval.enableSuggested);
+          user = super.user // lib.filterAttrs (_u: en: en && pval.enableSuggested) pval.enableFor.user;
+        };
       }) acc pval.suggestedPrograms
     )
-  ) {} pkgSpecs;
+  ) (mkDefaultEnables pkgSpecs) pkgSpecs;
+  mkDefaultEnables = lib.mapAttrs (_pname: _pval: { system = false; user = {}; });
   defaultEnables = solveDefaultEnableFor cfg;
   pkgSpec = types.submodule ({ config, name, ... }: {
     options = {
@@ -59,45 +65,16 @@ let
             # a valid source explicitly.
             getAttrFromPath pkgPath pkgs;
       };
-      # XXX: this is *quadratic* behavior
-      # i can turn it into a linear time operation by a `foldl'` over the whole `config.sane.programs` set
-      # to expand the `enableFor` config before i use it, but doing so naively would
-      # break `prog.enableFor.<x> = lib.mkForce false`.
-      # the robust approach is to copy what we do in `sane-lib.fs`.
-      #
-      # alternatively, i can maybe take this same `default = ...` approach (which allows for overriding)
-      # if i can keep its non-recursive property, but turn each `default = ..` operation
-      # into a (amortized) constant-time access into something that's cacheable.
-      # e.g. create a map from:
-      # { "${pkg}" = [ "list" "of" "packages" "which" "if" "enabled" "would" "*directly or indirectly*" "enable" "${pkg}" ]; }
-      # then it's just `default = any (pname: cfg."${pname}".enableFor.system) enableMap."${name}";`
       enableFor.system = mkOption {
         type = types.bool;
-        default = (defaultEnables."${name}" or { system = false; }).system;
-        # default = any (en: en) (
-        #   mapAttrsToList
-        #     (otherName: otherPkg:
-        #       otherName != name && elem name otherPkg.suggestedPrograms && otherPkg.enableSuggested && otherPkg.enableFor.system
-        #     )
-        #     cfg
-        # );
+        default = defaultEnables."${name}".system;
         description = ''
           place this program on the system PATH
         '';
       };
       enableFor.user = mkOption {
         type = types.attrsOf types.bool;
-        default =
-          let
-            suggestedBy = mapAttrsToList (otherName: otherPkg:
-              optionalAttrs
-                (otherName != name && elem name otherPkg.suggestedPrograms && otherPkg.enableSuggested)
-                (filterAttrs (user: en: en) otherPkg.enableFor.user)
-            ) cfg;
-          in
-            # we can just // the attrs since each set is flat and the only value
-            # each attr can have here is `true`, never `false`
-            lib.foldl' (prev: next: prev // next) {} suggestedBy;
+        default = defaultEnables."${name}".user;
         description = ''
           place this program on the PATH for some specified user(s).
         '';
