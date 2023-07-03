@@ -20,6 +20,28 @@ let
   ;
   inherit (sane-lib) joinAttrsets;
   cfg = config.sane.programs;
+  # create a map:
+  # {
+  #   "${pkgName}" = {
+  #     system = true|false;
+  #     users = {
+  #       "${name}" = true|false;
+  #     };
+  #   };
+  # }
+  # for every ${pkgName} in pkgSpecs.
+  # `system = true|false` is a computed expression over all the other programs, as evaluated.
+  solveDefaultEnableFor = pkgSpecs: lib.foldlAttrs (
+    acc: pname: pval: (
+      # add "${enableName}".system |= areSuggestionsEnabled pval
+      # for each `enableName` in pvalsuggestedPackages
+      lib.foldl (acc': enableName: acc' // {
+        "${enableName}".system = (acc'."${enableName}" or { system = false; }).system
+          || (pval.enableFor.system && pval.enableSuggested);
+      }) acc pval.suggestedPrograms
+    )
+  ) {} pkgSpecs;
+  defaultEnables = solveDefaultEnableFor cfg;
   pkgSpec = types.submodule ({ config, name, ... }: {
     options = {
       package = mkOption {
@@ -51,13 +73,14 @@ let
       # then it's just `default = any (pname: cfg."${pname}".enableFor.system) enableMap."${name}";`
       enableFor.system = mkOption {
         type = types.bool;
-        default = any (en: en) (
-          mapAttrsToList
-            (otherName: otherPkg:
-              otherName != name && elem name otherPkg.suggestedPrograms && otherPkg.enableSuggested && otherPkg.enableFor.system
-            )
-            cfg
-        );
+        default = (defaultEnables."${name}" or { system = false; }).system;
+        # default = any (en: en) (
+        #   mapAttrsToList
+        #     (otherName: otherPkg:
+        #       otherName != name && elem name otherPkg.suggestedPrograms && otherPkg.enableSuggested && otherPkg.enableFor.system
+        #     )
+        #     cfg
+        # );
         description = ''
           place this program on the system PATH
         '';
