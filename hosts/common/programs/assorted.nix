@@ -3,15 +3,62 @@
 {
   sane.programs = {
     # PACKAGE SETS
-    consoleMediaUtils = {
+    sysadminUtils = {
       package = null;
       suggestedPrograms = [
-        "ffmpeg"
-        "imagemagick"
-        "sox"
-        "yt-dlp"
+        "btrfs-progs"
+        "cacert.unbundled"  # some services require unbundled /etc/ssl/certs
+        "cryptsetup"
+        "dig"
+        "efibootmgr"
+        "fatresize"
+        "fd"
+        "file"
+        "gawk"
+        "git"
+        "gptfdisk"
+        "hdparm"
+        "htop"
+        "iftop"
+        "inetutils"  # for telnet
+        "iotop"
+        "iptables"
+        "jq"
+        "killall"
+        "lsof"
+        "miniupnpc"
+        "nano"
+        "neovim"
+        "netcat"
+        "nethogs"
+        "nmap"
+        "openssl"
+        "parted"
+        "pciutils"
+        "powertop"
+        "pstree"
+        "ripgrep"
+        "screen"
+        "smartmontools"
+        "socat"
+        "strace"
+        "subversion"
+        "tcpdump"
+        "tree"
+        "usbutils"
+        "wget"
+        "wirelesstools"  # iwlist
       ];
     };
+    sysadminExtraUtils = {
+      package = null;
+      suggestedPrograms = [
+        "backblaze-b2"
+        "duplicity"
+        "sqlite"  # to debug sqlite3 databases
+      ];
+    };
+
     # TODO: split these into smaller groups.
     # - moby doesn't want a lot of these.
     # - categories like
@@ -69,37 +116,29 @@
         "zsh"
       ];
     };
-    desktopGuiApps = {
+
+    consoleMediaUtils = {
       package = null;
       suggestedPrograms = [
-        "audacity"
-        "blanket"  # ambient noise generator
-        "brave"  # for the integrated wallet -- as a backup
-        "chromium"
-        "dino"
-        "electrum"
-        "element-desktop"
-        # "font-manager"  #< depends on webkitgtk4_0 (expensive to build)
-        "gajim"  # XMPP client
-        "gimp"  # broken on phosh
-        "gnome.dconf-editor"
-        "gnome.gnome-disk-utility"
-        # "gnome.totem"  # video player, supposedly supports UPnP
-        "handbrake"
-        "hase"
-        "inkscape"
-        "jellyfin-media-player"
-        "kdenlive"
-        "kid3"  # audio tagging
-        "krita"
-        "libreoffice-fresh"
-        "mumble"
-        "obsidian"
-        "slic3r"
-        "steam"
-        "wireshark"  # could maybe ship the cli as sysadmin pkg
+        "ffmpeg"
+        "imagemagick"
+        "sox"
+        "yt-dlp"
       ];
     };
+
+    tuiApps = {
+      package = null;
+      suggestedPrograms = [
+        "aerc"  # email client
+        "msmtp"  # sendmail
+        "offlineimap"  # email mailox sync
+        "sfeed"  # RSS fetcher
+        "visidata"  # TUI spreadsheet viewer/editor
+        "w3m"  # web browser
+      ];
+    };
+
     guiApps = {
       package = null;
       suggestedPrograms = [
@@ -155,80 +194,39 @@
         "xterm"  # broken on phosh
       ];
     };
-    iphoneUtils = {
+
+    desktopGuiApps = {
       package = null;
       suggestedPrograms = [
-        "ifuse"
-        "ipfs"
-        "libimobiledevice"
+        "audacity"
+        "blanket"  # ambient noise generator
+        "brave"  # for the integrated wallet -- as a backup
+        "chromium"
+        "dino"
+        "electrum"
+        "element-desktop"
+        # "font-manager"  #< depends on webkitgtk4_0 (expensive to build)
+        "gajim"  # XMPP client
+        "gimp"  # broken on phosh
+        "gnome.dconf-editor"
+        "gnome.gnome-disk-utility"
+        # "gnome.totem"  # video player, supposedly supports UPnP
+        "handbrake"
+        "hase"
+        "inkscape"
+        "jellyfin-media-player"
+        "kdenlive"
+        "kid3"  # audio tagging
+        "krita"
+        "libreoffice-fresh"
+        "mumble"
+        "obsidian"
+        "slic3r"
+        "steam"
+        "wireshark"  # could maybe ship the cli as sysadmin pkg
       ];
     };
-    sysadminUtils = {
-      package = null;
-      suggestedPrograms = [
-        "btrfs-progs"
-        "cacert.unbundled"  # some services require unbundled /etc/ssl/certs
-        "cryptsetup"
-        "dig"
-        "efibootmgr"
-        "fatresize"
-        "fd"
-        "file"
-        "gawk"
-        "git"
-        "gptfdisk"
-        "hdparm"
-        "htop"
-        "iftop"
-        "inetutils"  # for telnet
-        "iotop"
-        "iptables"
-        "jq"
-        "killall"
-        "lsof"
-        "miniupnpc"
-        "nano"
-        "neovim"
-        "netcat"
-        "nethogs"
-        "nmap"
-        "openssl"
-        "parted"
-        "pciutils"
-        "powertop"
-        "pstree"
-        "ripgrep"
-        "screen"
-        "smartmontools"
-        "socat"
-        "strace"
-        "subversion"
-        "tcpdump"
-        "tree"
-        "usbutils"
-        "wget"
-        "wirelesstools"  # iwlist
-      ];
-    };
-    sysadminExtraUtils = {
-      package = null;
-      suggestedPrograms = [
-        "backblaze-b2"
-        "duplicity"
-        "sqlite"  # to debug sqlite3 databases
-      ];
-    };
-    tuiApps = {
-      package = null;
-      suggestedPrograms = [
-        "aerc"  # email client
-        "msmtp"  # sendmail
-        "offlineimap"  # email mailox sync
-        "sfeed"  # RSS fetcher
-        "visidata"  # TUI spreadsheet viewer/editor
-        "w3m"  # web browser
-      ];
-    };
+
     x86GuiApps = {
       package = null;
       suggestedPrograms = [
@@ -246,6 +244,15 @@
         "spotify"
         "tor-browser-bundle-bin"
         "zecwallet-lite"
+      ];
+    };
+
+    iphoneUtils = {
+      package = null;
+      suggestedPrograms = [
+        "ifuse"
+        "ipfs"
+        "libimobiledevice"
       ];
     };
 
