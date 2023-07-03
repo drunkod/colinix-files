@@ -1,25 +1,7 @@
 { config, lib, options, pkgs, sane-lib, ... }:
 let
-  inherit (builtins) any attrValues elem map;
-  inherit (lib)
-    concatMapAttrs
-    filterAttrs
-    hasAttrByPath
-    getAttrFromPath
-    mapAttrs
-    mapAttrs'
-    mapAttrsToList
-    mkDefault
-    mkIf
-    mkMerge
-    mkOption
-    optional
-    optionalAttrs
-    splitString
-    types
-  ;
-  inherit (sane-lib) joinAttrsets;
   cfg = config.sane.programs;
+
   # create a map:
   # {
   #   "${pkgName}" = {
@@ -48,7 +30,7 @@ let
   ) (mkDefaultEnables pkgSpecs) pkgSpecs;
   mkDefaultEnables = lib.mapAttrs (_pname: _pval: { system = false; user = {}; });
   defaultEnables = solveDefaultEnableFor cfg;
-  pkgSpec = types.submodule ({ config, name, ... }: {
+  pkgSpec = with lib; types.submodule ({ config, name, ... }: {
     options = {
       package = mkOption {
         type = types.nullOr types.package;
@@ -57,13 +39,13 @@ let
         '';
         default =
           let
-            pkgPath = splitString "." name;
+            pkgPath = lib.splitString "." name;
           in
             # package can be inferred by the attr name, allowing shorthand like
             #   `sane.programs.nano.enable = true;`
             # this indexing will throw if the package doesn't exist and the user forgets to specify
             # a valid source explicitly.
-            getAttrFromPath pkgPath pkgs;
+            lib.getAttrFromPath pkgPath pkgs;
       };
       enableFor.system = mkOption {
         type = types.bool;
@@ -143,13 +125,13 @@ let
     };
 
     config = {
-      enabled = config.enableFor.system || any (en: en) (attrValues config.enableFor.user);
+      enabled = config.enableFor.system || builtins.any (en: en) (lib.attrValues config.enableFor.user);
     };
   });
-  toPkgSpec = types.coercedTo types.package (p: { package = p; }) pkgSpec;
+  toPkgSpec = with lib; types.coercedTo types.package (p: { package = p; }) pkgSpec;
 
-  configs = mapAttrsToList (name: p: {
-    assertions = map (sug: {
+  configs = lib.mapAttrsToList (name: p: {
+    assertions = builtins.map (sug: {
       assertion = cfg ? "${sug}";
       message = ''program "${sug}" referenced by "${name}", but not defined'';
     }) p.suggestedPrograms;
@@ -161,19 +143,19 @@ let
     };
 
     # conditionally add to user(s) PATH
-    users.users = mapAttrs (user: en: {
-      packages = optional (p.package != null && en) p.package;
+    users.users = lib.mapAttrs (user: en: {
+      packages = lib.optional (p.package != null && en) p.package;
     }) p.enableFor.user;
 
     # conditionally persist relevant user dirs and create files
-    sane.users = mapAttrs (user: en: optionalAttrs en {
+    sane.users = lib.mapAttrs (user: en: lib.optionalAttrs en {
       inherit (p) persist;
       environment = p.env;
-      fs = mkMerge [
+      fs = lib.mkMerge [
         # make every fs entry wanted by system boot:
-        (mapAttrs (_path: sane-lib.fs.wanted) p.fs)
+        (lib.mapAttrs (_path: sane-lib.fs.wanted) p.fs)
         # link every secret into the fs:
-        (mapAttrs
+        (lib.mapAttrs
           # TODO: user the user's *actual* home directory, don't guess.
           (homePath: _src: sane-lib.fs.wantedSymlinkTo "/run/secrets/home/${user}/${homePath}")
           p.secrets
@@ -182,9 +164,9 @@ let
     }) p.enableFor.user;
 
     # make secrets available for each user
-    sops.secrets = concatMapAttrs
-      (user: en: optionalAttrs en (
-        mapAttrs'
+    sops.secrets = lib.concatMapAttrs
+      (user: en: lib.optionalAttrs en (
+        lib.mapAttrs'
           (homePath: src: {
             # TODO: user the user's *actual* home directory, don't guess.
             # XXX: name CAN'T START WITH '/', else sops creates the directories funny.
@@ -203,7 +185,7 @@ let
   }) cfg;
 in
 {
-  options = {
+  options = with lib; {
     sane.programs = mkOption {
       type = types.attrsOf toPkgSpec;
       default = {};
@@ -220,7 +202,7 @@ in
         sane.users = f.sane.users;
         sops.secrets = f.sops.secrets;
       };
-    in mkMerge [
+    in lib.mkMerge [
       (take (sane-lib.mkTypedMerge take configs))
       {
         # expose the pkgs -- as available to the system -- as a build target.
