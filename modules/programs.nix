@@ -37,6 +37,18 @@ let
             # a valid source explicitly.
             getAttrFromPath pkgPath pkgs;
       };
+      # XXX: this is *quadratic* behavior
+      # i can turn it into a linear time operation by a `foldl'` over the whole `config.sane.programs` set
+      # to expand the `enableFor` config before i use it, but doing so naively would
+      # break `prog.enableFor.<x> = lib.mkForce false`.
+      # the robust approach is to copy what we do in `sane-lib.fs`.
+      #
+      # alternatively, i can maybe take this same `default = ...` approach (which allows for overriding)
+      # if i can keep its non-recursive property, but turn each `default = ..` operation
+      # into a (amortized) constant-time access into something that's cacheable.
+      # e.g. create a map from:
+      # { "${pkg}" = [ "list" "of" "packages" "which" "if" "enabled" "would" "*directly or indirectly*" "enable" "${pkg}" ]; }
+      # then it's just `default = any (pname: cfg."${pname}".enableFor.system) enableMap."${name}";`
       enableFor.system = mkOption {
         type = types.bool;
         default = any (en: en) (
