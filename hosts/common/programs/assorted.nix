@@ -246,6 +246,15 @@
       ];
     };
 
+    devPkgs = {
+      package = null;
+      suggestedPrograms = [
+        "clang"
+        "nodejs"
+        "tree-sitter"
+      ];
+    };
+
 
     # INDIVIDUAL PACKAGE DEFINITIONS
 
