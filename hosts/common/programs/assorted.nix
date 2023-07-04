@@ -80,6 +80,7 @@
         # "gocryptfs"
         # "gopass"
         # "gopass-jsonapi"
+        "helix"  # text editor
         "kitty"  # TODO: move to GUI, but `ssh servo` from kitty sets `TERM=xterm-kitty` in the remove and breaks things
         "libsecret"  # for managing user keyrings. TODO: what needs this? lift into the consumer
         "lm_sensors"  # for sensors-detect. TODO: what needs this? lift into the consumer
