@@ -60,18 +60,6 @@
     ManagedOOMSwap = "kill";
   };
 
-  # TODO: move this to gui machines only
-  fonts = {
-    enableDefaultFonts = true;
-    fonts = with pkgs; [ font-awesome noto-fonts-emoji hack-font ];
-    fontconfig.enable = true;
-    fontconfig.defaultFonts = {
-      emoji = [ "Font Awesome 6 Free" "Noto Color Emoji" ];
-      monospace = [ "Hack" ];
-      serif = [ "DejaVu Serif" ];
-      sansSerif = [ "DejaVu Sans" ];
-    };
-  };
 
   system.activationScripts.nixClosureDiff = {
     supportsDryActivation = true;
