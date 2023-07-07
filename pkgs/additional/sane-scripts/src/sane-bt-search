@@ -217,7 +217,7 @@ def main(args: list):
     help = options.pop("help")
     json = options.pop("json")
     query = options.pop("query")
-    top = options.pop("top")
+    top = int(options.pop("top"))
     verbose = options.pop("verbose")
     manga = options.pop("manga")
 
@@ -230,7 +230,6 @@ def main(args: list):
         logging.getLogger().setLevel(logging.DEBUG)
 
 
-    num_listings = 1000 if full else int(top)
     client = Client()
     results = client.query(query)
     num_results = len(results)
