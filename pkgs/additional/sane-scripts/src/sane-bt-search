@@ -88,9 +88,9 @@ class Torrent:
     size: int
     tracker: str
     title: str
-    magnet: "Optional[str]"
-    http_dl_uri: "Optional[str]"  # probably a .torrent file but it COULD be a referral to a magnet:// URI
-    tracker_uri: "Optional[str]"
+    magnet: str | None
+    http_dl_uri: str | None  # probably a .torrent file but it COULD be a referral to a magnet:// URI
+    tracker_uri: str | None
     categories: frozenset[str]  # human-friendly list of categories, lowercase. e.g. ["Books", "Anime"]
 
     def __str__(self) -> str:
@@ -164,7 +164,7 @@ class Client:
         resp = requests.get(url, params=params)
         return resp.json()
 
-    def query(self, q: str) -> list:
+    def query(self, q: str) -> list[Torrent]:
         torrents = set()
         api_res = self.api_call("results", dict(Query=q))
         for r in api_res["Results"]:
@@ -185,7 +185,7 @@ def filter_results(results: list[Torrent], full: bool, top: int, manga: bool) ->
         results = results[:top]
     return results
 
-def parse_args(args: list) -> dict:
+def parse_args(args: list[str]) -> dict:
     options = dict(
         full=False,
         help=False,
@@ -210,7 +210,7 @@ def parse_args(args: list) -> dict:
 
     return options
 
-def main(args: list):
+def main(args: list[str]):
     logging.basicConfig()
     options = parse_args(args)
     full = options.pop("full")
