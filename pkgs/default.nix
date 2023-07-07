@@ -97,6 +97,8 @@ let
 
     gocryptfs = callPackage ./patched/gocryptfs { inherit (unpatched) gocryptfs; };
 
+    helix = callPackage ./patched/helix { inherit (unpatched) helix; };
+
     # jackett doesn't allow customization of the bind address: this will probably always be here.
     jackett = callPackage ./patched/jackett { inherit (unpatched) jackett; };
 

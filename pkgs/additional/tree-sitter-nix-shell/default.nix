@@ -2,6 +2,7 @@
 , fetchFromGitea
 , htmlq
 , tree-sitter
+, tree-sitter-nix-shell
 }:
 
 tree-sitter.buildGrammar {
@@ -23,6 +24,15 @@ tree-sitter.buildGrammar {
     (cd ..; make test)
   '';
   doCheck = true;
+
+  passthru = {
+    generated = tree-sitter-nix-shell.overrideAttrs (orig: {
+      # provide a package which has the output of `tree-sitter generate`, but not the binary compiled parser
+      buildPhase = "true";
+      installPhase = "cp -r . $out";
+      checkPhase = "true";
+    });
+  };
 
   meta = with lib; {
     description = "parse `#!/usr/bin/env nix-shell` scripts with tree-sitter";
