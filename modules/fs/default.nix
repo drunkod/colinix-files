@@ -5,6 +5,19 @@ let
   sane-types = sane-lib.types;
   cfg = config.sane.fs;
 
+  ensure-dir = pkgs.static-nix-shell.mkBash {
+    pname = "ensure-dir";
+    src = ./.;
+  };
+  ensure-symlink = pkgs.static-nix-shell.mkBash {
+    pname = "ensure-symlink";
+    src = ./.;
+  };
+  ensure-perms = pkgs.static-nix-shell.mkBash {
+    pname = "ensure-perms";
+    src = ./.;
+  };
+
   mountNameFor = path: "${utils.escapeSystemdPath path}.mount";
   serviceNameFor = path: "ensure-${utils.escapeSystemdPath path}";
 
@@ -249,67 +262,28 @@ let
     (lib.mkIf (opt.mount != null) (mkMountConfig path opt))
   ];
 
-  generateWrapperScript = path: gen-opt: {
-    script = ''
-      set -e
-
-      fspath="$1"
-      acluser="$2"
-      aclgroup="$3"
-      aclmode="$4"
-      shift 4
-
-      # ensure any things created by the user script have the desired mode.
-      # chmod doesn't work on symlinks, so we *have* to use this umask approach.
-      decmask=$(( 0777 - "$aclmode" ))
-      octmask=$(printf "%o" "$decmask")
-      umask "$octmask"
-
-      # try to chmod/chown the result even if the user script errors
-      _status=0
-      trap "_status=\$?" ERR
-
-      ${gen-opt.script.script}
-
-      # claim ownership of the new thing (DON'T traverse symlinks)
-      chown --no-dereference "$acluser:$aclgroup" "$fspath"
-      # AS LONG AS IT'S NOT A SYMLINK, try to fix perms in case the entity existed before this script was called
-      if ! test -L "$fspath"
-      then
-        chmod "$aclmode" "$fspath"
-      fi
-
-      exit "$_status"
-    '';
-    scriptArgs = [ path gen-opt.acl.user gen-opt.acl.group gen-opt.acl.mode ] ++ gen-opt.script.scriptArgs;
+  generateWrapperScript = path: gen-opt: let
+    userScript = pkgs.writeShellScript "sane-fs-user-script" gen-opt.script.script;
+  in {
+    script = ''${ensure-perms}/bin/ensure-perms "$@"'';
+    scriptArgs = [
+      path
+      gen-opt.acl.user
+      gen-opt.acl.group
+      gen-opt.acl.mode
+      "${userScript}"
+    ] ++ gen-opt.script.scriptArgs;
   };
 
   # systemd/shell script used to create and set perms for a specific dir
   ensureDirScript = path: dir-cfg: {
-    script = ''
-      dirpath="$1"
-
-      if ! test -d "$dirpath"
-      then
-        # if the directory *doesn't* exist, try creating it
-        # if we fail to create it, ensure we raced with something else and that it's actually a directory
-        mkdir "$dirpath" || test -d "$dirpath"
-      fi
-    '';
+    script = ''${ensure-dir}/bin/ensure-dir "$@"'';
     scriptArgs = [ path ];
   };
 
   # systemd/shell script used to create a symlink
   ensureSymlinkScript = path: link-cfg: {
-    script = ''
-      lnfrom="$1"
-      lnto="$2"
-
-      # ln is clever when there's something else at the place we want to create the link
-      # only create the link if nothing's there or what is there is another link,
-      # otherwise you'll get links at unexpected fs locations
-      ! test -e "$lnfrom" || test -L "$lnfrom"  && ln -sf --no-dereference "$lnto" "$lnfrom"
-    '';
+    script = ''${ensure-symlink}/bin/ensure-symlink "$@"'';
     scriptArgs = [ path link-cfg.target ];
   };
 
