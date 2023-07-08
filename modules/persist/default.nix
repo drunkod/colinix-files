@@ -235,15 +235,19 @@ in
         }
         (lib.optionalAttrs (opt.type == "dir") {
           # create the backing path as a dir
-          sane.fs."${fsPathToBackingPath fspath}".dir = {
-            acl = config.sane.fs."${fspath}".generated.acl;
+          sane.fs."${fsPathToBackingPath fspath}" = {
+            wantedBeforeBy = [ config.sane.fs."${fspath}".unit ];
+            dir.acl = config.sane.fs."${fspath}".generated.acl;
           };
         })
         (lib.optionalAttrs (opt.type == "file") {
           # ensure the backing path of this file's parent exists.
           # XXX: this forces the backing parent to be a directory
           # this is almost always what is wanted, but it's sometimes an arbitrary constraint
-          sane.fs."${path.parent (fsPathToBackingPath fspath)}".dir = {};
+          sane.fs."${path.parent (fsPathToBackingPath fspath)}" = {
+            wantedBeforeBy = [ config.sane.fs."${fspath}".unit ];
+            dir = {};
+          };
         })
         {
           # default each item along the backing path to have the same acl as the location it would be mounted.
