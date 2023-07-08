@@ -156,9 +156,6 @@ let
         '';
         default = [];
       };
-      script.script = mkOption {
-        type = types.lines;
-      };
       script.scriptArgs = mkOption {
         type = types.listOf types.str;
         default = [];
@@ -196,11 +193,6 @@ let
   mkGeneratedConfig = path: opt: let
     gen-opt = opt.generated;
     wrapper = generateWrapperScript path gen-opt;
-    ty =
-      if (opt.dir != null) then "dir"
-      else if (opt.symlink != null) then "symlink"
-      else "custom";
-    wrapperPath = pkgs.writeShellScript "sane-fs-ensure-${ty}" wrapper.script;
   in {
     systemd.services."${serviceNameFor path}" = {
       description = "prepare ${path}";
@@ -208,9 +200,7 @@ let
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;  # makes `systemctl start ensure-blah` a noop if already completed, instead of a restart
-        ExecStart = escapeShellArgs (
-          [ "${wrapperPath}" ] ++ wrapper.scriptArgs
-          );
+        ExecStart = escapeShellArgs wrapper.scriptArgs;
       };
 
       after = gen-opt.depends;
@@ -262,29 +252,31 @@ let
     (lib.mkIf (opt.mount != null) (mkMountConfig path opt))
   ];
 
-  generateWrapperScript = path: gen-opt: let
-    userScript = pkgs.writeShellScript "sane-fs-user-script" gen-opt.script.script;
-  in {
-    script = ''${ensure-perms}/bin/ensure-perms "$@"'';
+  generateWrapperScript = path: gen-opt: {
     scriptArgs = [
+      "${ensure-perms}/bin/ensure-perms"
       path
       gen-opt.acl.user
       gen-opt.acl.group
       gen-opt.acl.mode
-      "${userScript}"
     ] ++ gen-opt.script.scriptArgs;
   };
 
   # systemd/shell script used to create and set perms for a specific dir
   ensureDirScript = path: dir-cfg: {
-    script = ''${ensure-dir}/bin/ensure-dir "$@"'';
-    scriptArgs = [ path ];
+    scriptArgs = [
+      "${ensure-dir}/bin/ensure-dir"
+      path
+    ];
   };
 
   # systemd/shell script used to create a symlink
   ensureSymlinkScript = path: link-cfg: {
-    script = ''${ensure-symlink}/bin/ensure-symlink "$@"'';
-    scriptArgs = [ path link-cfg.target ];
+    scriptArgs = [
+      "${ensure-symlink}/bin/ensure-symlink"
+      path
+      link-cfg.target
+    ];
   };
 
   # return all ancestors of this path.

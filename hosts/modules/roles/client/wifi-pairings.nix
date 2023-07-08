@@ -12,8 +12,12 @@ in
     sane.fs."/var/lib/iwd/.secrets.psk.stamp" = {
       wantedBeforeBy = [ "iwd.service" ];
       generated.acl.mode = "0600";
-      generated.script.script = ''${install-iwd}/bin/install-iwd "$@"'';
-      generated.script.scriptArgs = [ "/run/secrets/net" "/var/lib/iwd" "/var/lib/iwd/.secrets.psk.stamp" ];
+      generated.script.scriptArgs = [
+        "${install-iwd}/bin/install-iwd"
+        "/run/secrets/net"
+        "/var/lib/iwd"
+        "/var/lib/iwd/.secrets.psk.stamp"
+      ];
     };
   };
 }
