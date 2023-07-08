@@ -15,11 +15,8 @@ in
     sane.fs."/var/lib/bluetooth".generated.acl.mode = "0700";
     sane.fs."/var/lib/bluetooth/.secrets.stamp" = {
       wantedBeforeBy = [ "bluetooth.service" ];
-      generated.script.script = ''
-        ${install-bluetooth}/bin/install-bluetooth $@
-        touch "/var/lib/bluetooth/.secrets.stamp"
-      '';
-      generated.script.scriptArgs = [ "/run/secrets/bt" ];
+      generated.script.script = ''${install-bluetooth}/bin/install-bluetooth "$@"'';
+      generated.script.scriptArgs = [ "/run/secrets/bt" "" "/var/lib/bluetooth/.secrets.stamp" ];
     };
   };
 }
