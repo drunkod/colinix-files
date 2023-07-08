@@ -152,8 +152,7 @@ let
       inherit (p) persist;
       environment = p.env;
       fs = lib.mkMerge [
-        # make every fs entry wanted by system boot:
-        (lib.mapAttrs (_path: sane-lib.fs.wanted) p.fs)
+        p.fs
         # link every secret into the fs:
         (lib.mapAttrs
           # TODO: user the user's *actual* home directory, don't guess.
