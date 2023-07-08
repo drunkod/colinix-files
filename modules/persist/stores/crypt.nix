@@ -51,7 +51,7 @@ lib.mkIf config.sane.persist.enable
       ${pkgs.gocryptfs}/bin/gocryptfs -quiet -passfile "$passfile" -init "$backing"
     '';
   in {
-    script.scriptArgs = [ "${script}" underlying key ];
+    command = [ "${script}" underlying key ];
     # we need the key in order to initialize the store
     depends = [ config.sane.fs."${key}".unit ];
   };
@@ -62,7 +62,7 @@ lib.mkIf config.sane.persist.enable
       dd if=/dev/random bs=128 count=1 | base64 --wrap=0 > "$1"
     '';
   in {
-    script.scriptArgs = [ "${script}" key ];
+    command = [ "${script}" key ];
     # no need for anyone else to be able to read the key
     acl.mode = "0400";
   };

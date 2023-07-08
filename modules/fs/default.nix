@@ -86,9 +86,9 @@ let
       ];
 
       # actually generate the item
-      generated.script = lib.mkMerge [
-        (lib.mkIf (config.dir != null) (ensureDirScript name config.dir))
-        (lib.mkIf (config.symlink != null) (ensureSymlinkScript name config.symlink))
+      generated.command = lib.mkMerge [
+        (lib.mkIf (config.dir != null) [ "${ensure-dir}/bin/ensure-dir" name ])
+        (lib.mkIf (config.symlink != null) [ "${ensure-symlink}/bin/ensure-symlink" name config.symlink.target ])
       ];
 
       # make the unit file which generates the underlying thing available so that `mount` can use it.
@@ -156,7 +156,7 @@ let
         '';
         default = [];
       };
-      script.scriptArgs = mkOption {
+      command = mkOption {
         type = types.listOf types.str;
         default = [];
       };
@@ -192,7 +192,13 @@ let
 
   mkGeneratedConfig = path: opt: let
     gen-opt = opt.generated;
-    wrapper = generateWrapperScript path gen-opt;
+    wrappedCommand = [
+      "${ensure-perms}/bin/ensure-perms"
+      path
+      gen-opt.acl.user
+      gen-opt.acl.group
+      gen-opt.acl.mode
+    ] ++ gen-opt.command;
   in {
     systemd.services."${serviceNameFor path}" = {
       description = "prepare ${path}";
@@ -200,7 +206,7 @@ let
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;  # makes `systemctl start ensure-blah` a noop if already completed, instead of a restart
-        ExecStart = escapeShellArgs wrapper.scriptArgs;
+        ExecStart = escapeShellArgs wrappedCommand;
       };
 
       after = gen-opt.depends;
@@ -251,33 +257,6 @@ let
     (mkGeneratedConfig path opt)
     (lib.mkIf (opt.mount != null) (mkMountConfig path opt))
   ];
-
-  generateWrapperScript = path: gen-opt: {
-    scriptArgs = [
-      "${ensure-perms}/bin/ensure-perms"
-      path
-      gen-opt.acl.user
-      gen-opt.acl.group
-      gen-opt.acl.mode
-    ] ++ gen-opt.script.scriptArgs;
-  };
-
-  # systemd/shell script used to create and set perms for a specific dir
-  ensureDirScript = path: dir-cfg: {
-    scriptArgs = [
-      "${ensure-dir}/bin/ensure-dir"
-      path
-    ];
-  };
-
-  # systemd/shell script used to create a symlink
-  ensureSymlinkScript = path: link-cfg: {
-    scriptArgs = [
-      "${ensure-symlink}/bin/ensure-symlink"
-      path
-      link-cfg.target
-    ];
-  };
 
   # return all ancestors of this path.
   # e.g. ancestorsOf "/foo/bar/baz" => [ "/" "/foo" "/foo/bar" ]

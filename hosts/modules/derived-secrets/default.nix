@@ -37,7 +37,7 @@ in
 
   config = {
     sane.fs = mapAttrs (path: c: {
-      generated.script.scriptArgs = [
+      generated.command = [
         "${hash-path-with-salt}/bin/hash-path-with-salt"
         path
       ];
