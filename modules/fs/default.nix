@@ -191,11 +191,14 @@ let
   in {
     systemd.services."${serviceNameFor path}" = {
       description = "prepare ${path}";
-      serviceConfig.Type = "oneshot";
 
-      serviceConfig.ExecStart = escapeShellArgs (
-        [ "${wrapperPath}" ] ++ wrapper.scriptArgs
-      );
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;  # makes `systemctl start ensure-blah` a noop if already completed, instead of a restart
+        ExecStart = escapeShellArgs (
+          [ "${wrapperPath}" ] ++ wrapper.scriptArgs
+          );
+      };
 
       after = gen-opt.depends;
       wants = gen-opt.depends;
