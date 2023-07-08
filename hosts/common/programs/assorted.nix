@@ -143,7 +143,6 @@
     guiApps = {
       package = null;
       suggestedPrograms = [
-        "fontconfig"  # for default fonts
         "tuiApps"
         "web-browser"
       ] ++ lib.optional (pkgs.system == "x86_64-linux") "x86GuiApps"
