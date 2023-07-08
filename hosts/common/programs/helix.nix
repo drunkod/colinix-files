@@ -12,6 +12,11 @@
       # docs: <https://docs.helix-editor.com/configuration.html>
       [editor.soft-wrap]
       enable = true
+
+      [editor.whitespace.render]
+      space = "all"
+      tab = "all"
+      newline = "none"
     '';
   };
 }
