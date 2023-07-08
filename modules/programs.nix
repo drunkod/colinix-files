@@ -81,12 +81,12 @@ let
       };
       persist = {
         plaintext = mkOption {
-          type = types.listOf types.str;
+          type = types.listOf (types.either types.attrs types.str);
           default = [];
           description = "list of home-relative paths to persist for this package";
         };
         private = mkOption {
-          type = types.listOf types.str;
+          type = types.listOf (types.either types.attrs types.str);
           default = [];
           description = "list of home-relative paths to persist (in encrypted format) for this package";
         };
