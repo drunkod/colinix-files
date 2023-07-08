@@ -40,6 +40,7 @@ in
       generated.command = [
         "${hash-path-with-salt}/bin/hash-path-with-salt"
         path
+        c.encoding
       ];
       generated.acl.mode = "0600";
     }) cfg;
