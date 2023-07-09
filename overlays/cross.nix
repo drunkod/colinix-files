@@ -1290,7 +1290,6 @@ in {
       gdk-pixbuf
       #^ the above wasn't enough. v the below was added in one go
       # TODO: reduce this emulated set!
-      # N.B.: needs the webkit sandbox disabling that i did for epiphany
       glib
       glib-networking
       gsettings-desktop-schemas
