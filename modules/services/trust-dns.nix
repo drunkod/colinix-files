@@ -132,8 +132,29 @@ in
         Type = "simple";
         Restart = "on-failure";
         RestartSec = "10s";
-        # TODO: hardening (like, don't run as root!)
         # TODO: link to docs
+        # TODO: hardening:
+        # - User/DynamicUser
+        # - Group
+        # - CapabilityBoundingSet
+        # - SystemCallFilter ?
+        # - RestrictAddressFamilies
+        # - LockPersonality ?
+        # use `systemd-analyze security trust-dns`
+        MemoryDenyWriteExecute = true;
+        PrivateDevices = true;
+        PrivateMounts = true;
+        PrivateTmp = true;
+        ProtectClock = true;
+        ProtectControlGroups = true;
+        ProtectHome = true;
+        ProtectHostname = true;
+        ProtectKernelLogs = true;
+        ProtectKernelTunables = true;
+        ProtectProc = "invisible";
+        ProtectSystem = "full";
+        RestrictSUIDSGID = true;
+        SystemCallArchitectures = "native";
       };
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
