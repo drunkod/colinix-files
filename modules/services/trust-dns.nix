@@ -120,6 +120,7 @@ in
   config = mkIf cfg.enable {
     systemd.services.trust-dns = {
       description = "trust-dns DNS server";
+      unitConfig.Documentation = "https://trust-dns.org/";
       serviceConfig = {
         ExecStart =
         let
