@@ -133,10 +133,12 @@ in
         Type = "simple";
         Restart = "on-failure";
         RestartSec = "10s";
-        # TODO: link to docs
+
+        User = "trust-dns";
+        Group = "trust-dns";
+        DynamicUser = true;
+        AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
         # TODO: hardening:
-        # - User/DynamicUser
-        # - Group
         # - CapabilityBoundingSet
         # - SystemCallFilter ?
         # - RestrictAddressFamilies
