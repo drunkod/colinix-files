@@ -2,9 +2,6 @@
 - why i need to manually restart `wireguard-wg-ovpns` on servo periodically
   - else DNS fails
 - fix port 53 UPnP failures
-  - make one service per forward:
-    - that way one port being bad doesn't take down all of them
-      but i still get `systemctl --failed` status
 - fix epiphany to launch on moby
   - something to do with bwrap/bubblewrap?
 
