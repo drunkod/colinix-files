@@ -31,6 +31,14 @@ class SsdpResponse:
     def location(self) -> str:
         return self.headers.get("LOCATION")
 
+def get_cached_root_devices() -> list[str]:
+    try:
+        dev = open("/var/lib/uninsane/upnp.txt", "r").read()
+    except IOError:
+        return []
+    else:
+        logger.debug("loaded cached UPNP root device", dev)
+        return [dev]
 
 def get_root_devices() -> list[str]:
     listener = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -91,12 +99,15 @@ def get_ips_from_location(location: str) -> tuple[str | None, str | None]:
             logger.info(f"got LAN = {lan} from {location}")
     return lan, wan
 
-def get_any_wan() -> tuple[str, str, str] | None:
+def get_any_wan(cached: bool = False) -> tuple[str, str, str] | None:
     """ return (location, LAN IP, WAN IP) for the first device seen which has a WAN IP """
-    for location in get_root_devices():
-        lan, wan = get_ips_from_location(location)
-        if lan and wan:
-            return location, lan, wan
+    sources = ([ get_cached_root_devices() ] if cached else []) \
+        + [ get_root_devices() ]
+    for source in sources:
+        for location in source:
+            lan, wan = get_ips_from_location(location)
+            if lan and wan:
+                return location, lan, wan
 
 def forward_port(root_device: str, proto: str, port: int, lan_ip: str, reason: str = "", duration: int = 86400) -> None:
     args = [
