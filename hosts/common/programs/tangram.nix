@@ -2,7 +2,7 @@
 # it views each tab as a distinct application, persisted, and where the 'home' button action is specific to each tab.
 # it supports ephemeral tabs, but UX is heavily geared to GCing those as early as possible.
 
-{ lib, pkgs, ... }:
+{ pkgs, ... }:
 let
   dconfProfile = pkgs.writeTextFile {
     name = "dconf-tangram-profile";
@@ -12,9 +12,6 @@ let
       system-db:site
     '';
   };
-  initTangramDconf = pkgs.writeShellScript "init-tangram-dconf" ''
-    test -f "$1" || ${lib.getBin pkgs.dconf}/bin/dconf compile "$1" "${pkgs.emptyDirectory}"
-  '';
 in
 {
   sane.programs.tangram = {
@@ -22,7 +19,6 @@ in
     # - `bwrap: Can't make symlink at /var/run: File exists`
     # see epiphany.nix for more info
     package = pkgs.tangram.overrideAttrs (upstream: {
-      # --set DCONF_PROFILE "${dconfProfile}/etc/dconf/profile/tangram"
       preFixup = ''
         gappsWrapperArgs+=(
           --set WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS "1"
@@ -42,13 +38,5 @@ in
       # { type = "file"; path = ".config/dconf/tangram"; method = "bind"; }
       ".config/dconf"
     ];
-
-    fs."private/.config/dconf/tangram".generated = {
-      acl.mode = "0644";
-      command = [
-        "${initTangramDconf}"
-        "/home/colin/private/.config/dconf/tangram"
-      ];
-    };
   };
 }
