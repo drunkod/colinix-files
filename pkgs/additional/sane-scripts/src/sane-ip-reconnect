@@ -19,7 +19,7 @@ def rm_color(stdout: str) -> str:
 def rm_heading(stdout: str) -> str:
     return "\n".join(stdout.split("\n")[4:])
 
-def extract_columns(stdout: str) -> list:
+def extract_columns(stdout: str) -> list[tuple[str, str]]:
     " split each line into two fields "
     lines = stdout.split("\n")
     items = []
@@ -38,7 +38,7 @@ def extract_columns(stdout: str) -> list:
     logger.debug(f"parsed iwctl output: {items!r}")
     return items
 
-def iwctl(args: list, sudo: bool = False) -> str:
+def iwctl(args: list[str], sudo: bool = False) -> str:
     cmd = [ "iwctl" ] + args
     if sudo:
         cmd = [ "sudo" ] + cmd
@@ -52,21 +52,21 @@ def scan() -> None:
     iwctl(["station", "wlan0", "scan"], sudo=True)
     time.sleep(5)  # give time for adapter to see networks
 
-def get_known() -> list:
+def get_known() -> list[str]:
     stdout = iwctl(["known-networks", "list"])
     stdout = rm_color(stdout)
     stdout = rm_heading(stdout)
     logging.debug(f"iwctl known-networks list: got: {stdout}")
     return [name for (name, date) in extract_columns(stdout)]
 
-def get_visible() -> list:
+def get_visible() -> list[tuple[str, int]]:
     stdout = iwctl(["station", "wlan0", "get-networks", "rssi-dbms"])
     stdout = rm_color(stdout)
     stdout = rm_heading(stdout)
     logging.debug(f"iwctl station wlan0 get-networks rssi-dbms: got: {stdout}")
     return [(name, int(strength)) for (name, strength) in extract_columns(stdout)]
 
-def choose_best(visible: list, known: list) -> str:
+def choose_best(visible: list[tuple[str, int]], known: list[str]) -> str:
     candidates = [(name, strength) for (name, strength) in visible if name in known]
     # the least-negative RSSI is the best
     return max(candidates, key=lambda c: c[1])[0] if candidates else None
