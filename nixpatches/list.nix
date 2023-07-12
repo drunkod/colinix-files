@@ -140,10 +140,16 @@ in [
   #   hash = "sha256-MNG8C0OgdPnFQ8SF2loiEhXJuP2z4n9pkXr8Zh4X7QU=";
   # })
 
+  # (fetchpatch' {
+  #   title = "conky: 1.13.1 -> 1.18.0";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/217224";
+  #   hash = "sha256-paNHUbsIBmWRTuSl7stE8INGtENL1ccO9UoDVGJNykM=";
+  # })
   (fetchpatch' {
-    title = "conky: 1.13.1 -> 1.18.0";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/217224";
-    hash = "sha256-paNHUbsIBmWRTuSl7stE8INGtENL1ccO9UoDVGJNykM=";
+    # includes the diff of the above 1.13.1 -> 1.18.0 upgrade
+    title = "conky: support wayland";
+    saneCommit = "dc8ef58ce033862663ea2fc320c5bb5e0d70d81b";
+    hash = "sha256-yXH6H1ZtQj8ywHWj8SVbDFCff0t0lpJAhb8fFG8Qrv4=";
   })
 
   # (fetchpatch' {
