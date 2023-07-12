@@ -217,6 +217,8 @@ in
       # sane.user.fs.".config/waybar/style.css".symlink.text =
       #   builtins.readFile ./waybar-style.css;
 
+      sane.user.fs.".config/sxmo/conky.conf".symlink.target =
+        builtins.readFile ./conky-config;
 
       ## greeter
 
