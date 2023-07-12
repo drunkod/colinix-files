@@ -22,6 +22,7 @@
       # SXMO_SWAY_SCALE = "1.5";  # hard to press gPodder icons
       SXMO_SWAY_SCALE = "1.8";
       # SXMO_SWAY_SCALE = "2";
+      SXMO_WORKSPACE_WRAPPING = "5";  # how many workspaces. default: 4
 
       # wvkbd layers:
       # - full
