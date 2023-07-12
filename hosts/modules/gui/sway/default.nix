@@ -137,7 +137,7 @@ in
       sane.user.fs.".config/sway/config".symlink.text =
         import ./sway-config.nix { inherit config pkgs; };
 
-      sane.user.fs.".config/waybar/config".symlink.text =
+      sane.user.fs.".config/waybar/config".symlink.target =
         let
           waybar-config = import ./waybar-config.nix { inherit pkgs; };
         in
