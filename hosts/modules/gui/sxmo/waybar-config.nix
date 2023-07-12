@@ -23,6 +23,9 @@
     };
 
     "custom/sxmo" = {
+      # this gives wifi state, batter, mic/speaker, lockstate, time all as one widget.
+      # a good starting point, but may want to split these apart later to make things configurable.
+      # e.g. distinct vol-up & vol-down buttons next to the speaker?
       exec = "sxmo_status.sh";
       interval = 1;
       format = "{}";
