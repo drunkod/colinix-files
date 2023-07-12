@@ -219,6 +219,13 @@ in [
     hash = "sha256-lXuLHdSPhWol9X5QX4cxnZqoVGUWEQTCZLmosvLX+WY=";
   })
 
+  (fetchpatch' {
+    title = "komikku: 1.21.1 -> 1.22.0";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/243017";
+    saneCommit = "853be697f59f64c342269e81e34ca375e8b3e7aa";
+    hash = "sha256-qyGEqV+xYiA/TPMaU6QitpJwzYSuZ82ZSaZT5mFmKxs=";
+  })
+
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
   #   title = "matrix-appservice-irc: 0.38.0 -> 1.0.0";
