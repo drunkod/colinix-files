@@ -203,6 +203,17 @@ in
         ${userConfig}
       '';
 
+      sane.user.fs.".config/sway/config".symlink.text = builtins.readFile ./sway-config;
+
+      # sane.user.fs.".config/waybar/config".symlink.text =
+      #   let
+      #     waybar-config = import ./waybar-config.nix { inherit pkgs; };
+      #   in
+      #     (pkgs.formats.json {}).generate "waybar-config.json" waybar-config;
+
+      # sane.user.fs.".config/waybar/style.css".symlink.text =
+      #   builtins.readFile ./waybar-style.css;
+
 
       ## greeter
 
