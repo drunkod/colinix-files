@@ -17,7 +17,7 @@ ${alignc}${font Sxmo:size=50:style=Bold}${exec date +"%H"}${font Sxmo:size=50}:$
 ${font Sxmo:size=20}${exec date +"%a %d %b %Y"}${font}
 
 ${alignc}${font Sxmo:size=15}${color lightgrey}☵ $memperc%${font}
-${alignc}${font Sxmo:size=15}${color lightgrey} $cpu%${font}    
+${alignc}${font Sxmo:size=15}${color lightgrey} $cpu%${font}
 ${alignc}${font Sxmo:size=15}${color lightgrey}⇅ ${downspeedf wlan0}K/s${font}
-${alignc}${font Sxmo:size=15}${color lightgrey} ${exec echo $(( $(cat /sys/class/power_supply/axp20x-battery/charge_full_design) * -60 / $(cat /sys/class/power_supply/axp20x-battery/current_now) )) }m${font}
+${alignc}${font Sxmo:size=15}${color lightgrey}${exec @bat@ }${font}
 ]]
