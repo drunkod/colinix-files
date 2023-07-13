@@ -16,7 +16,7 @@ fmt_minutes() {
     hr=$(($2 / 60))
     hr_in_min=$(($hr * 60))
     min=$(($2 - $hr_in_min))
-    echo "$1 ${hr}h${min}m"
+    printf "%s %dh%02dm" "$1" "$hr" "$min"
   fi
 }
 
