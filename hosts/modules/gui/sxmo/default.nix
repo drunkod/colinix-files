@@ -243,6 +243,12 @@ in
           cfg.package  # this gets share/wayland-sessions/swmo.desktop linked
         ];
 
+        sane.persist.sys.plaintext = [
+          # this takes up 4-5 MB of fontconfig and mesa shader caches.
+          # it could optionally be cleared on boot.
+          { path = "/var/lib/lightdm"; user = "lightdm"; group = "lightdm"; mode = "0770"; }
+        ];
+
         # taken from gui/phosh:
         # NB: setting defaultSession has the critical side-effect that it lets org.freedesktop.AccountsService
         # know that our user exists. this ensures lightdm succeeds when calling /org/freedesktop/AccountsServices ListCachedUsers
