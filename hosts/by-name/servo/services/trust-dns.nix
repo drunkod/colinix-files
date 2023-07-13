@@ -59,13 +59,7 @@
     ];
   };
 
-  # we need trust-dns to load our zone by relative path instead of /nix/store path
-  # because we generate it at runtime.
-  services.trust-dns.settings.zones = [
-    {
-      zone = "uninsane.org";
-    }
-  ];
+  services.trust-dns.settings.zones = [ "uninsane.org" ];
 
   services.trust-dns.package =
     let
