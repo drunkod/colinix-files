@@ -104,3 +104,6 @@ this repo exists in a few known locations:
 
 if you want to contact me for questions, or collaborate to split something useful into a shared repo, etc,
 you can reach me via any method listed [here](https://uninsane.org/about).
+patches, for this repo or any other i host, will be warmly welcomed in any manner you see fit:
+`git send-email`, DM'ing the patch over Matrix/Lemmy/ActivityPub/etc, even a literal PR where you
+link me to your own clone.
