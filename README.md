@@ -16,6 +16,8 @@ directly here; even the sources for those packages is often kept here too.
 [uninsane-org]: https://uninsane.org
 
 ## Layout
+- `doc/`
+    - instructions for tasks i find myself doing semi-occasionally in this repo.
 - `hosts/`
     - the bulk of config which isn't factored with external use in mind.
     - that is, if you were to add this repo to a flake.nix for your own use,
