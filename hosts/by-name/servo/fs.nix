@@ -59,11 +59,6 @@
     }
   ];
 
-  # in-memory compressed RAM (seems to be dynamically sized)
-  # zramSwap = {
-  #   enable = true;
-  # };
-
   # btrfs doesn't easily support swapfiles
   # swapDevices = [
   #   { device = "/nix/persist/swapfile"; size = 4096; }
