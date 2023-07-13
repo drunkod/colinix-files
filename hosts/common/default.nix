@@ -70,19 +70,6 @@
     '';
   };
 
-  # XXX: twitter-color-emoji doesn't cross-compile; but not-fonts-emoji does
-  # fonts = {
-  #   enableDefaultFonts = true;
-  #   fonts = with pkgs; [ font-awesome twitter-color-emoji hack-font ];
-  #   fontconfig.enable = true;
-  #   fontconfig.defaultFonts = {
-  #     emoji = [ "Font Awesome 6 Free" "Twitter Color Emoji" ];
-  #     monospace = [ "Hack" ];
-  #     serif = [ "DejaVu Serif" ];
-  #     sansSerif = [ "DejaVu Sans" ];
-  #   };
-  # };
-
   # disable non-required packages like nano, perl, rsync, strace
   environment.defaultPackages = [];
 
