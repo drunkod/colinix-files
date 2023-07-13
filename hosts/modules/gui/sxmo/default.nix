@@ -133,6 +133,7 @@ in
         suggestedPrograms = [
           "guiApps"
           "sfeed"  # want this here so that the user's ~/.sfeed/sfeedrc gets created
+          "superd"  # make superctl (used by sxmo) be on PATH
         ];
       };
     }
