@@ -57,6 +57,9 @@ let fsOpts = rec {
 };
 in
 {
+  # some services which use private directories error if the parent (/var/lib/private) isn't 700.
+  sane.fs."/var/lib/private".dir.acl.mode = "0700";
+
   # fileSystems."/mnt/servo-nfs" = {
   #   device = "servo-hn:/";
   #   noCheck = true;
