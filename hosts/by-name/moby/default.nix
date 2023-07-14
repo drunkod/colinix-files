@@ -1,3 +1,8 @@
+# Pinephone
+# other setups to reference:
+# - <https://hamblingreen.gitlab.io/2022/03/02/my-pinephone-setup.html>
+#   - sxmo Arch user. lots of app recommendations
+
 { config, pkgs, lib, ... }:
 {
   imports = [
