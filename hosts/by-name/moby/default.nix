@@ -105,6 +105,14 @@
     services.wireplumber.environment.ALSA_CONFIG_UCM2         = ucm-env;
   };
 
+  services.udev.extraRules = let
+    chmod = "${pkgs.coreutils}/bin/chmod";
+    chown = "${pkgs.coreutils}/bin/chown";
+  in ''
+    # make Pinephone LEDs writable by user.
+    # taken from postmarketOS: <repo:postmarketOS/pmaports:device/main/device-pine64-pinephone/60-flashlight.rules>
+    SUBSYSTEM=="leds", DEVPATH=="*/*:flash", RUN+="${chmod} g+w /sys%p/brightness /sys%p/flash_strobe", RUN+="${chown} :video /sys%p/brightness /sys%p/flash_strobe"
+  '';
 
   hardware.opengl.driSupport = true;
 }
