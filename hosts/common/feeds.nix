@@ -166,6 +166,7 @@ let
     (fromDb "ianthehenry.com" // tech)
     (fromDb "bitbashing.io" // tech)
     (fromDb "idiomdrottning.org" // uncat)
+    (mkText "http://boginjr.com/feed" // tech // infrequent)
     (mkText "https://anish.lakhwara.com/home.html" // tech // weekly)
     (fromDb "jefftk.com" // tech)
     (fromDb "pomeroyb.com" // tech)
