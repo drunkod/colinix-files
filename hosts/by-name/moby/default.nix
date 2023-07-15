@@ -37,6 +37,7 @@
   sane.programs.tuiApps.enableFor.user.colin = false;  # visidata, others, don't compile well
   # disabled for faster deploys
   sane.programs.soundconverter.enableFor.user.colin = false;
+  sane.programs.firefox.enableFor.user.colin = false;  # use epiphany instead
   # sane.programs.mpv.enableFor.user.colin = true;
 
   boot.loader.efi.canTouchEfiVariables = false;
