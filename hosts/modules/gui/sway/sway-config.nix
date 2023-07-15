@@ -127,9 +127,6 @@ in ''
 
   ### lightly modified bars
   bar {
-    # TODO: fonts was:
-    #   config.fonts.fontconfig.defaultFonts; (monospace ++ emoji)
-    font pango:Hack, Font Awesome 6 Free, Twitter Color Emoji 24.000000
     mode dock
     hidden_state hide
     position top
