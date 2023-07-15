@@ -193,6 +193,16 @@ in
       sane.programs.web-browser = {
         inherit package;
 
+        mime = let
+          inherit (cfg.browser) desktop;
+        in {
+          "text/html" = desktop;
+          "x-scheme-handler/http" = desktop;
+          "x-scheme-handler/https" = desktop;
+          "x-scheme-handler/about" = desktop;
+          "x-scheme-handler/unknown" = desktop;
+        };
+
         # env.BROWSER = "${package}/bin/${cfg.browser.libName}";
         env.BROWSER = cfg.browser.libName;  # used by misc tools like xdg-email, as fallback
 

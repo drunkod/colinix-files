@@ -79,6 +79,19 @@ let
         type = types.bool;
         default = true;
       };
+      mime = mkOption {
+        type = types.attrsOf types.str;
+        default = {};
+        description = ''
+          mime associations. each entry takes the form of:
+            "<mime type>" = "<launcher>.desktop"
+          e.g.
+          {
+            "audio/flac" = "vlc.desktop";
+            "application/pdf" = "org.gnome.Evince.desktop";
+          }
+        '';
+      };
       persist = mkOption {
         type = options.sane.persist.sys.type;
         default = {};

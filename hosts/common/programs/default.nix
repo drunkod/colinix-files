@@ -6,6 +6,7 @@
     ./assorted.nix
     ./cozy.nix
     ./epiphany.nix
+    ./evince.nix
     ./fontconfig.nix
     ./git.nix
     ./gnome-feeds.nix
@@ -25,6 +26,7 @@
     ./neovim.nix
     ./newsflash.nix
     ./nix-index.nix
+    ./obsidian.nix
     ./offlineimap.nix
     ./ripgrep.nix
     ./sfeed.nix
