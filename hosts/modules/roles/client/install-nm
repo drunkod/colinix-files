@@ -1,0 +1,49 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -i python3 -p "python3.withPackages (ps: [  ])"
+
+import argparse
+import json
+import os.path
+
+from dataclasses import dataclass
+
+@dataclass
+class Connection:
+    comment: str | None
+    ssid: str
+    passphrase: str | None
+
+def parse_manifest(manifest_path: str) -> list[Connection]:
+    for entry in json.load(open(manifest_path)):
+        comment = entry.get("comment")
+        ssid = entry["ssid"]
+        passphrase = entry.get("passphrase")
+        if ssid != "<EOF>":
+            yield Connection(comment=comment, ssid=ssid, passphrase=passphrase)
+
+def install(manifest: list[Connection], destination: str):
+    for con in manifest:
+        path = os.path.join(destination, f"{con.ssid}.psk")
+        with open(path, "w") as psk:
+            psk.write("[Security]\n")
+            if con.passphrase != None:
+                psk.write(f"Passphrase={con.passphrase}\n")
+
+def stamp(destination: str, stamp: str) -> None:
+    if stamp:
+        with open(os.path.join(destination, stamp), "w"):
+            pass
+
+def main():
+    parser = argparse.ArgumentParser(description="create network connection descriptions from a static manifest")
+    parser.add_argument("manifest", help="path to the manifest.json")
+    parser.add_argument("destination", help="directory in which to install files")
+    parser.add_argument("--stamp", default=".install-nm.stamp", help="relative path of empty file to touch after completion")
+
+    args = parser.parse_args()
+    manifest = parse_manifest(args.manifest)
+    install(manifest, args.destination)
+    stamp(args.destination, args.stamp)
+
+if __name__ == "__main__":
+    main()
