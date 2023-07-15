@@ -79,7 +79,14 @@ let
         type = types.bool;
         default = true;
       };
-      mime = mkOption {
+      mime.priority = mkOption {
+        type = types.int;
+        default = 100;
+        description = ''
+          program with the numerically lower priority takes precedence whenever two mime associations overlap.
+        '';
+      };
+      mime.associations = mkOption {
         type = types.attrsOf types.str;
         default = {};
         description = ''

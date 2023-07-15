@@ -193,7 +193,7 @@ in
       sane.programs.firefox = {
         inherit package;
 
-        mime = let
+        mime.associations = let
           inherit (cfg.browser) desktop;
         in {
           "text/html" = desktop;

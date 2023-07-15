@@ -1,4 +1,4 @@
 { ... }:
 {
-  sane.programs.obsidian.mime."text/markdown" = "obsidian.desktop";
+  sane.programs.obsidian.mime.associations."text/markdown" = "obsidian.desktop";
 }
