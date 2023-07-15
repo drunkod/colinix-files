@@ -24,16 +24,6 @@
 
   sops.secrets.colin-passwd.neededForUsers = true;
 
-  sane.programs.web-browser.config = {
-    # compromise impermanence for the sake of usability
-    persistCache = "private";
-    persistData = "private";
-
-    # i don't do crypto stuff on moby
-    addons.ether-metamask.enable = false;
-    # addons.sideberry.enable = false;
-  };
-
   sane.user.persist.plaintext = [
     # TODO: make this just generally conditional upon pulse being enabled?
     ".config/pulse"  # persist pulseaudio volume

@@ -11,8 +11,8 @@
   sane.programs.guiApps = {
     package = null;
     suggestedPrograms = [
+      "firefox"
       "tuiApps"
-      "web-browser"
     ] ++ lib.optional (pkgs.system == "x86_64-linux") "x86GuiApps"
     ++ [
       # "celluloid"  # mpv frontend

@@ -1,5 +1,19 @@
+# this file configures preferences per program, without actually enabling any programs.
+# the goal is to separate the place where we decide *what* to use (i.e. `sane.programs.firefox.enable = true` -- at the toplevel)
+# from where we specific how that thing should behave *if* it's in use.
+
 { pkgs, sane-lib, ... }:
 {
+  sane.programs.firefox.config = {
+    # compromise impermanence for the sake of usability
+    persistCache = "private";
+    persistData = "private";
+
+    # i don't do crypto stuff on moby
+    addons.ether-metamask.enable = false;
+    # addons.sideberry.enable = false;
+  };
+
   sane.gui.sxmo = {
     settings = {
       ### hardware: touch screen

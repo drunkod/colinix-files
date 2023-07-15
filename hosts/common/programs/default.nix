@@ -7,6 +7,7 @@
     ./cozy.nix
     ./epiphany.nix
     ./evince.nix
+    ./firefox.nix
     ./fontconfig.nix
     ./git.nix
     ./gnome-feeds.nix
@@ -35,7 +36,6 @@
     ./sublime-music.nix
     ./tangram.nix
     ./vlc.nix
-    ./web-browser.nix
     ./wireshark.nix
     ./zeal.nix
     ./zsh
