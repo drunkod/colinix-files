@@ -151,7 +151,7 @@ in
       };
       sane.programs.firefox.config.addons = {
         browserpass-extension = {
-          package = pkgs.firefox-extensions.browserpass-extension;
+          package = pkgs.firefox-extensions.browserpass-extension.withoutPermission "notifications";
           enable = lib.mkDefault true;
         };
         # TODO: add bypass-paywalls-clean (build from source)

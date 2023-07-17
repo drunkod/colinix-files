@@ -1,18 +1,70 @@
-{ fetchFirefoxAddon
+{ stdenv
 , browserpass-extension
+, fetchFirefoxAddon
+, jq
+, strip-nondeterminism
+, unzip
+, writeScript
+, zip
 }:
 let
-  addon = name: extid: hash: fetchFirefoxAddon {
+  # given an addon, repackage it without some `perm`ission
+  removePermission = perm: addon:
+  let
+    extid = addon.passthru.extid;
+  in stdenv.mkDerivation {
+    # heavily borrows from <repo:nixos/nixpkgs:pkgs/build-support/fetchfirefoxaddon/default.nix>
+    inherit (addon) name;
+    passthru = {
+      inherit extid;
+      original = addon;
+    };
+    builder = writeScript "manifest-fixer" ''
+      source $stdenv/setup
+
+      UUID="${extid}"
+      echo "firefox addon $name into $out/$UUID.xpi, remove ${perm}"
+
+      # extract the XPI
+      mkdir -p "$out/$UUID"
+      unzip -q "${addon}/$UUID.xpi" -d "$out/$UUID"
+
+      # apply the operation
+      NEW_MANIFEST=$(jq 'del(.permissions[] | select(. == "${perm}"))' "$out/$UUID/manifest.json")
+      echo "$NEW_MANIFEST" > "$out/$UUID/manifest.json"
+
+      # repackage the XPI
+      cd "$out/$UUID"
+      zip -r -q -FS "$out/$UUID.xpi" *
+      strip-nondeterminism "$out/$UUID.xpi"
+      rm -r "$out/$UUID"
+    '';
+
+    nativeBuildInputs = [
+      jq
+      strip-nondeterminism
+      unzip
+      zip
+    ];
+  };
+  # given an addon, add a `passthru.withoutPermission` method for further configuration
+  mkConfigurable = pkg: pkg.overrideAttrs (final: upstream: {
+    passthru = (upstream.passthru or {}) // {
+      withoutPermission = perm: mkConfigurable (removePermission perm final.finalPackage);
+    };
+  });
+
+  addon = name: extid: hash: mkConfigurable (fetchFirefoxAddon {
     inherit name hash;
     url = "https://addons.mozilla.org/firefox/downloads/latest/${name}/latest.xpi";
     # extid can be found by unar'ing the above xpi, and copying browser_specific_settings.gecko.id field
     fixedExtid = extid;
-  };
-  localAddon = pkg: fetchFirefoxAddon {
+  });
+  localAddon = pkg: mkConfigurable (fetchFirefoxAddon {
     inherit (pkg) name;
     src = "${pkg}/share/mozilla/extensions/\\{ec8030f7-c20a-464f-9b0e-13a3a9e97384\\}/${pkg.extid}.xpi";
     fixedExtid = pkg.extid;
-  };
+  });
 in {
   # get names from:
   # - ~/ref/nix-community/nur-combined/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
