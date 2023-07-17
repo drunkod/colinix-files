@@ -9,15 +9,6 @@
 , zip
 }:
 let
-  # given an addon, repackage it without some `perm`ission
-  removePermission = perm: addon: mkPatchedAddon addon {
-    patchPhase = ''
-      NEW_MANIFEST=$(jq 'del(.permissions[] | select(. == "${perm}"))' manifest.json)
-      echo "$NEW_MANIFEST" > manifest.json
-    '';
-    nativeBuildInputs = [ jq ];
-  };
-
   mkPatchedAddon = addon: args:
   let
     extid = addon.passthru.extid;
@@ -58,7 +49,13 @@ let
   # given an addon, add a `passthru.withoutPermission` method for further configuration
   mkConfigurable = pkg: pkg.overrideAttrs (final: upstream: {
     passthru = (upstream.passthru or {}) // {
-      withoutPermission = perm: mkConfigurable (removePermission perm final.finalPackage);
+      withAttrs = attrs: mkConfigurable (mkPatchedAddon final.finalPackage attrs);
+      withPatchPhase = patchPhase: final.passthru.withAttrs { inherit patchPhase; };
+      # given an addon, repackage it without some `perm`ission
+      withoutPermission = perm: final.passthru.withPatchPhase ''
+        NEW_MANIFEST=$(${jq}/bin/jq 'del(.permissions[] | select(. == "${perm}"))' manifest.json)
+        echo "$NEW_MANIFEST" > manifest.json
+      '';
     };
   });
 
@@ -80,7 +77,9 @@ in {
   #
   # TODO: give these updateScript's
 
-  browserpass-extension = localAddon (callPackage ./browserpass-extension { });
+  browserpass-extension =
+    (localAddon (callPackage ./browserpass-extension { }))
+    .withoutPermission "notifications";
 
   # TODO: build bypass-paywalls from source? it's mysteriously disappeared from the Mozilla store.
   # bypass-paywalls-clean.package = addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-oUwdqdAwV3DezaTtOMx7A/s4lzIws+t2f08mwk+324k=";
@@ -90,17 +89,15 @@ in {
   ether-metamask = addon "ether-metamask" "webextension@metamask.io" "sha256-UI83wUUc33OlQYX+olgujeppoo2D2PAUJ+Wma5mH2O0=";
   i2p-in-private-browsing = addon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io" "sha256-dJcJ3jxeAeAkRvhODeIVrCflvX+S4E0wT/PyYzQBQWs=";
   sidebery = addon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}" "sha256-YONfK/rIjlsrTgRHIt3km07Q7KnpIW89Z9r92ZSCc6w=";
-  sponsorblock = mkPatchedAddon
+  sponsorblock =
     (addon "sponsorblock" "sponsorBlocker@ajay.app" "sha256-b/OTFmhSEUZ/CYrYCE4rHVMQmY+Y78k8jSGMoR8vsZA=")
-    {
-      patchPhase = ''
-        # patch sponsorblock to not show the help tab on first launch.
-        # XXX: i tried to build sponsorblock from source and patch this *before* it gets webpack'd,
-        # but web shit is absolutely cursed and building from source requires a fucking PhD
-        # (if you have one, feel free to share your nix package)
-        ${gnused}/bin/sed -i 's/default\.config\.userID)/default.config.userID && false)/' js/background.js
-      '';
-    };
+    .withPatchPhase ''
+      # patch sponsorblock to not show the help tab on first launch.
+      # XXX: i tried to build sponsorblock from source and patch this *before* it gets webpack'd,
+      # but web shit is absolutely cursed and building from source requires a fucking PhD
+      # (if you have one, feel free to share your nix package)
+      ${gnused}/bin/sed -i 's/default\.config\.userID)/default.config.userID && false)/' js/background.js
+    '';
   ublacklist = addon "ublacklist" "@ublacklist" "sha256-NZ2FmgJiYnH7j2Lkn0wOembxaEphmUuUk0Ytmb0rNWo=";
   ublock-origin = addon "ublock-origin" "uBlock0@raymondhill.net" "sha256-EGGAA+cLUow/F5luNzFG055rFfd3rEyh8hTaL/23pbM=";
 }
