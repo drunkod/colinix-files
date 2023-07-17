@@ -195,10 +195,6 @@ in {
     # configure: error: no acceptable C compiler found in $PATH
     inherit (emulated) stdenv;
   };
-  browserpass-extension = prev.browserpass-extension.override {
-    # bash: line 1: node_modules/.bin/prettier: cannot execute: required file not found
-    inherit (emulated) mkYarnModules;
-  };
   cantarell-fonts = prev.cantarell-fonts.override {
     # fixes error where python3.10-skia-pathops dependency isn't available for the build platform
     inherit (emulated) stdenv;
@@ -295,6 +291,15 @@ in {
     # fixes -msse2, -mfpmath=sse flags
     wrapGAppsHook4 = final.wrapGAppsHook;
   };
+
+  firefox-extensions = prev.firefox-extensions.overrideScope' (self: super: {
+    unwrapped = super.unwrapped // {
+      browserpass-extension = super.unwrapped.browserpass-extension.override {
+        # bash: line 1: node_modules/.bin/prettier: cannot execute: required file not found
+        inherit (emulated) mkYarnModules;
+      };
+    };
+  });
 
   flatpak = prev.flatpak.overrideAttrs (upstream: {
     # fixes "No package 'libxml-2.0' found"
