@@ -4,6 +4,7 @@
 , gnused
 , jq
 , lib
+, newScope
 , strip-nondeterminism
 , unzip
 , writeScript
@@ -79,8 +80,7 @@ let
     # extid can be found by unar'ing the above xpi, and copying browser_specific_settings.gecko.id field
     passthru = { inherit extid; };
   };
-in rec {
-  # TODO: make this a scope, so it can be override'able
+in lib.makeScope newScope (self: with self; {
   unwrapped = lib.recurseIntoAttrs {
     # get names from:
     # - ~/ref/nix-community/nur-combined/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
@@ -116,5 +116,4 @@ in rec {
 
   ublacklist = wrapAddon unwrapped.ublacklist {};
   ublock-origin = wrapAddon unwrapped.ublock-origin {};
-
-}
+})
