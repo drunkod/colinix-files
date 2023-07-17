@@ -215,13 +215,6 @@ in [
     hash = "sha256-lXuLHdSPhWol9X5QX4cxnZqoVGUWEQTCZLmosvLX+WY=";
   })
 
-  (fetchpatch' {
-    title = "nixos/trust-dns: init";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/243244";
-    saneCommit = "64645a696a48bc9610f306de75f73bab8aaefd7a";
-    hash = "sha256-9da3/igzSb8puEcUMGStOvo92yCfAWEaBK7IDEDuQs0=";
-  })
-
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
   #   title = "matrix-appservice-irc: 0.38.0 -> 1.0.0";
