@@ -9,32 +9,39 @@
 }:
 let
   # given an addon, repackage it without some `perm`ission
-  removePermission = perm: addon:
+  removePermission = perm: addon: mkPatchedAddon addon {
+    patchPhase = ''
+      NEW_MANIFEST=$(jq 'del(.permissions[] | select(. == "${perm}"))' "$out/$UUID/manifest.json")
+      echo "$NEW_MANIFEST" > "$out/$UUID/manifest.json"
+    '';
+    nativeBuildInputs = [ jq ];
+  };
+
+  mkPatchedAddon = addon: args:
   let
     extid = addon.passthru.extid;
-  in stdenv.mkDerivation {
+    # merge our requirements into the derivation args
+    args' = args // {
+      passthru = {
+        inherit extid;
+        original = addon;
+      } // (args.passthru or {});
+      nativeBuildInputs = [
+        strip-nondeterminism
+        unzip
+        zip
+      ] ++ (args.nativeBuildInputs or []);
+    };
+  in stdenv.mkDerivation ({
     # heavily borrows from <repo:nixos/nixpkgs:pkgs/build-support/fetchfirefoxaddon/default.nix>
     inherit (addon) name;
-    passthru = {
-      inherit extid;
-      original = addon;
-    };
     unpackPhase = ''
       UUID="${extid}"
-      echo "firefox addon $name into $out/$UUID.xpi, remove ${perm}"
+      echo "patching firefox addon $name into $out/$UUID.xpi"
 
       # extract the XPI
       mkdir -p "$out/$UUID"
       unzip -q "${addon}/$UUID.xpi" -d "$out/$UUID"
-    '';
-
-    patchPhase = ''
-      runHook prePatch
-
-      NEW_MANIFEST=$(jq 'del(.permissions[] | select(. == "${perm}"))' "$out/$UUID/manifest.json")
-      echo "$NEW_MANIFEST" > "$out/$UUID/manifest.json"
-
-      runHook postPatch
     '';
 
     installPhase = ''
@@ -48,14 +55,7 @@ let
 
       runHook postInstall
     '';
-
-    nativeBuildInputs = [
-      jq
-      strip-nondeterminism
-      unzip
-      zip
-    ];
-  };
+  } // args');
   # given an addon, add a `passthru.withoutPermission` method for further configuration
   mkConfigurable = pkg: pkg.overrideAttrs (final: upstream: {
     passthru = (upstream.passthru or {}) // {
