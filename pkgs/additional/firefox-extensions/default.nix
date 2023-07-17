@@ -19,25 +19,34 @@ let
       inherit extid;
       original = addon;
     };
-    builder = writeScript "manifest-fixer" ''
-      source $stdenv/setup
-
+    unpackPhase = ''
       UUID="${extid}"
       echo "firefox addon $name into $out/$UUID.xpi, remove ${perm}"
 
       # extract the XPI
       mkdir -p "$out/$UUID"
       unzip -q "${addon}/$UUID.xpi" -d "$out/$UUID"
+    '';
 
-      # apply the operation
+    patchPhase = ''
+      runHook prePatch
+
       NEW_MANIFEST=$(jq 'del(.permissions[] | select(. == "${perm}"))' "$out/$UUID/manifest.json")
       echo "$NEW_MANIFEST" > "$out/$UUID/manifest.json"
+
+      runHook postPatch
+    '';
+
+    installPhase = ''
+      runHook preInstall
 
       # repackage the XPI
       cd "$out/$UUID"
       zip -r -q -FS "$out/$UUID.xpi" *
       strip-nondeterminism "$out/$UUID.xpi"
       rm -r "$out/$UUID"
+
+      runHook postInstall
     '';
 
     nativeBuildInputs = [
