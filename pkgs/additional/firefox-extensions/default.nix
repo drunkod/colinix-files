@@ -1,5 +1,5 @@
 { stdenv
-, browserpass-extension
+, callPackage
 , fetchFirefoxAddon
 , jq
 , strip-nondeterminism
@@ -72,7 +72,7 @@ in {
   #
   # TODO: give these updateScript's
 
-  browserpass-extension = localAddon browserpass-extension;
+  browserpass-extension = localAddon (callPackage ./browserpass-extension { });
 
   # TODO: build bypass-paywalls from source? it's mysteriously disappeared from the Mozilla store.
   # bypass-paywalls-clean.package = addon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-oUwdqdAwV3DezaTtOMx7A/s4lzIws+t2f08mwk+324k=";
