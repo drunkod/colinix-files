@@ -17,6 +17,7 @@ in {
           "[](#9A348E)"
           "$os"
           "$username"
+          "$hostname"
           "[](bg:#DA627D fg:#9A348E)"
           "$directory"
           "[](fg:#DA627D bg:#FCA17D)"
@@ -37,9 +38,12 @@ in {
         # os.symbols.NixOS = "❄️";  # removes the space after logo
 
         # TODO: tune foreground color of username
-        username.style_user = "bold bg:#9A348E";
+        username.style_user = "bg:#9A348E";
         username.style_root = "bold bg:#9A348E";
         username.format = "[$user]($style)";
+
+        hostname.style = "bold bg:#9A348E";
+        hostname.format = "[$ssh_symbol$hostname]($style)";
 
         directory.style = "bg:#DA627D fg:#ffffff";
         directory.format = "[ $path ]($style)";
