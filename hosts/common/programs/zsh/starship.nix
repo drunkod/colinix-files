@@ -55,13 +55,13 @@ in {
         git_status.style = "bold bg:#FCA17D fg:#ffffff";
         # git_status.style = "bg:#FF8262";
         git_status.format = "[$all_status$ahead_behind ]($style)";
-        git_status.untracked = "";
-        git_status.stashed = "";
-        git_status.modified = "*";
-        git_status.behind = "⇣$count";
         git_status.ahead = "⇡$count";
+        git_status.behind = "⇣$count";
         # git_status.diverged = "⇣$behind_count⇡$ahead_count";
         git_status.diverged = "⇡$ahead_count⇣$behind_count";
+        git_status.modified = "*";
+        git_status.stashed = "";
+        git_status.untracked = "";
 
 
         time.disabled = true;
@@ -71,14 +71,16 @@ in {
 
         status.disabled = false;
         status.style = "bg:#33658A";
-        # success_symbol = "♥ ";
-        # success_symbol = "💖";
-        # success_symbol = "💙";
-        # success_symbol = "💚";
-        # success_symbol = "💜";
-        # success_symbol = "✔️'";
+        # status.success_symbol = "♥ ";
+        # status.success_symbol = "💖";
+        # status.success_symbol = "💙";
+        # status.success_symbol = "💚";
+        # status.success_symbol = "💜";
+        # status.success_symbol = "✔️'";
         status.success_symbol = "";
         status.symbol = "❌";
+        # status.symbol = "❗️";
+        # status.symbol = "‼️";
         status.format = "[$symbol]($style)";
       };
     };
