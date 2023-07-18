@@ -49,10 +49,10 @@ in {
         # TODO: tune foreground color of username
         username.style_user = "bg:${colors._01_purple}";
         username.style_root = "bold bg:${colors._01_purple}";
-        username.format = "[$user]($style)";
+        username.format = "[$user ]($style)";
 
         hostname.style = "bold bg:${colors._01_purple}";
-        hostname.format = "[$ssh_symbol$hostname]($style)";
+        hostname.format = "[$ssh_symbol$hostname ]($style)";
 
         directory.style = "bg:${colors._02_pink} fg:#ffffff";
         directory.format = "[ $path ]($style)";
