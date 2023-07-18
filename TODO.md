@@ -64,10 +64,6 @@
   - could change junk filter from "no DKIM success" to explicit "DKIM failed"
 
 ### perf
-- why does zsh take so long to init?
-    - try using Starship prompt instead? <https://starship.rs/>
-      - supports git-status stuff too
-      - can probably displace all of the powerlevel10k stuff
 - why does nixos-rebuild switch take 5 minutes when net is flakey?
     - trying to auto-mount servo?
     - something to do with systemd services restarting/stalling
