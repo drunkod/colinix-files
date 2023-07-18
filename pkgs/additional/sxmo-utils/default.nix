@@ -9,6 +9,7 @@
 , gitUpdater
 , gnugrep
 , gojq
+, grim
 , inotify-tools
 , j4-dmenu-desktop
 , jq
@@ -46,6 +47,7 @@ let
     # dmenu  # or dmenu-wayland? only used on x11?
     gnugrep
     gojq
+    grim
     inotify-tools
     j4-dmenu-desktop
     jq
