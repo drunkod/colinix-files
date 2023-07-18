@@ -46,8 +46,6 @@
 ### user experience
 - neovim: set up language server (lsp; rnix-lsp; nvim-lspconfig)
 - Helix: make copy-to-system clipboard be the default
-- Sway: use <Super> instead of <Alt>, so that <Alt> can be used by applications
-- firefox/librewolf: don't show browserpass/sponsorblock/metamask "first run" on every boot
 - firefox/librewolf: persist history
   - just not cookies or tabs
 - moby: improve gPodder launch time
