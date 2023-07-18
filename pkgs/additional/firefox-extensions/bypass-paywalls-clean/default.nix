@@ -14,6 +14,12 @@ stdenv.mkDerivation rec {
     hash = "sha256-FkAqzJisPdBiElX9ceQS3zfg8zwrsozOquHDagiRKiE=";
   };
 
+  patches = [
+    ./0001-dont-show-options.patch
+    ./0002-disable-auto-update.patch
+    ./0003-disable-metrics.patch
+  ];
+
   installPhase = ''
     ${zip}/bin/zip -r $out ./*
   '';
