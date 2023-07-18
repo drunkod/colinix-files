@@ -349,14 +349,17 @@ in {
     wrapGAppsHook4 = final.wrapGAppsHook;
   };
   gnustep = prev.gnustep.overrideScope' (self: super: {
-    # "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings."
     # gnustep is going to need a *lot* of work/domain-specific knowledge to truly cross-compile,
-    base = emulated.gnustep.base;
-    # base = super.base.override {
-    #   # emulating gsmake amounts to emulating stdenv.
-    #   # still fails, but with "checking FFI library usage... ./configure: line 11028: pkg-config: command not found"
-    #   inherit (emulated.gnustep) gsmakeDerivation;
-    # };
+    # base = emulated.gnustep.base;
+    base = (super.base.override {
+      # fixes: "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings."
+      # emulating gsmake amounts to emulating stdenv.
+      inherit (emulated.gnustep) gsmakeDerivation;
+    }).overrideAttrs (upstream: {
+      # fixes: "checking FFI library usage... ./configure: line 11028: pkg-config: command not found"
+      # nixpkgs has this in nativeBuildInputs... but that's failing when we partially emulate things.
+      buildInputs = (upstream.buildInputs or []) ++ [ prev.pkg-config ];
+    });
   });
   gthumb = mvInputs { nativeBuildInputs = [ final.glib ]; } prev.gthumb;
 
