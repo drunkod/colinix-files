@@ -35,12 +35,12 @@ in
       };
       p10k = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = "enable powerlevel10k prompt and prezto";
       };
       starship = mkOption {
         type = types.bool;
-        default = false;
+        default = true;
         description = "enable starship prompt";
       };
     };
