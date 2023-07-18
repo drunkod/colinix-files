@@ -1063,7 +1063,7 @@ in {
   #     inherit (emulated.qt5) qtModule;
   #   };
   # });
-  qt5 = emulated.qt5.overrideScope' (self: super: {
+  qt5 = emulated.qt5.overrideScope (self: super: {
     # emulate all the qt5 packages, but rework `libsForQt5.callPackage` and `mkDerivation`
     # to use non-emulated stdenv by default.
     mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
