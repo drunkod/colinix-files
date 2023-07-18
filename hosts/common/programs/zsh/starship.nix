@@ -36,6 +36,11 @@ in {
         os.disabled = false;
         # os.symbols.NixOS = "❄️";  # removes the space after logo
 
+        # TODO: tune foreground color of username
+        username.style_user = "bold bg:#9A348E";
+        username.style_root = "bold bg:#9A348E";
+        username.format = "[$user]($style)";
+
         directory.style = "bg:#DA627D fg:#ffffff";
         directory.format = "[ $path ]($style)";
         directory.truncation_length = 3;
