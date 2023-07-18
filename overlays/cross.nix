@@ -72,10 +72,6 @@ in {
     # duplicity  # python3.10-s3transfer
     # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
     # gnome-tour
-    # XXX: gnustep members aren't individually overridable, because the "scope" uses `rec` such that members don't see overrides
-    # gnustep is going to need a *lot* of work/domain-specific knowledge to truly cross-compile,
-    # though if we make the members overridable maybe we can get away with emulating only stdenv.
-    gnustep  # gnustep.base: "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings."
     # grpc
     hare
     harec
@@ -352,6 +348,16 @@ in {
     # fixes -msse2, -mfpmath=sse flags
     wrapGAppsHook4 = final.wrapGAppsHook;
   };
+  gnustep = prev.gnustep.overrideScope' (self: super: {
+    # "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings."
+    # gnustep is going to need a *lot* of work/domain-specific knowledge to truly cross-compile,
+    base = emulated.gnustep.base;
+    # base = super.base.override {
+    #   # emulating gsmake amounts to emulating stdenv.
+    #   # still fails, but with "checking FFI library usage... ./configure: line 11028: pkg-config: command not found"
+    #   inherit (emulated.gnustep) gsmakeDerivation;
+    # };
+  });
   gthumb = mvInputs { nativeBuildInputs = [ final.glib ]; } prev.gthumb;
 
   gnome = prev.gnome.overrideScope' (self: super: {
