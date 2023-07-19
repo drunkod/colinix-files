@@ -15,15 +15,20 @@
       rev = "6a1e5ba1c9ef81c205a4b270c3f121a1e106f4fc";
       hash = "sha256-H0HWR+hpAYLGbBdY3BwxgKPUrWhrIsVMnoURdbn8iIE=";
     };
-    # fbink = {  # weird nix/git clone error?
-    #   url = "https://github.com/NiLuJe/FBInk.git";
-    #   rev = "f562bc15a606524694a6d885bed5d83d03c7eb23";
-    # };
-    # freetype2 = {  # weird nix/git clone error?
-    #   url = "https://gitlab.com/koreader/freetype2.git";
-    #   # rev = "VER-2-13-1";
-    #   rev = "e4586d960f339cf75e2e0b34aee30a0ed8353c0d";
-    # };
+    fbink = {
+      url = "https://github.com/NiLuJe/FBInk.git";
+      rev = "f562bc15a606524694a6d885bed5d83d03c7eb23";
+      hash = "sha256-JlanCl4XQBFnrpRIEsowSeUI7wSa9RoQc5h3pkMHXA8=";
+      leaveDotGit = false;
+      deepClone = false;
+    };
+    freetype2 = {
+      url = "https://gitlab.com/koreader/freetype2.git";
+      rev = "VER-2-13-1";
+      hash = "sha256-rQN+hRzrs+KGgp8+n1VJzOOwtKUcRuSE/s/r8/xOUdI=";
+      leaveDotGit = false;
+      deepClone = false;
+    };
     fribidi = {
       url = "https://github.com/fribidi/fribidi.git";
       rev = "tags/v1.0.12";
