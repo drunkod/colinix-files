@@ -18,6 +18,12 @@
       hash = "sha256-H0HWR+hpAYLGbBdY3BwxgKPUrWhrIsVMnoURdbn8iIE=";
       name = "djvulibre";
     }
+    {
+      url = "https://github.com/glennrp/libpng.git";
+      rev = "v1.6.40";
+      hash = "sha256-/994yXMCaX0fVYH94oPPtwc8VDgZNMKXeGUyHd5H3KI=";
+      name = "libpng";
+    }
   ];
 
   externalProjects = {
