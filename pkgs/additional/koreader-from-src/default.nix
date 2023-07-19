@@ -35,11 +35,15 @@ stdenv.mkDerivation rec {
       # hash = "sha256-gdf7AUTpIJ6T4H915YqRG1WzxYHrGmzX6X4dMriWzRA=";
       name = "koreader";
     })
-  ] ++ (builtins.map (s: fetchgit {
-    inherit (s) url rev hash name;
-    leaveDotGit = true;  # maybe not needed, but we'd need another way to query the rev during build process below
-    deepClone = true;  # probably not needed
-  }) sources.thirdparty);
+  ] ++ (builtins.map
+    (s: fetchgit (
+      {
+        leaveDotGit = true;  # maybe not needed, but we'd need another way to query the rev during build process below
+        deepClone = true;  # probably not needed
+      } // s
+    ))
+    sources.thirdparty
+  );
 
   patches = [
     (substituteAll (
