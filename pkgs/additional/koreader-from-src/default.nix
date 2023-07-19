@@ -39,8 +39,6 @@ stdenv.mkDerivation rec {
     (name: src: fetchgit (
       {
         inherit name;
-        leaveDotGit = true;  # maybe not needed, but we'd need another way to query the rev during build process below
-        deepClone = true;  # probably not needed
       } // src // {
         # koreader sometimes specifies the rev as `tags/FOO`.
         # we need to remember that to place the repo where it expects, but we have to strip it here for fetchgit to succeed.
