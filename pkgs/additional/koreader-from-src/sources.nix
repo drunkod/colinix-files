@@ -24,12 +24,11 @@
     #   # rev = "VER-2-13-1";
     #   rev = "e4586d960f339cf75e2e0b34aee30a0ed8353c0d";
     # };
-    # fribidi = {  # TODO
-    #   url = "https://github.com/fribidi/fribidi.git";
-    #   rev = "tags/v1.0.12";
-    #   rev = "6428d8469e536bcbb6e12c7b79ba6659371c435a";
-    #   hash = "sha256-FxeJa9u5PB4jsoI+yCfdx3w1jPoUBKkRkMfVi6ljM3c=";
-    # };
+    fribidi = {
+      url = "https://github.com/fribidi/fribidi.git";
+      rev = "tags/v1.0.12";
+      hash = "sha256-RXi3i+vA0PCbBj4s4FtYydU4dN7+vwCZBxG1oVIRtlw=";
+    };
     leptonica = {
       url = "https://github.com/DanBloomberg/leptonica.git";
       rev = "1.74.1";
