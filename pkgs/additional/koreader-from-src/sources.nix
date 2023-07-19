@@ -24,6 +24,18 @@
       hash = "sha256-/994yXMCaX0fVYH94oPPtwc8VDgZNMKXeGUyHd5H3KI=";
       name = "libpng";
     }
+    {
+      url = "https://github.com/tesseract-ocr/tesseract.git";
+      rev = "60176fc5ae5e7f6bdef60c926a4b5ea03de2bfa7";
+      hash = "sha256-xPhXnMdJJFL0UPAzOWUyx2l4lfjVU154/WgbStq9RDo=";
+      name = "tesseract";
+    }
+    {
+      url = "https://github.com/DanBloomberg/leptonica.git";
+      rev = "1.74.1";
+      hash = "sha256-vpgKAPBMQpbF2iCvtX8V+RQ9ynjpWRKN22fOehWxHNE=";
+      name = "leptonica";
+    }
   ];
 
   externalProjects = {
