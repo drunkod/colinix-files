@@ -35,9 +35,40 @@
       rev = "60b82eeecf71d1776951da970fe8cd2cc5735ded";
       hash = "sha256-JKf6vA5S7VNqk4GzOaX5k1OgAd0vLmoTXusAzR6Otto=";
     };
+    zstd = {
+      url = "https://github.com/facebook/zstd.git";
+      rev = "tags/v1.5.5";
+      hash = "sha256-cxoBEwrCA1qrH8o5l0PvKJDcr2M4z1Ek76MISeToENE=";
+    };
+    curl = {
+      url = "https://github.com/curl/curl.git";
+      rev = "tags/curl-7_80_0";
+      hash = "sha256-ivlhyCAOzaHw5H3tizKYdArSiueH3NPHRG6Jssy2UuE=";
+    };
+    czmq = {
+      url = "https://github.com/zeromq/czmq.git";
+      rev = "2a0ddbc4b2dde623220d7f4980ddd60e910cfa78";
+      hash = "sha256-FxeJa9u5PB4jsoI+yCfdx2w1jPoUBKkRkMfVi6ljM3c=";
+    };
+    # fbink = {  # weird nix/git clone error?
+    #   url = "https://github.com/NiLuJe/FBInk.git";
+    #   rev = "f562bc15a606524694a6d885bed5d83d03c7eb23";
+    # };
+    # freetype2 = {  # weird nix/git clone error?
+    #   url = "https://gitlab.com/koreader/freetype2.git";
+    #   # rev = "VER-2-13-1";
+    #   rev = "e4586d960f339cf75e2e0b34aee30a0ed8353c0d";
+    # };
+    # fribidi = {  # TODO
+    #   url = "https://github.com/fribidi/fribidi.git";
+    #   rev = "tags/v1.0.12";
+    #   rev = "6428d8469e536bcbb6e12c7b79ba6659371c435a";
+    #   hash = "sha256-FxeJa9u5PB4jsoI+yCfdx3w1jPoUBKkRkMfVi6ljM3c=";
+    # };
   };
 
   externalProjects = {
+    # dropbear = TODO
     zlib = {
       url = "http://gentoo.osuosl.org/distfiles/zlib-1.2.13.tar.xz";
       hash = "sha256-0Uw44xOvw1qah2Da3yYEL1HqD10VSwYwox2gVAEH+5g=";

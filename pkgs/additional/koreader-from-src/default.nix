@@ -103,7 +103,8 @@ stdenv.mkDerivation rec {
       # the logic we're spoofing lives in koreader/base/thirdparty/cmake_modules/koreader_thirdparty_git.cmake
       stamp_dir="base/thirdparty/$lib/build/x86_64-unknown-linux-gnu/git_checkout/stamp"
       echo "creating stamp in $stamp_dir for rev $rev"
-      mkdir -p "$stamp_dir"
+      # mkdir $(dirname ..) to handle the case where `$rev` contains slashes
+      mkdir -p $(dirname "$stamp_dir/$lib-gitinfo-$rev.txt")
       # koreader-base decides whether to redo the git checkout based on a timestamp compare of these two stamp files
       touch -d "last week" "$stamp_dir/$lib-gitinfo-$rev.txt"
       touch -d "next week" "$stamp_dir/$lib-gitclone-lastrun.txt"
