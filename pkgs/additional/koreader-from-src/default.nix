@@ -13,9 +13,11 @@
 , gnutar
 , gtk3-x11
 , luajit
+, pkg-config
 , sdcv
 , SDL2
 , substituteAll
+, which
 }:
 let
   luajit_lua52 = luajit.override { enable52Compat = true; };
@@ -69,6 +71,8 @@ stdenv.mkDerivation rec {
     git
     libtool
     makeWrapper
+    pkg-config
+    which
     # luajit_lua52.pkgs.luarocks
   ];
   buildInputs = [
