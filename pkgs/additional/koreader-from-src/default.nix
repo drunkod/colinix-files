@@ -35,12 +35,13 @@ stdenv.mkDerivation rec {
       # hash = "sha256-gdf7AUTpIJ6T4H915YqRG1WzxYHrGmzX6X4dMriWzRA=";
       name = "koreader";
     })
-  ] ++ (builtins.map
-    (s: fetchgit (
+  ] ++ (lib.mapAttrsToList
+    (name: src: fetchgit (
       {
+        inherit name;
         leaveDotGit = true;  # maybe not needed, but we'd need another way to query the rev during build process below
         deepClone = true;  # probably not needed
-      } // s
+      } // src
     ))
     sources.thirdparty
   );
@@ -117,8 +118,8 @@ stdenv.mkDerivation rec {
       chmod u+w -R "$prefix/src/$lib"
     }
 
-  '' + builtins.concatStringsSep "\n" (builtins.map
-    (l: ''install_lib "${l.name}" "${l.rev}"'')
+  '' + builtins.concatStringsSep "\n" (lib.mapAttrsToList
+    (name: src: ''install_lib "${name}" "${src.rev}"'')
     sources.thirdparty
   ) + ''
 
