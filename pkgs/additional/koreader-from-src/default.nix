@@ -11,20 +11,9 @@
 , luajit
 , sdcv
 , SDL2
-, writeText
 }:
 let
   luajit_lua52 = luajit.override { enable52Compat = true; };
-  luajit-stamp = writeText "luajit-stamp" ''
-    # This is a generated file and its contents are an internal implementation detail.
-    # The download step will be re-executed if anything in this file changes.
-    # No other meaning or use of this file is supported.
-
-    method=
-    command=
-    source_dir=
-    work_dir=/build/koreader/base/thirdparty/luajit/build/x86_64-unknown-linux-gnu/git_checkout
-  '';
 in
 stdenv.mkDerivation rec {
   pname = "koreader-from-src";
@@ -48,8 +37,8 @@ stdenv.mkDerivation rec {
       # rev = "224129a8e64bfa219d35cd03055bf03952f167f6";
       # hash = "sha256-ZxGRpUO9NYjC2fL0P24FOxui27xSvN4TA8r9Gukvfn8=";
       name = "thirdparty-luajit";
-      leaveDotGit = true;
-      deepClone = true;
+      leaveDotGit = true;  # maybe not needed, but we'd need another way to query the rev during build process below
+      deepClone = true;  # probably not needed
     })
   ];
 
@@ -75,8 +64,7 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     for l in $(ls .. | grep thirdparty- | sed 's/thirdparty-//')
     do
-      deref=$(realpath "../thirdparty-$l")
-      # deref="$PWD/../thirdparty-$l"
+      lib_src="../thirdparty-$l"
 
       # link the nix clone into the directory koreader would use for checkout
       # ref="base/thirdparty/$l/build/git_checkout"
@@ -88,23 +76,29 @@ stdenv.mkDerivation rec {
       # needs to be writable for koreader to checkout it specific revision
       # chmod u+w -R "$ref/$l/.git"
 
+      # koreader wants to clone each library into this git_checkout dir,
+      # then checkout a specific revision,
+      # and then copy that checkout into the build/working directory further down.
+      # instead, we replicate that effect here, and by creating these "stamp" files
+      # koreader will know to skip the `git clone` and `git checkout` calls.
+      # the logic we're spoofing lives in koreader/base/thirdparty/cmake_modules/koreader_thirdparty_git.cmake
+      stamp_dir="base/thirdparty/$l/build/x86_64-unknown-linux-gnu/git_checkout/stamp"
+      rev=$(cat "$lib_src/.git/shallow")
+      echo "creating stamp in $stamp_dir for rev $rev"
+      mkdir -p "$stamp_dir"
+      # koreader-base decides whether to redo the git checkout based on a timestamp compare of these two stamp files
+      touch -d "last week" "$stamp_dir/$l-gitinfo-$rev.txt"
+      touch -d "next week" "$stamp_dir/$l-gitclone-lastrun.txt"
+
       # koreader would copy the checkout into this build/working directory,
       # but because we spoof the stamps to work around other git errors,
       # copy it there on koreader's behalf
       prefix="base/thirdparty/$l/build/x86_64-unknown-linux-gnu/$l-prefix"
       mkdir -p "$prefix/src"
-      cp -R "$deref" "$prefix/src/$l"
+      cp -R "$lib_src" "$prefix/src/$l"
       # src dir needs to be writable for koreader to apply its own patches
       chmod u+w -R "$prefix/src/$l"
     done
-
-    # TODO: move this into the above loop, but we need to be able to read the commit dynamically
-    echo "copying ${luajit-stamp}"
-    mkdir -p "base/thirdparty/luajit/build/x86_64-unknown-linux-gnu/git_checkout/stamp"
-    cp "${luajit-stamp}" "base/thirdparty/luajit/build/x86_64-unknown-linux-gnu/git_checkout/stamp/luajit-gitinfo-8635cbabf3094c4d8bd00578c7d812bea87bb2d3.txt"
-    cp "${luajit-stamp}" "base/thirdparty/luajit/build/x86_64-unknown-linux-gnu/git_checkout/stamp/luajit-gitclone-lastrun.txt"
-    # koreader-base decides whether to redo the git checkout based on a timestamp compare of these two stamp files
-    touch -d "next week" "base/thirdparty/luajit/build/x86_64-unknown-linux-gnu/git_checkout/stamp/luajit-gitclone-lastrun.txt"
 
     make TARGET=debian DEBIAN=1 INSTALL_DIR="$out" SHELL=sh VERBOSE=1
   '';
