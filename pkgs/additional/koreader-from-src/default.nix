@@ -1,8 +1,12 @@
 { lib, stdenv
+, autoconf
+, automake
 , cmake
 , fetchurl
 , git
+, libtool
 , makeWrapper
+, fetchgit
 , fetchFromGitHub
 , dpkg
 , glib
@@ -14,6 +18,7 @@
 }:
 let
   luajit_lua52 = luajit.override { enable52Compat = true; };
+  thirdparty = import ./sources.nix;
 in
 stdenv.mkDerivation rec {
   pname = "koreader-from-src";
@@ -29,25 +34,21 @@ stdenv.mkDerivation rec {
       # hash = "sha256-gdf7AUTpIJ6T4H915YqRG1WzxYHrGmzX6X4dMriWzRA=";
       name = "koreader";
     })
-    (fetchFromGitHub {
-      repo = "LuaJIT";
-      owner = "LuaJIT";
-      rev = "8635cbabf3094c4d8bd00578c7d812bea87bb2d3";
-      hash = "sha256-os10rjBacalpDw2TkF/LEFL6xiQJkWCr+yqrY6XgSZo=";
-      # rev = "224129a8e64bfa219d35cd03055bf03952f167f6";
-      # hash = "sha256-ZxGRpUO9NYjC2fL0P24FOxui27xSvN4TA8r9Gukvfn8=";
-      name = "thirdparty-luajit";
-      leaveDotGit = true;  # maybe not needed, but we'd need another way to query the rev during build process below
-      deepClone = true;  # probably not needed
-    })
-  ];
+  ] ++ (builtins.map (s: fetchgit {
+    inherit (s) url rev hash name;
+    leaveDotGit = true;  # maybe not needed, but we'd need another way to query the rev during build process below
+    deepClone = true;  # probably not needed
+  }) thirdparty);
 
   sourceRoot = "koreader";
 
   nativeBuildInputs = [
-    cmake
+    autoconf  # autotools is used by some thirdparty libraries
+    automake
+    cmake  # for koreader/base submodule
     dpkg
     git
+    libtool
     makeWrapper
     # luajit_lua52.pkgs.luarocks
   ];
@@ -62,9 +63,10 @@ stdenv.mkDerivation rec {
 
   dontConfigure = true;
   buildPhase = ''
-    for l in $(ls .. | grep thirdparty- | sed 's/thirdparty-//')
-    do
-      lib_src="../thirdparty-$l"
+    install_lib() {
+      lib="$1"
+      rev="$2"
+      lib_src="../$lib"
 
       # link the nix clone into the directory koreader would use for checkout
       # ref="base/thirdparty/$l/build/git_checkout"
@@ -82,23 +84,27 @@ stdenv.mkDerivation rec {
       # instead, we replicate that effect here, and by creating these "stamp" files
       # koreader will know to skip the `git clone` and `git checkout` calls.
       # the logic we're spoofing lives in koreader/base/thirdparty/cmake_modules/koreader_thirdparty_git.cmake
-      stamp_dir="base/thirdparty/$l/build/x86_64-unknown-linux-gnu/git_checkout/stamp"
-      rev=$(cat "$lib_src/.git/shallow")
+      stamp_dir="base/thirdparty/$lib/build/x86_64-unknown-linux-gnu/git_checkout/stamp"
       echo "creating stamp in $stamp_dir for rev $rev"
       mkdir -p "$stamp_dir"
       # koreader-base decides whether to redo the git checkout based on a timestamp compare of these two stamp files
-      touch -d "last week" "$stamp_dir/$l-gitinfo-$rev.txt"
-      touch -d "next week" "$stamp_dir/$l-gitclone-lastrun.txt"
+      touch -d "last week" "$stamp_dir/$lib-gitinfo-$rev.txt"
+      touch -d "next week" "$stamp_dir/$lib-gitclone-lastrun.txt"
 
       # koreader would copy the checkout into this build/working directory,
       # but because we spoof the stamps to work around other git errors,
       # copy it there on koreader's behalf
-      prefix="base/thirdparty/$l/build/x86_64-unknown-linux-gnu/$l-prefix"
+      prefix="base/thirdparty/$lib/build/x86_64-unknown-linux-gnu/$lib-prefix"
       mkdir -p "$prefix/src"
-      cp -R "$lib_src" "$prefix/src/$l"
+      cp -R "$lib_src" "$prefix/src/$lib"
       # src dir needs to be writable for koreader to apply its own patches
-      chmod u+w -R "$prefix/src/$l"
-    done
+      chmod u+w -R "$prefix/src/$lib"
+    }
+
+  '' + builtins.concatStringsSep "\n" (builtins.map
+    (l: ''install_lib "${l.name}" "${l.rev}"'')
+    thirdparty
+  ) + ''
 
     make TARGET=debian DEBIAN=1 INSTALL_DIR="$out" SHELL=sh VERBOSE=1
   '';
