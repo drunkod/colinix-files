@@ -36,6 +36,12 @@
       hash = "sha256-vpgKAPBMQpbF2iCvtX8V+RQ9ynjpWRKN22fOehWxHNE=";
       name = "leptonica";
     }
+    {
+      url = "https://github.com/koreader/libk2pdfopt.git";
+      rev = "60b82eeecf71d1776951da970fe8cd2cc5735ded";
+      hash = "sha256-JKf6vA5S7VNqk4GzOaX5k1OgAd0vLmoTXusAzR6Otto=";
+      name = "libk2pdfopt";
+    }
   ];
 
   externalProjects = {
