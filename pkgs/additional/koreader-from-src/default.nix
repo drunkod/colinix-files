@@ -15,10 +15,11 @@
 , luajit
 , sdcv
 , SDL2
+, substituteAll
 }:
 let
   luajit_lua52 = luajit.override { enable52Compat = true; };
-  thirdparty = import ./sources.nix;
+  sources = import ./sources.nix;
 in
 stdenv.mkDerivation rec {
   pname = "koreader-from-src";
@@ -38,7 +39,18 @@ stdenv.mkDerivation rec {
     inherit (s) url rev hash name;
     leaveDotGit = true;  # maybe not needed, but we'd need another way to query the rev during build process below
     deepClone = true;  # probably not needed
-  }) thirdparty);
+  }) sources.thirdparty);
+
+  patches = [
+    (substituteAll (
+      {
+        src = ./vendor-external-projects.patch;
+      } // (lib.mapAttrs
+        (_proj: source: fetchurl source)
+        sources.externalProjects
+      )
+    ))
+  ];
 
   sourceRoot = "koreader";
 
@@ -103,7 +115,7 @@ stdenv.mkDerivation rec {
 
   '' + builtins.concatStringsSep "\n" (builtins.map
     (l: ''install_lib "${l.name}" "${l.rev}"'')
-    thirdparty
+    sources.thirdparty
   ) + ''
 
     make TARGET=debian DEBIAN=1 INSTALL_DIR="$out" SHELL=sh VERBOSE=1
