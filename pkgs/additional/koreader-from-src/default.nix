@@ -14,6 +14,7 @@
 , gtk3-x11
 , luajit
 , pkg-config
+, ragel
 , sdcv
 , SDL2
 , substituteAll
@@ -41,10 +42,10 @@ stdenv.mkDerivation rec {
     (name: src: fetchgit (
       {
         inherit name;
-      } // src // {
+      } // src.source // {
         # koreader sometimes specifies the rev as `tags/FOO`.
         # we need to remember that to place the repo where it expects, but we have to strip it here for fetchgit to succeed.
-        rev = lib.removePrefix "tags/" src.rev;
+        rev = lib.removePrefix "tags/" src.source.rev;
       }
     ))
     sources.thirdparty
@@ -72,6 +73,7 @@ stdenv.mkDerivation rec {
     libtool
     makeWrapper
     pkg-config
+    ragel
     which
     # luajit_lua52.pkgs.luarocks
   ];
@@ -89,6 +91,8 @@ stdenv.mkDerivation rec {
     install_lib() {
       lib="$1"
       rev="$2"
+      platform="$3"
+
       lib_src="../$lib"
 
       # link the nix clone into the directory koreader would use for checkout
@@ -107,7 +111,7 @@ stdenv.mkDerivation rec {
       # instead, we replicate that effect here, and by creating these "stamp" files
       # koreader will know to skip the `git clone` and `git checkout` calls.
       # the logic we're spoofing lives in koreader/base/thirdparty/cmake_modules/koreader_thirdparty_git.cmake
-      stamp_dir="base/thirdparty/$lib/build/x86_64-unknown-linux-gnu/git_checkout/stamp"
+      stamp_dir="base/thirdparty/$lib/build/$platform/git_checkout/stamp"
       echo "creating stamp in $stamp_dir for rev $rev"
       # mkdir $(dirname ..) to handle the case where `$rev` contains slashes
       mkdir -p $(dirname "$stamp_dir/$lib-gitinfo-$rev.txt")
@@ -118,7 +122,7 @@ stdenv.mkDerivation rec {
       # koreader would copy the checkout into this build/working directory,
       # but because we spoof the stamps to work around other git errors,
       # copy it there on koreader's behalf
-      prefix="base/thirdparty/$lib/build/x86_64-unknown-linux-gnu/$lib-prefix"
+      prefix="base/thirdparty/$lib/build/$platform/$lib-prefix"
       mkdir -p "$prefix/src"
       cp -R "$lib_src" "$prefix/src/$lib"
       # src dir needs to be writable for koreader to apply its own patches
@@ -126,7 +130,7 @@ stdenv.mkDerivation rec {
     }
 
   '' + builtins.concatStringsSep "\n" (lib.mapAttrsToList
-    (name: src: ''install_lib "${name}" "${src.rev}"'')
+    (name: src: ''install_lib "${name}" "${src.source.rev}" "${if src.buildInSource or false then "" else "x86_64-unknown-linux-gnu"}"'')
     sources.thirdparty
   ) + ''
 
