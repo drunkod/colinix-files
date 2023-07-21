@@ -6,6 +6,7 @@
       source.hash = "sha256-kzozc0Io+1f4UMivSV2IhzJDQXmad4wNhXN/Y2Lsg3Q=";
     };
     czmq = {
+      # Completed
       source.url = "https://github.com/zeromq/czmq.git";
       source.rev = "2a0ddbc4b2dde623220d7f4980ddd60e910cfa78";
       source.hash = "sha256-p4Cl2PLVgRQ0S4qr3VClJXjvAd2LUBU9oRUvOCfVnyw=";
@@ -40,6 +41,9 @@
       source.hash = "sha256-znbY4tliXHXVLBd8sTKrbglOdCUb7xhcCQsDDWcQfhw=";
     };
     glib = {
+      # TODO: fails
+      # GEN      xdp-dbus.c
+      # sh: line 1: python2.7: command not found
       source.url = "https://github.com/GNOME/glib.git";
       source.rev = "2.58.3";
       source.hash = "sha256-KmJXCJ6h2QhPyK1axk+Y9+yJzO0wnCczcogopxGShJc=";
@@ -91,6 +95,7 @@
       source.hash = "sha256-ddDL/nnBikbm6YznlyCcBgmq2Qzo0MjIwMzN4/kzWqk=";
     };
     libzmq = {
+      # Completed
       source.url = "https://github.com/zeromq/libzmq";
       source.rev = "883e95b22e0bffffa72312ea1fec76199afbe458";
       source.hash = "sha256-R76EREtHsqcoKxKrgT8gfEf9pIWdLTBXvF9cDvjEf3E=";
@@ -138,9 +143,11 @@
       source.hash = "sha256-Y35QYNLznQmErr6rIjxLzw0/6Y7y8TbzD4yaEdgEljA=";
     };
     lua-Spore = {
-      # TODO: fails with:
-      # Missing dependencies for lua-spore 0.3.1-1:
-      # luajson >= 1.3 (not installed)
+      # Complete... ish?
+      # this originally failed like so:
+      #   Missing dependencies for lua-spore 0.3.1-1:
+      #   luajson >= 1.3 (not installed)
+      # it passes now only because we patch out its build-time check for luajson (which we DO provide at runtime)
       source.url = "https://framagit.org/fperrad/lua-Spore";
       source.rev = "tags/0.3.3";
       source.hash = "sha256-wb7ykJsndoq0DazHpfXieUcBBptowYqD/eTTN/EK/6g=";
@@ -231,6 +238,7 @@
       hash = "sha256-x30NoxAq7JwH9DZx5gYR6/+JqZbvFZSXzo5Z0HV4axI=";
     };
     libffi = {
+      # Completed
       url = "https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz";
       hash = "sha256-1mxWrSWags8qnfxAizK/XaUjcVALhHRff7i2RXEt9nY=";
     };

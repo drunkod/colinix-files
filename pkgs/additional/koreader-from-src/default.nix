@@ -3,12 +3,12 @@
 , automake
 , buildPackages
 , cmake
-, fetchurl
 , git
 , libtool
 , makeWrapper
-, fetchgit
 , fetchFromGitHub
+, fetchgit
+, fetchurl
 , dpkg
 , glib
 , gnutar
@@ -27,6 +27,32 @@ let
   # XXX: koreader assumes lua 5.1 in places -- is this really ok?
   luajit_lua52 = luajit.override { enable52Compat = true; };
   sources = import ./sources.nix;
+  # luajson = luajit_lua52.pkgs.buildLuarocksPackage {
+  #   pname = "luajson";
+  #   version = "1.3.4-1";
+  #   source = fetchgit {
+  #     url = "https://github.com/harningt/luajson.git";
+  #     rev = "1.3.4";
+  #     hash = "sha256-JaJsjN5Gp+8qswfzl5XbHRQMfaCAJpWDWj9DYWJ0gEI=";
+  #   };
+  # };
+  luaEnv = luajit_lua52.withPackages (ps: with ps; [
+    luarocks
+    (buildLuarocksPackage {
+      pname = "luajson";
+      version = "1.3.4-1";
+      src = fetchgit {
+        url = "https://github.com/harningt/luajson.git";
+        rev = "1.3.4";
+        hash = "sha256-JaJsjN5Gp+8qswfzl5XbHRQMfaCAJpWDWj9DYWJ0gEI=";
+      };
+      knownRockspec = (fetchurl {
+        url = "mirror://luarocks/luajson-1.3.4-1.rockspec";
+        hash = "sha256-+S4gfa6QaOMmOCDX8TxBq3kFWlbaEeiSMxCfefYakv0=";
+      }).outPath;
+      propagatedBuildInputs = [ lpeg ];
+    })
+  ]);
 in
 stdenv.mkDerivation rec {
   pname = "koreader-from-src";
@@ -59,6 +85,7 @@ stdenv.mkDerivation rec {
     ./debug.patch
     # ./mupdf_dir.patch  #< TODO: needed?
     ./no_rm_build_dirs.patch
+    ./lua-Spore-no-luajson.patch  #< TODO: test this at runtime! we ship luajson, but just don't expose it via luarocks...
     (substituteAll (
       {
         src = ./vendor-external-projects.patch;
@@ -84,13 +111,16 @@ stdenv.mkDerivation rec {
     pkg-config
     ragel
     which
-    luajit_lua52.pkgs.luarocks
+    # luajit_lua52.pkgs.luarocks
+    luaEnv.pkgs.luarocks
   ];
   buildInputs = [
     glib
     gnutar
     gtk3-x11
-    luajit_lua52
+    # luajit_lua52
+    # luajson
+    luaEnv
     sdcv
     SDL2
   ];
@@ -165,6 +195,10 @@ stdenv.mkDerivation rec {
   installPhase = ''
     make TARGET=debian DEBIAN=1 update
   '';
+
+  passthru = {
+    inherit luaEnv;
+  };
 
   meta = with lib; {
     homepage = "https://github.com/koreader/koreader";
