@@ -41,9 +41,7 @@
       source.hash = "sha256-znbY4tliXHXVLBd8sTKrbglOdCUb7xhcCQsDDWcQfhw=";
     };
     glib = {
-      # TODO: fails
-      # GEN      xdp-dbus.c
-      # sh: line 1: python2.7: command not found
+      # Completed
       source.url = "https://github.com/GNOME/glib.git";
       source.rev = "2.58.3";
       source.hash = "sha256-KmJXCJ6h2QhPyK1axk+Y9+yJzO0wnCczcogopxGShJc=";

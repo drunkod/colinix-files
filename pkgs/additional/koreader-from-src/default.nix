@@ -17,6 +17,7 @@
 # , lua51Packages
 , perl
 , pkg-config
+, python3
 , ragel
 , sdcv
 , SDL2
@@ -109,6 +110,7 @@ stdenv.mkDerivation rec {
     makeWrapper
     perl  # TODO: openssl might try to take a runtime dep on this; see nixpkg
     pkg-config
+    python3
     ragel
     which
     # luajit_lua52.pkgs.luarocks
@@ -125,8 +127,30 @@ stdenv.mkDerivation rec {
     SDL2
   ];
 
-  postPatch = ''
-    substituteInPlace ../openssl/config --replace '/usr/bin/env' '${buildPackages.coreutils}/bin/env'
+  postPatch =
+  let
+    env = "${buildPackages.coreutils}/bin/env";
+  in ''
+    substituteInPlace ../openssl/config --replace '/usr/bin/env' '${env}'
+
+    chmod +x ../glib/gio/gio-querymodules-wrapper.py
+    chmod +x ../glib/gio/tests/gengiotypefuncs.py
+    chmod +x ../glib/gobject/tests/taptestrunner.py
+    # need directory write perm in order to patchShebangs
+    chmod u+w ../glib/{gio,gio/tests,glib,gobject/tests,tests}
+
+    patchShebangs ../glib/gio/data-to-c.py
+    patchShebangs ../glib/gio/gio-querymodules-wrapper.py
+    patchShebangs ../glib/gio/tests/gengiotypefuncs.py
+    patchShebangs ../glib/glib/update-gtranslit.py
+    patchShebangs ../glib/gobject/tests/taptestrunner.py
+    patchShebangs ../glib/tests/gen-casefold-txt.py
+    patchShebangs ../glib/tests/gen-casemap-txt.py
+
+    substituteInPlace ../glib/gio/gdbus-2.0/codegen/gdbus-codegen.in --replace '/usr/bin/env @PYTHON@' '@PYTHON@'
+    substituteInPlace ../glib/glib/gtester-report.in --replace '/usr/bin/env @PYTHON@' '@PYTHON@'
+    substituteInPlace ../glib/gobject/glib-genmarshal.in --replace '/usr/bin/env @PYTHON@' '@PYTHON@'
+    substituteInPlace ../glib/gobject/glib-mkenums.in --replace '/usr/bin/env @PYTHON@' '@PYTHON@'
   '';
 
   dontConfigure = true;
