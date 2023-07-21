@@ -64,6 +64,9 @@
   - could change junk filter from "no DKIM success" to explicit "DKIM failed"
 
 ### perf
+- add `pkgs.impure-cached.<foo>` package set to build things with ccache enabled
+    - every package here can be auto-generated, and marked with some env var so that it doesn't pollute the pure package set
+    - would be super handy for package prototyping!
 - why does nixos-rebuild switch take 5 minutes when net is flakey?
     - trying to auto-mount servo?
     - something to do with systemd services restarting/stalling
