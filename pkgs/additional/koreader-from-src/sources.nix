@@ -191,11 +191,12 @@
       source.rev = "e715396a4951ee91c40a98d2824a130f158268bb";
       source.hash = "sha256-JeBZMsg6ZUGSnyZ4eds4w63gM/L73EsAnLaHOPpL6iM=";
     };
-    sdvc = {
-      source.url = "https://github.com/Dushistov/sdcv.git";
-      source.rev = "6e36e7730caf07b6cd0bfa265cdf9b5e31e7acad";
-      source.hash = "sha256-pPaT9tB39dd+VyE21KSjMpON99KjOxQ8Hi8+ZgFsuUY=";
-    };
+    # sdcv = {
+    #   # upstream is (temporarily?) acquiring this via `download_project` machinery
+    #   source.url = "https://github.com/Dushistov/sdcv.git";
+    #   source.rev = "6e36e7730caf07b6cd0bfa265cdf9b5e31e7acad";
+    #   source.hash = "sha256-pPaT9tB39dd+VyE21KSjMpON99KjOxQ8Hi8+ZgFsuUY=";
+    # };
     tesseract = {
       source.url = "https://github.com/tesseract-ocr/tesseract.git";
       source.rev = "60176fc5ae5e7f6bdef60c926a4b5ea03de2bfa7";
@@ -249,10 +250,16 @@
       url = "http://distcache.FreeBSD.org/ports-distfiles/lpeg-1.0.2.tar.gz";
       hash = "sha256-SNZldgUbbHg4j6rQm3BJMJMmRYj80PJY3aqxzdShX/4=";
     };
-    # sdcv = TODO (uses download_project)
-    # sdl2 = {  # TODO  (uses download_project)
-    #   url = "https://github.com/libsdl-org/SDL/releases/download/release-2.28.1/SDL2-2.28.1.tar.gz";
-    # };
+    sdcv = {
+      # TODO: if this form of substitution works, i could optionally patch in *all* deps
+      # using the `file://@foo@` ExternalProject_Add syntax
+      url = "https://github.com/Dushistov/sdcv/archive/6e36e7730caf07b6cd0bfa265cdf9b5e31e7acad.tar.gz";
+      hash = "sha256-bzCpzassIDY/g7NO71PoWNayLAyEaz1haY9vMFk4hqU=";
+    };
+    sdl2 = {
+      url = "https://github.com/libsdl-org/SDL/releases/download/release-2.28.1/SDL2-2.28.1.tar.gz";
+      hash = "sha256-SXfOulwAVNvmwvEUZBrO1DzjvytB6mS2o3LWuhKcsV0=";
+    };
     sqlite = {
       url = "https://www.sqlite.org/2023/sqlite-autoconf-3420000.tar.gz";
       hash = "sha256-erz9FhxuJ0LKXGwIldH4U8lA8gMwSgtJ2k4eyl0IjKY=";
