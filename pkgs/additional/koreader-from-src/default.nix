@@ -14,6 +14,7 @@
 , gnutar
 , gtk3-x11
 , luajit
+# , lua51Packages
 , perl
 , pkg-config
 , ragel
@@ -23,6 +24,7 @@
 , which
 }:
 let
+  # XXX: koreader assumes lua 5.1 in places -- is this really ok?
   luajit_lua52 = luajit.override { enable52Compat = true; };
   sources = import ./sources.nix;
 in
@@ -76,12 +78,13 @@ stdenv.mkDerivation rec {
     dpkg
     git
     libtool
+    # lua51Packages.luarocks
     makeWrapper
     perl  # TODO: openssl might try to take a runtime dep on this; see nixpkg
     pkg-config
     ragel
     which
-    # luajit_lua52.pkgs.luarocks
+    luajit_lua52.pkgs.luarocks
   ];
   buildInputs = [
     glib

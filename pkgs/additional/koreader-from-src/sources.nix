@@ -108,8 +108,7 @@
       source.hash = "sha256-AAw6I+MxDaxmGpjC5efxuBNw7Lx8FXwg2TEfl6LfPfQ=";
     };
     lua-htmlparser = {
-      # TODO: fails build
-      # - `sh: line 1: luarocks: command not found`
+      # Completed
       source.url = "https://github.com/msva/lua-htmlparser";
       source.rev = "5ce9a775a345cf458c0388d7288e246bb1b82bff";
       source.hash = "sha256-aSTLSfqz/MIDFVRwtBlDNBUhPb7KqOl32/Y62Hdec1s=";
@@ -121,6 +120,7 @@
       source.hash = "sha256-pfMNQFulW6AEwAVPxn9wUdbRg3ViHbGVCCke5NSIgTo=";
     };
     lua-rapidjson = {
+      # Completed
       source.url = "https://github.com/xpol/lua-rapidjson";
       source.rev = "242b40c8eaceb0cc43bcab88309736461cac1234";
       source.hash = "sha256-y/czEVPtCt4uN1n49Qi7BrgZmkG+SDXlM5D2GvvO2qg=";
@@ -138,6 +138,9 @@
       source.hash = "sha256-Y35QYNLznQmErr6rIjxLzw0/6Y7y8TbzD4yaEdgEljA=";
     };
     lua-Spore = {
+      # TODO: fails with:
+      # Missing dependencies for lua-spore 0.3.1-1:
+      # luajson >= 1.3 (not installed)
       source.url = "https://framagit.org/fperrad/lua-Spore";
       source.rev = "tags/0.3.3";
       source.hash = "sha256-wb7ykJsndoq0DazHpfXieUcBBptowYqD/eTTN/EK/6g=";
@@ -236,6 +239,7 @@
       hash = "sha256-zPU2YgpFRY0muoOIepg7loJwAekqE4R7ReSSXMiRMXg=";
     };
     lpeg = {
+      # Completed
       url = "http://distcache.FreeBSD.org/ports-distfiles/lpeg-1.0.2.tar.gz";
       hash = "sha256-SNZldgUbbHg4j6rQm3BJMJMmRYj80PJY3aqxzdShX/4=";
     };
