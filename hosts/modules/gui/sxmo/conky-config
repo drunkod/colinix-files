@@ -25,8 +25,8 @@ conky.config = {
     -- shades are drop-shadows, outline is the centered version. both apply to text only
     draw_shades = true,
     draw_outline = false,
-    default_shade_color = '#707070',
-    default_outline_color = '#a0a0a0',
+    default_shade_color = '#beebe5',
+    default_outline_color = '#beebe5',
 
     font = 'Sxmo:size=8',
     use_xft = true,
@@ -37,13 +37,13 @@ conky.config = {
 }
 
 conky.text = [[
-${alignc}${font Sxmo:size=50:style=Bold}${color1}${exec date +"%H:%M"}${font}
-${alignc}${font Sxmo:size=20}${color2}${exec date +"%a %d %b"}${font}
+${color1}${shadecolor 707070}${font Sxmo:size=50:style=Bold}${alignc}${exec date +"%H:%M"}${font}
+${color2}${shadecolor a4d7d0}${font Sxmo:size=20}${alignc}${exec date +"%a %d %b"}${font}
 
 
-${alignc}${font Sxmo:size=22:style=Bold}${color1}${exec @bat@ }${font}
+${color1}${shadecolor}${font Sxmo:size=22:style=Bold}${alignc}${exec @bat@ }${font}
 
 
-${alignc}${font Sxmo:size=16}${color2}⇅ ${downspeedf wlan0}K/s${font}
-${alignc}${font Sxmo:size=16}${color2}☵ $memperc%  $cpu%${font}
+${color2}${shadecolor a4d7d0}${font Sxmo:size=16}${alignc}⇅ ${downspeedf wlan0}K/s${font}
+${font Sxmo:size=16}${alignc}☵ $memperc%  $cpu%${font}
 ]]
