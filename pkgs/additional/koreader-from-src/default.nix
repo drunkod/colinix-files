@@ -52,6 +52,9 @@ stdenv.mkDerivation rec {
   );
 
   patches = [
+    ./debug.patch
+    ./mupdf_dir.patch  #< TODO: needed?
+    ./mupdf_no_rm_build_dir.patch
     (substituteAll (
       {
         src = ./vendor-external-projects.patch;
@@ -112,12 +115,15 @@ stdenv.mkDerivation rec {
       # koreader will know to skip the `git clone` and `git checkout` calls.
       # the logic we're spoofing lives in koreader/base/thirdparty/cmake_modules/koreader_thirdparty_git.cmake
       stamp_dir="base/thirdparty/$lib/build/$platform/git_checkout/stamp"
-      echo "creating stamp in $stamp_dir for rev $rev"
+      stamp_info="$stamp_dir/$lib-gitinfo-$rev.txt"
+      stamp_clone="$stamp_dir/$lib-gitclone-lastrun.txt"
+      echo "creating stamps for $lib: $stamp_clone > $stamp_info"
       # mkdir $(dirname ..) to handle the case where `$rev` contains slashes
-      mkdir -p $(dirname "$stamp_dir/$lib-gitinfo-$rev.txt")
+      mkdir -p $(dirname "$stamp_info")
       # koreader-base decides whether to redo the git checkout based on a timestamp compare of these two stamp files
-      touch -d "last week" "$stamp_dir/$lib-gitinfo-$rev.txt"
-      touch -d "next week" "$stamp_dir/$lib-gitclone-lastrun.txt"
+      touch -d "last week" $(dirname "$stamp_info")  #< XXX: necessary?
+      touch -d "last week" "$stamp_info"
+      touch -d "next week" "$stamp_clone"
 
       # koreader would copy the checkout into this build/working directory,
       # but because we spoof the stamps to work around other git errors,

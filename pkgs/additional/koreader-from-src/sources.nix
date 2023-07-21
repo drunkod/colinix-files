@@ -148,6 +148,7 @@
       source.hash = "sha256-P/3MMMGYDqD9NmkYvw/thKpUNa3wNOSlBBjANHSonAg=";
     };
     mupdf = {
+      # Completed
       source.url = "https://github.com/ArtifexSoftware/mupdf.git";
       source.rev = "tags/1.13.0";
       source.hash = "sha256-pQejRon9fO9A1mhz3oLjBr1j4HveDLcQIWjR1/Rpy5Q=";
