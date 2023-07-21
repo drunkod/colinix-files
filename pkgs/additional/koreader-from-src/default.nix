@@ -131,6 +131,8 @@ stdenv.mkDerivation rec {
   let
     env = "${buildPackages.coreutils}/bin/env";
   in ''
+    # patchShebangs platform/debian/do_debian_package.sh
+
     substituteInPlace ../openssl/config --replace '/usr/bin/env' '${env}'
 
     chmod +x ../glib/gio/gio-querymodules-wrapper.py
@@ -217,7 +219,8 @@ stdenv.mkDerivation rec {
   # might be safe to specify that as an env var, though?
 
   installPhase = ''
-    make TARGET=debian DEBIAN=1 update
+    make TARGET=debian DEBIAN=1 debianupdate
+    mv koreader-debian-x86_64-unknown-linux-gnu/debian/usr $out
   '';
 
   passthru = {
