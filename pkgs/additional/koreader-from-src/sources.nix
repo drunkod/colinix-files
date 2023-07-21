@@ -34,6 +34,7 @@
       source.hash = "sha256-L4m/F9rs8fiv9rSf8oy7P6cthhupc6R/lCv30PLiQ4M=";
     };
     giflib = {
+      # Completed
       source.url = "https://gitlab.com/koreader/giflib.git";
       source.rev = "5.1.4";
       source.hash = "sha256-znbY4tliXHXVLBd8sTKrbglOdCUb7xhcCQsDDWcQfhw=";
@@ -98,13 +99,17 @@
       source.url = "https://github.com/koreader/lj-wpaclient.git";
       source.rev = "2f93beb3071e6ebb57c783bd5b92f83aa5ebb757";
       source.hash = "sha256-ilJviGZTvL2i1TN5lHQ4eA9pFiM7NlXD+v9ofv520b8=";
+      machineAgnostic = true;
     };
     lodepng = {
+      # Completed
       source.url = "https://github.com/lvandeve/lodepng.git";
       source.rev = "c18b949b71f45e78b1f9a28c5d458bce0da505d6";
       source.hash = "sha256-AAw6I+MxDaxmGpjC5efxuBNw7Lx8FXwg2TEfl6LfPfQ=";
     };
     lua-htmlparser = {
+      # TODO: fails build
+      # - `sh: line 1: luarocks: command not found`
       source.url = "https://github.com/msva/lua-htmlparser";
       source.rev = "5ce9a775a345cf458c0388d7288e246bb1b82bff";
       source.hash = "sha256-aSTLSfqz/MIDFVRwtBlDNBUhPb7KqOl32/Y62Hdec1s=";
@@ -121,11 +126,13 @@
       source.hash = "sha256-y/czEVPtCt4uN1n49Qi7BrgZmkG+SDXlM5D2GvvO2qg=";
     };
     luasec = {
+      # Completed
       source.url = "https://github.com/brunoos/luasec";
       source.rev = "tags/v1.3.1";
       source.hash = "sha256-3iYRNQoVk5HFjDSqRRmg1taSqeT2cHFil36vxjrEofo=";
     };
     luasocket = {
+      # Completed
       source.url = "https://github.com/lunarmodules/luasocket";
       source.rev = "8c2ff7217e2a205eb107a6f48b04ff1b2b3090a1";
       source.hash = "sha256-Y35QYNLznQmErr6rIjxLzw0/6Y7y8TbzD4yaEdgEljA=";
@@ -152,17 +159,13 @@
       source.url = "https://github.com/ArtifexSoftware/mupdf.git";
       source.rev = "tags/1.13.0";
       source.hash = "sha256-pQejRon9fO9A1mhz3oLjBr1j4HveDLcQIWjR1/Rpy5Q=";
-      # buildInSource = true;
     };
     nanosvg = {
       # Completed
-      # XXX koreader expects stamp file to not have x86_64-... prefix?
-      # maybe because it specifies an empty BUILD_COMMAND instead of `KO_MAKE_RECURSIVE`?
-      # or because `BUILD_IN_SOURCE`?
       source.url = "https://github.com/memononen/nanosvg.git";
       source.rev = "9da543e8329fdd81b64eb48742d8ccb09377aed1";
       source.hash = "sha256-VOiN6583DtzGYPRkl19VG2QvSzl4T9HaynBuNcvZf94=";
-      buildInSource = true;
+      machineAgnostic = true;
     };
     openssh = {
       source.url = "https://github.com/openssh/openssh-portable.git";
@@ -170,6 +173,7 @@
       source.hash = "sha256-yjIpSbe5pt9sEV2MZYGztxejg/aBFfKO8ieRvoLN2KA=";
     };
     openssl = {
+      # Completed
       source.url = "https://github.com/openssl/openssl.git";
       source.rev = "OpenSSL_1_1_1u";
       source.hash = "sha256-JOcUj4ovA6621+1k2HUsvhGX1B9BjvaMbCaSx680nSs=";
@@ -190,6 +194,7 @@
       source.hash = "sha256-FQvlrJ+Uy7+wtUxBuS5NdoToUwNRhYw2ju8Ya8MLyQw=";
     };
     turbo = {
+      # Completed
       source.url = "https://github.com/kernelsauce/turbo";
       source.rev = "tags/v2.1.3";
       source.hash = "sha256-vBRkFdc5a0FIt15HBz3TnqMZ+GGsqjEefnfJEpuVTBs=";

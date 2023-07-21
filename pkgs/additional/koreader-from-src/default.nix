@@ -1,6 +1,7 @@
 { lib, stdenv
 , autoconf
 , automake
+, buildPackages
 , cmake
 , fetchurl
 , git
@@ -13,6 +14,7 @@
 , gnutar
 , gtk3-x11
 , luajit
+, perl
 , pkg-config
 , ragel
 , sdcv
@@ -53,8 +55,8 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./debug.patch
-    ./mupdf_dir.patch  #< TODO: needed?
-    ./mupdf_no_rm_build_dir.patch
+    # ./mupdf_dir.patch  #< TODO: needed?
+    ./no_rm_build_dirs.patch
     (substituteAll (
       {
         src = ./vendor-external-projects.patch;
@@ -75,6 +77,7 @@ stdenv.mkDerivation rec {
     git
     libtool
     makeWrapper
+    perl  # TODO: openssl might try to take a runtime dep on this; see nixpkg
     pkg-config
     ragel
     which
@@ -89,6 +92,10 @@ stdenv.mkDerivation rec {
     SDL2
   ];
 
+  postPatch = ''
+    substituteInPlace ../openssl/config --replace '/usr/bin/env' '${buildPackages.coreutils}/bin/env'
+  '';
+
   dontConfigure = true;
   buildPhase = ''
     install_lib() {
@@ -97,6 +104,7 @@ stdenv.mkDerivation rec {
       platform="$3"
 
       lib_src="../$lib"
+      build_dir="base/thirdparty/$lib/build/$platform"
 
       # link the nix clone into the directory koreader would use for checkout
       # ref="base/thirdparty/$l/build/git_checkout"
@@ -114,7 +122,7 @@ stdenv.mkDerivation rec {
       # instead, we replicate that effect here, and by creating these "stamp" files
       # koreader will know to skip the `git clone` and `git checkout` calls.
       # the logic we're spoofing lives in koreader/base/thirdparty/cmake_modules/koreader_thirdparty_git.cmake
-      stamp_dir="base/thirdparty/$lib/build/$platform/git_checkout/stamp"
+      stamp_dir="$build_dir/git_checkout/stamp"
       stamp_info="$stamp_dir/$lib-gitinfo-$rev.txt"
       stamp_clone="$stamp_dir/$lib-gitclone-lastrun.txt"
       echo "creating stamps for $lib: $stamp_clone > $stamp_info"
@@ -128,7 +136,7 @@ stdenv.mkDerivation rec {
       # koreader would copy the checkout into this build/working directory,
       # but because we spoof the stamps to work around other git errors,
       # copy it there on koreader's behalf
-      prefix="base/thirdparty/$lib/build/$platform/$lib-prefix"
+      prefix="$build_dir/$lib-prefix"
       mkdir -p "$prefix/src"
       cp -R "$lib_src" "$prefix/src/$lib"
       # src dir needs to be writable for koreader to apply its own patches
@@ -136,15 +144,23 @@ stdenv.mkDerivation rec {
     }
 
   '' + builtins.concatStringsSep "\n" (lib.mapAttrsToList
-    (name: src: ''install_lib "${name}" "${src.source.rev}" "${if src.buildInSource or false then "" else "x86_64-unknown-linux-gnu"}"'')
+    (name: src:
+      let
+        # for machine-agnostic libraries (e.g. pure lua), koreader doesn't build them in a flavored directory
+        machine = if src.machineAgnostic or false then "" else "x86_64-unknown-linux-gnu";
+      in
+        ''install_lib "${name}" "${src.source.rev}" "${machine}"''
+    )
     sources.thirdparty
   ) + ''
 
-    make TARGET=debian DEBIAN=1 INSTALL_DIR="$out" SHELL=sh VERBOSE=1
+    make TARGET=debian DEBIAN=1 SHELL=sh VERBOSE=1
   '';
+  # XXX: ^ don't specify INSTALL_DIR="$out" as make arg because that conflicts with vars used by third-party libs
+  # might be safe to specify that as an env var, though?
 
   installPhase = ''
-    make TARGET=debian DEBIAN=1 INSTALL_DIR="$out" update
+    make TARGET=debian DEBIAN=1 update
   '';
 
   meta = with lib; {
