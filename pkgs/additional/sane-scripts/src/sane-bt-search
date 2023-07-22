@@ -218,6 +218,7 @@ def main(args: list[str]):
     help = options.pop("help")
     json = options.pop("json")
     query = options.pop("query")
+    assert options.get("top") is not True, "use `--top=N`, not `--top N`"
     top = int(options.pop("top"))
     verbose = options.pop("verbose")
     manga = options.pop("manga")
