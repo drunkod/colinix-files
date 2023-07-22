@@ -11,34 +11,20 @@
 , fetchgit
 , fetchurl
 , dpkg
-, glib
-, gnutar
-, gtk3-x11
+, gettext
 , luajit
-# , lua51Packages
 , perl
 , pkg-config
 , python3
 , ragel
-, sdcv
 , SDL2
 , substituteAll
 , which
 }:
 let
   sources = import ./sources.nix;
-  # luajson = luajit_lua52.pkgs.buildLuarocksPackage {
-  #   pname = "luajson";
-  #   version = "1.3.4-1";
-  #   source = fetchgit {
-  #     url = "https://github.com/harningt/luajson.git";
-  #     rev = "1.3.4";
-  #     hash = "sha256-JaJsjN5Gp+8qswfzl5XbHRQMfaCAJpWDWj9DYWJ0gEI=";
-  #   };
-  # };
   luajit52 = luajit.override { enable52Compat = true; self = luajit52; };
   luaEnv = luajit52.withPackages (ps: with ps; [
-    luarocks  # TODO: needed?
     (buildLuarocksPackage {
       pname = "luajson";
       version = "1.3.4-1";
@@ -107,7 +93,6 @@ stdenv.mkDerivation rec {
     dpkg
     git
     libtool
-    # lua51Packages.luarocks
     makeWrapper
     perl  # TODO: openssl might try to take a runtime dep on this; see nixpkg
     pkg-config
@@ -118,14 +103,9 @@ stdenv.mkDerivation rec {
     luaEnv.pkgs.luarocks
   ];
   buildInputs = [
-    glib  #< TODO: needed?
-    gnutar
-    gtk3-x11  #< TODO: needed?
-    # luajit_lua52
+    gettext
     # luajson
     luaEnv
-    sdcv  # TODO: remove this? KOreader builds (and ships) it itself
-    SDL2  # TODO: remove this? KOreader builds (but doesn't ship) it itself
   ];
 
   postPatch =
