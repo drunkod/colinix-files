@@ -1,6 +1,7 @@
 { lib, stdenv
 , autoconf
 , automake
+, autoPatchelfHook
 , buildPackages
 , cmake
 , git
@@ -25,8 +26,6 @@
 , which
 }:
 let
-  # XXX: koreader assumes lua 5.1 in places -- is this really ok?
-  luajit_lua52 = luajit.override { enable52Compat = true; };
   sources = import ./sources.nix;
   # luajson = luajit_lua52.pkgs.buildLuarocksPackage {
   #   pname = "luajson";
@@ -37,8 +36,9 @@ let
   #     hash = "sha256-JaJsjN5Gp+8qswfzl5XbHRQMfaCAJpWDWj9DYWJ0gEI=";
   #   };
   # };
-  luaEnv = luajit_lua52.withPackages (ps: with ps; [
-    luarocks
+  luajit52 = luajit.override { enable52Compat = true; self = luajit52; };
+  luaEnv = luajit52.withPackages (ps: with ps; [
+    luarocks  # TODO: needed?
     (buildLuarocksPackage {
       pname = "luajson";
       version = "1.3.4-1";
@@ -102,6 +102,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     autoconf  # autotools is used by some thirdparty libraries
     automake
+    autoPatchelfHook  # TODO: needed?
     cmake  # for koreader/base submodule
     dpkg
     git
@@ -117,14 +118,14 @@ stdenv.mkDerivation rec {
     luaEnv.pkgs.luarocks
   ];
   buildInputs = [
-    glib
+    glib  #< TODO: needed?
     gnutar
-    gtk3-x11
+    gtk3-x11  #< TODO: needed?
     # luajit_lua52
     # luajson
     luaEnv
-    sdcv
-    SDL2
+    sdcv  # TODO: remove this? KOreader builds (and ships) it itself
+    SDL2  # TODO: remove this? KOreader builds (but doesn't ship) it itself
   ];
 
   postPatch =
@@ -221,7 +222,12 @@ stdenv.mkDerivation rec {
   installPhase = ''
     make TARGET=debian DEBIAN=1 debianupdate
     mv koreader-debian-x86_64-unknown-linux-gnu/debian/usr $out
+
+    wrapProgram $out/bin/koreader --prefix LD_LIBRARY_PATH : ${
+      lib.makeLibraryPath [ SDL2 ]
+    }
   '';
+  # XXX: nixpkgs adds glib and gtk3-x11 to LD_LIBRARY_PATH as well
 
   passthru = {
     inherit luaEnv;
