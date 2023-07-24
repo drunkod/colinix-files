@@ -9,6 +9,12 @@ window#waybar {
   transition-duration: .2s;
 }
 
+.modules-right {
+  /* workspace buttons (LHS) get padding between it and the screen edge */
+  /* replicate that same padding for whatever's on the RHS (i.e. the clock) */
+  margin-right: 5px;
+}
+
 #workspaces button {
   padding: 0 5px;
   background-color: #418379;
