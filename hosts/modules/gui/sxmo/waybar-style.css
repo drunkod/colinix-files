@@ -6,7 +6,7 @@ window#waybar {
   border-bottom: 2px solid #1f5e54;
   color: #ffffff;
   transition-property: background-color;
-  transition-duration: .3s;
+  transition-duration: .2s;
 }
 
 #workspaces button {
