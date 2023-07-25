@@ -77,7 +77,7 @@ in [
   #   hash = "sha256-eTwEbVULYjmOW7zUFcTUqvBZqUFjHTKFhvmU2m3XQeo=";
   # })
 
-  ./2022-12-19-i2p-aarch64.patch
+  # ./2022-12-19-i2p-aarch64.patch
 
   # fix for CMA memory leak in mesa: <https://gitlab.freedesktop.org/mesa/mesa/-/issues/8198>
   # fixed in mesa 22.3.6: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/21330/diffs>
@@ -219,6 +219,17 @@ in [
     title = "gnustep: remove `rec` to support `overrideScope`";
     saneCommit = "69162cbf727264e50fc9d7222a03789d12644705";
     hash = "sha256-rD0es4uUbaLMrI9ZB2HzPmRLyu/ixNBLAFyDJtFHNko=";
+  })
+
+  (fetchpatch' {
+    title = "p11-kit: build with meson";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/244633";
+    hash = "sha256-+z6hosSyt6ynLpUKS0TsHRoLOS8ck/SK9Y7W2zVUnCQ=";
+  })
+  (fetchpatch' {
+    title = "p11-kit: use mesonEmulatorHook for cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/245124";
+    hash = "sha256-8NqqLBbjt1fLj4ZYhat7wPqQSv/aez9IwgSK2b4CfW8=";
   })
 
   # (fetchpatch' {
