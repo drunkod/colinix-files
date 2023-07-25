@@ -14,6 +14,7 @@
   imports = [
     ./bootloader.nix
     ./fs.nix
+    ./gps.nix
     ./kernel.nix
     ./polyfill.nix
   ];
