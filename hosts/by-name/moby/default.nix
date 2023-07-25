@@ -12,7 +12,7 @@
 { config, pkgs, lib, ... }:
 {
   imports = [
-    ./firmware.nix
+    ./bootloader.nix
     ./fs.nix
     ./kernel.nix
     ./polyfill.nix
