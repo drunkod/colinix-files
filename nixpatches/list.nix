@@ -232,6 +232,12 @@ in [
     hash = "sha256-8NqqLBbjt1fLj4ZYhat7wPqQSv/aez9IwgSK2b4CfW8=";
   })
 
+  (fetchpatch' {
+    title = "libgudev: fix cross failing to build checks";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/245761";
+    hash = "sha256-jEQeGAcDGrv0TYouBTfn5ubWaosWg/ecmUW0ii1QIVs=";
+  })
+
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
   #   title = "matrix-appservice-irc: 0.38.0 -> 1.0.0";

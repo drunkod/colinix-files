@@ -85,11 +85,11 @@
     },
     "nixpkgs-unpatched": {
       "locked": {
-        "lastModified": 1690179384,
-        "narHash": "sha256-+arbgqFTAtoeKtepW9wCnA0njCOyoiDFyl0Q0SBSOtE=",
+        "lastModified": 1690272529,
+        "narHash": "sha256-MakzcKXEdv/I4qJUtq/k/eG+rVmyOZLnYNC2w1mB59Y=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "b12803b6d90e2e583429bb79b859ca53c348b39a",
+        "rev": "ef99fa5c5ed624460217c31ac4271cfb5cb2502c",
         "type": "github"
       },
       "original": {
@@ -152,11 +152,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1688265812,
-        "narHash": "sha256-Wkx56Pw7V5+5Gn6B3olDGP+o1qIp8BPFL0MWC2wbKVg=",
+        "lastModified": 1690326573,
+        "narHash": "sha256-UgsGOTx00sp4Oev6QNN2u+4AMVehgGO/8yODF++8bwM=",
         "ref": "refs/heads/master",
-        "rev": "1542323cfb46a8950c17a3afa5f7cd2e62dd9672",
-        "revCount": 202,
+        "rev": "fcec1d09b6c469d9425a716b11b4f4995a285774",
+        "revCount": 204,
         "type": "git",
         "url": "https://git.uninsane.org/colin/uninsane"
       },

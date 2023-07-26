@@ -1337,6 +1337,8 @@ in {
     blueprint-compiler = dontCheck emulated.blueprint-compiler;  # emulate: because gi. dontCheck: because tests time out
     gjs = dontCheck emulated.gjs;  # emulate: because Tangram build hangs. dontCheck: because tests time out
   };
+  # fixes "meson.build:204:12: ERROR: Can not run test applications in this cross environment."
+  tracker = useEmulatedStdenv prev.tracker;
   tracker-miners = prev.tracker-miners.override {
     # fixes "meson.build:183:0: ERROR: Can not run test applications in this cross environment."
     inherit (emulated) stdenv;
@@ -1368,6 +1370,12 @@ in {
       '';
     });
   };
+  upower = prev.upower.overrideAttrs (upstream: {
+    # cross-compiled builds seem to not create the installedTest files
+    outputs = lib.remove "installedTests" upstream.outputs;
+    postInstall = lib.replaceStrings [ "installedTests" ] [ "" ] upstream.postInstall;
+    postFixup = "";
+  });
 
   visidata = prev.visidata.override {
     # hdf5 / h5py don't cross-compile, but i don't use that file format anyway.
