@@ -2,7 +2,7 @@
 , fetchFromGitHub
 , fetchFromGitea
 }:
-mpvScripts.uosc.overrideAttrs (_upstream: {
+mpvScripts.uosc.overrideAttrs (upstream: {
   version = "unstable-2023-07-26";
   # src = fetchFromGitHub {
   #   owner = "tomasklaen";
@@ -18,6 +18,8 @@ mpvScripts.uosc.overrideAttrs (_upstream: {
     hash = "sha256-XOhryppod3zozYrPQlGBw298u+0/eS1MaDepV4p88cM=";
     # for version > 4.7.0, we can use nixpkgs src and set `patches` to a fetch of my one custom commit
   };
-  passthru.scriptName = "uosc";
+  passthru = upstream.passthru // {
+    scriptName = "uosc";
+  };
   postPatch = "";  # delete the outdated `path` fix
 })
