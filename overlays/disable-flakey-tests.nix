@@ -4,15 +4,17 @@
 # - they assume a particular architecture (e.g. x86) whereas i compile on multiple archs.
 # - they assume too much about their environment and fail under qemu.
 #
-(next: prev: {
-  ell = prev.ell.overrideAttrs (_upstream: {
-    # 2023/02/11
-    # fixes "TEST FAILED in get_random_return_callback at unit/test-dbus-message-fds.c:278: !l_dbus_message_get_error(message, ((void *)0), ((void *)0))"
-    # 2023/04/06
-    # fixes "test-cipher: unit/test-cipher.c:102: test_aes_ctr: Assertion `!r' failed."
-    # unclear *why* this test fails.
+(next: prev:
+let
+  dontCheck = p: p.overrideAttrs (_: {
     doCheck = false;
   });
+in {
+  # 2023/07/27
+  # 4 tests fail when building `host-pkgs.moby.emulated.elfutils`
+  # it might be enough to only disable checks when targeting aarch64, which could reduce rebuilds?
+  elfutils = dontCheck prev.elfutils;
+
   # fish = prev.fish.overrideAttrs (_upstream: {
   #   # 2023/02/28
   #   # The following tests FAILED:
@@ -62,12 +64,6 @@
   #   # - not ok 267 - tcp_bind_error_addrinuse_listen
   #   doCheck = false;
   # });
-  libwacom = prev.libwacom.overrideAttrs (_upstream: {
-    # 2023/03/30
-    # "libwacom:all / pytest TIMEOUT"
-    doCheck = false;
-    mesonFlags = [ "-Dtests=disabled" ];
-  });
 
   # llvmPackages_12 =
   #   let
