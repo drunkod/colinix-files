@@ -121,6 +121,8 @@ let
     (mkPod "https://feeds.megaphone.fm/RUNMED9919162779" // pol // infrequent)
     ## Atlas Obscura
     (fromDb "feeds.simplecast.com/xKJ93w_w" // uncat)
+    ## Ezra Klein Show
+    (fromDb "feeds.simplecast.com/82FI35Px" // pol)
   ];
 
   texts = [
