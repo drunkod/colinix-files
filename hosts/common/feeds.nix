@@ -119,6 +119,8 @@ let
     ## The Witch Trials of J.K. Rowling
     ## - <https://www.thefp.com/witchtrials>
     (mkPod "https://feeds.megaphone.fm/RUNMED9919162779" // pol // infrequent)
+    ## Atlas Obscura
+    (fromDb "feeds.simplecast.com/xKJ93w_w" // uncat)
   ];
 
   texts = [
