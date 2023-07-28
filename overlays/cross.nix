@@ -253,13 +253,13 @@ in {
     nativeBuildInputs = upstream.nativeBuildInputs ++ [ final.git ];
   });
 
-  cozy = prev.cozy.override {
-    cozy = prev.cozy.upstream.cozy.override {
-      # fixes runtime error: "Settings schema 'org.gtk.Settings.FileChooser' is not installed"
-      # otherwise gtk3+ schemas aren't added to XDG_DATA_DIRS
-      inherit (emulated) wrapGAppsHook;
-    };
-  };
+  # cozy = prev.cozy.override {
+  #   cozy = prev.cozy.upstream.cozy.override {
+  #     # fixes runtime error: "Settings schema 'org.gtk.Settings.FileChooser' is not installed"
+  #     # otherwise gtk3+ schemas aren't added to XDG_DATA_DIRS
+  #     inherit (emulated) wrapGAppsHook;
+  #   };
+  # };
 
   dante = prev.dante.override {
     # fixes: "configure: error: error: getaddrinfo() error value count too low"
@@ -286,14 +286,9 @@ in {
   #   inherit (emulated) stdenv;
   # };
   emacs = prev.emacs.override {
-    nativeComp = false;
+    nativeComp = false;  # will be renamed to `withNativeCompilation` in future
     # TODO: we can specify 'action-if-cross-compiling' to actually invoke the test programs:
     # <https://www.gnu.org/software/autoconf/manual/autoconf-2.63/html_node/Runtime.html>
-  };
-
-  epiphany = prev.epiphany.override {
-    # fixes -msse2, -mfpmath=sse flags
-    wrapGAppsHook4 = final.wrapGAppsHook;
   };
 
   firefox-extensions = prev.firefox-extensions.overrideScope' (self: super: {
@@ -352,10 +347,7 @@ in {
   gcr_4 = (
     # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
     mvToNativeInputs [ final.gnupg final.openssh ] prev.gcr_4
-  ).override {
-    # fixes -msse2, -mfpmath=sse flags
-    wrapGAppsHook4 = final.wrapGAppsHook;
-  };
+  );
   gnustep = prev.gnustep.overrideScope' (self: super: {
     # gnustep is going to need a *lot* of work/domain-specific knowledge to truly cross-compile,
     # base = emulated.gnustep.base;
@@ -419,17 +411,8 @@ in {
     # };
     # fixes: "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
     file-roller = mvToNativeInputs [ final.glib ] super.file-roller;
-    gnome-bluetooth = super.gnome-bluetooth.override {
-      # fixes -msse2, -mfpmath=sse flags
-      wrapGAppsHook4 = final.wrapGAppsHook;
-    };
     # fixes: "meson.build:75:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
-    gnome-clocks = (
-      addNativeInputs [ final.gtk4 ] super.gnome-clocks
-    ).override {
-      # fixes -msse2, -mfpmath=sse flags
-      wrapGAppsHook4 = final.wrapGAppsHook;
-    };
+    gnome-clocks = addNativeInputs [ final.gtk4 ] super.gnome-clocks;
     # fixes: "src/meson.build:3:0: ERROR: Program 'glib-compile-resources' not found or not executable"
     gnome-color-manager = mvToNativeInputs [ final.glib ] super.gnome-color-manager;
     # fixes "subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
@@ -531,34 +514,34 @@ in {
       ];
       mesonFlags = lib.remove "-Ddocs=true" orig.mesonFlags;
       outputs = lib.remove "devdoc" orig.outputs;
-    })).override {
-      # fixes -msse2, -mfpmath=sse flags
-      wrapGAppsHook4 = final.wrapGAppsHook;
-    };
+    }));
     # nautilus = super.nautilus.override {
     #   # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
     #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libglib-2.0.so: error adding symbols: file in wrong format"
     #   inherit (emulated) stdenv;
     # };
-    nautilus = (
-      addInputs {
-        # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
-        buildInputs = [ final.libxml2 ];
-        # fixes: "meson.build:226:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
-        nativeBuildInputs = [ final.gtk4 ];
-      }
-      super.nautilus
-    ).override {
-      # fixes -msse2, -mfpmath=sse flags
-      # wrapGAppsHook4 = final.wrapGAppsHook;
-      # fixes -msse2, -mfpmath=ssh flags AND "Settings schema 'org.gtk.gtk4.Settings.FileChooser' is not installed"
-      wrapGAppsHook4 = emulated.wrapGAppsHook4;
-    };
-
-    zenity = super.zenity.override {
-      # fixes -msse2, -mfpmath=sse flags
-      wrapGAppsHook4 = final.wrapGAppsHook;
-    };
+    # nautilus = (
+    #   addInputs {
+    #     # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
+    #     buildInputs = [ final.libxml2 ];
+    #     # fixes: "meson.build:226:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
+    #     nativeBuildInputs = [ final.gtk4 ];
+    #   }
+    #   super.nautilus
+    # ).override {
+    #   # fixes -msse2, -mfpmath=sse flags
+    #   # wrapGAppsHook4 = final.wrapGAppsHook;
+    #   # fixes -msse2, -mfpmath=ssh flags AND "Settings schema 'org.gtk.gtk4.Settings.FileChooser' is not installed"
+    #   # TODO: then we should just add `gtk4` to buildInputs?
+    #   # ^ no, it already is. maybe that it's ALSO in nativeBuildInputs is a problem?
+    #   # ^ probably due to upstream meson.build
+    #   # gnome.post_install(
+    #   #   gtk_update_icon_cache: true,
+    #   #   glib_compile_schemas: true,
+    #   #   update_desktop_database: true,
+    #   # )
+    #   wrapGAppsHook4 = emulated.wrapGAppsHook4;
+    # };
   });
 
   gnome2 = prev.gnome2.overrideScope' (self: super: {
@@ -727,12 +710,12 @@ in {
       ./kitty-no-docs.patch
     ];
   });
-  komikku = prev.komikku.override {
-    komikku = prev.komikku.unpatched.override {
-      # GI_TYPELIB_PATH points to x86_64 types in the default build, only when using wrapGAppsHook4
-      wrapGAppsHook4 = final.wrapGAppsHook;
-    };
-  };
+  # komikku = prev.komikku.override {
+  #   komikku = prev.komikku.unpatched.override {
+  #     # GI_TYPELIB_PATH points to x86_64 types in the default build, only when using wrapGAppsHook4
+  #     wrapGAppsHook4 = final.wrapGAppsHook;
+  #   };
+  # };
   koreader = (prev.koreader.override {
     # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
     inherit (emulated) luajit;
@@ -745,17 +728,17 @@ in {
     # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
     inherit (emulated) luajit;
   };
-  libgweather = rmNativeInputs [ final.glib ] (prev.libgweather.override {
-    # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
-    #   but presumably that's just a different way to emulate it.
-    # the python gobject-introspection stuff is a tangled mess that's impossible to debug:
-    # don't dig further, leave this for some other dedicated soul.
-    inherit (emulated)
-      stdenv  # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
-      gobject-introspection  # fixes gir x86-64 python -> aarch64 shared object import
-      python3  # fixes build-aux/meson/gen_locations_variant.py x86-64 python -> aarch64 import of glib
-    ;
-  });
+  # libgweather = rmNativeInputs [ final.glib ] (prev.libgweather.override {
+  #   # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
+  #   #   but presumably that's just a different way to emulate it.
+  #   # the python gobject-introspection stuff is a tangled mess that's impossible to debug:
+  #   # don't dig further, leave this for some other dedicated soul.
+  #   inherit (emulated)
+  #     stdenv  # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
+  #     gobject-introspection  # fixes gir x86-64 python -> aarch64 shared object import
+  #     python3  # fixes build-aux/meson/gen_locations_variant.py x86-64 python -> aarch64 import of glib
+  #   ;
+  # });
   # libgweather = prev.libgweather.overrideAttrs (upstream: {
   #   nativeBuildInputs = (lib.remove final.gobject-introspection upstream.nativeBuildInputs) ++ [
   #     final.buildPackages.gobject-introspection  # fails to fix "gi._error.GError: g-invoke-error-quark: Could not locate g_option_error_quark: /nix/store/dsx6kqmyg7f3dz9hwhz7m3jrac4vn3pc-glib-aarch64-unknown-linux-gnu-2.74.3/lib/libglib-2.0.so.0"
@@ -782,11 +765,6 @@ in {
   #   mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
   #   callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
   # });
-
-  megapixels = prev.megapixels.override {
-    # fixes -msse2, -mfpmath=sse flags
-    wrapGAppsHook4 = final.wrapGAppsHook;
-  };
 
   # mepo = (prev.mepo.override {
   #   inherit (emulated)
@@ -1276,10 +1254,7 @@ in {
   sysprof = (
     # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
     mvToNativeInputs [ final.glib ] prev.sysprof
-  ).override {
-    # fixes -msse2, -mfpmath=sse flags
-    wrapGAppsHook4 = final.wrapGAppsHook;
-  };
+  );
   # tangram = rmNativeInputs [ final.gobject-introspection ] (
   # tangram = mvToBuildInputs [ (dontCheck (useEmulatedStdenv final.blueprint-compiler)) ] (
   #   addNativeInputs [ final.gjs ] (  # new error: "gi._error.GError: g-invoke-error-quark: Could not locate g_option_error_quark" loading glib
@@ -1315,11 +1290,11 @@ in {
   #     doCheck = false;  # tests time out
   #   };
   # };
-  tangram = prev.tangram.override {
+  tangram = (prev.tangram.override {
     inherit (emulated)
       # required for compilation
       gobject-introspection
-      stdenv  # fixes: "src/meson.build:2:20: ERROR: Program 'gjs' not found or not executable"
+      # stdenv  # fixes: "src/meson.build:2:20: ERROR: Program 'gjs' not found or not executable"
       # not required to compile, but lets try to fix runtime error
       appstream-glib
       gtk4
@@ -1335,18 +1310,21 @@ in {
       # libadwaita
     ;
     blueprint-compiler = dontCheck emulated.blueprint-compiler;  # emulate: because gi. dontCheck: because tests time out
-    gjs = dontCheck emulated.gjs;  # emulate: because Tangram build hangs. dontCheck: because tests time out
-  };
+    # gjs = dontCheck emulated.gjs;  # emulate: because Tangram build hangs. dontCheck: because tests time out
+  }).overrideAttrs (upstream: {
+    # fixes: "src/meson.build:2:20: ERROR: Program 'gjs' not found or not executable"
+    postPatch = (upstream.postPatch or "") + ''
+      substituteInPlace src/meson.build \
+        --replace "find_program('gjs').full_path()" "'${final.gjs}/bin/gjs'"
+    '';
+  });
   # fixes "meson.build:204:12: ERROR: Can not run test applications in this cross environment."
   tracker = useEmulatedStdenv prev.tracker;
   tracker-miners = prev.tracker-miners.override {
     # fixes "meson.build:183:0: ERROR: Can not run test applications in this cross environment."
     inherit (emulated) stdenv;
   };
-  tuba = (prev.tuba.override {
-    # fixes -msse2, -mfpmath=sse flags
-    wrapGAppsHook4 = final.wrapGAppsHook;
-  }).overrideAttrs (upstream: {
+  tuba = prev.tuba.overrideAttrs (upstream: {
     # error: Package `{libadwaita-1,gtksourceview-5,libsecret-1,gee-0.8}' not found in specified Vala API directories or GObject-Introspection GIR directories
     buildInputs = upstream.buildInputs ++ [ final.vala ];
   });
@@ -1394,8 +1372,15 @@ in {
   });
   # fixes "perl: command not found"
   vpnc = mvToNativeInputs [ final.perl ] prev.vpnc;
+  # wrapGAppsHook = prev.wrapGAppsHook.override {
+  #   # prevents build gtk3 from being propagated into places it shouldn't (e.g. waybar)
+  #   isGraphical = false;
+  # };
   wrapGAppsHook4 = prev.wrapGAppsHook4.override {
-    gtk3 = final.emptyDirectory;
+    # fixes -msse2, -mfpmath=sse flags being inherited by consumers.
+    # ^ maybe that's because of the stuff in depsTargetTargetPropagated?
+    isGraphical = false;
+    # gtk3 = final.emptyDirectory;
   };
   xapian = prev.xapian.overrideAttrs (upstream: {
     # the output has #!/bin/sh scripts.
@@ -1410,10 +1395,7 @@ in {
     addNativeInputs [ final.wayland-scanner ] (
       mvToNativeInputs [ final.gettext final.glib ] prev.xdg-desktop-portal-gnome
     )
-  ).override {
-    # fixes -msse2, -mfpmath=sse flags
-    wrapGAppsHook4 = final.wrapGAppsHook;
-  };
+  );
   # "fatal error: urcu.h: No such file or directory"
   # xfsprogs wants to compile things for the build target (BUILD_CC)
   # xfsprogs = useEmulatedStdenv prev.xfsprogs;
@@ -1448,9 +1430,12 @@ in {
   };
 
   waybar = (prev.waybar.override {
-    inherit (emulated) wrapGAppsHook;
     runTests = false;
     cavaSupport = false;  # doesn't cross compile
+    # hopefully fixes: "/nix/store/sc1pz0zaqwpai24zh7xx0brjinflmc6v-aarch64-unknown-linux-gnu-binutils-2.40/bin/aarch64-unknown-linux-gnu-ld: /nix/store/ghxl1zrfnvh69dmv7xa1swcbyx06va4y-wayland-1.22.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
+    wrapGAppsHook = final.wrapGAppsHook.override {
+      isGraphical = false;
+    };
   }).overrideAttrs (upstream: {
     depsBuildBuild = upstream.depsBuildBuild or [] ++ [ final.pkg-config ];
   });
