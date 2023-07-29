@@ -8,12 +8,18 @@
 let
   dontCheck = p: p.overrideAttrs (_: {
     doCheck = false;
+    doInstallCheck = false;
+  });
+  dontCheckAarch64 = p: p.overrideAttrs (_: next.lib.optionalAttrs (p.stdenv.targetPlatform.system == "aarch64-linux") {
+    # only `dontCheck` if the package is being built for aarch64
+    doCheck = false;
+    doInstallCheck = false;
   });
 in {
   # 2023/07/27
   # 4 tests fail when building `host-pkgs.moby.emulated.elfutils`
   # it might be enough to only disable checks when targeting aarch64, which could reduce rebuilds?
-  elfutils = dontCheck prev.elfutils;
+  elfutils = dontCheckAarch64 prev.elfutils;
 
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (py-next: py-prev: {

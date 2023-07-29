@@ -520,15 +520,16 @@ in {
     #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libglib-2.0.so: error adding symbols: file in wrong format"
     #   inherit (emulated) stdenv;
     # };
-    # nautilus = (
-    #   addInputs {
-    #     # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
-    #     buildInputs = [ final.libxml2 ];
-    #     # fixes: "meson.build:226:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
-    #     nativeBuildInputs = [ final.gtk4 ];
-    #   }
-    #   super.nautilus
-    # ).override {
+    nautilus = (
+      addInputs {
+        # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
+        buildInputs = [ final.libxml2 ];
+        # fixes: "meson.build:226:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
+        nativeBuildInputs = [ final.gtk4 ];
+      }
+      super.nautilus
+    );
+    # .override {
     #   # fixes -msse2, -mfpmath=sse flags
     #   # wrapGAppsHook4 = final.wrapGAppsHook;
     #   # fixes -msse2, -mfpmath=ssh flags AND "Settings schema 'org.gtk.gtk4.Settings.FileChooser' is not installed"
@@ -1319,11 +1320,12 @@ in {
     '';
   });
   # fixes "meson.build:204:12: ERROR: Can not run test applications in this cross environment."
-  tracker = useEmulatedStdenv prev.tracker;
-  tracker-miners = prev.tracker-miners.override {
+  tracker = addNativeInputs [ final.mesonEmulatorHook ] prev.tracker;
+  # fixes "meson.build:425:23: ERROR: Program 'glib-compile-schemas' not found or not executable"
+  tracker-miners = mvToNativeInputs [ final.glib ] (
     # fixes "meson.build:183:0: ERROR: Can not run test applications in this cross environment."
-    inherit (emulated) stdenv;
-  };
+    addNativeInputs [ final.mesonEmulatorHook ] prev.tracker-miners
+  );
   tuba = prev.tuba.overrideAttrs (upstream: {
     # error: Package `{libadwaita-1,gtksourceview-5,libsecret-1,gee-0.8}' not found in specified Vala API directories or GObject-Introspection GIR directories
     buildInputs = upstream.buildInputs ++ [ final.vala ];
