@@ -22,6 +22,7 @@
     ./koreader
     ./libreoffice.nix
     ./lemoa.nix
+    ./megapixels.nix
     ./mepo.nix
     ./mpv.nix
     ./msmtp.nix
