@@ -10,7 +10,12 @@ let
     doCheck = false;
     doInstallCheck = false;
   });
-  dontCheckAarch64 = p: p.overrideAttrs (_: next.lib.optionalAttrs (p.stdenv.targetPlatform.system == "aarch64-linux") {
+  aarch64Only = f: p: p.overrideAttrs (upstream:
+    next.lib.optionalAttrs
+      (p.stdenv.targetPlatform.system == "aarch64-linux")
+      (f upstream)
+  );
+  dontCheckAarch64 = aarch64Only (_: {
     # only `dontCheck` if the package is being built for aarch64
     doCheck = false;
     doInstallCheck = false;
@@ -20,6 +25,19 @@ in {
   # 4 tests fail when building `host-pkgs.moby.emulated.elfutils`
   # it might be enough to only disable checks when targeting aarch64, which could reduce rebuilds?
   elfutils = dontCheckAarch64 prev.elfutils;
+
+  # 2023/07/28
+  # "7/7 libwacom:all / pytest                               TIMEOUT        30.36s   killed by signal 15 SIGTERM"
+  libwacom = aarch64Only (_: {
+    doCheck = false;
+    mesonFlags = [ "-Dtests=disabled" ];
+  }) prev.libwacom;
+
+  pipewire = prev.pipewire.override {
+    # avoid a dep on python3.10-PyQt5, which has mixed qt5 versions.
+    # this means we lose firewire support (oh well..?)
+    ffadoSupport = false;
+  };
 
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (py-next: py-prev: {
