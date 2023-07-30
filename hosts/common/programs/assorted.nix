@@ -177,12 +177,6 @@
 
     fluffychat-moby.persist.plaintext = [ ".local/share/chat.fluffy.fluffychat" ];
 
-    # XXX by default fractal stores its state in ~/.local/share/<UUID>.
-    # after logging in, manually change ~/.local/share/keyrings/... to point it to some predictable subdir.
-    # then reboot (so that libsecret daemon re-loads the keyring...?)
-    fractal-latest.persist.private = [ ".local/share/fractal" ];
-    fractal-next.persist.private = [ ".local/share/fractal" ];
-
     # MS GitHub stores auth token in .config
     # TODO: we can populate gh's stuff statically; it even lets us use the same oauth across machines
     gh.persist.private = [ ".config/gh" ];

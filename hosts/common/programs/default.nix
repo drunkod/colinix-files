@@ -9,6 +9,7 @@
     ./evince.nix
     ./firefox.nix
     ./fontconfig.nix
+    ./fractal.nix
     ./git.nix
     ./gnome-feeds.nix
     ./gpodder.nix
