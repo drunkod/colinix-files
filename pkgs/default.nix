@@ -56,7 +56,7 @@ let
 
     # packages i haven't used for a while, may or may not still work
     # fluffychat-moby = callPackage ./additional/fluffychat-moby { };
-    # fractal-latest = callPackage ./additional/fractal-latest { };
+    fractal-latest = callPackage ./additional/fractal-latest { };
     # kaiteki = callPackage ./additional/kaiteki { };
     # tokodon = libsForQt5.callPackage ./additional/tokodon { };
 
