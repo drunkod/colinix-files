@@ -187,13 +187,6 @@
 
     mumble.persist.private = [ ".local/share/Mumble" ];
 
-    # not strictly necessary, but allows caching articles; offline use, etc.
-    nheko.persist.private = [
-      ".config/nheko"  # config file (including client token)
-      ".cache/nheko"  # media cache
-      ".local/share/nheko"  # per-account state database
-    ];
-
     # settings (electron app)
     obsidian.persist.plaintext = [ ".config/obsidian" ];
 

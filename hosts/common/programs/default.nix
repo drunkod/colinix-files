@@ -28,6 +28,7 @@
     ./msmtp.nix
     ./neovim.nix
     ./newsflash.nix
+    ./nheko.nix
     ./nix-index.nix
     ./obsidian.nix
     ./offlineimap.nix
