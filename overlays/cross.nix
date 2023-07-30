@@ -1,3 +1,9 @@
+# upstreaming status:
+# - p11-kit builds on staging
+# - xdg-utils is blocked on perl5.36.0-Module-Build
+#   - needed for File-BaseDir, used by File-MimeInfo
+#   - File-BaseDir can be updated to v0.09, which cross compiles with ease
+
 final: prev:
 let
   inherit (prev) lib;
@@ -35,6 +41,8 @@ let
       rmInputs { buildInputs = nativeBuildInputs; nativeBuildInputs = buildInputs; }
       pkg
     );
+
+  wrapGAppsHook4Fix = p: rmNativeInputs [ final.wrapGAppsHook4 ] (addNativeInputs [ final.wrapGAppsNoGuiHook final.gtk4 ] p);
 
   dontCheck = p: p.overrideAttrs (_: {
     doCheck = false;
@@ -180,7 +188,7 @@ in {
   #       };
   #     };
 
-  # 2023/07/27: upstreaming is blocked on xdg-utils cross compilation
+  # 2023/07/27: upstreaming is blocked on xdg-utils, p11-kit cross compilation
   blueman = prev.blueman.overrideAttrs (orig: {
     # configure: error: ifconfig or ip not found, install net-tools or iproute2
     nativeBuildInputs = orig.nativeBuildInputs ++ [ final.iproute2 ];
@@ -197,9 +205,8 @@ in {
     inherit (emulated) stdenv;
   };
   # fixes "FileNotFoundError: [Errno 2] No such file or directory: 'gtk4-update-icon-cache'"
-  # - only required because of my wrapGAppsHook4 change
   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
-  celluloid = addNativeInputs [ final.gtk4 ] prev.celluloid;
+  # celluloid = wrapGAppsHook4Fix prev.celluloid;
   cdrtools = prev.cdrtools.override {
     # "configure: error: installation or configuration problem: C compiler cc not found."
     inherit (emulated) stdenv;
@@ -533,22 +540,9 @@ in {
         # fixes: "meson.build:226:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
         nativeBuildInputs = [ final.gtk4 ];
       }
-      super.nautilus
+      # fixes -msse2, -mfpmath=sse flags
+      (wrapGAppsHook4Fix super.nautilus)
     );
-    # .override {
-    #   # fixes -msse2, -mfpmath=sse flags
-    #   # wrapGAppsHook4 = final.wrapGAppsHook;
-    #   # fixes -msse2, -mfpmath=ssh flags AND "Settings schema 'org.gtk.gtk4.Settings.FileChooser' is not installed"
-    #   # TODO: then we should just add `gtk4` to buildInputs?
-    #   # ^ no, it already is. maybe that it's ALSO in nativeBuildInputs is a problem?
-    #   # ^ probably due to upstream meson.build
-    #   # gnome.post_install(
-    #   #   gtk_update_icon_cache: true,
-    #   #   glib_compile_schemas: true,
-    #   #   update_desktop_database: true,
-    #   # )
-    #   wrapGAppsHook4 = emulated.wrapGAppsHook4;
-    # };
   });
 
   gnome2 = prev.gnome2.overrideScope' (self: super: {
@@ -721,12 +715,9 @@ in {
       ./kitty-no-docs.patch
     ];
   });
-  # komikku = prev.komikku.override {
-  #   komikku = prev.komikku.unpatched.override {
-  #     # GI_TYPELIB_PATH points to x86_64 types in the default build, only when using wrapGAppsHook4
-  #     wrapGAppsHook4 = final.wrapGAppsHook;
-  #   };
-  # };
+  komikku = prev.komikku.override {
+    komikku = wrapGAppsHook4Fix prev.komikku.unpatched;
+  };
   koreader = (prev.koreader.override {
     # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
     inherit (emulated) luajit;
@@ -775,6 +766,16 @@ in {
   #   # to use non-emulated stdenv by default.
   #   mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
   #   callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
+  # });
+
+  # libwacom = prev.libwacom.overrideAttrs (upstream: {
+  #   # "meson.build:298:7: ERROR: python is missing modules: libevdev, pyudev, pytest"
+  #   nativeBuildInputs = lib.remove [ final.python ] upstream.nativeBuildInputs;
+  #   buildInputs = with final; [
+  #     glib
+  #     libgudev
+  #     # (python.withPackages (ps: with ps; [ pyudev ]))
+  #   ];
   # });
 
   # mepo = (prev.mepo.override {
@@ -986,6 +987,12 @@ in {
       final.desktop-file-utils  # fixes "meson.build:116:8: ERROR: Program 'update-desktop-database' not found or not executable"
     ];
   } prev.phosh-mobile-settings;
+  # pipewire = prev.pipewire.override {
+  #   # avoid a dep on python3.10-PyQt5, which has mixed qt5 versions.
+  #   # this means we lose firewire support (oh well..?)
+  #   ffadoSupport = false;
+  # };
+
   # psqlodbc = prev.psqlodbc.override {
   #   # fixes "configure: error: odbc_config not found (required for unixODBC build)"
   #   inherit (emulated) stdenv;
@@ -1016,11 +1023,12 @@ in {
         ];
       });
       gssapi = py-prev.gssapi.overridePythonAttrs (_orig: {
-        # 2023/07/28: upstreaming is unblocked; same error on servo
+        # 2023/07/29: upstreaming is unblocked; implemented on servo pr/cross-2023-07-28 branch
         # "krb5-aarch64-unknown-linux-gnu-1.20.1/lib/libgssapi_krb5.so: cannot open shared object file"
         # setup.py only needs this to detect if kerberos was configured with gssapi support (not sure why it doesn't call krb5-config for that?)
         # it doesn't actually link or use anything from the build krb5 except a "canary" symobl.
-        GSSAPI_MAIN_LIB = "${final.buildPackages.krb5}/lib/libgssapi_krb5.so";
+        # GSSAPI_MAIN_LIB = "${final.buildPackages.krb5}/lib/libgssapi_krb5.so";
+        env.GSSAPI_SUPPORT_DETECT = lib.boolToString (prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform);
       });
       # h5py = py-prev.h5py.overridePythonAttrs (orig: {
       #   # XXX: can't upstream until its dependency, hdf5, is fixed. that looks TRICKY.
@@ -1315,28 +1323,15 @@ in {
   #   };
   # };
   tangram = (prev.tangram.override {
-    inherit (emulated)
-      # required for compilation
-      gobject-introspection
-      # stdenv  # fixes: "src/meson.build:2:20: ERROR: Program 'gjs' not found or not executable"
-      # not required to compile, but lets try to fix runtime error
-      appstream-glib
-      gtk4
-      wrapGAppsHook  # fixes icons
-      # older emulated inputs which probably aren't actually needed:
-      # desktop-file-utils
-      # gettext
-      # buildInputs, not required to compile
-      # gdk-pixbuf
-      # glib
-      # glib-networking
-      # gsettings-desktop-schemas
-      # libadwaita
-    ;
-    blueprint-compiler = dontCheck emulated.blueprint-compiler;  # emulate: because gi. dontCheck: because tests time out
-    # gjs = dontCheck emulated.gjs;  # emulate: because Tangram build hangs. dontCheck: because tests time out
+    # N.B. blueprint-compiler is in nativeBuildInputs.
+    # the trick here is to force the aarch64 versions to be used during build (via emulation),
+    # which -- if we also emulate gobject-introspection (and the transient gjs dep) -- gets us the right gobject-introspection dirs.
+    # `dontCheck` because tests time out.
+    blueprint-compiler = dontCheck emulated.blueprint-compiler;
+    gjs = dontCheck emulated.gjs;
+    inherit (emulated) gobject-introspection;
   }).overrideAttrs (upstream: {
-    # fixes: "src/meson.build:2:20: ERROR: Program 'gjs' not found or not executable"
+    # depsBuildBuild = [ final.pkg-config ];  # else no `gio` dep found
     postPatch = (upstream.postPatch or "") + ''
       substituteInPlace src/meson.build \
         --replace "find_program('gjs').full_path()" "'${final.gjs}/bin/gjs'"
@@ -1350,7 +1345,7 @@ in {
     # fixes "meson.build:183:0: ERROR: Can not run test applications in this cross environment."
     addNativeInputs [ final.mesonEmulatorHook ] prev.tracker-miners
   );
-  tuba = prev.tuba.overrideAttrs (upstream: {
+  tuba = (wrapGAppsHook4Fix prev.tuba).overrideAttrs (upstream: {
     # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
     # error: Package `{libadwaita-1,gtksourceview-5,libsecret-1,gee-0.8}' not found in specified Vala API directories or GObject-Introspection GIR directories
     buildInputs = upstream.buildInputs ++ [ final.vala ];
@@ -1407,13 +1402,13 @@ in {
   #   # prevents build gtk3 from being propagated into places it shouldn't (e.g. waybar)
   #   isGraphical = false;
   # };
-  wrapGAppsHook4 = prev.wrapGAppsHook4.override {
-    # fixes -msse2, -mfpmath=sse flags being inherited by consumers.
-    # ^ maybe that's because of the stuff in depsTargetTargetPropagated?
-    # N.B.: this makes the hook functionally equivalent to `wrapGAppsNoGuiHook`
-    isGraphical = false;
-    # gtk3 = final.emptyDirectory;
-  };
+  # wrapGAppsHook4 = prev.wrapGAppsHook4.override {
+  #   # fixes -msse2, -mfpmath=sse flags being inherited by consumers.
+  #   # ^ maybe that's because of the stuff in depsTargetTargetPropagated?
+  #   # N.B.: this makes the hook functionally equivalent to `wrapGAppsNoGuiHook`
+  #   isGraphical = false;
+  #   # gtk3 = final.emptyDirectory;
+  # };
   xapian = prev.xapian.overrideAttrs (upstream: {
     # the output has #!/bin/sh scripts.
     # - shebangs get re-written on native build, but not cross build
