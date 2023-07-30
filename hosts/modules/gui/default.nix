@@ -21,11 +21,11 @@
       "epiphany"  # gnome's web browser
       "evince"  # works on phosh
       # "foliate"  # e-book reader
+      # "fractal"  # matrix client
       # "gnome.cheese"
       # "gnome-feeds"  # RSS reader (with claimed mobile support)
       "gnome.file-roller"
       # "gnome.gnome-maps"  # works on phosh
-      "gnome.nautilus"
       # "gnome-podcasts"
       # "gnome.gnome-system-monitor"
       # "gnome.gnome-terminal"  # works on phosh
@@ -70,6 +70,7 @@
       "gimp"  # broken on phosh
       "gnome.dconf-editor"
       "gnome.gnome-disk-utility"
+      "gnome.nautilus"  # file browser
       # "gnome.totem"  # video player, supposedly supports UPnP
       "handbrake"
       "hase"
@@ -92,6 +93,7 @@
     package = null;
     suggestedPrograms = [
       "megapixels"  # camera app
+      "portfolio-filemanager"
     ];
   };
 
