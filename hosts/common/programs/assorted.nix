@@ -75,7 +75,6 @@
         "efivar"
         # "flashrom"
         "fwupd"
-        "gh"  # MS GitHub cli
         "git"  # needed as a user package, for config.
         # "gnupg"
         # "gocryptfs"
@@ -90,8 +89,6 @@
         "neovim"  # needed as a user package, for swap persistence
         # "nettools"
         # "networkmanager"
-        "nix-index"
-        "nixpkgs-review"
         # "nixos-generators"
         "nmon"
         # "node2nix"
@@ -102,8 +99,7 @@
         # "python3Packages.eyeD3"  # music tagging
         "ripgrep"  # needed as a user package so that its user-level config file can be installed
         "rsync"
-        "sane-scripts"
-        "sequoia"
+        "sane-scripts"  # TODO: split; moby doesn't need the duplicity related ones
         "snapper"
         "sops"
         "speedtest-cli"
@@ -116,6 +112,16 @@
         "xdg-utils"  # for xdg-open
         # "yarn"
         "zsh"
+      ];
+    };
+
+    desktopConsoleUtils = {
+      package = null;
+      suggestedPrograms = [
+        "gh"  # MS GitHub cli
+        "nix-index"
+        "nixpkgs-review"
+        "sequoia"
       ];
     };
 
@@ -134,7 +140,7 @@
       suggestedPrograms = [
         "aerc"  # email client
         "msmtp"  # sendmail
-        "offlineimap"  # email mailox sync
+        "offlineimap"  # email mailbox sync
         "sfeed"  # RSS fetcher
         "visidata"  # TUI spreadsheet viewer/editor
         "w3m"  # web browser
