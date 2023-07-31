@@ -1212,6 +1212,13 @@ in {
     # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
     inherit (emulated) stdenv;
   };
+  rpm = prev.rpm.overrideAttrs (upstream: {
+    # fixes "python too old". might also be specifiable as a configure flag?
+    env = upstream.env // {
+      PYTHON = final.python3.interpreter;
+    };
+  });
+
   # samba = prev.samba.overrideAttrs (_upstream: {
   #   # we get "cannot find C preprocessor: aarch64-unknown-linux-gnu-cpp", but ONLY when building with the ccache stdenv.
   #   # this solves that, but `CPP` must be a *single* path -- not an expression.

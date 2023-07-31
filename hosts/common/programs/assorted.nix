@@ -72,6 +72,7 @@
         # "cdrtools"
         "clinfo"
         "dmidecode"
+        "dtrx"  # `unar` alternative, "Do The Right eXtraction"
         "efivar"
         # "flashrom"
         "fwupd"
@@ -106,7 +107,7 @@
         # "ssh-to-age"
         "sudo"
         # "tageditor"  # music tagging
-        "unar"
+        # "unar"
         "wireguard-tools"
         "xdg-terminal-exec"
         "xdg-utils"  # for xdg-open

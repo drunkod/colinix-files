@@ -264,6 +264,17 @@ in [
     hash = "sha256-fAZpduh3JZeFixJ4yX0wkh/GRp0gYKsTT+XkNdpK7CU=";
   })
 
+  (fetchpatch' {
+    title = "dtrx: 8.5.1 -> 8.5.3";
+    saneCommit = "eba9bbc251db942ae27f87824cae643b5f3198c2";
+    hash = "sha256-wgpjUXQ/ZnRY5AJ9xOL2BToA7hDaokDiMmPkMt0Y5go=";
+  })
+  (fetchpatch' {
+    title = "dtrx: don't double-wrap the binary";
+    saneCommit = "97a9d12b6c31a58e9067eae7cdcd3f53055c124c";
+    hash = "sha256-g+p96OrBOQAwwH7nwHBuM/KGeIrnBzh9u9lL0M0sYWo=";
+  })
+
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
   #   title = "matrix-appservice-irc: 0.38.0 -> 1.0.0";
