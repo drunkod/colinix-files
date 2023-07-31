@@ -266,14 +266,16 @@ in [
 
   (fetchpatch' {
     title = "dtrx: 8.5.1 -> 8.5.3";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/246282";
     saneCommit = "eba9bbc251db942ae27f87824cae643b5f3198c2";
-    hash = "sha256-wgpjUXQ/ZnRY5AJ9xOL2BToA7hDaokDiMmPkMt0Y5go=";
+    # hash = "sha256-wgpjUXQ/ZnRY5AJ9xOL2BToA7hDaokDiMmPkMt0Y5go=";
+    hash = "sha256-awUDlibmxcJcdMZeBXcWR1U+P/GCxCH/lalhwZ5Er90=";
   })
-  (fetchpatch' {
-    title = "dtrx: don't double-wrap the binary";
-    saneCommit = "97a9d12b6c31a58e9067eae7cdcd3f53055c124c";
-    hash = "sha256-g+p96OrBOQAwwH7nwHBuM/KGeIrnBzh9u9lL0M0sYWo=";
-  })
+  # (fetchpatch' {
+  #   title = "dtrx: don't double-wrap the binary";
+  #   saneCommit = "97a9d12b6c31a58e9067eae7cdcd3f53055c124c";
+  #   hash = "sha256-g+p96OrBOQAwwH7nwHBuM/KGeIrnBzh9u9lL0M0sYWo=";
+  # })
 
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
