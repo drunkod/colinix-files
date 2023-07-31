@@ -1,16 +1,16 @@
 # upstreaming status:
 # - p11-kit builds on staging
-# - xdg-utils is blocked on perl5.36.0-Module-Build
-#   - needed for File-BaseDir, used by File-MimeInfo
-#   - File-BaseDir can be updated to v0.09, which cross compiles with ease
-#
-# perlInterpters:
-# - Test-utf8 fails cross (wants Fcntl, for `flock` and `seek`)
-#   - (already on latest release; upstream is dead)
-#   - Test-File depends on Test-utf8
-#     - on 1.443; 1.993 is out, NO LONGER USES Test-utf8
-#     - File-Copy-Recursive depends on Test-File
-#       - used by imapsync?
+# - xdg-utils builds on servo branch
+#   - xdg-utils is blocked on perl5.36.0-Module-Build
+#     - needed for File-BaseDir, used by File-MimeInfo
+#     - File-BaseDir can be updated to v0.09, which cross compiles with ease
+# - libgudev builds on servo branch
+# - gdk-pixbuf doesn't generate `gdk-pixbuf-thumbnailer` on cross
+#   - been this way since 2018: <https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/merge_requests/20>
+#   - as authored upstream, thumbnailer depends on loader.cache, and neither are built during cross compilation.
+#   - nixos manually builds loader.cache in postInstall (via emulator).
+#   - even though we have loader.cache, ordering means that thumbnailer still can't be built.
+#   - solution is probably to integrate meson's cross_file stuff, and pushing all this emulation upstream.
 
 final: prev:
 let
@@ -196,7 +196,7 @@ in {
   #       };
   #     };
 
-  # 2023/07/27: upstreaming is blocked on xdg-utils, p11-kit cross compilation
+  # 2023/07/27: upstreaming is blocked on xdg-utils, p11-kit, libgudev cross compilation
   blueman = prev.blueman.overrideAttrs (orig: {
     # configure: error: ifconfig or ip not found, install net-tools or iproute2
     nativeBuildInputs = orig.nativeBuildInputs ++ [ final.iproute2 ];
@@ -236,7 +236,7 @@ in {
     '';
   });
 
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/27: upstreaming is blocked on p11-kit, argyllcms, libavif cross compilation
   colord = prev.colord.overrideAttrs (upstream: {
     # fixes: (meson) ERROR: An exe_wrapper is needed but was not found. Please define one in cross file and check the command and/or add it to PATH.
     nativeBuildInputs = upstream.nativeBuildInputs ++ lib.optionals (!prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) [
