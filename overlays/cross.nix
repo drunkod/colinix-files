@@ -94,8 +94,8 @@ in {
     # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
     # hdf5  # configure: error: cannot run test program while cross compiling
     # http2
-    ibus  # "error: cannot run test program while cross compiling"
-    jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
+    # ibus  # "error: cannot run test program while cross compiling"
+    # jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
     # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
     # libsForQt5  # if we emulate qt5, we're better off emulating libsForQt5 else qt complains about multiple versions of qtbase
     mepo  # /build/source/src/sdlshim.zig:1:20: error: C import failed
@@ -204,21 +204,21 @@ in {
   bonsai = prev.bonsai.override {
     inherit (emulated) hare stdenv;
   };
-  brltty = prev.brltty.override {
-    # configure: error: no acceptable C compiler found in $PATH
-    inherit (emulated) stdenv;
-  };
-  cantarell-fonts = prev.cantarell-fonts.override {
-    # fixes error where python3.10-skia-pathops dependency isn't available for the build platform
-    inherit (emulated) stdenv;
-  };
+  # brltty = prev.brltty.override {
+  #   # configure: error: no acceptable C compiler found in $PATH
+  #   inherit (emulated) stdenv;
+  # };
+  # cantarell-fonts = prev.cantarell-fonts.override {
+  #   # fixes error where python3.10-skia-pathops dependency isn't available for the build platform
+  #   inherit (emulated) stdenv;
+  # };
   # fixes "FileNotFoundError: [Errno 2] No such file or directory: 'gtk4-update-icon-cache'"
   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
   # celluloid = wrapGAppsHook4Fix prev.celluloid;
-  cdrtools = prev.cdrtools.override {
-    # "configure: error: installation or configuration problem: C compiler cc not found."
-    inherit (emulated) stdenv;
-  };
+  # cdrtools = prev.cdrtools.override {
+  #   # "configure: error: installation or configuration problem: C compiler cc not found."
+  #   inherit (emulated) stdenv;
+  # };
   # cdrtools = prev.cdrtools.overrideAttrs (upstream: {
   #   # can't get it to actually use our CC, even when specifying these explicitly
   #   # CC = "${final.stdenv.cc}/bin/${final.stdenv.cc.targetPrefix}cc";
@@ -259,10 +259,10 @@ in {
   #   };
   # };
 
-  dante = prev.dante.override {
-    # fixes: "configure: error: error: getaddrinfo() error value count too low"
-    inherit (emulated) stdenv;
-  };
+  # dante = prev.dante.override {
+  #   # fixes: "configure: error: error: getaddrinfo() error value count too low"
+  #   inherit (emulated) stdenv;
+  # };
 
   # dconf = (prev.dconf.override {
   #   # we need dconf to build with vala, because dconf-editor requires that.
@@ -342,25 +342,23 @@ in {
     # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
     mvToNativeInputs [ final.gnupg final.openssh ] prev.gcr_4
   );
-  gnustep = prev.gnustep.overrideScope' (self: super: {
-    # gnustep is going to need a *lot* of work/domain-specific knowledge to truly cross-compile,
-    # base = emulated.gnustep.base;
-    base = (super.base.override {
-      # fixes: "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings."
-      # emulating gsmake amounts to emulating stdenv.
-      inherit (emulated.gnustep) gsmakeDerivation;
-    }).overrideAttrs (upstream: {
-      # fixes: "checking FFI library usage... ./configure: line 11028: pkg-config: command not found"
-      # nixpkgs has this in nativeBuildInputs... but that's failing when we partially emulate things.
-      buildInputs = (upstream.buildInputs or []) ++ [ prev.pkg-config ];
-    });
-  });
+  # gnustep = prev.gnustep.overrideScope' (self: super: {
+  #   # gnustep is going to need a *lot* of work/domain-specific knowledge to truly cross-compile,
+  #   # base = emulated.gnustep.base;
+  #   base = (super.base.override {
+  #     # fixes: "configure: error: Your compiler does not appear to implement the -fconstant-string-class option needed for support of strings."
+  #     # emulating gsmake amounts to emulating stdenv.
+  #     inherit (emulated.gnustep) gsmakeDerivation;
+  #   }).overrideAttrs (upstream: {
+  #     # fixes: "checking FFI library usage... ./configure: line 11028: pkg-config: command not found"
+  #     # nixpkgs has this in nativeBuildInputs... but that's failing when we partially emulate things.
+  #     buildInputs = (upstream.buildInputs or []) ++ [ prev.pkg-config ];
+  #   });
+  # });
   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
   gthumb = mvInputs { nativeBuildInputs = [ final.glib ]; } prev.gthumb;
 
   gnome = prev.gnome.overrideScope' (self: super: {
-    inherit (emulated.gnome)
-    ;
     # dconf-editor = super.dconf-editor.override {
     #   # fails to fix original error
     #   inherit (emulated) stdenv;
@@ -506,38 +504,38 @@ in {
     );
   });
 
-  gnome2 = prev.gnome2.overrideScope' (self: super: {
-    # inherit (emulated.gnome2)
-    #   GConf
-    # ;
-    # GConf = (
-    #   # python3 -> nativeBuildInputs fixes "2to3: command not found"
-    #   # glib.dev in nativeBuildInputs fixes "gconfmarshal.list: command not found"
-    #   # new error: "** (orbit-idl-2): WARNING **: ./GConfX.idl compilation failed"
-    #   addNativeInputs
-    #     [ final.glib.dev ]
-    #     (mvToNativeInputs [ final.python3 ] super.GConf);
-    # );
-    # TODO: purge gconf from my system. last release was 2013: it's dead.
-    GConf = super.GConf.override {
-      inherit (emulated) stdenv;
-    };
+  # gnome2 = prev.gnome2.overrideScope' (self: super: {
+  #   # inherit (emulated.gnome2)
+  #   #   GConf
+  #   # ;
+  #   # GConf = (
+  #   #   # python3 -> nativeBuildInputs fixes "2to3: command not found"
+  #   #   # glib.dev in nativeBuildInputs fixes "gconfmarshal.list: command not found"
+  #   #   # new error: "** (orbit-idl-2): WARNING **: ./GConfX.idl compilation failed"
+  #   #   addNativeInputs
+  #   #     [ final.glib.dev ]
+  #   #     (mvToNativeInputs [ final.python3 ] super.GConf);
+  #   # );
+  #   # avoid gconf. last release was 2013: it's dead.
+  #   GConf = super.GConf.override {
+  #     inherit (emulated) stdenv;
+  #   };
 
-    # gnome_vfs = (
-    #   # fixes: "configure: error: gconftool-2 executable not found in your path - should be installed with GConf"
-    #   # new error: "configure: error: cannot run test program while cross compiling"
-    #   mvToNativeInputs [ self.GConf ] super.gnome_vfs
-    # );
-    gnome_vfs = useEmulatedStdenv super.gnome_vfs;
-    libIDL  = super.libIDL.override {
-      # "configure: error: cannot run test program while cross compiling"
-      inherit (emulated) stdenv;
-    };
-    ORBit2 = super.ORBit2.override {
-      # "configure: error: Failed to find alignment. Check config.log for details."
-      inherit (emulated) stdenv;
-    };
-  });
+  #   # gnome_vfs = (
+  #   #   # fixes: "configure: error: gconftool-2 executable not found in your path - should be installed with GConf"
+  #   #   # new error: "configure: error: cannot run test program while cross compiling"
+  #   #   mvToNativeInputs [ self.GConf ] super.gnome_vfs
+  #   # );
+  #   gnome_vfs = useEmulatedStdenv super.gnome_vfs;
+  #   libIDL  = super.libIDL.override {
+  #     # "configure: error: cannot run test program while cross compiling"
+  #     inherit (emulated) stdenv;
+  #   };
+  #   ORBit2 = super.ORBit2.override {
+  #     # "configure: error: Failed to find alignment. Check config.log for details."
+  #     inherit (emulated) stdenv;
+  #   };
+  # });
 
   # 2023/07/27: upstreaming is blocked on xdg-utils cross compilation
   gpodder = prev.gpodder.overridePythonAttrs (upstream: {
@@ -610,30 +608,30 @@ in {
   # fixes: "make: gcc: No such file or directory"
   java-service-wrapper = useEmulatedStdenv prev.java-service-wrapper;
 
-  javaPackages = prev.javaPackages // {
-    compiler = prev.javaPackages.compiler // {
-      adoptopenjdk-8 = prev.javaPackages.compiler.adoptopenjdk-8 // {
-        # fixes "error: auto-patchelf could not satisfy dependency libgcc_s.so.1 wanted by /nix/store/fvln9pahd3c4ys8xv5c0w91xm2347cvq-adoptopenjdk-hotspot-bin-aarch64-unknown-linux-gnu-8.0.322/jre/lib/aarch64/libsunec.so"
-        jdk-hotspot  = useEmulatedStdenv prev.javaPackages.compiler.adoptopenjdk-8.jdk-hotspot;
-      };
-      openjdk8-bootstrap = useEmulatedStdenv prev.javaPackages.compiler.openjdk8-bootstrap;
-      # fixes "configure: error: Could not find required tool for WHICH"
-      openjdk8 = useEmulatedStdenv prev.javaPackages.compiler.openjdk8;
-      # openjdk19 = (
-      #   # fixes "configure: error: Could not find required tool for ZIPEXE"
-      #   # new failure: "checking for cc... [not found]"
-      #   (mvToNativeInputs
-      #     [ final.zip ]
-      #     (useEmulatedStdenv prev.javaPackages.compiler.openjdk19)
-      #   ).overrideAttrs (_upstream: {
-      #     # avoid building `support/demos`, which segfaults
-      #     buildFlags = [ "product-images" ];
-      #     doCheck = false;  # pre-emptive
-      #   })
-      # );
-      openjdk19 = emulated.javaPackages.compiler.openjdk19;
-    };
-  };
+  # javaPackages = prev.javaPackages // {
+  #   compiler = prev.javaPackages.compiler // {
+  #     adoptopenjdk-8 = prev.javaPackages.compiler.adoptopenjdk-8 // {
+  #       # fixes "error: auto-patchelf could not satisfy dependency libgcc_s.so.1 wanted by /nix/store/fvln9pahd3c4ys8xv5c0w91xm2347cvq-adoptopenjdk-hotspot-bin-aarch64-unknown-linux-gnu-8.0.322/jre/lib/aarch64/libsunec.so"
+  #       jdk-hotspot  = useEmulatedStdenv prev.javaPackages.compiler.adoptopenjdk-8.jdk-hotspot;
+  #     };
+  #     openjdk8-bootstrap = useEmulatedStdenv prev.javaPackages.compiler.openjdk8-bootstrap;
+  #     # fixes "configure: error: Could not find required tool for WHICH"
+  #     openjdk8 = useEmulatedStdenv prev.javaPackages.compiler.openjdk8;
+  #     # openjdk19 = (
+  #     #   # fixes "configure: error: Could not find required tool for ZIPEXE"
+  #     #   # new failure: "checking for cc... [not found]"
+  #     #   (mvToNativeInputs
+  #     #     [ final.zip ]
+  #     #     (useEmulatedStdenv prev.javaPackages.compiler.openjdk19)
+  #     #   ).overrideAttrs (_upstream: {
+  #     #     # avoid building `support/demos`, which segfaults
+  #     #     buildFlags = [ "product-images" ];
+  #     #     doCheck = false;  # pre-emptive
+  #     #   })
+  #     # );
+  #     openjdk19 = emulated.javaPackages.compiler.openjdk19;
+  #   };
+  # };
 
   jellyfin-media-player = mvToBuildInputs
     [ final.libsForQt5.wrapQtAppsHook ]  # this shouldn't be: but otherwise we get mixed qtbase deps
@@ -764,10 +762,10 @@ in {
   #   # fails to fix "configure.ac:58: error: possibly undefined macro: AM_GLIB_GNU_GETTEXT"
   #   nativeBuildInputs = orig.nativeBuildInputs ++ [ final.gettext ];
   # });
-  networkmanager-iodine = prev.networkmanager-iodine.override {
-    # fixes "configure.ac:58: error: possibly undefined macro: AM_GLIB_GNU_GETTEXT"
-    inherit (emulated) stdenv;
-  };
+  # networkmanager-iodine = prev.networkmanager-iodine.override {
+  #   # fixes "configure.ac:58: error: possibly undefined macro: AM_GLIB_GNU_GETTEXT"
+  #   inherit (emulated) stdenv;
+  # };
   # networkmanager-iodine = addNativeInputs [ final.gettext ] prev.networkmanager-iodine;
   # networkmanager-iodine = prev.networkmanager-iodine.overrideAttrs (upstream: {
   #   # buildInputs = upstream.buildInputs ++ [ final.intltool final.gettext ];
@@ -864,14 +862,14 @@ in {
   # fixes "/nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 2: --prefix=ods_manager: command not found"
   # - dbus-glib should maybe be removed from buildInputs, too? but doing so breaks upstream configure
   obex_data_server = addNativeInputs [ final.dbus-glib ] prev.obex_data_server;
-  openfortivpn = prev.openfortivpn.override {
-    # fixes "checking for /proc/net/route... configure: error: cannot check for file existence when cross compiling"
-    inherit (emulated) stdenv;
-  };
-  ostree = prev.ostree.override {
-    # fixes "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
-    inherit (emulated) stdenv;
-  };
+  # openfortivpn = prev.openfortivpn.override {
+  #   # fixes "checking for /proc/net/route... configure: error: cannot check for file existence when cross compiling"
+  #   inherit (emulated) stdenv;
+  # };
+  # ostree = prev.ostree.override {
+  #   # fixes "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
+  #   inherit (emulated) stdenv;
+  # };
   # ostree = prev.ostree.overrideAttrs (upstream: {
   #   # fixes: "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
   #   # new failure mode: "./src/libotutil/ot-gpg-utils.h:22:10: fatal error: gpgme.h: No such file or directory"
@@ -988,9 +986,9 @@ in {
           "tests/unit/test_compat.py"
         ];
       });
-      scipy = py-prev.scipy.override {
-        inherit (emulated) stdenv;
-      };
+      # scipy = py-prev.scipy.override {
+      #   inherit (emulated) stdenv;
+      # };
       # scipy = py-prev.scipy.overridePythonAttrs (orig: {
       #   # "/nix/store/yhz6yy9bp52x9fvcda4lr6kgsngxnv2l-python3.10-numpy-1.24.2/lib/python3.10/site-packages/numpy/core/include/../lib/libnpymath.a: error adding symbols: file in wrong format"
       #   # mesonFlags = orig.mesonFlags or [] ++ [ "-Duse-pythran=false" ];
@@ -1195,18 +1193,18 @@ in {
   #   ];
   # });
 
-  squeekboard = prev.squeekboard.override {
-    inherit (emulated)
-      rustPlatform  # fixes original "'rust' compiler binary not defined in cross or native file"
-      rustc
-      cargo
-      stdenv  # fixes "gcc: error: unrecognized command line option '-m64'"
-      glib  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/jzh15bi6zablx3d9s928w3lgqy6and91-glib-2.74.3/lib/libgio-2.0.so"
-      wayland  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/ni0vb1pnaznx85378i3h9xhw9cay68g5-wayland-1.21.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
-      # gtk3  # fails to fix: "/nix/store/acl3fg3z4i96d6lha2cbr16k7bl1zjs5-binutils-2.40/bin/ld: /nix/store/k2jd14yl5qcl3kwifhhs271607fjafbx-gtk+3-3.24.36/lib/libgtk-3.so: error adding symbols: file in wrong format"
-      wrapGAppsHook  # introduces a competing gtk3 at link-time, unless emulated
-    ;
-  };
+  # squeekboard = prev.squeekboard.override {
+  #   inherit (emulated)
+  #     rustPlatform  # fixes original "'rust' compiler binary not defined in cross or native file"
+  #     rustc
+  #     cargo
+  #     stdenv  # fixes "gcc: error: unrecognized command line option '-m64'"
+  #     glib  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/jzh15bi6zablx3d9s928w3lgqy6and91-glib-2.74.3/lib/libgio-2.0.so"
+  #     wayland  # fixes error when linking src/squeekboard: "/nix/store/3c0dqm093ylw8ks7myzxdaif0m16rgcl-binutils-2.40/bin/ld: /nix/store/ni0vb1pnaznx85378i3h9xhw9cay68g5-wayland-1.21.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
+  #     # gtk3  # fails to fix: "/nix/store/acl3fg3z4i96d6lha2cbr16k7bl1zjs5-binutils-2.40/bin/ld: /nix/store/k2jd14yl5qcl3kwifhhs271607fjafbx-gtk+3-3.24.36/lib/libgtk-3.so: error adding symbols: file in wrong format"
+  #     wrapGAppsHook  # introduces a competing gtk3 at link-time, unless emulated
+  #   ;
+  # };
 
   sysprof = (
     # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
