@@ -79,7 +79,7 @@
       "kdenlive"
       "kid3"  # audio tagging
       "krita"
-      "libreoffice-fresh"  # TODO: replace with an office suite that uses saner packaging?
+      "libreoffice"  # TODO: replace with an office suite that uses saner packaging?
       "mumble"
       "obsidian"
       "slic3r"
