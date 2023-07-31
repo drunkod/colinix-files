@@ -61,7 +61,7 @@
       "audacity"
       "blanket"  # ambient noise generator
       "brave"  # for the integrated wallet -- as a backup
-      "chromium"
+      # "chromium"  # chromium takes hours to build. brave is chromium-based, distributed in binary form, so prefer it.
       "dino"
       "electrum"
       "element-desktop"
@@ -79,7 +79,7 @@
       "kdenlive"
       "kid3"  # audio tagging
       "krita"
-      "libreoffice-fresh"
+      "libreoffice-fresh"  # TODO: replace with an office suite that uses saner packaging?
       "mumble"
       "obsidian"
       "slic3r"
