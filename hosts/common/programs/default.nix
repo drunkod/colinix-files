@@ -40,6 +40,7 @@
     ./tangram.nix
     ./vlc.nix
     ./wireshark.nix
+    ./xarchiver.nix
     ./zeal.nix
     ./zsh
   ];

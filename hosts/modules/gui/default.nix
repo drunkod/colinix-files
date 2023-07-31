@@ -24,7 +24,7 @@
       # "fractal"  # matrix client
       # "gnome.cheese"
       # "gnome-feeds"  # RSS reader (with claimed mobile support)
-      "gnome.file-roller"
+      # "gnome.file-roller"
       # "gnome.gnome-maps"  # works on phosh
       # "gnome-podcasts"
       # "gnome.gnome-system-monitor"
@@ -69,6 +69,7 @@
       "gajim"  # XMPP client
       "gimp"  # broken on phosh
       "gnome.dconf-editor"
+      "gnome.file-roller"
       "gnome.gnome-disk-utility"
       "gnome.nautilus"  # file browser
       # "gnome.totem"  # video player, supposedly supports UPnP
@@ -94,6 +95,7 @@
     suggestedPrograms = [
       "megapixels"  # camera app
       "portfolio-filemanager"
+      "xarchiver"
     ];
   };
 

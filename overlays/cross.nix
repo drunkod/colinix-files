@@ -1398,4 +1398,7 @@ in {
   #       --replace "pkg-config" "$PKG_CONFIG"
   #   '';
   # });
+
+  # 2023/07/30: upstreaming is blocked on unar (gnustep), unless i also make that optional
+  xarchiver = mvToNativeInputs [ final.libxslt ] prev.xarchiver;
 }
