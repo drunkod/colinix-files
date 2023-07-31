@@ -337,7 +337,7 @@ in {
     outputs = lib.remove "devdoc" upstream.outputs;
   });
 
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/27: upstreaming is blocked on p11-kit, gupnp cross compilation
   gcr_4 = (
     # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
     mvToNativeInputs [ final.gnupg final.openssh ] prev.gcr_4
