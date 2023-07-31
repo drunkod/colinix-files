@@ -62,23 +62,23 @@ let
 in {
   inherit emulated;
 
-  pkgsi686Linux = prev.pkgsi686Linux.extend (i686Self: i686Super: {
-    # fixes eval-time error: "Unsupported cross architecture"
-    #   it happens even on a x86_64 -> x86_64 build:
-    #   - defining `config.nixpkgs.buildPlatform` to the non-default causes that setting to be inherited by pkgsi686.
-    #   - hence, `pkgsi686` on a non-cross build is ordinarily *emulated*:
-    #     defining a cross build causes it to also be cross (but to the right hostPlatform)
-    # this has no inputs other than stdenv, and fetchurl, so emulating it is fine.
-    tbb = prev.emulated.pkgsi686Linux.tbb;
-    # tbb = i686Super.tbb.overrideAttrs (orig: (with i686Self; {
-    #   makeFlags = lib.optionals stdenv.cc.isClang [
-    #     "compiler=clang"
-    #   ] ++ (lib.optional (stdenv.buildPlatform != stdenv.hostPlatform)
-    #     (if stdenv.hostPlatform.isAarch64 then "arch=arm64"
-    #     else if stdenv.hostPlatform.isx86_64 then "arch=intel64"
-    #     else throw "Unsupported cross architecture: ${stdenv.buildPlatform.system} -> ${stdenv.hostPlatform.system}"));
-    # }));
-  });
+  # pkgsi686Linux = prev.pkgsi686Linux.extend (i686Self: i686Super: {
+  #   # fixes eval-time error: "Unsupported cross architecture"
+  #   #   it happens even on a x86_64 -> x86_64 build:
+  #   #   - defining `config.nixpkgs.buildPlatform` to the non-default causes that setting to be inherited by pkgsi686.
+  #   #   - hence, `pkgsi686` on a non-cross build is ordinarily *emulated*:
+  #   #     defining a cross build causes it to also be cross (but to the right hostPlatform)
+  #   # this has no inputs other than stdenv, and fetchurl, so emulating it is fine.
+  #   tbb = prev.emulated.pkgsi686Linux.tbb;
+  #   # tbb = i686Super.tbb.overrideAttrs (orig: (with i686Self; {
+  #   #   makeFlags = lib.optionals stdenv.cc.isClang [
+  #   #     "compiler=clang"
+  #   #   ] ++ (lib.optional (stdenv.buildPlatform != stdenv.hostPlatform)
+  #   #     (if stdenv.hostPlatform.isAarch64 then "arch=arm64"
+  #   #     else if stdenv.hostPlatform.isx86_64 then "arch=intel64"
+  #   #     else throw "Unsupported cross architecture: ${stdenv.buildPlatform.system} -> ${stdenv.hostPlatform.system}"));
+  #   # }));
+  # });
 
   # packages which don't cross compile
   inherit (emulated)
