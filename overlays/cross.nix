@@ -236,10 +236,6 @@ in {
     '';
   });
 
-  # colord = prev.colord.override {
-  #   # doesn't fix: "ld: error adding symbols: file in wrong format"
-  #   inherit (emulated) stdenv;
-  # };
   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
   colord = prev.colord.overrideAttrs (upstream: {
     # fixes: (meson) ERROR: An exe_wrapper is needed but was not found. Please define one in cross file and check the command and/or add it to PATH.
@@ -248,23 +244,6 @@ in {
     ];
   });
 
-  # conky = (prev.conky.override {
-  #     curlSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
-  #     # docbook2x dependency doesn't cross compile
-  #     docsSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
-  #     journalSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
-  #     # tries to invoke `toluapp`, which would likely compile to wrong platform?
-  #     luaSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
-  #     ncursesSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
-  #     wirelessSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
-  #     x11Support = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
-  #     # lua = emulated.lua5_3_compat;
-  #   }
-  # ).overrideAttrs (upstream: {
-  #   nativeBuildInputs = upstream.nativeBuildInputs ++ [ final.git ];
-  #   buildInputs = [ final.lua5_4_compat ];
-  #   cmakeFlags = upstream.cmakeFlags ++ ["-DLUA_INCLUDE_DIR=/tmp/"];
-  # });
   conky = ((useEmulatedStdenv prev.conky).override {
     # docbook2x dependency doesn't cross compile
     docsSupport = prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform;
@@ -357,11 +336,6 @@ in {
     mesonFlags = (lib.remove "-Ddocs=enabled" upstream.mesonFlags) ++ [ "-Ddocs=disabled" ];
     outputs = lib.remove "devdoc" upstream.outputs;
   });
-  # fwupd = prev.fwupd.override {
-  #   # solves missing libgcab-1.0;
-  #   # new error: "meson.build:449:4: ERROR: Command "/nix/store/n7xrj3pnrgcr8igx7lfhz8197y67bk7k-python3-aarch64-unknown-linux-gnu-3.10.9-env/bin/python3 po/test-deps" failed with status 1."
-  #   inherit (emulated) stdenv;
-  # };
 
   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
   gcr_4 = (
@@ -426,10 +400,6 @@ in {
       # ];
     });
 
-    # file-roller = super.file-roller.override {
-    #   # fixes "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
-    #   inherit (emulated) stdenv;
-    # };
     # fixes: "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
     file-roller = mvToNativeInputs [ final.glib ] super.file-roller;
     # fixes: "meson.build:75:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
@@ -438,13 +408,6 @@ in {
     gnome-color-manager = mvToNativeInputs [ final.glib ] super.gnome-color-manager;
     # fixes "subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
     gnome-control-center = mvToNativeInputs [ final.glib ] super.gnome-control-center;
-    # gnome-control-center = super.gnome-control-center.override {
-    #   inherit (final) stdenv;
-    # };
-    # gnome-keyring = super.gnome-keyring.override {
-    #   # does not fix original error
-    #   inherit (final) stdenv;
-    # };
     gnome-keyring = super.gnome-keyring.overrideAttrs (orig: {
       # fixes "configure.ac:374: error: possibly undefined macro: AM_PATH_LIBGCRYPT"
       nativeBuildInputs = orig.nativeBuildInputs ++ [ final.libgcrypt final.openssh final.glib ];
@@ -511,11 +474,6 @@ in {
     });
     # fixes: "gdbus-codegen not found or executable"
     gnome-session = mvToNativeInputs [ final.glib ] super.gnome-session;
-    # gnome-terminal = super.gnome-terminal.override {
-    #   # fixes: "meson.build:343:0: ERROR: Dependency "libpcre2-8" not found, tried pkgconfig"
-    #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libglib-2.0.so: error adding symbols: file in wrong format"
-    #   inherit (emulated) stdenv;
-    # };
     gnome-terminal = super.gnome-terminal.overrideAttrs (orig: {
       # fixes "meson.build:343:0: ERROR: Dependency "libpcre2-8" not found, tried pkgconfig"
       buildInputs = orig.buildInputs ++ [ final.pcre2 ];
@@ -536,11 +494,6 @@ in {
       mesonFlags = lib.remove "-Ddocs=true" orig.mesonFlags;
       outputs = lib.remove "devdoc" orig.outputs;
     }));
-    # nautilus = super.nautilus.override {
-    #   # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
-    #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/f7yr5z123d162p5457jh3wzkqm7x8yah-glib-2.74.3/lib/libglib-2.0.so: error adding symbols: file in wrong format"
-    #   inherit (emulated) stdenv;
-    # };
     nautilus = (
       addInputs {
         # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
@@ -597,15 +550,6 @@ in {
   });
 
   gst_all_1 = prev.gst_all_1 // {
-    # inherit (emulated.gst_all_1) gst-plugins-good;
-    # gst-plugins-good = prev.gst_all_1.gst-plugins-good.override {
-    #   # when invoked with `qt5Support = true`, qtbase shows up in both buildInputs and nativeBuildInputs
-    #   # if these aren't identical, then qt complains: "Error: detected mismatched Qt dependencies"
-    #   # doesn't fix the original error.
-    #   inherit (emulated) stdenv;
-    #   # TODO: try removing qtbase from nativeBuildInputs? emulate meson, pkg-config &c?
-    #   # qt5Support = true;
-    # };
     gst-plugins-good = prev.gst_all_1.gst-plugins-good.overrideAttrs (upstream: {
       nativeBuildInputs = lib.remove final.qt5.qtbase upstream.nativeBuildInputs;
       # TODO: swap in this line instead?
@@ -776,16 +720,6 @@ in {
   #   callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
   # });
 
-  # libwacom = prev.libwacom.overrideAttrs (upstream: {
-  #   # "meson.build:298:7: ERROR: python is missing modules: libevdev, pyudev, pytest"
-  #   nativeBuildInputs = lib.remove [ final.python ] upstream.nativeBuildInputs;
-  #   buildInputs = with final; [
-  #     glib
-  #     libgudev
-  #     # (python.withPackages (ps: with ps; [ pyudev ]))
-  #   ];
-  # });
-
   # mepo = (prev.mepo.override {
   #   inherit (emulated)
   #     stdenv
@@ -906,22 +840,6 @@ in {
     #     )
     #   ) ++ [ final.gmime ];
   });
-  # notmuch = (prev.notmuch.override {
-  #   inherit (emulated)
-  #     stdenv
-  #     # gmime
-  #   ;
-  #   gmime = emulated.gmime3;
-  # }).overrideAttrs (upstream: {
-  #   postPatch = upstream.postPatch or "" + ''
-  #     sed -i 's/pkg-config/\$PKG_CONFIG/g' configure
-  #   '';
-  #   nativeBuildInputs = upstream.nativeBuildInputs ++ [
-  #     final.gnupg
-  #     final.perl
-  #   ];
-  #   buildInputs = lib.remove final.gnupg upstream.buildInputs;
-  # });
   # notmuch = prev.notmuch.overrideAttrs (upstream: {
   #   # fixes "Error: The dependencies of notmuch could not be satisfied"  (xapian, gmime, glib, talloc)
   #   # when cross-compiling, we only have a triple-prefixed pkg-config which notmuch's configure script doesn't know how to find.
@@ -961,10 +879,6 @@ in {
   #   nativeBuildInputs = upstream.nativeBuildInputs ++ [ final.gpgme ];
   # });
 
-  # phoc = prev.phoc.override {
-  #   # fixes "Program wayland-scanner found: NO"
-  #   inherit (emulated) stdenv;
-  # };
   # fixes (meson) "Program 'glib-mkenums mkenums' not found or not executable"
   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
   phoc = mvToNativeInputs [ final.wayland-scanner final.glib ] prev.phoc;
@@ -979,10 +893,6 @@ in {
     #   sed -i 's:gio_querymodules = :gio_querymodules = "${final.buildPackages.glib.dev}/bin/gio-querymodules" if True else :' build-aux/post_install.py
     # '';
   });
-  # phosh-mobile-settings = prev.phosh-mobile-settings.override {
-  #   # fixes "meson.build:26:0: ERROR: Dependency "phosh-plugins" not found, tried pkgconfig"
-  #   inherit (emulated) stdenv;
-  # };
   phosh-mobile-settings = mvInputs {
     # fixes "meson.build:26:0: ERROR: Dependency "phosh-plugins" not found, tried pkgconfig"
     # phosh is used only for its plugins; these are specified as a runtime dep in src.
@@ -1212,6 +1122,7 @@ in {
     # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
     inherit (emulated) stdenv;
   };
+  # 2023/07/30: upstreaming is ?; implemented on servo cross-staging-2023-07-30 branch
   rpm = prev.rpm.overrideAttrs (upstream: {
     # fixes "python too old". might also be specifiable as a configure flag?
     env = upstream.env // {
@@ -1445,11 +1356,6 @@ in {
   # xfsprogs = useEmulatedStdenv prev.xfsprogs;
   xfsprogs = addNativeInputs [ final.liburcu ] prev.xfsprogs;
   # webkitgtk = prev.webkitgtk.override { stdenv = final.ccacheStdenv; };
-  # webp-pixbuf-loader = prev.webp-pixbuf-loader.override {
-  #   # fixes "Builder called die: Cannot wrap '/nix/store/kpp8qhzdjqgvw73llka5gpnsj0l4jlg8-gdk-pixbuf-aarch64-unknown-linux-gnu-2.42.10/bin/gdk-pixbuf-thumbnailer' because it is not an executable file"
-  #   # new failure mode: "/nix/store/grqh2wygy9f9wp5bgvqn4im76v82zmcx-binutils-2.39/bin/ld: /nix/store/2syg6jxk8zi1zkpqvkxkz87x8sl27c6b-gdk-pixbuf-2.42.10/lib/libgdk_pixbuf-2.0.so: error adding symbols: file in wrong format"
-  #   inherit (emulated) stdenv;
-  # };
   webp-pixbuf-loader = prev.webp-pixbuf-loader.overrideAttrs (upstream: {
     # fixes: "Builder called die: Cannot wrap '/nix/store/kpp8qhzdjqgvw73llka5gpnsj0l4jlg8-gdk-pixbuf-aarch64-unknown-linux-gnu-2.42.10/bin/gdk-pixbuf-thumbnailer' because it is not an executable file"
     # gdk-pixbuf doesn't create a `bin/` directory when cross-compiling, breaks some thumbnailing stuff.
