@@ -117,6 +117,13 @@ stdenv.mkDerivation rec {
       url = "https://lists.sr.ht/~mil/sxmo-devel/patches/42443/mbox";
       hash = "sha256-c4VySbVJgsbh2h+CnCgwWWe5WkAregpYFqL8n3WRXwY=";
     })
+    # (fetchpatch {
+    #   XXX: doesn't apply cleanly to 1.14.2 release
+    #   # Don't wait for led or status bar in state change hooks
+    #   # - significantly decreases the time between power-button state transitions
+    #   url = "https://lists.sr.ht/~mil/sxmo-devel/patches/43109/mbox";
+    #   hash = "sha256-4uR2u6pa62y6SaRHYRn15YGDPILAs7py0mPbAjsgwM4=";
+    # })
     (fetchpatch {
       # Make config gesture toggle persistent
       url = "https://lists.sr.ht/~mil/sxmo-devel/patches/42876/mbox";
