@@ -3,6 +3,14 @@
 # - xdg-utils is blocked on perl5.36.0-Module-Build
 #   - needed for File-BaseDir, used by File-MimeInfo
 #   - File-BaseDir can be updated to v0.09, which cross compiles with ease
+#
+# perlInterpters:
+# - Test-utf8 fails cross (wants Fcntl, for `flock` and `seek`)
+#   - (already on latest release; upstream is dead)
+#   - Test-File depends on Test-utf8
+#     - on 1.443; 1.993 is out, NO LONGER USES Test-utf8
+#     - File-Copy-Recursive depends on Test-File
+#       - used by imapsync?
 
 final: prev:
 let
@@ -91,7 +99,7 @@ in {
     # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
     # libsForQt5  # if we emulate qt5, we're better off emulating libsForQt5 else qt complains about multiple versions of qtbase
     mepo  # /build/source/src/sdlshim.zig:1:20: error: C import failed
-    perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
+    # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
     # qgnomeplatform
     # qtbase
     # qt5  # qt5.qtbase, qt5.qtx11extras fails, but we can't selectively emulate them.
@@ -1022,14 +1030,14 @@ in {
           "tests/test_main.py"
         ];
       });
-      gssapi = py-prev.gssapi.overridePythonAttrs (_orig: {
-        # 2023/07/29: upstreaming is unblocked; implemented on servo pr/cross-2023-07-28 branch
-        # "krb5-aarch64-unknown-linux-gnu-1.20.1/lib/libgssapi_krb5.so: cannot open shared object file"
-        # setup.py only needs this to detect if kerberos was configured with gssapi support (not sure why it doesn't call krb5-config for that?)
-        # it doesn't actually link or use anything from the build krb5 except a "canary" symobl.
-        # GSSAPI_MAIN_LIB = "${final.buildPackages.krb5}/lib/libgssapi_krb5.so";
-        env.GSSAPI_SUPPORT_DETECT = lib.boolToString (prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform);
-      });
+      # gssapi = py-prev.gssapi.overridePythonAttrs (_orig: {
+      #   # 2023/07/29: upstreaming is unblocked; implemented on servo pr/cross-2023-07-28 branch
+      #   # "krb5-aarch64-unknown-linux-gnu-1.20.1/lib/libgssapi_krb5.so: cannot open shared object file"
+      #   # setup.py only needs this to detect if kerberos was configured with gssapi support (not sure why it doesn't call krb5-config for that?)
+      #   # it doesn't actually link or use anything from the build krb5 except a "canary" symobl.
+      #   # GSSAPI_MAIN_LIB = "${final.buildPackages.krb5}/lib/libgssapi_krb5.so";
+      #   env.GSSAPI_SUPPORT_DETECT = lib.boolToString (prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform);
+      # });
       # h5py = py-prev.h5py.overridePythonAttrs (orig: {
       #   # XXX: can't upstream until its dependency, hdf5, is fixed. that looks TRICKY.
       #   # - the `setup_configure.py` in h5py tries to dlopen (and call into) the hdf5 lib to query the version and detect features like MPI
@@ -1470,13 +1478,13 @@ in {
   });
 
   # 2023/07/28: upstreaming is unblocked; implemented on servo pr/cross-2023-07-28 branch
-  wvkbd = (
-    # "wayland-scanner: no such program"
-    mvToNativeInputs [ final.wayland-scanner ] prev.wvkbd
-  ).overrideAttrs (upstream: {
-    postPatch = upstream.postPatch or "" + ''
-      substituteInPlace Makefile \
-        --replace "pkg-config" "$PKG_CONFIG"
-    '';
-  });
+  # wvkbd = (
+  #   # "wayland-scanner: no such program"
+  #   mvToNativeInputs [ final.wayland-scanner ] prev.wvkbd
+  # ).overrideAttrs (upstream: {
+  #   postPatch = upstream.postPatch or "" + ''
+  #     substituteInPlace Makefile \
+  #       --replace "pkg-config" "$PKG_CONFIG"
+  #   '';
+  # });
 }

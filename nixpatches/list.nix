@@ -238,6 +238,32 @@ in [
     hash = "sha256-jEQeGAcDGrv0TYouBTfn5ubWaosWg/ecmUW0ii1QIVs=";
   })
 
+  (fetchpatch' {
+    title = "wvkbd: support cross compilation";
+    saneCommit = "34379f5770662b483ab0cbe252cf23dd663d84dc";
+    hash = "sha256-Duim5hPBtfGePBte29ZUtojyRAts9lQlbleUsTJNkwI=";
+  })
+  (fetchpatch' {
+    title = "python310Packages.gssapi: support cross compilation";
+    saneCommit = "4766ae46f863734fbe96dc4e537870b6b3894cf4";
+    hash = "sha256-qCAJjPRoH8nvKzB+uwDQtGQbFfHS/MiY7m1J0BMl7tY=";
+  })
+  (fetchpatch' {
+    title = "perlPackages.FileBaseDir: 0.08 -> 0.09";
+    saneCommit = "acc990b04bbe8c99587eadccc65f100c326ec204";
+    hash = "sha256-8s789GGARJH1i088OGBjGGnL2l5m8Q+iBPS213QsS6A=";
+  })
+  (fetchpatch' {
+    title = "xdg-utils: enable cross compilation";
+    saneCommit = "b7aa5e0c1ec06723cf1594de192703a65be21497";
+    hash = "sha256-4iE2EDIe3nSkB8xFXucyCH7k2oiIoBiuYZYAtF31G38=";
+  })
+  (fetchpatch' {
+    title = "perlPackages.TestFile: 1.443 -> 1.993";
+    saneCommit = "6cf080fb51d034f9c2ddd60cef7dee7d041afd3e";
+    hash = "sha256-fAZpduh3JZeFixJ4yX0wkh/GRp0gYKsTT+XkNdpK7CU=";
+  })
+
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
   #   title = "matrix-appservice-irc: 0.38.0 -> 1.0.0";
