@@ -1115,11 +1115,11 @@ in {
     });
   });
 
-  rmlint = prev.rmlint.override {
-    # fixes "Checking whether the C compiler works... no"
-    # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
-    inherit (emulated) stdenv;
-  };
+  # rmlint = prev.rmlint.override {
+  #   # fixes "Checking whether the C compiler works... no"
+  #   # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
+  #   inherit (emulated) stdenv;
+  # };
   # 2023/07/30: upstreaming is ?; implemented on servo cross-staging-2023-07-30 branch
   rpm = prev.rpm.overrideAttrs (upstream: {
     # fixes "python too old". might also be specifiable as a configure flag?
