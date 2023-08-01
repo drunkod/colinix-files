@@ -187,12 +187,6 @@ in [
   # related: <https://github.com/NixOS/nixpkgs/issues/236890#issuecomment-1585030861>
   # ./2023-06-10-lemmy-downgrade.patch
 
-  # (fetchpatch' {
-  #   title = "gpodder: wrap with missing `xdg-utils` path";
-  #   saneCommit = "10d0ac11bc083cbcf0d6340950079b3888095abf";
-  #   hash = "sha256-cu8L30ZiUJnWFGRR/SK917TC7TalzpGkurGkUAAxl54=";
-  # })
-
   (fetchpatch' {
     title = "koreader: 2023.04 -> 2023.05.1";
     saneCommit = "a5c471bd263abe93e291239e0078ac4255a94262";
