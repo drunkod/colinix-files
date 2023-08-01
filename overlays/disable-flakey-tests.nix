@@ -61,7 +61,7 @@ in {
       pyarrow = py-prev.pyarrow.overridePythonAttrs (upstream: {
         # 2023/04/02
         # disabledTests = upstream.disabledTests ++ [ "test_generic_options" ];
-        disabledTestPaths = upstream.disabledTestPaths or [] ++ [
+        disabledTestPaths = (upstream.disabledTestPaths or []) ++ [
           "pyarrow/tests/test_flight.py"
         ];
       });
@@ -71,4 +71,9 @@ in {
   # 2023/02/22
   # "27/37 tracker:core / service                          TIMEOUT         60.37s   killed by signal 15 SIGTERM"
   tracker = dontCheck prev.tracker;
+
+  # 2023/07/31
+  # fails a test (didn't see which one)
+  # only for binfmt-emulated aarch64 -> aarch64 build
+  umockdev = dontCheckEmulated prev.umockdev;
 })

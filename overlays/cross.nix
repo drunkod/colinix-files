@@ -347,11 +347,11 @@ in {
     outputs = lib.remove "devdoc" upstream.outputs;
   });
 
-  # 2023/07/31: upstreaming is unblocked
-  gcr_4 = (
-    # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
-    mvToNativeInputs [ final.gnupg final.openssh ] prev.gcr_4
-  );
+  # 2023/07/31: upstreaming is unblocked,implemented on servo
+  # gcr_4 = (
+  #   # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
+  #   mvToNativeInputs [ final.gnupg final.openssh ] prev.gcr_4
+  # );
   # gnustep = prev.gnustep.overrideScope' (self: super: {
   #   # gnustep is going to need a *lot* of work/domain-specific knowledge to truly cross-compile,
   #   # base = emulated.gnustep.base;
@@ -381,6 +381,7 @@ in {
     #   it's cross-platform; should be possible to ship dconf only in buildInputs & point dconf-editor to the right place
     dconf-editor = addNativeInputs [ final.dconf ] super.dconf-editor;
     evince = super.evince.overrideAttrs (orig: {
+      # 2023/07/31: upstreaming is blocked on libavif
       # fixes (meson) "Run-time dependency gi-docgen found: NO (tried pkgconfig and cmake)"
       # inspired by gupnp
       outputs = [ "out" "dev" ]
@@ -390,6 +391,7 @@ in {
       ];
     });
     evolution-data-server = super.evolution-data-server.overrideAttrs (upstream: {
+      # 2023/08/01: upstreaming is blocked on libavif
       # fixes aborts in "Performing Test _correct_iconv"
       cmakeFlags = upstream.cmakeFlags ++ [
         "-DCMAKE_CROSSCOMPILING_EMULATOR=${final.stdenv.hostPlatform.emulator final.buildPackages}"
@@ -408,15 +410,20 @@ in {
       # ];
     });
 
+    # 2023/08/01: upstreaming is blocked on nautilus, gnome-user-share (apache-httpd, webp-pixbuf-loader)
     # fixes: "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
     file-roller = mvToNativeInputs [ final.glib ] super.file-roller;
+    # 2023/08/01: upstreaming is unblocked
     # fixes: "meson.build:75:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
     gnome-clocks = addNativeInputs [ final.gtk4 ] super.gnome-clocks;
+    # 2023/07/31: upstreaming is blocked on argyllcms, libavif
     # fixes: "src/meson.build:3:0: ERROR: Program 'glib-compile-resources' not found or not executable"
     gnome-color-manager = mvToNativeInputs [ final.glib ] super.gnome-color-manager;
+    # 2023/08/01: upstreaming is blocked by apache-httpd, argyllcms, ibus, libavif, webp-pixbuf-loader
     # fixes "subprojects/gvc/meson.build:30:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
     gnome-control-center = mvToNativeInputs [ final.glib ] super.gnome-control-center;
     gnome-keyring = super.gnome-keyring.overrideAttrs (orig: {
+      # 2023/07/31: upstreaming is unblocked, but requires a different fix
       # fixes "configure.ac:374: error: possibly undefined macro: AM_PATH_LIBGCRYPT"
       nativeBuildInputs = orig.nativeBuildInputs ++ [ final.libgcrypt final.openssh final.glib ];
     });
@@ -441,6 +448,7 @@ in {
     #   # ];
     # });
     gnome-shell = super.gnome-shell.overrideAttrs (upstream: {
+      # 2023/08/01: upstreaming is blocked on argyllcms, gnome-keyring, gnome-clocks, ibus, libavif, webp-pixbuf-loader
       nativeBuildInputs = upstream.nativeBuildInputs ++ [
         final.gjs  # fixes "meson.build:128:0: ERROR: Program 'gjs' not found or not executable"
         final.buildPackages.gobject-introspection  # fixes "shew| Build-time dependency gobject-introspection-1.0 found: NO"
@@ -469,6 +477,7 @@ in {
     #   nativeBuildInputs = orig.nativeBuildInputs ++ [ final.mesonEmulatorHook ];
     # });
     gnome-settings-daemon = super.gnome-settings-daemon.overrideAttrs (orig: {
+      # 2023/07/31: upstreaming is blocked on argyllcms, libavif
       # glib solves: "Program 'glib-mkenums mkenums' not found or not executable"
       nativeBuildInputs = orig.nativeBuildInputs ++ [ final.glib ];
       # pkg-config solves: "plugins/power/meson.build:22:0: ERROR: Dependency lookup for glib-2.0 with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found."
@@ -480,17 +489,19 @@ in {
         sed -i "s/disabled_plugins = \[\]/disabled_plugins = ['power']/" plugins/meson.build
       '';
     });
+    # 2023/08/01: upstreaming is blocked on argyllcms, gnome-keyring, gnome-clocks, ibus, libavif, webp-pixbuf-loader (gnome-shell)
     # fixes: "gdbus-codegen not found or executable"
     gnome-session = mvToNativeInputs [ final.glib ] super.gnome-session;
     gnome-terminal = super.gnome-terminal.overrideAttrs (orig: {
+      # 2023/07/31: upstreaming is blocked on argyllcms, apache-httpd, gnome-keyring, libavif, gnome-clocks, ibus, webp-pixbuf-loader
       # fixes "meson.build:343:0: ERROR: Dependency "libpcre2-8" not found, tried pkgconfig"
       buildInputs = orig.buildInputs ++ [ final.pcre2 ];
     });
+    # 2023/07/31: upstreaming is blocked on apache-httpd
     # fixes: meson.build:111:6: ERROR: Program 'glib-compile-schemas' not found or not executable
     gnome-user-share = addNativeInputs [ final.glib ] super.gnome-user-share;
-    # fixes: "FileNotFoundError: [Errno 2] No such file or directory: 'gtk4-update-icon-cache'"
-    gnome-weather = addNativeInputs [ final.gtk4 ] super.gnome-weather;
     mutter = (super.mutter.overrideAttrs (orig: {
+      # 2023/07/31: upstreaming is blocked on argyllcms, libavif
       nativeBuildInputs = orig.nativeBuildInputs ++ [
         final.glib  # fixes "clutter/clutter/meson.build:281:0: ERROR: Program 'glib-mkenums mkenums' not found or not executable"
         final.buildPackages.gobject-introspection  # allows to build without forcing `introspection=false` (which would break gnome-shell)
@@ -503,6 +514,7 @@ in {
       outputs = lib.remove "devdoc" orig.outputs;
     }));
     nautilus = (
+      # 2023/07/31: upstreaming is blocked on apache-httpd, webp-pixbuf-loader
       addInputs {
         # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
         buildInputs = [ final.libxml2 ];
@@ -559,10 +571,10 @@ in {
   });
 
   gst_all_1 = prev.gst_all_1 // {
+    # TODO: qt5 support is disabled in gstreamer by default;
+    #   i think it's just nheko which asks for qt5 support, so override only it.
     gst-plugins-good = prev.gst_all_1.gst-plugins-good.overrideAttrs (upstream: {
       nativeBuildInputs = lib.remove final.qt5.qtbase upstream.nativeBuildInputs;
-      # TODO: swap in this line instead?
-      # buildInputs = lib.remove final.qt5.qtbase upstream.buildInputs;
     });
   };
   # 2023/07/27: upstreaming is blocked on p11-kit, libavif cross compilation
@@ -773,7 +785,7 @@ in {
   # 2023/07/27: upstreaming is unblocked by deps; but turns out to not be this simple
   ncftp = addNativeInputs [ final.bintools ] prev.ncftp;
   # fixes "gdbus-codegen: command not found"
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/31: upstreaming is blocked on p11-kit, openfortivpn cross compilation
   networkmanager-fortisslvpn = mvToNativeInputs [ final.glib ] prev.networkmanager-fortisslvpn;
   # networkmanager-iodine = prev.networkmanager-iodine.overrideAttrs (orig: {
   #   # fails to fix "configure.ac:58: error: possibly undefined macro: AM_GLIB_GNU_GETTEXT"
@@ -795,26 +807,26 @@ in {
 
   # fixes "gdbus-codegen: command not found"
   # fixes "gtk4-builder-tool: command not found"
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
-  networkmanager-l2tp = addNativeInputs [ final.gtk4 ]
-    (mvToNativeInputs [ final.glib ] prev.networkmanager-l2tp);
+  # 2023/07/31: upstreaming is unblocked,implemented
+  # networkmanager-l2tp = addNativeInputs [ final.gtk4 ]
+  #   (mvToNativeInputs [ final.glib ] prev.networkmanager-l2tp);
   # fixes "properties/gresource.xml: Permission denied"
   #   - by providing glib-compile-resources
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/31: upstreaming is blocked on libavif cross compilation
   networkmanager-openconnect = mvToNativeInputs [ final.glib ] prev.networkmanager-openconnect;
   # fixes "properties/gresource.xml: Permission denied"
   #   - by providing glib-compile-resources
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/31: upstreaming is unblocked,implemented
   networkmanager-openvpn = mvToNativeInputs [ final.glib ] prev.networkmanager-openvpn;
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
-  networkmanager-sstp = (
-    # fixes "gdbus-codegen: command not found"
-    mvToNativeInputs [ final.glib ] (
-      # fixes gtk4-builder-tool wrong format
-      addNativeInputs [ final.gtk4.dev ] prev.networkmanager-sstp
-    )
-  );
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/31: upstreaming is unblocked,implemented
+  # networkmanager-sstp = (
+  #   # fixes "gdbus-codegen: command not found"
+  #   mvToNativeInputs [ final.glib ] (
+  #     # fixes gtk4-builder-tool wrong format
+  #     addNativeInputs [ final.gtk4.dev ] prev.networkmanager-sstp
+  #   )
+  # );
+  # 2023/07/31: upstreaming is blocked on vpnc cross compilation
   networkmanager-vpnc = mvToNativeInputs [ final.glib ] prev.networkmanager-vpnc;
   # fixes "properties/gresource.xml: Permission denied"
   #   - by providing glib-compile-resources
@@ -1021,22 +1033,50 @@ in {
     })
   ];
 
-  # qt5 = prev.qt5.overrideScope' (self: super: {
-  #   qtbase = super.qtbase.override {
-  #     inherit (emulated) stdenv;
-  #   };
-  #   qtx11extras = super.qtx11extras.override {
-  #     # "Project ERROR: Cannot run compiler 'g++'";
-  #     # this fails an assert though, where the cross qt now references the emulated qt.
-  #     inherit (emulated.qt5) qtModule;
-  #   };
-  # });
-  qt5 = emulated.qt5.overrideScope (self: super: {
-    # emulate all the qt5 packages, but rework `libsForQt5.callPackage` and `mkDerivation`
-    # to use non-emulated stdenv by default.
+  qt5 = (prev.qt5.override {
+    # build all qt5 modules using emulation...
+    inherit (emulated) stdenv;
+  }).overrideScope' (self: super: {
+    # but for anything using `libsForQt5.callPackage`, don't emulate.
+    # note: alternative approach is to only `libsForQt5` (it's a separate scope),.
+    # it inherits so much from the `qt5` scope, so not a clear improvement.
     mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
     callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
+    qtbase = super.qtbase.override {
+      # qtbase is the only thing in `qt5` scope that references `[stdenv.]mkDerivation`.
+      # to emulate it, we emulate stdenv; all the other qt5 members are emulated via `qt5.qtModule`
+      inherit (emulated) stdenv;
+    };
   });
+  # qt5 = prev.qt5.overrideScope' (self: super: {
+  #   inherit (emulated) stdenv;
+  #   # mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
+  #   # callPackage = self.newScope {
+  #   #   inherit (self) qtCompatVersion qtModule srcs;
+  #   #   inherit (final) stdenv;
+  #   #   mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
+  #   # };
+  #   # qtbase = super.qtbase.override {
+  #   #   inherit (emulated) stdenv;
+  #   # };
+  #   # qtModule = super.qtModule.override {
+  #   #   inherit (emulated) stdenv;
+  #   # };
+  #   # qtimageformats = useEmulatedStdenv super.qtimageformats;
+  #   # qtsvg = useEmulatedStdenv super.qtsvg;
+  #   # qtx11extras = super.qtx11extras.override {
+  #   #   # "Project ERROR: Cannot run compiler 'g++'";
+  #   #   # this fails an assert though, where the cross qt now references the emulated qt.
+  #   #   # inherit (emulated.qt5) qtModule;
+  #   #   inherit (emulated) stdenv;
+  #   # };
+  # });
+  # qt5 = emulated.qt5.overrideScope (self: super: {
+  #   # emulate all the qt5 packages, but rework `libsForQt5.callPackage` and `mkDerivation`
+  #   # to use non-emulated stdenv by default.
+  #   mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
+  #   callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
+  # });
   qt6 = prev.qt6.overrideScope' (self: super: {
     # # inherit (emulated.qt6) qtModule;
     # qtbase = super.qtbase.overrideAttrs (upstream: {
@@ -1327,7 +1367,7 @@ in {
     # setting this to null means visidata will work as normal but not be able to load hdf files.
     h5py = null;
   };
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/27: upstreaming is blocked on p11-kit, qtbase cross compilation
   vlc = prev.vlc.overrideAttrs (orig: {
     # fixes: "configure: error: could not find the LUA byte compiler"
     # fixes: "configure: error: protoc compiler needed for chromecast was not found"
