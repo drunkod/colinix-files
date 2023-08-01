@@ -570,13 +570,6 @@ in {
     strictDeps = true;
   });
 
-  gst_all_1 = prev.gst_all_1 // {
-    # TODO: qt5 support is disabled in gstreamer by default;
-    #   i think it's just nheko which asks for qt5 support, so override only it.
-    gst-plugins-good = prev.gst_all_1.gst-plugins-good.overrideAttrs (upstream: {
-      nativeBuildInputs = lib.remove final.qt5.qtbase upstream.nativeBuildInputs;
-    });
-  };
   # 2023/07/27: upstreaming is blocked on p11-kit, libavif cross compilation
   gvfs = prev.gvfs.overrideAttrs (upstream: {
     nativeBuildInputs = upstream.nativeBuildInputs ++ [
@@ -831,7 +824,14 @@ in {
   # fixes "properties/gresource.xml: Permission denied"
   #   - by providing glib-compile-resources
   # 2023/07/27: upstreaming is blocked on p11-kit, coeurl cross compilation
-  nheko = prev.nheko.overrideAttrs (orig: {
+  nheko = (prev.nheko.override {
+    gst_all_1 = final.gst_all_1 // {
+      # don't build gst-plugins-good with "qt5 support"
+      # alternative build fix is to remove `qtbase` from nativeBuildInputs:
+      # - that avoids the mixd qt5 deps, but forces a rebuild of gst-plugins-good and +20MB to closure
+      gst-plugins-good.override = attrs: final.gst_all_1.gst-plugins-good.override (builtins.removeAttrs attrs [ "qt5Support" ]);
+    };
+  }).overrideAttrs (orig: {
     # fixes "fatal error: lmdb++.h: No such file or directory
     buildInputs = orig.buildInputs ++ [ final.lmdbxx ];
   });
