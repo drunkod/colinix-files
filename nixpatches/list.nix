@@ -87,9 +87,6 @@ in [
   # upgrade to 22.3.6 instead
   # ./2023-02-28-mesa-22.3.6.patch
 
-  # fix qt6.qtbase and qt6.qtModule to cross-compile.
-  # unfortunately there's some tangle that makes that difficult to do via the normal `override` facilities
-  ./2023-03-03-qtbase-cross-compile.patch
 
   # let ccache cross-compile
   # TODO: why doesn't this apply?
@@ -172,12 +169,6 @@ in [
 
   # make alsa-project members overridable
   ./2023-05-31-toplevel-alsa.patch
-
-  # qt6 qtwebengine: specify `python` as buildPackages
-  ./2023-06-02-qt6-qtwebengine-cross.patch
-
-  # Jellyfin: don't build via `libsForQt5.callPackage`
-  ./2023-06-06-jellyfin-no-libsForQt5-callPackage.patch
 
   # pin to a pre-0.17.3 release
   # removing this and using stock 0.17.3 (also 0.17.4) causes:
@@ -365,4 +356,14 @@ in [
   ./02-rpi4-uboot.patch
 
   # ./07-duplicity-rich-url.patch
+
+  # fix qt6.qtbase and qt6.qtModule to cross-compile.
+  # unfortunately there's some tangle that makes that difficult to do via the normal `override` facilities
+  # ./2023-03-03-qtbase-cross-compile.patch
+
+  # qt6 qtwebengine: specify `python` as buildPackages
+  # ./2023-06-02-qt6-qtwebengine-cross.patch
+
+  # Jellyfin: don't build via `libsForQt5.callPackage`
+  # ./2023-06-06-jellyfin-no-libsForQt5-callPackage.patch
 ]
