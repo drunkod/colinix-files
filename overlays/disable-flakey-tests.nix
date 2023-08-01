@@ -15,16 +15,33 @@ let
       (p.stdenv.targetPlatform.system == "aarch64-linux")
       (f upstream)
   );
+  emulatedOnly = f: p: p.overrideAttrs (upstream:
+    next.lib.optionalAttrs
+      (p.stdenv.targetPlatform.system == "aarch64-linux" && p.stdenv.buildPlatform.system == "aarch64-linux")
+      (f upstream)
+  );
   dontCheckAarch64 = aarch64Only (_: {
     # only `dontCheck` if the package is being built for aarch64
     doCheck = false;
     doInstallCheck = false;
+  });
+  dontCheckEmulated = emulatedOnly (_: {
+    doCheck = false;
   });
 in {
   # 2023/07/27
   # 4 tests fail when building `host-pkgs.moby.emulated.elfutils`
   # it might be enough to only disable checks when targeting aarch64, which could reduce rebuilds?
   elfutils = dontCheckAarch64 prev.elfutils;
+
+  # 2023/07/31
+  # tests just hang after mini-record-2
+  # only for binfmt-emulated aarch64 -> aarch64 build
+  gnutls = dontCheckEmulated prev.gnutls;
+
+  # 2023/07/31
+  # tests fail (not timeout), but only when cross compiling, and not on servo (so, due to binfmt?)
+  gupnp = dontCheck prev.gupnp;
 
   # 2023/07/28
   # "7/7 libwacom:all / pytest                               TIMEOUT        30.36s   killed by signal 15 SIGTERM"

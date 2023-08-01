@@ -58,15 +58,15 @@ in [
   #   hash = "sha256-oQEM3EZfAOmfZzDu9faCqyOFZsdHYGn1mVBgkxt68Zg=";
   # })
   (fetchpatch' {
-    saneCommit = "c3becd7cdf144d85d12e2e76663e9549a0536efd";
     title = "firefox-pmos-mobile: init at 4.0.2";
+    saneCommit = "c3becd7cdf144d85d12e2e76663e9549a0536efd";
     hash = "sha256-NRh2INUMA2K7q8zioqKA7xwoqg7v6sxpuJRpTG5IP1Q=";
   })
 
-  # splatmoji: init at 1.2.0
   (fetchpatch' {
-    saneCommit = "75149039b6eaf57d8a92164e90aab20eb5d89196";
+    title = "splatmoji: init at 1.2.0";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/211874";
+    saneCommit = "75149039b6eaf57d8a92164e90aab20eb5d89196";
     hash = "sha256-jDXYLlXaEBKMrZ2dgxc6ucrcX/5dtqoIIKw+Ay19vlc=";
   })
 
@@ -164,6 +164,7 @@ in [
   #   hash = "sha256-2easgOtJfzvVcz/3nt3lo1GKLLotrM4CkBRyTgIAhHU=";
   # })
   (fetchpatch' {
+    # includes hare-json and hare-ev as pre-reqs
     title = "bonsai: init at 1.0.0";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/233892";
     hash = "sha256-HqtDgisbR0xOUY4AxhzEv+2JJMPyQMawKo6nbd9pxhE=";
@@ -232,17 +233,12 @@ in [
     hash = "sha256-8NqqLBbjt1fLj4ZYhat7wPqQSv/aez9IwgSK2b4CfW8=";
   })
 
-  (fetchpatch' {
-    title = "libgudev: fix cross failing to build checks";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/245761";
-    hash = "sha256-jEQeGAcDGrv0TYouBTfn5ubWaosWg/ecmUW0ii1QIVs=";
-  })
+  # (fetchpatch' {
+  #   title = "libgudev: fix cross failing to build checks";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/245761";
+  #   hash = "sha256-jEQeGAcDGrv0TYouBTfn5ubWaosWg/ecmUW0ii1QIVs=";
+  # })
 
-  (fetchpatch' {
-    title = "wvkbd: support cross compilation";
-    saneCommit = "34379f5770662b483ab0cbe252cf23dd663d84dc";
-    hash = "sha256-Duim5hPBtfGePBte29ZUtojyRAts9lQlbleUsTJNkwI=";
-  })
   (fetchpatch' {
     title = "python310Packages.gssapi: support cross compilation";
     saneCommit = "4766ae46f863734fbe96dc4e537870b6b3894cf4";
@@ -254,14 +250,65 @@ in [
     hash = "sha256-8s789GGARJH1i088OGBjGGnL2l5m8Q+iBPS213QsS6A=";
   })
   (fetchpatch' {
+    title = "perlPackages.TestFile: 1.443 -> 1.993";
+    saneCommit = "6cf080fb51d034f9c2ddd60cef7dee7d041afd3e";
+    hash = "sha256-fAZpduh3JZeFixJ4yX0wkh/GRp0gYKsTT+XkNdpK7CU=";
+  })
+  (fetchpatch' {
     title = "xdg-utils: enable cross compilation";
     saneCommit = "b7aa5e0c1ec06723cf1594de192703a65be21497";
     hash = "sha256-4iE2EDIe3nSkB8xFXucyCH7k2oiIoBiuYZYAtF31G38=";
   })
   (fetchpatch' {
-    title = "perlPackages.TestFile: 1.443 -> 1.993";
-    saneCommit = "6cf080fb51d034f9c2ddd60cef7dee7d041afd3e";
-    hash = "sha256-fAZpduh3JZeFixJ4yX0wkh/GRp0gYKsTT+XkNdpK7CU=";
+    # N.B.: duplicates outstanding, approved PR: <https://github.com/NixOS/nixpkgs/pull/245761>
+    title = "libgudev: support cross compilation";
+    saneCommit = "4dc30718fe01e9dbed4ffc2ff375148da218e86b";
+    hash = "sha256-Nb2LphSyv8Dayqfwqfua0eKtNzsnaf7PC/KYUhIvnT8=";
+  })
+  (fetchpatch' {
+    title = "gupnp: fix cross compilation";
+    saneCommit = "a1604d867581239c53a3dda0c845a2eb49aa814a";
+    hash = "sha256-euYjOa/axVlFlWo73Xkcg0t4ip/bOCyGbZmynvhM6sc=";
+  })
+  (fetchpatch' {
+    title = "blueman: support cross compilation";
+    saneCommit = "e070195bdf213dffb0164574397b6a7417f81c9e";
+    hash = "sha256-6JnIJCVBbV4tmFinX7Qv2wO2AThrgxrnyb9T4Ov6p5w=";
+  })
+  (fetchpatch' {
+    title = "tracker: support cross compilation";
+    saneCommit = "bea390fd0c4fda96db5b1fad06ee071a10561305";
+    hash = "sha256-Y2tVoTvSIIT9ufghqqsXgmqWq9daH+WKj4JHZgWbWwE=";
+  })
+  (fetchpatch' {
+    title = "tracker-miners: support cross compilation";
+    saneCommit = "24b062309ea8baa2d8303c0610c9ec7b8c399e8b";
+    hash = "sha256-Jj+1z2DeCEY+DqI1J4vYjYJwDDMRcA93CqpZSXzG0wE=";
+  })
+  (fetchpatch' {
+    title = "upower: fix cross compilation";
+    saneCommit = "3ab262456acc016c8dc834df1d1f7e61a00e01e3";
+    hash = "sha256-kTFZVu9oDiYH4W4SoQQj0pNuo9hTJk6jUy+hy34HUtA=";
+  })
+  (fetchpatch' {
+    title = "upower: don't pass unnecessary nativeBuildInputs";
+    saneCommit = "e2cbfb1bc81afadc5d31c18d43e774fa9a985f98";
+    hash = "sha256-7Q9Fjp7xrw3e887inc5cc01OvuOhThnVYduSLNtv2d0=";
+  })
+  (fetchpatch' {
+    title = "mpvScripts.mpris: support cross compilation";
+    saneCommit = "f7cd92e2afa26852ccf53f8ca59c13d82bf7bf64";
+    hash = "sha256-MB3qloOW4pXZmbCIVsUKP2DnPoePmBf+qRc2x/o+nDw=";
+  })
+  (fetchpatch' {
+    title = "wvkbd: support cross compilation";
+    saneCommit = "34379f5770662b483ab0cbe252cf23dd663d84dc";
+    hash = "sha256-Duim5hPBtfGePBte29ZUtojyRAts9lQlbleUsTJNkwI=";
+  })
+  (fetchpatch' {
+    title = "clapper: support cross compilation";
+    saneCommit = "8a171b49aca406f8220f016e56964b3fae53a3df";
+    hash = "sha256-R11IYatGhSXxZnJxJid519Oc9Kh56D9NT2/cxf2CLuM=";
   })
 
   (fetchpatch' {
@@ -276,6 +323,14 @@ in [
   #   saneCommit = "97a9d12b6c31a58e9067eae7cdcd3f53055c124c";
   #   hash = "sha256-g+p96OrBOQAwwH7nwHBuM/KGeIrnBzh9u9lL0M0sYWo=";
   # })
+
+  (fetchpatch' {
+    # fixes iio-sensor-proxy cross-compilation
+    # merged 2023/08/01
+    title = "iio-sensor-proxy: 3.0 -> 3.5, cleanup";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/245773";
+    hash = "sha256-6Ho3A+xyVJoip+y5ioc/U8nPZ9O1SlvLenuzkYEAbuo=";
+  })
 
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped

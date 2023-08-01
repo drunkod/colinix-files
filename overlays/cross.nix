@@ -5,6 +5,13 @@
 #     - needed for File-BaseDir, used by File-MimeInfo
 #     - File-BaseDir can be updated to v0.09, which cross compiles with ease
 # - libgudev builds on servo branch
+# - gupnp builds on servo branch
+# - blueman builds on servo branch
+# - tracker builds on servo branch
+# - upower builds on servo branch
+# - wvkbd builds on servo branch
+# - directfb needs investigation on servo
+# - engrampa fails on servo, same way as it does on desko
 # - gdk-pixbuf doesn't generate `gdk-pixbuf-thumbnailer` on cross
 #   - been this way since 2018: <https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/merge_requests/20>
 #   - as authored upstream, thumbnailer depends on loader.cache, and neither are built during cross compilation.
@@ -196,11 +203,11 @@ in {
   #       };
   #     };
 
-  # 2023/07/27: upstreaming is blocked on xdg-utils, p11-kit, libgudev cross compilation
-  blueman = prev.blueman.overrideAttrs (orig: {
-    # configure: error: ifconfig or ip not found, install net-tools or iproute2
-    nativeBuildInputs = orig.nativeBuildInputs ++ [ final.iproute2 ];
-  });
+  # 2023/07/31: upstreaming is unblocked,implemented on servo
+  # blueman = prev.blueman.overrideAttrs (orig: {
+  #   # configure: error: ifconfig or ip not found, install net-tools or iproute2
+  #   nativeBuildInputs = orig.nativeBuildInputs ++ [ final.iproute2 ];
+  # });
   bonsai = prev.bonsai.override {
     inherit (emulated) hare stdenv;
   };
@@ -227,14 +234,14 @@ in {
   #   ];
   # });
 
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
-  clapper = prev.clapper.overrideAttrs (upstream: {
-    # use the host gjs (meson's find_program expects it to be executable)
-    postPatch = (upstream.postPatch or "") + ''
-      substituteInPlace bin/meson.build \
-        --replace "find_program('gjs').path()" "'${final.gjs}/bin/gjs'"
-    '';
-  });
+  # 2023/07/31: upstreaming is unblocked, implemented on servo
+  # clapper = prev.clapper.overrideAttrs (upstream: {
+  #   # use the host gjs (meson's find_program expects it to be executable)
+  #   postPatch = (upstream.postPatch or "") + ''
+  #     substituteInPlace bin/meson.build \
+  #       --replace "find_program('gjs').path()" "'${final.gjs}/bin/gjs'"
+  #   '';
+  # });
 
   # 2023/07/27: upstreaming is blocked on p11-kit, argyllcms, libavif cross compilation
   colord = prev.colord.overrideAttrs (upstream: {
@@ -298,6 +305,7 @@ in {
     };
   });
 
+  # 2023/07/31: upstreaming is blocked on ostree dep
   flatpak = prev.flatpak.overrideAttrs (upstream: {
     # fixes "No package 'libxml-2.0' found"
     buildInputs = upstream.buildInputs ++ [ final.libxml2 ];
@@ -307,6 +315,7 @@ in {
     ];
   });
 
+  # 2023/07/31: upstreaming is unblocked -- if i can rework to not use emulation
   fwupd-efi = prev.fwupd-efi.override {
     # fwupd-efi queries meson host_machine to decide what arch to build for.
     #   for some reason, this gives x86_64 unless meson itself is emulated.
@@ -326,6 +335,7 @@ in {
   #   # ];
   # });
   # solves (meson) "Run-time dependency libgcab-1.0 found: NO (tried pkgconfig and cmake)", and others.
+  # 2023/07/31: upstreaming is blocked on argyllcms, fwupd-efi, libavif
   fwupd = (addBuildInputs
     [ final.gcab ]
     (mvToBuildInputs [ final.gnutls ] prev.fwupd)
@@ -337,7 +347,7 @@ in {
     outputs = lib.remove "devdoc" upstream.outputs;
   });
 
-  # 2023/07/27: upstreaming is blocked on p11-kit, gupnp cross compilation
+  # 2023/07/31: upstreaming is unblocked
   gcr_4 = (
     # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
     mvToNativeInputs [ final.gnupg final.openssh ] prev.gcr_4
@@ -355,7 +365,7 @@ in {
   #     buildInputs = (upstream.buildInputs or []) ++ [ prev.pkg-config ];
   #   });
   # });
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/27: upstreaming is blocked on p11-kit, libavif cross compilation
   gthumb = mvInputs { nativeBuildInputs = [ final.glib ]; } prev.gthumb;
 
   gnome = prev.gnome.overrideScope' (self: super: {
@@ -538,6 +548,7 @@ in {
   # });
 
   # 2023/07/27: upstreaming is blocked on xdg-utils cross compilation
+  # - fails in different way than here: tries to run host python during build
   gpodder = prev.gpodder.overridePythonAttrs (upstream: {
     # fix gobject-introspection overrides import that otherwise fails on launch
     nativeBuildInputs = upstream.nativeBuildInputs ++ [
@@ -554,7 +565,7 @@ in {
       # buildInputs = lib.remove final.qt5.qtbase upstream.buildInputs;
     });
   };
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/27: upstreaming is blocked on p11-kit, libavif cross compilation
   gvfs = prev.gvfs.overrideAttrs (upstream: {
     nativeBuildInputs = upstream.nativeBuildInputs ++ [
       final.openssh
@@ -601,9 +612,15 @@ in {
   #   ];
   # });
 
-  # fixes "./autogen.sh: line 26: gtkdocize: not found"
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
-  iio-sensor-proxy = mvToNativeInputs [ final.glib final.gtk-doc ] prev.iio-sensor-proxy;
+  # fixes "ERROR: Program 'glib-compile-resources' not found or not executable
+  # 2023/07/31: upstreaming is unblocked on servo
+  # - different failure mode though:
+  # - "configure: error: cannot run C compiled programs"
+  # - "If you meant to cross compile, use `--host`"
+  # nixpkgs merged 3.0 -> 3.5 update
+  # - <https://github.com/NixOS/nixpkgs/pull/245773/files>
+  # - still needs glib in native build inputs
+  iio-sensor-proxy = addNativeInputs [ final.glib ] prev.iio-sensor-proxy;
 
   # fixes: "make: gcc: No such file or directory"
   java-service-wrapper = useEmulatedStdenv prev.java-service-wrapper;
@@ -745,12 +762,12 @@ in {
   #   # '';
   # });
 
-  mpvScripts = prev.mpvScripts // {
-    # "line 1: pkg-config: command not found"
-    #   "mpris.c:1:10: fatal error: gio/gio.h: No such file or directory"
-    # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
-    mpris = addNativeInputs [ final.pkg-config ] prev.mpvScripts.mpris;
-  };
+  # mpvScripts = prev.mpvScripts // {
+  #   # "line 1: pkg-config: command not found"
+  #   #   "mpris.c:1:10: fatal error: gio/gio.h: No such file or directory"
+  #   # 2023/07/31: upstreaming unblocked, implemented on servo
+  #   mpris = addNativeInputs [ final.pkg-config ] prev.mpvScripts.mpris;
+  # };
   # fixes: "ar: command not found"
   # `ar` is provided by bintools
   # 2023/07/27: upstreaming is unblocked by deps; but turns out to not be this simple
@@ -801,7 +818,7 @@ in {
   networkmanager-vpnc = mvToNativeInputs [ final.glib ] prev.networkmanager-vpnc;
   # fixes "properties/gresource.xml: Permission denied"
   #   - by providing glib-compile-resources
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/27: upstreaming is blocked on p11-kit, coeurl cross compilation
   nheko = prev.nheko.overrideAttrs (orig: {
     # fixes "fatal error: lmdb++.h: No such file or directory
     buildInputs = orig.buildInputs ++ [ final.lmdbxx ];
@@ -939,7 +956,7 @@ in {
         ];
       });
       # gssapi = py-prev.gssapi.overridePythonAttrs (_orig: {
-      #   # 2023/07/29: upstreaming is unblocked; implemented on servo pr/cross-2023-07-28 branch
+      #   # 2023/07/29: upstreaming is unblocked,implemented on servo pr/cross-2023-07-28 branch
       #   # "krb5-aarch64-unknown-linux-gnu-1.20.1/lib/libgssapi_krb5.so: cannot open shared object file"
       #   # setup.py only needs this to detect if kerberos was configured with gssapi support (not sure why it doesn't call krb5-config for that?)
       #   # it doesn't actually link or use anything from the build krb5 except a "canary" symobl.
@@ -1120,7 +1137,8 @@ in {
   #   # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
   #   inherit (emulated) stdenv;
   # };
-  # 2023/07/30: upstreaming is ?; implemented on servo cross-staging-2023-07-30 branch
+  # 2023/07/30: upstreaming requires some changes, as configure tries to invoke our `python`
+  # implemented (broken) on servo cross-staging-2023-07-30 branch
   rpm = prev.rpm.overrideAttrs (upstream: {
     # fixes "python too old". might also be specifiable as a configure flag?
     env = upstream.env // {
@@ -1206,11 +1224,11 @@ in {
   #   ;
   # };
 
-  sysprof = (
-    # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
-    # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
-    mvToNativeInputs [ final.glib ] prev.sysprof
-  );
+  # sysprof = (
+  #   # fixes: "src/meson.build:12:2: ERROR: Program 'gdbus-codegen' not found or not executable"
+  #   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  #   mvToNativeInputs [ final.glib ] prev.sysprof
+  # );
   # tangram = rmNativeInputs [ final.gobject-introspection ] (
   # tangram = mvToBuildInputs [ (dontCheck (useEmulatedStdenv final.blueprint-compiler)) ] (
   #   addNativeInputs [ final.gjs ] (  # new error: "gi._error.GError: g-invoke-error-quark: Could not locate g_option_error_quark" loading glib
@@ -1261,14 +1279,15 @@ in {
         --replace "find_program('gjs').full_path()" "'${final.gjs}/bin/gjs'"
     '';
   });
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/31: upstreaming is unblocked,implemented on servo
   # fixes "meson.build:204:12: ERROR: Can not run test applications in this cross environment."
-  tracker = addNativeInputs [ final.mesonEmulatorHook ] prev.tracker;
+  # tracker = addNativeInputs [ final.mesonEmulatorHook ] prev.tracker;
   # fixes "meson.build:425:23: ERROR: Program 'glib-compile-schemas' not found or not executable"
-  tracker-miners = mvToNativeInputs [ final.glib ] (
-    # fixes "meson.build:183:0: ERROR: Can not run test applications in this cross environment."
-    addNativeInputs [ final.mesonEmulatorHook ] prev.tracker-miners
-  );
+  # 2023/07/31: upstreaming is unblocked,implemented on servo
+  # tracker-miners = mvToNativeInputs [ final.glib ] (
+  #   # fixes "meson.build:183:0: ERROR: Can not run test applications in this cross environment."
+  #   addNativeInputs [ final.mesonEmulatorHook ] prev.tracker-miners
+  # );
   tuba = (wrapGAppsHook4Fix prev.tuba).overrideAttrs (upstream: {
     # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
     # error: Package `{libadwaita-1,gtksourceview-5,libsecret-1,gee-0.8}' not found in specified Vala API directories or GObject-Introspection GIR directories
@@ -1281,7 +1300,7 @@ in {
 
   # fixes: "ar: command not found"
   # `ar` is provided by bintools
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/27: upstreaming is blocked on p11-kit, gnustep cross compilation
   unar = addNativeInputs [ final.bintools ] prev.unar;
   unixODBCDrivers = prev.unixODBCDrivers // {
     # TODO: should this package be deduped with toplevel psqlodbc in upstream nixpkgs?
@@ -1295,13 +1314,13 @@ in {
       '';
     });
   };
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
-  upower = prev.upower.overrideAttrs (upstream: {
-    # cross-compiled builds seem to not create the installedTest files
-    outputs = lib.remove "installedTests" upstream.outputs;
-    postInstall = lib.replaceStrings [ "installedTests" ] [ "" ] upstream.postInstall;
-    postFixup = "";
-  });
+  # 2023/07/31: upstreaming is unblocked,implemented
+  # upower = prev.upower.overrideAttrs (upstream: {
+  #   # cross-compiled builds seem to not create the installedTest files
+  #   outputs = lib.remove "installedTests" upstream.outputs;
+  #   postInstall = lib.replaceStrings [ "installedTests" ] [ "" ] upstream.postInstall;
+  #   postFixup = "";
+  # });
 
   visidata = prev.visidata.override {
     # hdf5 / h5py don't cross-compile, but i don't use that file format anyway.
@@ -1320,7 +1339,8 @@ in {
     };
   });
   # fixes "perl: command not found"
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/30: upstreaming is unblocked, but requires alternative fix
+  # - i think the build script tries to run the generated binary?
   vpnc = mvToNativeInputs [ final.perl ] prev.vpnc;
   # wrapGAppsHook = prev.wrapGAppsHook.override {
   #   # prevents build gtk3 from being propagated into places it shouldn't (e.g. waybar)
@@ -1339,7 +1359,7 @@ in {
     buildInputs = upstream.buildInputs ++ [ final.bash ];
   });
   # fixes "No package 'xdg-desktop-portal' found"
-  # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
+  # 2023/07/27: upstreaming is blocked on p11-kit,argyllcms cross compilation
   xdg-desktop-portal-gtk = mvToBuildInputs [ final.xdg-desktop-portal ] prev.xdg-desktop-portal-gtk;
   # fixes: "data/meson.build:33:5: ERROR: Program 'msgfmt' not found or not executable"
   # fixes: "src/meson.build:25:0: ERROR: Program 'gdbus-codegen' not found or not executable"
@@ -1349,11 +1369,9 @@ in {
       mvToNativeInputs [ final.gettext final.glib ] prev.xdg-desktop-portal-gnome
     )
   );
-  # "fatal error: urcu.h: No such file or directory"
-  # xfsprogs wants to compile things for the build target (BUILD_CC)
-  # xfsprogs = useEmulatedStdenv prev.xfsprogs;
-  xfsprogs = addNativeInputs [ final.liburcu ] prev.xfsprogs;
+
   # webkitgtk = prev.webkitgtk.override { stdenv = final.ccacheStdenv; };
+
   webp-pixbuf-loader = prev.webp-pixbuf-loader.overrideAttrs (upstream: {
     # fixes: "Builder called die: Cannot wrap '/nix/store/kpp8qhzdjqgvw73llka5gpnsj0l4jlg8-gdk-pixbuf-aarch64-unknown-linux-gnu-2.42.10/bin/gdk-pixbuf-thumbnailer' because it is not an executable file"
     # gdk-pixbuf doesn't create a `bin/` directory when cross-compiling, breaks some thumbnailing stuff.
@@ -1377,6 +1395,7 @@ in {
     };
   };
 
+  # 2023/07/31: upstreaming is blocked on playerctl
   waybar = (prev.waybar.override {
     runTests = false;
     cavaSupport = false;  # doesn't cross compile

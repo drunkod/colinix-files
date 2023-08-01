@@ -89,6 +89,8 @@ let
 
     cozy = callPackage ./patched/cozy { inherit (unpatched) cozy; };
 
+    engrampa = callPackage ./patched/engrampa { inherit (unpatched) mate; };
+
     # mozilla keeps nerfing itself and removing configuration options
     firefox-unwrapped = callPackage ./patched/firefox-unwrapped { inherit (unpatched) firefox-unwrapped; };
 
