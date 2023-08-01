@@ -45,6 +45,7 @@ in {
 
   # 2023/07/28
   # "7/7 libwacom:all / pytest                               TIMEOUT        30.36s   killed by signal 15 SIGTERM"
+  # N.B.: it passes on x86_64, but only if it's not CPU starved (i.e. nix build with -j1 if it fails)
   libwacom = aarch64Only (_: {
     doCheck = false;
     mesonFlags = [ "-Dtests=disabled" ];
