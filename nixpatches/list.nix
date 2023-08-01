@@ -92,10 +92,10 @@ in [
   # TODO: why doesn't this apply?
   # ./2023-03-04-ccache-cross-fix.patch
 
-  # 2023-04-11: bambu-studio: init at 01.06.02.04
   (fetchpatch' {
+    title = "bambu-studio: init at 01.06.02.04";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/206495";
-    hash = "sha256-XG4hvHXmP/wgiKuNRCAfttaGLrg/6mAOr+YvAVmycKQ=";
+    hash = "sha256-Z+IOzd+bnxjg6neF1YcrRDTzz9GhJfbbj0Wa8yTXsa4=";
   })
 
   # (fetchpatch' {
@@ -168,7 +168,13 @@ in [
   })
 
   # make alsa-project members overridable
-  ./2023-05-31-toplevel-alsa.patch
+  (fetchpatch' {
+    title = "alsa-project: expose the scope as a top-level package to support overrides";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/246656";
+    saneCommit = "28f76deae50cc53f5f6a5e846e04426357b8ce2e";
+    # hash = "sha256-dBWStotLBa4LN7JmriTzoFX3/SQr/qxGO8glv3MNyZQ=";
+    hash = "sha256-QvurEnupAdPVVnHYl4DC1OqJronGt31REkTJO/alr60=";
+  })
 
   # pin to a pre-0.17.3 release
   # removing this and using stock 0.17.3 (also 0.17.4) causes:
