@@ -740,6 +740,13 @@ in {
   #   callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
   # });
 
+  libshumate = prev.libshumate.overrideAttrs (upstream: {
+    # fixes "Build-time dependency gi-docgen found: NO (tried pkgconfig and cmake)"
+    mesonFlags = (upstream.mesonFlags or []) ++ [ "-Dgtk_doc=false" ];
+    # alternative partial fix, but then it tries to link against the build glib
+    # depsBuildBuild = (upstream.depsBuildBuild or []) ++ [ final.pkg-config ];
+  });
+
   # mepo = (prev.mepo.override {
   #   inherit (emulated)
   #     stdenv
