@@ -25,6 +25,7 @@
 , sqlite
 # NEW
 , evolution-data-server-gtk4
+, glib-networking
 , gtk4
 , libadwaita
 , wrapGAppsHook4
@@ -58,6 +59,7 @@ chatty.overrideAttrs (upstream: {
   buildInputs = [
     # evolution-data-server
     feedbackd
+    glib-networking  # for TLS
     glibmm
     gnome-desktop
     gspell
