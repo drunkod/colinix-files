@@ -40,7 +40,6 @@
       "mpv"
       # "networkmanagerapplet"
       # "newsflash"
-      "nheko"
       "pavucontrol"
       # "picard"  # music tagging
       # "libsForQt5.plasmatube"  # Youtube player
@@ -82,6 +81,7 @@
       "krita"
       "libreoffice"  # TODO: replace with an office suite that uses saner packaging?
       "mumble"
+      "nheko"
       "obsidian"
       "slic3r"
       "steam"

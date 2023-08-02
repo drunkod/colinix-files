@@ -14,5 +14,7 @@
         };
       };
     };
+
+    suggestedPrograms = [ "gnome-keyring" ];
   };
 }
