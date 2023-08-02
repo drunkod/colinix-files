@@ -28,5 +28,9 @@ in
     # package = chattyNoOauth;
     package = chatty-latest;
     suggestedPrograms = [ "gnome-keyring" ];
+    persist.private = [
+      ".local/share/chatty"  # matrix avatars and files
+      # ".purple"  # XMPP stuff
+    ];
   };
 }
