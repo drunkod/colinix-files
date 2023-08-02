@@ -618,14 +618,14 @@ in {
   # });
 
   # fixes "ERROR: Program 'glib-compile-resources' not found or not executable
-  # 2023/07/31: upstreaming is unblocked on servo
+  # 2023/08/01: upstreaming is unblocked,implemented on servo
   # - different failure mode though:
   # - "configure: error: cannot run C compiled programs"
   # - "If you meant to cross compile, use `--host`"
   # nixpkgs merged 3.0 -> 3.5 update
   # - <https://github.com/NixOS/nixpkgs/pull/245773/files>
   # - still needs glib in native build inputs
-  iio-sensor-proxy = addNativeInputs [ final.glib ] prev.iio-sensor-proxy;
+  # iio-sensor-proxy = addNativeInputs [ final.glib ] prev.iio-sensor-proxy;
 
   # fixes: "make: gcc: No such file or directory"
   java-service-wrapper = useEmulatedStdenv prev.java-service-wrapper;

@@ -201,6 +201,15 @@ in [
   })
 
   (fetchpatch' {
+    # fixes iio-sensor-proxy cross-compilation
+    # merged 2023/08/01
+    title = "iio-sensor-proxy: 3.0 -> 3.5, cleanup";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/245773";
+    hash = "sha256-6Ho3A+xyVJoip+y5ioc/U8nPZ9O1SlvLenuzkYEAbuo=";
+  })
+
+
+  (fetchpatch' {
     title = "gthumb: make the webservices feature be optional";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/240602";
     saneCommit = "50767d5746fd80657e997b43fc5d82ba0c2c2447";
@@ -287,6 +296,11 @@ in [
     hash = "sha256-7Q9Fjp7xrw3e887inc5cc01OvuOhThnVYduSLNtv2d0=";
   })
   (fetchpatch' {
+    title = "iio-sensor-proxy: support cross compilation";
+    saneCommit = "dc1c3341fef6c64d5fbc983670819cf7932f5be1";
+    hash = "sha256-lSVGjNepRLMfLgaAG3zv/BfoEhJg8yX7EqaCgu8/b8I=";
+  })
+  (fetchpatch' {
     title = "mpvScripts.mpris: support cross compilation";
     saneCommit = "f7cd92e2afa26852ccf53f8ca59c13d82bf7bf64";
     hash = "sha256-MB3qloOW4pXZmbCIVsUKP2DnPoePmBf+qRc2x/o+nDw=";
@@ -334,14 +348,6 @@ in [
   #   saneCommit = "97a9d12b6c31a58e9067eae7cdcd3f53055c124c";
   #   hash = "sha256-g+p96OrBOQAwwH7nwHBuM/KGeIrnBzh9u9lL0M0sYWo=";
   # })
-
-  (fetchpatch' {
-    # fixes iio-sensor-proxy cross-compilation
-    # merged 2023/08/01
-    title = "iio-sensor-proxy: 3.0 -> 3.5, cleanup";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/245773";
-    hash = "sha256-6Ho3A+xyVJoip+y5ioc/U8nPZ9O1SlvLenuzkYEAbuo=";
-  })
 
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
