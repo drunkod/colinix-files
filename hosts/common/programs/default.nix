@@ -4,6 +4,7 @@
   imports = [
     ./aerc.nix
     ./assorted.nix
+    ./chatty.nix
     ./cozy.nix
     ./epiphany.nix
     ./evince.nix
