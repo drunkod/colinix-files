@@ -1,8 +1,59 @@
 { pkgs, ... }:
 
+let
+  declPackageSet = pkgs: {
+    package = null;
+    suggestedPrograms = pkgs;
+  };
+in
 {
   sane.programs = {
     # PACKAGE SETS
+    "sane-scripts.backup" = declPackageSet [
+      "sane-scripts.backup-ls"
+      "sane-scripts.backup-restore"
+    ];
+    "sane-scripts.bittorrent" = declPackageSet [
+      "sane-scripts.bt-add"
+      "sane-scripts.bt-rm"
+      "sane-scripts.bt-search"
+      "sane-scripts.bt-show"
+    ];
+    "sane-scripts.dev" = declPackageSet [
+      "sane-scripts.dev-cargo-loop"
+      "sane-scripts.git-init"
+    ];
+    "sane-scripts.cli" = declPackageSet [
+      "sane-scripts.deadlines"
+      "sane-scripts.find-dotfiles"
+      "sane-scripts.ip-check"
+      "sane-scripts.ip-reconnect"
+      "sane-scripts.private-change-passwd"
+      "sane-scripts.private-do"
+      "sane-scripts.private-init"
+      "sane-scripts.private-lock"
+      "sane-scripts.private-unlock"
+      "sane-scripts.rcp"
+      "sane-scripts.reboot"
+      "sane-scripts.reclaim-boot-space"
+      "sane-scripts.reclaim-disk-space"
+      "sane-scripts.secrets-dump"
+      "sane-scripts.secrets-unlock"
+      "sane-scripts.secrets-update-keys"
+      "sane-scripts.shutdown"
+      "sane-scripts.ssl-dump"
+      "sane-scripts.sudo-redirect"
+      "sane-scripts.sync-from-servo"
+      "sane-scripts.vpn-down"
+      "sane-scripts.vpn-up"
+      "sane-scripts.which"
+      "sane-scripts.wipe-browser"
+    ];
+    "sane-scripts.sys-utils" = declPackageSet [
+      "sane-scripts.ip-port-forward"
+    ];
+
+
     sysadminUtils = {
       package = null;
       suggestedPrograms = [
@@ -56,6 +107,7 @@
       suggestedPrograms = [
         "backblaze-b2"
         "duplicity"
+        "sane-scripts.backup"
         "sqlite"  # to debug sqlite3 databases
       ];
     };
@@ -100,7 +152,8 @@
         # "python3Packages.eyeD3"  # music tagging
         "ripgrep"  # needed as a user package so that its user-level config file can be installed
         "rsync"
-        "sane-scripts"  # TODO: split; moby doesn't need the duplicity related ones
+        "sane-scripts.bittorrent"
+        "sane-scripts.cli"
         "snapper"
         "sops"
         "speedtest-cli"
@@ -122,6 +175,7 @@
         "gh"  # MS GitHub cli
         "nix-index"
         "nixpkgs-review"
+        "sane-scripts.dev"
         "sequoia"
       ];
     };
@@ -154,6 +208,7 @@
         "ifuse"
         "ipfs"
         "libimobiledevice"
+        "sane-scripts.sync-from-iphone"
       ];
     };
 
