@@ -174,6 +174,7 @@
         disable-flakey-tests = final: prev: import ./overlays/disable-flakey-tests.nix final prev;
         pkgs = final: prev: import ./overlays/pkgs.nix final prev;
         pins = final: prev: import ./overlays/pins.nix final prev;
+        preferences = final: prev: import ./overlays/preferences.nix final prev;
         optimizations = final: prev: import ./overlays/optimizations.nix final prev;
         passthru = final: prev:
           let

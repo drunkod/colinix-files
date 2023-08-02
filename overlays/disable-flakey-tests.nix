@@ -50,12 +50,6 @@ in {
     mesonFlags = [ "-Dtests=disabled" ];
   }) prev.libwacom;
 
-  pipewire = prev.pipewire.override {
-    # avoid a dep on python3.10-PyQt5, which has mixed qt5 versions.
-    # this means we lose firewire support (oh well..?)
-    ffadoSupport = false;
-  };
-
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (py-next: py-prev: {
       pyarrow = py-prev.pyarrow.overridePythonAttrs (upstream: {
