@@ -134,6 +134,7 @@ in
         # - org.freedesktop.impl.portal.ScreenCast
         # - org.freedesktop.impl.portal.Screenshot
         enable = true;
+        extraPackages = [];  # nixos adds swaylock, swayidle, foot, dmenu by default
         # "wrapGAppsHook wrapper to execute sway with required environment variables for GTK applications."
         wrapperFeatures.gtk = true;
       };
