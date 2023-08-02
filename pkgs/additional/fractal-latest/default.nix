@@ -1,6 +1,7 @@
 { fractal-next, fetchFromGitLab, rustPlatform }:
 
 (fractal-next.overrideAttrs (prev: rec {
+  pname = "fractal-latest";
   version = "unstable-2023-07-28";
   src = fetchFromGitLab {
     domain = "gitlab.gnome.org";
