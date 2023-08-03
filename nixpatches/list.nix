@@ -339,8 +339,10 @@ in [
   })
   (fetchpatch' {
     title = "libgnt: 2.14.1 -> 2.14.3";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/246937";
     saneCommit = "ecd423195d72036a209912868ad02742cb4b6fcd";
-    hash = "sha256-u4V/UHNtd2c3+FppuJ5LeLNSV8ZaLe8cqj8HmcW2a/0=";
+    # hash = "sha256-u4V/UHNtd2c3+FppuJ5LeLNSV8ZaLe8cqj8HmcW2a/0=";
+    hash = "sha256-cGhJSby0K+e1hKPdPZjLFRKvwjGaTbq/kb6Fxj2v8g8=";
   })
   (fetchpatch' {
     title = "pidgin: support cross compilation";
