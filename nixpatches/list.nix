@@ -20,6 +20,12 @@ let
     );
 in [
 
+  (fetchpatch' {
+    title = "libkiwix: 12.0.0 -> 12.1.0";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/246700";
+    hash = "sha256-LyTkWNgG1mynCdckKm3Hj9ifzLemyrhJ9BFVaPppwgw=";
+  })
+
   # (fetchpatch' {
   #   # XXX: doesn't cleanly apply; fetch `firefox-pmos-mobile` branch from my git instead
   #   title = "firefox-pmos-mobile: init at -pmos-2.2.0";
