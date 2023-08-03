@@ -283,15 +283,18 @@ in [
     hash = "sha256-Jj+1z2DeCEY+DqI1J4vYjYJwDDMRcA93CqpZSXzG0wE=";
   })
   (fetchpatch' {
+    # PR also includes the nativeBuildInputs fix
     title = "upower: fix cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/246945";
     saneCommit = "3ab262456acc016c8dc834df1d1f7e61a00e01e3";
-    hash = "sha256-kTFZVu9oDiYH4W4SoQQj0pNuo9hTJk6jUy+hy34HUtA=";
+    # hash = "sha256-kTFZVu9oDiYH4W4SoQQj0pNuo9hTJk6jUy+hy34HUtA=";
+    hash = "sha256-PpC9YRMqg/wPfFgAPNV80mwbZWCKxNi4agxNf0yQutI=";
   })
-  (fetchpatch' {
-    title = "upower: don't pass unnecessary nativeBuildInputs";
-    saneCommit = "e2cbfb1bc81afadc5d31c18d43e774fa9a985f98";
-    hash = "sha256-7Q9Fjp7xrw3e887inc5cc01OvuOhThnVYduSLNtv2d0=";
-  })
+  # (fetchpatch' {
+  #   title = "upower: don't pass unnecessary nativeBuildInputs";
+  #   saneCommit = "e2cbfb1bc81afadc5d31c18d43e774fa9a985f98";
+  #   hash = "sha256-7Q9Fjp7xrw3e887inc5cc01OvuOhThnVYduSLNtv2d0=";
+  # })
   (fetchpatch' {
     title = "iio-sensor-proxy: support cross compilation";
     saneCommit = "dc1c3341fef6c64d5fbc983670819cf7932f5be1";
