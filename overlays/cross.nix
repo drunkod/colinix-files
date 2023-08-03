@@ -96,8 +96,8 @@ in {
     # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
     # gnome-tour
     # grpc
-    hare
-    harec
+    # hare
+    # harec
     # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
     # hdf5  # configure: error: cannot run test program while cross compiling
     # http2
