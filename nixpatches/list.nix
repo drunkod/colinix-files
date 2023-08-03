@@ -153,25 +153,25 @@ in [
   })
 
   # (fetchpatch' {
-  #   title = "hare-json: init at unstable-2023-01-31";
-  #   saneCommit = "260f9c6ac4e3564acbceb46aa4b65fbb652f8e23";
-  #   hash = "sha256-bjLKANo0+zaxugJlEk1ObPqRHWOKptD7dXB+/xzsYqA=";
+  #   title = "hare-json: init at unstable-2023-02-25";
+  #   saneCommit = "6c88c2b087755e8f60c9f61c6361dec2f7a38155";
+  #   hash = "sha256-9TTlhwLDZESaFC02k4+YER+NvoNVPz9wFYV79+Dmuxs=";
   # })
   # (fetchpatch' {
   #   title = "hare-ev: init at unstable-2022-12-29";
-  #   saneCommit = "4058200a407c86c5d963bc49b608aa1a881cbbf2";
-  #   hash = "sha256-wm1aavbCfxBhcOXh4EhFO4u0LrA9tNr0mSczHUK8mQU=";
+  #   saneCommit = "1761049e9b8620091f29bf864ecbbf204b0c56b4";
+  #   hash = "sha256-H2ekBJx/iRX8E4uVmdEyaAZVhqeM25QbwvQ9Ki7fMQ0=";
   # })
   # (fetchpatch' {
   #   title = "bonsai: init at 1.0.0";
-  #   saneCommit = "65d37294d939384e8db400ea82d25ce8b4ad6897";
-  #   hash = "sha256-2easgOtJfzvVcz/3nt3lo1GKLLotrM4CkBRyTgIAhHU=";
+  #   saneCommit = "507252828934c73c7cffe255dae237c041676c27";
+  #   hash = "sha256-HwycOd3v4IifdQqQmMP6w14g0E/T9RAjAw41AsUZQoc=";
   # })
   (fetchpatch' {
     # includes hare-json and hare-ev as pre-reqs
     title = "bonsai: init at 1.0.0";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/233892";
-    hash = "sha256-HqtDgisbR0xOUY4AxhzEv+2JJMPyQMawKo6nbd9pxhE=";
+    hash = "sha256-f7tdHz0lFsSJO8C0saMuG8e7VzSx8XDy/UXjbqWHP9M=";
   })
 
   # make alsa-project members overridable
