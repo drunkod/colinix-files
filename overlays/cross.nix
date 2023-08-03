@@ -105,7 +105,7 @@ in {
     # jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
     # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
     # libsForQt5  # if we emulate qt5, we're better off emulating libsForQt5 else qt complains about multiple versions of qtbase
-    mepo  # /build/source/src/sdlshim.zig:1:20: error: C import failed
+    # mepo  # /build/source/src/sdlshim.zig:1:20: error: C import failed
     # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
     # qgnomeplatform
     # qtbase
@@ -789,6 +789,30 @@ in {
     # depsBuildBuild = (upstream.depsBuildBuild or []) ++ [ final.pkg-config ];
   });
 
+  mepo = (prev.mepo.override {
+    # emulate zig and stdenv to fix:
+    # - "/build/source/src/sdlshim.zig:1:20: error: C import failed"
+    # emulate makeWrapper to fix:
+    # - "error: makeWrapper/makeShellWrapper must be in nativeBuildInputs"
+    inherit (emulated) makeWrapper stdenv zig;
+  }).overrideAttrs (upstream: {
+    nativeBuildInputs = [ final.pkg-config emulated.makeWrapper ];
+    # ref to zig by full path because otherwise it doesn't end up on the path...
+    checkPhase = lib.replaceStrings [ "zig" ] [ "${emulated.zig}/bin/zig" ] upstream.checkPhase;
+    installPhase = lib.replaceStrings [ "zig" ] [ "${emulated.zig}/bin/zig" ] upstream.installPhase;
+  });
+  # mepo = (prev.mepo.override {
+  #   inherit (emulated) stdenv;
+  # }).overrideAttrs (upstream: {
+  #   nativeBuildInputs = with final; [ pkg-config emulated.makeWrapper ];
+  #   buildInputs = with final; [
+  #     curl SDL2 SDL2_gfx SDL2_image SDL2_ttf jq ncurses
+  #     emulated.zig
+  #   ];
+  # });
+  # mepo = mvToBuildInputs [ emulated.zig ] (prev.mepo.override {
+  #   inherit (emulated) makeWrapper stdenv zig;
+  # });
   # mepo = (prev.mepo.override {
   #   inherit (emulated)
   #     stdenv
