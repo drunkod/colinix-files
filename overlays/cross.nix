@@ -1359,18 +1359,35 @@ in {
   tangram = (prev.tangram.override {
     # N.B. blueprint-compiler is in nativeBuildInputs.
     # the trick here is to force the aarch64 versions to be used during build (via emulation),
-    # which -- if we also emulate gobject-introspection (and the transient gjs dep) -- gets us the right gobject-introspection dirs.
-    # `dontCheck` because tests time out.
-    blueprint-compiler = dontCheck emulated.blueprint-compiler;
-    gjs = dontCheck emulated.gjs;
-    inherit (emulated) gobject-introspection;
+    blueprint-compiler = (useEmulatedStdenv final.blueprint-compiler).overrideAttrs (upstream: {
+      # default is to propagate gobject-introspection *as a buildInput*, when it's supposed to be native.
+      propagatedBuildInputs = [];
+      # "Namespace Gtk not available"
+      doCheck = false;
+    });
+    # blueprint-compiler = dontCheck emulated.blueprint-compiler;
+    # gjs = dontCheck emulated.gjs;
+    # gjs = dontCheck (mvToBuildInputs [ final.gobject-introspection ] (useEmulatedStdenv final.gjs));
+    # gjs = dontCheck (final.gjs.override {
+    #   inherit (emulated) stdenv gobject-introspection;
+    # });
+    # inherit (emulated) gobject-introspection;
+    # gobject-introspection = useEmulatedStdenv final.gobject-introspection;
   }).overrideAttrs (upstream: {
-    # depsBuildBuild = [ final.pkg-config ];  # else no `gio` dep found
     postPatch = (upstream.postPatch or "") + ''
       substituteInPlace src/meson.build \
         --replace "find_program('gjs').full_path()" "'${final.gjs}/bin/gjs'"
     '';
+    # buildInputs = upstream.buildInputs ++ [ final.gobject-introspection ];
+    # nativeBuildInputs = lib.remove final.gobject-introspection upstream.nativeBuildInputs;
   });
+  # tangram = (mvToBuildInputs [ final.blueprint-compiler final.gobject-introspection ] prev.tangram).overrideAttrs (upstream: {
+  #   postPatch = (upstream.postPatch or "") + ''
+  #     substituteInPlace src/meson.build \
+  #       --replace "find_program('gjs').full_path()" "'${final.gjs}/bin/gjs'"
+  #   '';
+  # });
+
   # 2023/07/31: upstreaming is unblocked,implemented on servo
   # fixes "meson.build:204:12: ERROR: Can not run test applications in this cross environment."
   # tracker = addNativeInputs [ final.mesonEmulatorHook ] prev.tracker;
