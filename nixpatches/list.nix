@@ -237,20 +237,21 @@ in [
     saneCommit = "4766ae46f863734fbe96dc4e537870b6b3894cf4";
     hash = "sha256-qCAJjPRoH8nvKzB+uwDQtGQbFfHS/MiY7m1J0BMl7tY=";
   })
-  (fetchpatch' {
-    title = "perlPackages.FileBaseDir: 0.08 -> 0.09";
-    saneCommit = "acc990b04bbe8c99587eadccc65f100c326ec204";
-    hash = "sha256-8s789GGARJH1i088OGBjGGnL2l5m8Q+iBPS213QsS6A=";
-  })
-  (fetchpatch' {
-    title = "perlPackages.TestFile: 1.443 -> 1.993";
-    saneCommit = "6cf080fb51d034f9c2ddd60cef7dee7d041afd3e";
-    hash = "sha256-fAZpduh3JZeFixJ4yX0wkh/GRp0gYKsTT+XkNdpK7CU=";
-  })
+  # (fetchpatch' {
+  #   title = "perlPackages.FileBaseDir: 0.08 -> 0.09";
+  #   saneCommit = "acc990b04bbe8c99587eadccc65f100c326ec204";
+  #   hash = "sha256-8s789GGARJH1i088OGBjGGnL2l5m8Q+iBPS213QsS6A=";
+  # })
+  # (fetchpatch' {
+  #   title = "perlPackages.TestFile: 1.443 -> 1.993";
+  #   saneCommit = "6cf080fb51d034f9c2ddd60cef7dee7d041afd3e";
+  #   hash = "sha256-fAZpduh3JZeFixJ4yX0wkh/GRp0gYKsTT+XkNdpK7CU=";
+  # })
   (fetchpatch' {
     title = "xdg-utils: enable cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/246954";
     saneCommit = "b7aa5e0c1ec06723cf1594de192703a65be21497";
-    hash = "sha256-4iE2EDIe3nSkB8xFXucyCH7k2oiIoBiuYZYAtF31G38=";
+    hash = "sha256-zT0NYmGhJV24GmfjKj1xKcj9+gRMSOy3504tS/xv6Cw=";
   })
   # (fetchpatch' {
   #   # N.B.: duplicates outstanding, merged PR: <https://github.com/NixOS/nixpkgs/pull/246362>
