@@ -17,6 +17,7 @@
       "tuiApps"
     ] ++ [
       # "celluloid"  # mpv frontend
+      "chatty"  # matrix/xmpp/irc client
       "cozy"  # audiobook player
       # "emote"
       "epiphany"  # gnome's web browser
