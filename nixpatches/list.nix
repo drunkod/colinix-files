@@ -297,8 +297,10 @@ in [
   # })
   (fetchpatch' {
     title = "iio-sensor-proxy: support cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/246947";
     saneCommit = "dc1c3341fef6c64d5fbc983670819cf7932f5be1";
-    hash = "sha256-lSVGjNepRLMfLgaAG3zv/BfoEhJg8yX7EqaCgu8/b8I=";
+    # hash = "sha256-lSVGjNepRLMfLgaAG3zv/BfoEhJg8yX7EqaCgu8/b8I=";
+    hash = "sha256-0rO+qkWgdrZsuHnoRdQ0SqEEW+PYcJaLixrOgJSOssk=";
   })
   (fetchpatch' {
     title = "mpvScripts.mpris: support cross compilation";
