@@ -1008,9 +1008,11 @@ in {
       #   ];
       # });
 
-      cryptography = py-prev.cryptography.override {
-        inherit (emulated) cargo rustc rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
-      };
+      # 2023/08/03: fix is in staging:
+      # - <https://github.com/NixOS/nixpkgs/pull/244135>
+      # cryptography = py-prev.cryptography.override {
+      #   inherit (emulated) cargo rustc rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+      # };
 
       # defcon = py-prev.defcon.overridePythonAttrs (orig: {
       #   nativeBuildInputs = orig.nativeBuildInputs ++ orig.nativeCheckInputs;
