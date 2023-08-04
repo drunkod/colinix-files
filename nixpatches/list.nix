@@ -317,8 +317,10 @@ in [
   })
   (fetchpatch' {
     title = "wvkbd: support cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/247083";
     saneCommit = "34379f5770662b483ab0cbe252cf23dd663d84dc";
-    hash = "sha256-Duim5hPBtfGePBte29ZUtojyRAts9lQlbleUsTJNkwI=";
+    # hash = "sha256-Duim5hPBtfGePBte29ZUtojyRAts9lQlbleUsTJNkwI=";
+    hash = "sha256-aC7zEM4pV4YXh5X0m2nYAkH0vLgVTNq8bgIP8CLZy4I=";
   })
   (fetchpatch' {
     title = "clapper: support cross compilation";
