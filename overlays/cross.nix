@@ -89,35 +89,6 @@ in {
 
   # packages which don't cross compile
   inherit (emulated)
-    # adwaita-qt6  # although qtbase cross-compiles with minor change, qtModule's qtbase can't
-    # bonsai
-    # conky  # needs to be able to build lua
-    # duplicity  # python3.10-s3transfer
-    # gdk-pixbuf  # cross-compiled version doesn't output bin/gdk-pixbuf-thumbnailer  (used by webp-pixbuf-loader
-    # gnome-tour
-    # grpc
-    # hare
-    # harec
-    # nixpkgs hdf5 is at commit 3e847e003632bdd5fdc189ccbffe25ad2661e16f
-    # hdf5  # configure: error: cannot run test program while cross compiling
-    # http2
-    # ibus  # "error: cannot run test program while cross compiling"
-    # jellyfin-web  # in node-dependencies-jellyfin-web: "node: command not found"  (nodePackages don't cross compile)
-    # libgccjit  # "../../gcc-9.5.0/gcc/jit/jit-result.c:52:3: error: 'dlclose' was not declared in this scope"  (needed by emacs!)
-    # libsForQt5  # if we emulate qt5, we're better off emulating libsForQt5 else qt complains about multiple versions of qtbase
-    # mepo  # /build/source/src/sdlshim.zig:1:20: error: C import failed
-    # perlInterpreters  # perl5.36.0-Module-Build perl5.36.0-Test-utf8 (see tracking issues ^)
-    # qgnomeplatform
-    # qtbase
-    # qt5  # qt5.qtbase, qt5.qtx11extras fails, but we can't selectively emulate them.
-    # qt6  # "You need to set QT_HOST_PATH to cross compile Qt."
-    # sequoia  # "/nix/store/q8hg17w47f9xr014g36rdc2gi8fv02qc-clang-aarch64-unknown-linux-gnu-12.0.1-lib/lib/libclang.so.12: cannot open shared object file: No such file or directory"', /build/sequoia-0.27.0-vendor.tar.gz/bindgen/src/lib.rs:1975:31"
-    # splatmoji
-    # tangram  # gjs / custom gjspack thing
-    # twitter-color-emoji  # /nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 1: pkg-config: command not found
-    # visidata  # python3.10-psycopg2 python3.10-pandas python3.10-h5py
-    # webkitgtk_4_1  # requires nativeBuildInputs = perl.pkgs.FileCopyRecursive => perl5.36.0-Test-utf8
-    # xdg-utils  # perl5.36.0-File-BaseDir / perl5.36.0-Module-Build
   ;
 
 
@@ -998,89 +969,89 @@ in {
   #   inherit (emulated) stdenv;
   # };
 
-  pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-    (py-final: py-prev: {
+  # pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+  #   (py-final: py-prev: {
 
-      # aiohttp = py-prev.aiohttp.overridePythonAttrs (orig: {
-      #   # fixes "ModuleNotFoundError: No module named 'setuptools'"
-      #   propagatedBuildInputs = orig.propagatedBuildInputs ++ [
-      #     py-final.setuptools
-      #   ];
-      # });
+  #     # aiohttp = py-prev.aiohttp.overridePythonAttrs (orig: {
+  #     #   # fixes "ModuleNotFoundError: No module named 'setuptools'"
+  #     #   propagatedBuildInputs = orig.propagatedBuildInputs ++ [
+  #     #     py-final.setuptools
+  #     #   ];
+  #     # });
 
-      # 2023/08/03: fix is in staging:
-      # - <https://github.com/NixOS/nixpkgs/pull/244135>
-      # cryptography = py-prev.cryptography.override {
-      #   inherit (emulated) cargo rustc rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
-      # };
+  #     # 2023/08/03: fix is in staging:
+  #     # - <https://github.com/NixOS/nixpkgs/pull/244135>
+  #     # cryptography = py-prev.cryptography.override {
+  #     #   inherit (emulated) cargo rustc rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+  #     # };
 
-      # defcon = py-prev.defcon.overridePythonAttrs (orig: {
-      #   nativeBuildInputs = orig.nativeBuildInputs ++ orig.nativeCheckInputs;
-      # });
-      # executing = py-prev.executing.overridePythonAttrs (orig: {
-      #   # test has an assertion that < 1s of CPU time elapsed => flakey
-      #   disabledTestPaths = orig.disabledTestPaths or [] ++ [
-      #     # "tests/test_main.py::TestStuff::test_many_source_for_filename_calls"
-      #     "tests/test_main.py"
-      #   ];
-      # });
-      # h5py = py-prev.h5py.overridePythonAttrs (orig: {
-      #   # XXX: can't upstream until its dependency, hdf5, is fixed. that looks TRICKY.
-      #   # - the `setup_configure.py` in h5py tries to dlopen (and call into) the hdf5 lib to query the version and detect features like MPI
-      #   # - it could be patched with ~10 LoC in the HDF5LibWrapper class.
-      #   #
-      #   # expose numpy and hdf5 as available at build time
-      #   nativeBuildInputs = orig.nativeBuildInputs ++ orig.propagatedBuildInputs ++ orig.buildInputs;
-      #   buildInputs = [];
-      #   # HDF5_DIR = "${hdf5}";
-      # });
-      # ipython = py-prev.ipython.overridePythonAttrs (orig: {
-      #   # fixes "FAILED IPython/terminal/tests/test_debug_magic.py::test_debug_magic_passes_through_generators - pexpect.exceptions.TIMEOUT: Timeout exceeded."
-      #   disabledTests = orig.disabledTests ++ [ "test_debug_magic_passes_through_generator" ];
-      # });
-      # mutatormath = py-prev.mutatormath.overridePythonAttrs (orig: {
-      #   nativeBuildInputs = orig.nativeBuildInputs or [] ++ orig.nativeCheckInputs;
-      # });
-      # pandas = py-prev.pandas.overridePythonAttrs (orig: {
-      #   # XXX: we only actually need numpy when building in ~/nixpkgs repo: not sure why we need all the propagatedBuildInputs here.
-      #   # nativeBuildInputs = orig.nativeBuildInputs ++ [ py-final.numpy ];
-      #   nativeBuildInputs = orig.nativeBuildInputs ++ orig.propagatedBuildInputs;
-      # });
-      # psycopg2 = py-prev.psycopg2.overridePythonAttrs (orig: {
-      #   # TODO: upstream  (see tracking issue)
-      #   #
-      #   # psycopg2 *links* against libpg, so we need the host postgres available at build time!
-      #   # present-day nixpkgs only includes it in nativeBuildInputs
-      #   buildInputs = orig.buildInputs ++ [ final.postgresql ];
-      # });
-      # s3transfer = py-prev.s3transfer.overridePythonAttrs (orig: {
-      #   # tests explicitly expect host CPU == build CPU
-      #   # Bail out! ERROR:../plugins/core.c:221:qemu_plugin_vcpu_init_hook: assertion failed: (success)
-      #   # Bail out! ERROR:../accel/tcg/cpu-exec.c:954:cpu_exec: assertion failed: (cpu == current_cpu)
-      #   disabledTestPaths = orig.disabledTestPaths ++ [
-      #     # "tests/functional/test_processpool.py::TestProcessPoolDownloader::test_cleans_up_tempfile_on_failure"
-      #     "tests/functional/test_processpool.py"
-      #     # "tests/unit/test_compat.py::TestBaseManager::test_can_provide_signal_handler_initializers_to_start"
-      #     "tests/unit/test_compat.py"
-      #   ];
-      # });
-      # scipy = py-prev.scipy.override {
-      #   inherit (emulated) stdenv;
-      # };
-      # scipy = py-prev.scipy.overridePythonAttrs (orig: {
-      #   # "/nix/store/yhz6yy9bp52x9fvcda4lr6kgsngxnv2l-python3.10-numpy-1.24.2/lib/python3.10/site-packages/numpy/core/include/../lib/libnpymath.a: error adding symbols: file in wrong format"
-      #   # mesonFlags = orig.mesonFlags or [] ++ [ "-Duse-pythran=false" ];
-      #   # don't know how to plumb meson falgs through python apps
-      #   # postPatch = orig.postPatch or "" + ''
-      #   #   sed -i "s/option('use-pythran', type: 'boolean', value: true,/option('use-pythran', type: 'boolean', value: false,/" meson_options.txt
-      #   # '';
-      #   SCIPY_USE_PYTHRAN = false;
-      #   nativeBuildInputs = lib.remove py-final.pythran orig.nativeBuildInputs;
-      # });
-      # skia-pathops = ?
-      #   it tries to call `cc` during the build, but can't find it.
-    })
-  ];
+  #     # defcon = py-prev.defcon.overridePythonAttrs (orig: {
+  #     #   nativeBuildInputs = orig.nativeBuildInputs ++ orig.nativeCheckInputs;
+  #     # });
+  #     # executing = py-prev.executing.overridePythonAttrs (orig: {
+  #     #   # test has an assertion that < 1s of CPU time elapsed => flakey
+  #     #   disabledTestPaths = orig.disabledTestPaths or [] ++ [
+  #     #     # "tests/test_main.py::TestStuff::test_many_source_for_filename_calls"
+  #     #     "tests/test_main.py"
+  #     #   ];
+  #     # });
+  #     # h5py = py-prev.h5py.overridePythonAttrs (orig: {
+  #     #   # XXX: can't upstream until its dependency, hdf5, is fixed. that looks TRICKY.
+  #     #   # - the `setup_configure.py` in h5py tries to dlopen (and call into) the hdf5 lib to query the version and detect features like MPI
+  #     #   # - it could be patched with ~10 LoC in the HDF5LibWrapper class.
+  #     #   #
+  #     #   # expose numpy and hdf5 as available at build time
+  #     #   nativeBuildInputs = orig.nativeBuildInputs ++ orig.propagatedBuildInputs ++ orig.buildInputs;
+  #     #   buildInputs = [];
+  #     #   # HDF5_DIR = "${hdf5}";
+  #     # });
+  #     # ipython = py-prev.ipython.overridePythonAttrs (orig: {
+  #     #   # fixes "FAILED IPython/terminal/tests/test_debug_magic.py::test_debug_magic_passes_through_generators - pexpect.exceptions.TIMEOUT: Timeout exceeded."
+  #     #   disabledTests = orig.disabledTests ++ [ "test_debug_magic_passes_through_generator" ];
+  #     # });
+  #     # mutatormath = py-prev.mutatormath.overridePythonAttrs (orig: {
+  #     #   nativeBuildInputs = orig.nativeBuildInputs or [] ++ orig.nativeCheckInputs;
+  #     # });
+  #     # pandas = py-prev.pandas.overridePythonAttrs (orig: {
+  #     #   # XXX: we only actually need numpy when building in ~/nixpkgs repo: not sure why we need all the propagatedBuildInputs here.
+  #     #   # nativeBuildInputs = orig.nativeBuildInputs ++ [ py-final.numpy ];
+  #     #   nativeBuildInputs = orig.nativeBuildInputs ++ orig.propagatedBuildInputs;
+  #     # });
+  #     # psycopg2 = py-prev.psycopg2.overridePythonAttrs (orig: {
+  #     #   # TODO: upstream  (see tracking issue)
+  #     #   #
+  #     #   # psycopg2 *links* against libpg, so we need the host postgres available at build time!
+  #     #   # present-day nixpkgs only includes it in nativeBuildInputs
+  #     #   buildInputs = orig.buildInputs ++ [ final.postgresql ];
+  #     # });
+  #     # s3transfer = py-prev.s3transfer.overridePythonAttrs (orig: {
+  #     #   # tests explicitly expect host CPU == build CPU
+  #     #   # Bail out! ERROR:../plugins/core.c:221:qemu_plugin_vcpu_init_hook: assertion failed: (success)
+  #     #   # Bail out! ERROR:../accel/tcg/cpu-exec.c:954:cpu_exec: assertion failed: (cpu == current_cpu)
+  #     #   disabledTestPaths = orig.disabledTestPaths ++ [
+  #     #     # "tests/functional/test_processpool.py::TestProcessPoolDownloader::test_cleans_up_tempfile_on_failure"
+  #     #     "tests/functional/test_processpool.py"
+  #     #     # "tests/unit/test_compat.py::TestBaseManager::test_can_provide_signal_handler_initializers_to_start"
+  #     #     "tests/unit/test_compat.py"
+  #     #   ];
+  #     # });
+  #     # scipy = py-prev.scipy.override {
+  #     #   inherit (emulated) stdenv;
+  #     # };
+  #     # scipy = py-prev.scipy.overridePythonAttrs (orig: {
+  #     #   # "/nix/store/yhz6yy9bp52x9fvcda4lr6kgsngxnv2l-python3.10-numpy-1.24.2/lib/python3.10/site-packages/numpy/core/include/../lib/libnpymath.a: error adding symbols: file in wrong format"
+  #     #   # mesonFlags = orig.mesonFlags or [] ++ [ "-Duse-pythran=false" ];
+  #     #   # don't know how to plumb meson falgs through python apps
+  #     #   # postPatch = orig.postPatch or "" + ''
+  #     #   #   sed -i "s/option('use-pythran', type: 'boolean', value: true,/option('use-pythran', type: 'boolean', value: false,/" meson_options.txt
+  #     #   # '';
+  #     #   SCIPY_USE_PYTHRAN = false;
+  #     #   nativeBuildInputs = lib.remove py-final.pythran orig.nativeBuildInputs;
+  #     # });
+  #     # skia-pathops = ?
+  #     #   it tries to call `cc` during the build, but can't find it.
+  #   })
+  # ];
 
   qt5 = (prev.qt5.override {
     # build all qt5 modules using emulation...
