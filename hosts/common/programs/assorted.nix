@@ -63,6 +63,7 @@ in
       "fatresize"
       "fd"
       "file"
+      "fwupd"
       "gawk"
       "git"
       "gptfdisk"
