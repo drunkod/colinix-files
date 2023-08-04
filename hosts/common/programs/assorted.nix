@@ -63,7 +63,7 @@ in
       "fatresize"
       "fd"
       "file"
-      "fwupd"
+      # "fwupd"
       "gawk"
       "git"
       "gptfdisk"
@@ -120,7 +120,6 @@ in
       "dtrx"  # `unar` alternative, "Do The Right eXtraction"
       "efivar"
       # "flashrom"
-      "fwupd"
       "git"  # needed as a user package, for config.
       # "gnupg"
       # "gocryptfs"

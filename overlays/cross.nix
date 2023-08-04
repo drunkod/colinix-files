@@ -326,15 +326,15 @@ in {
   # });
 
   # 2023/07/31: upstreaming is unblocked -- if i can rework to not use emulation
-  fwupd-efi = prev.fwupd-efi.override {
-    # fwupd-efi queries meson host_machine to decide what arch to build for.
-    #   for some reason, this gives x86_64 unless meson itself is emulated.
-    #   maybe meson's use of "host_machine" actually mirrors nix's "build machine"?
-    inherit (emulated)
-      stdenv  # fixes: "efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable"
-      meson  # fixes: "efi/meson.build:33:2: ERROR: Problem encountered: gnu-efi support requested, but headers were not found"
-    ;
-  };
+  # fwupd-efi = prev.fwupd-efi.override {
+  #   # fwupd-efi queries meson host_machine to decide what arch to build for.
+  #   #   for some reason, this gives x86_64 unless meson itself is emulated.
+  #   #   maybe meson's use of "host_machine" actually mirrors nix's "build machine"?
+  #   inherit (emulated)
+  #     stdenv  # fixes: "efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable"
+  #     meson  # fixes: "efi/meson.build:33:2: ERROR: Problem encountered: gnu-efi support requested, but headers were not found"
+  #   ;
+  # };
   # fwupd-efi = prev.fwupd-efi.overrideAttrs (upstream: {
   #   # does not fix: "efi/meson.build:162:0: ERROR: Program or command 'gcc' not found or not executable"
   #   makeFlags = upstream.makeFlags or [] ++ [ "CC=${prev.stdenv.cc.targetPrefix}cc" ];
@@ -346,7 +346,6 @@ in {
   # });
   # solves (meson) "Run-time dependency libgcab-1.0 found: NO (tried pkgconfig and cmake)", and others.
   # 2023/07/31: upstreaming is blocked on argyllcms, fwupd-efi, libavif
-  # TODO: can i purge fwupd from my system?
   fwupd = (addBuildInputs
     [ final.gcab ]
     (mvToBuildInputs [ final.gnutls ] prev.fwupd)
