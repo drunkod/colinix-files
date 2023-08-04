@@ -312,8 +312,10 @@ in [
   })
   (fetchpatch' {
     title = "mpvScripts.mpris: support cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/247087";
     saneCommit = "f7cd92e2afa26852ccf53f8ca59c13d82bf7bf64";
-    hash = "sha256-MB3qloOW4pXZmbCIVsUKP2DnPoePmBf+qRc2x/o+nDw=";
+    # hash = "sha256-MB3qloOW4pXZmbCIVsUKP2DnPoePmBf+qRc2x/o+nDw=";
+    hash = "sha256-uMbnfO0WY2/AFpvvnHQGKVSTE2rPrm3SCef4f04Bt78=";
   })
   (fetchpatch' {
     title = "wvkbd: support cross compilation";
