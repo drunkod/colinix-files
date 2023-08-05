@@ -1210,11 +1210,12 @@ in {
     # it inherits so much from the `qt5` scope, so not a clear improvement.
     mkDerivation = self.mkDerivationWith final.stdenv.mkDerivation;
     callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
-    qtbase = super.qtbase.override {
-      # qtbase is the only thing in `qt5` scope that references `[stdenv.]mkDerivation`.
-      # to emulate it, we emulate stdenv; all the other qt5 members are emulated via `qt5.qtModule`
-      inherit (emulated) stdenv;
-    };
+    qtbase = emulateBuildMachine super.qtbase;
+    # qtbase = super.qtbase.override {
+    #   # qtbase is the only thing in `qt5` scope that references `[stdenv.]mkDerivation`.
+    #   # to emulate it, we emulate stdenv; all the other qt5 members are emulated via `qt5.qtModule`
+    #   inherit (emulated) stdenv;
+    # };
   });
   # qt5 = emulated.qt5.overrideScope (self: super: {
   #   # emulate all the qt5 packages, but rework `libsForQt5.callPackage` and `mkDerivation`
