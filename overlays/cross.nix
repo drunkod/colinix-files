@@ -95,7 +95,7 @@ let
       origArgs = args;
 
       QEMU_OPTS = "-m 4096";  # MiB of RAM
-      enableParallelBuilding = "1";  #< not obvious this actually has an effect
+      enableParallelBuilding = true;
 
       # finally, let nix know that this package should be built by the build system
       system = final.stdenv.buildPlatform.system;
