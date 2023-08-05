@@ -89,7 +89,7 @@ let
     # so hack its components into something which *does* handle cross compilation
     lib.overrideDerivation binfmtDeriv ({ builder, args, ... }: {
       builder = "${final.buildPackages.bash}/bin/sh";
-      args = ["-e" (final.vmTools.vmRunCommand qemuCommandLinux)];
+      args = ["-e" (final.buildPackages.vmTools.vmRunCommand qemuCommandLinux)];
       # orig{Builder,Args} gets used by the vmRunCommand script:
       origBuilder = builder;
       origArgs = args;
