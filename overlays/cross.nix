@@ -67,11 +67,9 @@ let
   };
   emulated = mkEmulated final prev;
 
+  # given a package that's defined for build == host,
+  # build it from the native build machine by emulating the builder.
   emulateBuilder = pkg: let
-    # create a derivation would could be realized by the host system -- only.
-    binfmtDeriv = pkg.override {
-      inherit (emulated) stdenv;
-    };
     # fix up the nixpkgs command that runs a Linux OS inside QEMU:
     # qemu_kvm doesn't support x86_64 -> aarch64; but full qemu package does.
     qemuCommandLinux = lib.replaceStrings
@@ -79,15 +77,12 @@ let
       [ "${final.buildPackages.qemu}"]
       final.vmTools.qemuCommandLinux;
   in
-    # to use binfmt emulation, just return the derivation with emulated stdenv as usual:
-    # binfmtDeriv
-    #
     # without binfmt emulation, leverage the `vmTools.runInLinuxVM` infrastructure:
     # final.vmTools.runInLinuxVM pkg
     #
     # except `runInLinuxVM` doesn't seem to support cross compilation (what's its purpose, then?)
     # so hack its components into something which *does* handle cross compilation
-    lib.overrideDerivation binfmtDeriv ({ builder, args, ... }: {
+    lib.overrideDerivation pkg ({ builder, args, ... }: {
       builder = "${final.buildPackages.bash}/bin/sh";
       args = ["-e" (final.buildPackages.vmTools.vmRunCommand qemuCommandLinux)];
       # orig{Builder,Args} gets used by the vmRunCommand script:
@@ -99,11 +94,53 @@ let
 
       # finally, let nix know that this package should be built by the build system
       system = final.stdenv.buildPlatform.system;
-    })
+    }) // {
+      override = attrs: emulateBuilder (pkg.override attrs);
+    }
     # alternatively, `proot` could let us get per-package binfmt:
     # - <https://proot-me.github.io/>
     # - i.e., execute host programs *and* build programs, mixed
   ;
+
+  emulateBuildMachine =
+    let
+      # patch packages which can't ordinarily exist in buildPackages
+      preFixPkg = p:
+        if p.name == "make-shell-wrapper-hook" then
+          p.overrideAttrs (_: {
+            # unconditionally use the outermost targetPackages shell
+            shell = final.runtimeShell;
+          })
+          # p.__spliced.buildBuild.overrideAttrs (_: {
+          #   shell = "TODO"; # final.targetPackages.runtimeShell;
+          # })
+          # final.makeBinaryWrapper
+        else
+          p
+        ;
+      unsplicePkg = p: p.__spliced.hostTarget or p;
+      unsplicePkgs = ps: map (p: unsplicePkg (preFixPkg p))ps;
+    in
+      pkg: emulateBuilder ((pkg.override {
+        inherit (emulated) stdenv;
+      }).overrideAttrs (upstream: {
+        # for this purpose, the naming in `depsAB` is "inputs build for A, used to create packages in B" (i think).
+        # when cross compiling x86_64 -> aarch64, most packages are
+        # - build: x86_64
+        # - target: aarch64
+        # - host: aarch64
+        # so, we only need to replace the build packages with alternates.
+        depsBuildBuild = unsplicePkgs (upstream.depsBuildBuild or []);
+        nativeBuildInputs = unsplicePkgs (upstream.nativeBuildInputs or []);
+        depsBuildTarget = unsplicePkgs (upstream.depsBuildTarget or []);
+
+        depsBuildBuildPropagated = unsplicePkgs (upstream.depsBuildBuildPropagated or []);
+        propagatedNativeBuildInputs = unsplicePkgs (upstream.propagatedNativeBuildInputs or []);
+        depsBuildTargetPropagated = unsplicePkgs (upstream.depsBuildTargetPropagated or []);
+
+        nativeCheckInputs = unsplicePkgs (upstream.nativeCheckInputs or []);
+        nativeInstallCheckInputs = unsplicePkgs (upstream.nativeInstallCheckInputs or []);
+      }));
 in {
   inherit emulated;
 
@@ -202,11 +239,11 @@ in {
   #   # configure: error: ifconfig or ip not found, install net-tools or iproute2
   #   nativeBuildInputs = orig.nativeBuildInputs ++ [ final.iproute2 ];
   # });
-  bonsai = emulateBuilder (prev.bonsai.override {
-    hare = emulateBuilder (final.hare.override {
-      qbe = emulateBuilder final.qbe;
-      harePackages.harec = emulateBuilder (final.harePackages.harec.override {
-        qbe = emulateBuilder final.qbe;
+  bonsai = emulateBuildMachine (prev.bonsai.override {
+    hare = emulateBuildMachine (final.hare.override {
+      qbe = emulateBuildMachine final.qbe;
+      harePackages.harec = emulateBuildMachine (final.harePackages.harec.override {
+        qbe = emulateBuildMachine final.qbe;
       });
     });
   });
@@ -719,10 +756,9 @@ in {
   koreader = (prev.koreader.override {
     # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
     # inherit (emulated) luajit;
-    luajit = final.luajit.override {
-      inherit (emulated) stdenv;
+    luajit = emulateBuildMachine (final.luajit.override {
       buildPackages.stdenv = emulated.stdenv;  # it uses buildPackages.stdenv for HOST_CC
-    };
+    });
   }).overrideAttrs (upstream: {
     nativeBuildInputs = upstream.nativeBuildInputs ++ [
       final.autoPatchelfHook
@@ -731,10 +767,9 @@ in {
   koreader-from-src = prev.koreader-from-src.override {
     # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
     # inherit (emulated) luajit;
-    luajit = final.luajit.override {
-      inherit (emulated) stdenv;
+    luajit = emulateBuildMachine (final.luajit.override {
       buildPackages.stdenv = emulated.stdenv;  # it uses buildPackages.stdenv for HOST_CC
-    };
+    });
   };
   # libgweather = rmNativeInputs [ final.glib ] (prev.libgweather.override {
   #   # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
@@ -798,7 +833,8 @@ in {
     #   inherit (emulated) stdenv;
     #   inherit zig;
     # };
-    final.callPackage ({
+  let
+    mepoDefn = {
       stdenv
       , upstreamMepo
       , makeWrapper
@@ -830,11 +866,12 @@ in {
       ];
       checkPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstreamMepo.checkPhase;
       installPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstreamMepo.installPhase;
-    }) {
-      upstreamMepo = prev.mepo;
-      inherit (emulated) stdenv;
-      zig = useEmulatedStdenv final.zig;
     };
+  in
+    emulateBuildMachine (final.callPackage mepoDefn {
+      upstreamMepo = prev.mepo;
+      zig = emulateBuildMachine final.zig;
+    });
     # (prev.mepo.override {
     #   # emulate zig and stdenv to fix:
     #   # - "/build/source/src/sdlshim.zig:1:20: error: C import failed"
