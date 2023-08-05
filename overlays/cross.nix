@@ -739,18 +739,88 @@ in {
     # depsBuildBuild = (upstream.depsBuildBuild or []) ++ [ final.pkg-config ];
   });
 
-  mepo = (prev.mepo.override {
-    # emulate zig and stdenv to fix:
-    # - "/build/source/src/sdlshim.zig:1:20: error: C import failed"
-    # emulate makeWrapper to fix:
-    # - "error: makeWrapper/makeShellWrapper must be in nativeBuildInputs"
-    inherit (emulated) makeWrapper stdenv zig;
-  }).overrideAttrs (upstream: {
-    nativeBuildInputs = [ final.pkg-config emulated.makeWrapper ];
-    # ref to zig by full path because otherwise it doesn't end up on the path...
-    checkPhase = lib.replaceStrings [ "zig" ] [ "${emulated.zig}/bin/zig" ] upstream.checkPhase;
-    installPhase = lib.replaceStrings [ "zig" ] [ "${emulated.zig}/bin/zig" ] upstream.installPhase;
-  });
+  mepo =
+    # let
+    #   zig = final.zig.override {
+    #     inherit (emulated) stdenv;
+    #   };
+    #   # makeWrapper = final.makeWrapper.override {
+    #   #   inherit (emulated) stdenv;
+    #   # };
+    #   # makeWrapper = emulated.stdenv.mkDerivation final.makeWrapper;
+    # in
+    # (prev.mepo.overrideAttrs (upstream: {
+    #   checkPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.checkPhase;
+    #   installPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.installPhase;
+    # })).override {
+    #   inherit (emulated) stdenv;
+    #   inherit zig;
+    # };
+    final.callPackage ({
+      stdenv
+      , upstreamMepo
+      , makeWrapper
+      , pkg-config
+      , zig
+      # buildInputs
+      , curl
+      , SDL2
+      , SDL2_gfx
+      , SDL2_image
+      , SDL2_ttf
+      , jq
+      , ncurses
+    }: stdenv.mkDerivation {
+      inherit (upstreamMepo)
+        pname
+        version
+        src
+        # buildInputs
+        preBuild
+        doCheck
+        postInstall
+        meta
+      ;
+      # moves pkg-config to buildInputs where zig can see it, and uses the host build of zig.
+      nativeBuildInputs = [ makeWrapper ];
+      buildInputs = [
+        curl SDL2 SDL2_gfx SDL2_image SDL2_ttf jq ncurses pkg-config
+      ];
+      checkPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstreamMepo.checkPhase;
+      installPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstreamMepo.installPhase;
+    }) {
+      upstreamMepo = prev.mepo;
+      inherit (emulated) stdenv;
+      zig = useEmulatedStdenv final.zig;
+    };
+    # (prev.mepo.override {
+    #   # emulate zig and stdenv to fix:
+    #   # - "/build/source/src/sdlshim.zig:1:20: error: C import failed"
+    #   # emulate makeWrapper to fix:
+    #   # - "error: makeWrapper/makeShellWrapper must be in nativeBuildInputs"
+    #   # inherit (emulated) makeWrapper stdenv;
+    #   inherit (emulated) stdenv;
+    #   inherit zig;
+    #   # inherit makeWrapper;
+    # }).overrideAttrs (upstream: {
+    #   # nativeBuildInputs = [ final.pkg-config makeWrapper ];
+    #   # nativeBuildInputs = [ final.pkg-config emulated.makeWrapper ];
+    #   # ref to zig by full path because otherwise it doesn't end up on the path...
+    #   #checkPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.checkPhase;
+    #   #installPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.installPhase;
+    # });
+  # mepo = (prev.mepo.override {
+  #   # emulate zig and stdenv to fix:
+  #   # - "/build/source/src/sdlshim.zig:1:20: error: C import failed"
+  #   # emulate makeWrapper to fix:
+  #   # - "error: makeWrapper/makeShellWrapper must be in nativeBuildInputs"
+  #   inherit (emulated) makeWrapper stdenv zig;
+  # }).overrideAttrs (upstream: {
+  #   nativeBuildInputs = [ final.pkg-config emulated.makeWrapper ];
+  #   # ref to zig by full path because otherwise it doesn't end up on the path...
+  #   checkPhase = lib.replaceStrings [ "zig" ] [ "${emulated.zig}/bin/zig" ] upstream.checkPhase;
+  #   installPhase = lib.replaceStrings [ "zig" ] [ "${emulated.zig}/bin/zig" ] upstream.installPhase;
+  # });
   # mepo = (prev.mepo.override {
   #   inherit (emulated) stdenv;
   # }).overrideAttrs (upstream: {
