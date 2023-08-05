@@ -1452,12 +1452,12 @@ in {
   tangram = (prev.tangram.override {
     # N.B. blueprint-compiler is in nativeBuildInputs.
     # the trick here is to force the aarch64 versions to be used during build (via emulation),
-    blueprint-compiler = (useEmulatedStdenv final.blueprint-compiler).overrideAttrs (upstream: {
+    blueprint-compiler = emulateBuildMachine (final.blueprint-compiler.overrideAttrs (upstream: {
       # default is to propagate gobject-introspection *as a buildInput*, when it's supposed to be native.
       propagatedBuildInputs = [];
       # "Namespace Gtk not available"
       doCheck = false;
-    });
+    }));
     # blueprint-compiler = dontCheck emulated.blueprint-compiler;
     # gjs = dontCheck emulated.gjs;
     # gjs = dontCheck (mvToBuildInputs [ final.gobject-introspection ] (useEmulatedStdenv final.gjs));
