@@ -66,6 +66,44 @@ let
     inherit (emulated) stdenv;
   };
   emulated = mkEmulated final prev;
+
+  emulateBuilder = pkg: let
+    # create a derivation would could be realized by the host system -- only.
+    binfmtDeriv = pkg.override {
+      inherit (emulated) stdenv;
+    };
+    # fix up the nixpkgs command that runs a Linux OS inside QEMU:
+    # qemu_kvm doesn't support x86_64 -> aarch64; but full qemu package does.
+    qemuCommandLinux = lib.replaceStrings
+      [ "${final.buildPackages.qemu_kvm}" ]
+      [ "${final.buildPackages.qemu}"]
+      final.vmTools.qemuCommandLinux;
+  in
+    # to use binfmt emulation, just return the derivation with emulated stdenv as usual:
+    # binfmtDeriv
+    #
+    # without binfmt emulation, leverage the `vmTools.runInLinuxVM` infrastructure:
+    # final.vmTools.runInLinuxVM pkg
+    #
+    # except `runInLinuxVM` doesn't seem to support cross compilation (what's its purpose, then?)
+    # so hack its components into something which *does* handle cross compilation
+    lib.overrideDerivation binfmtDeriv ({ builder, args, ... }: {
+      builder = "${final.buildPackages.bash}/bin/sh";
+      args = ["-e" (final.vmTools.vmRunCommand qemuCommandLinux)];
+      # orig{Builder,Args} gets used by the vmRunCommand script:
+      origBuilder = builder;
+      origArgs = args;
+
+      QEMU_OPTS = "-m 4096";  # MiB of RAM
+      enableParallelBuilding = "1";  #< not obvious this actually has an effect
+
+      # finally, let nix know that this package should be built by the build system
+      system = final.stdenv.buildPlatform.system;
+    })
+    # alternatively, `proot` could let us get per-package binfmt:
+    # - <https://proot-me.github.io/>
+    # - i.e., execute host programs *and* build programs, mixed
+  ;
 in {
   inherit emulated;
 
@@ -164,18 +202,14 @@ in {
   #   # configure: error: ifconfig or ip not found, install net-tools or iproute2
   #   nativeBuildInputs = orig.nativeBuildInputs ++ [ final.iproute2 ];
   # });
-  bonsai = prev.bonsai.override {
-    inherit (emulated) stdenv;
-    hare = final.hare.override {
-      inherit (emulated) stdenv;
-      # inherit (emulated) stdenv harePackages qbe;
-      qbe = useEmulatedStdenv final.qbe;
-      harePackages.harec = final.harePackages.harec.override {
-        inherit (emulated) stdenv;
-        qbe = useEmulatedStdenv final.qbe;
-      };
-    };
-  };
+  bonsai = emulateBuilder (prev.bonsai.override {
+    hare = emulateBuilder (final.hare.override {
+      qbe = emulateBuilder final.qbe;
+      harePackages.harec = emulateBuilder (final.harePackages.harec.override {
+        qbe = emulateBuilder final.qbe;
+      });
+    });
+  });
   # bonsai = prev.bonsai.override {
   #   inherit (emulated) stdenv hare;
   # };
