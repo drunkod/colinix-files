@@ -29,7 +29,7 @@ let
     };
   in (stdenv.mkDerivation ({
     # heavily borrows from <repo:nixos/nixpkgs:pkgs/build-support/fetchfirefoxaddon/default.nix>
-    inherit (addon) name;
+    name = "${addon.name}-wrapped";
     unpackPhase = ''
       echo "patching firefox addon $name into $out/${extid}.xpi"
 
@@ -64,7 +64,7 @@ let
     '';
   } // args')).overrideAttrs (final: upstream: {
     passthru = (upstream.passthru or {}) // {
-      withAttrs = attrs: wrapAddon final.finalPackage attrs;
+      withAttrs = attrs: wrapAddon addon (args // attrs);
       withPostPatch = postPatch: final.passthru.withAttrs { inherit postPatch; };
       # given an addon, repackage it without some `perm`ission
       withoutPermission = perm: final.passthru.withPostPatch ''
