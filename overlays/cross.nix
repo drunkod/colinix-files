@@ -848,6 +848,8 @@ in {
   mepo = prev.mepo.overrideAttrs (upstream: {
     doCheck = false;
     nativeBuildInputs = upstream.nativeBuildInputs ++ [
+      # zig hardcodes the /lib/ld-linux.so interpreter which breaks nix dynamic linking & dep tracking
+      final.autoPatchelfHook
       # zig hard-codes `pkg-config` inside lib/std/build.zig
       (final.buildPackages.writeShellScriptBin "pkg-config" ''
         exec $PKG_CONFIG $@
