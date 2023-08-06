@@ -106,7 +106,7 @@ let
     let
       # patch packages which can't ordinarily exist in buildPackages
       preFixPkg = p:
-        if p.name == "make-shell-wrapper-hook" then
+        if p.name or null == "make-shell-wrapper-hook" then
           p.overrideAttrs (_: {
             # unconditionally use the outermost targetPackages shell
             shell = final.runtimeShell;
@@ -119,7 +119,7 @@ let
           p
         ;
       unsplicePkg = p: p.__spliced.hostTarget or p;
-      unsplicePkgs = ps: map (p: unsplicePkg (preFixPkg p))ps;
+      unsplicePkgs = ps: map (p: unsplicePkg (preFixPkg p)) ps;
     in
       pkg: emulateBuilder ((pkg.override {
         inherit (emulated) stdenv;
