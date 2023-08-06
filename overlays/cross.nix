@@ -844,78 +844,161 @@ in {
     # depsBuildBuild = (upstream.depsBuildBuild or []) ++ [ final.pkg-config ];
   });
 
-  mepo =
-    # let
-    #   zig = final.zig.override {
-    #     inherit (emulated) stdenv;
-    #   };
-    #   # makeWrapper = final.makeWrapper.override {
-    #   #   inherit (emulated) stdenv;
-    #   # };
-    #   # makeWrapper = emulated.stdenv.mkDerivation final.makeWrapper;
-    # in
-    # (prev.mepo.overrideAttrs (upstream: {
-    #   checkPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.checkPhase;
-    #   installPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.installPhase;
-    # })).override {
-    #   inherit (emulated) stdenv;
-    #   inherit zig;
-    # };
-  let
-    mepoDefn = {
-      stdenv
-      , upstreamMepo
-      , makeWrapper
-      , pkg-config
-      , zig
-      # buildInputs
-      , curl
-      , SDL2
-      , SDL2_gfx
-      , SDL2_image
-      , SDL2_ttf
-      , jq
-      , ncurses
-    }: stdenv.mkDerivation {
-      inherit (upstreamMepo)
-        pname
-        version
-        src
-        # buildInputs
-        preBuild
-        doCheck
-        postInstall
-        meta
-      ;
-      # moves pkg-config to buildInputs where zig can see it, and uses the host build of zig.
-      nativeBuildInputs = [ makeWrapper ];
-      buildInputs = [
-        curl SDL2 SDL2_gfx SDL2_image SDL2_ttf jq ncurses pkg-config
+  # mepo_1_1 = emulateBuildMachine (prev.mepo_1_1.override {
+  #   zig_0_9 = final.zig_0_9.overrideAttrs (upstream: {
+  #     cmakeFlags = (upstream.cmakeFlags or []) ++ [
+  #       "-DZIG_EXECUTABLE=${final.buildPackages.zig_0_9}/bin/zig"
+  #     ];
+  #     doInstallCheck = false;
+  #   });
+  # });
+  mepo_1_1 = emulateBuildMachine (prev.mepo_1_1.override {
+    zig_0_9 = emulateBuildMachine (final.zig_0_9.overrideAttrs (upstream: {
+      cmakeFlags = (upstream.cmakeFlags or []) ++ [
+        # "-DZIG_EXECUTABLE=${final.buildPackages.zig_0_9}/bin/zig"
+        "-DZIG_TARGET_TRIPLE=aarch64-linux-gnu"
       ];
-      checkPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstreamMepo.checkPhase;
-      installPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstreamMepo.installPhase;
-    };
-  in
-    emulateBuildMachine (final.callPackage mepoDefn {
-      upstreamMepo = prev.mepo;
-      zig = emulateBuildMachine final.zig;
-    });
-    # (prev.mepo.override {
-    #   # emulate zig and stdenv to fix:
-    #   # - "/build/source/src/sdlshim.zig:1:20: error: C import failed"
-    #   # emulate makeWrapper to fix:
-    #   # - "error: makeWrapper/makeShellWrapper must be in nativeBuildInputs"
-    #   # inherit (emulated) makeWrapper stdenv;
-    #   inherit (emulated) stdenv;
-    #   inherit zig;
-    #   # inherit makeWrapper;
-    # }).overrideAttrs (upstream: {
-    #   # nativeBuildInputs = [ final.pkg-config makeWrapper ];
-    #   # nativeBuildInputs = [ final.pkg-config emulated.makeWrapper ];
-    #   # ref to zig by full path because otherwise it doesn't end up on the path...
-    #   #checkPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.checkPhase;
-    #   #installPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.installPhase;
-    # });
+      doInstallCheck = false;
+    }));
+  });
+
+  mepo = prev.mepo.overrideAttrs (upstream: {
+    doCheck = false;
+    nativeBuildInputs = upstream.nativeBuildInputs ++ [
+      # zig hard-codes `pkg-config` inside lib/std/build.zig
+      (final.buildPackages.writeShellScriptBin "pkg-config" ''
+        exec $PKG_CONFIG $@
+      '')
+    ];
+    postPatch = (upstream.postPatch or "") + ''
+      substituteInPlace src/sdlshim.zig \
+        --replace 'cInclude("SDL2/SDL_image.h")' 'cInclude("SDL_image.h")' \
+        --replace 'cInclude("SDL2/SDL_ttf.h")' 'cInclude("SDL_ttf.h")'
+      substituteInPlace build.zig \
+        --replace 'step.linkSystemLibrary("curl")' 'step.linkSystemLibrary("libcurl")' \
+        --replace 'exe.install();' 'exe.install(); if (true) { return; } // skip tests when cross compiling'
+    '';
+    # optional `zig build` debugging flags:
+    # - --verbose
+    # - --verbose-cimport
+    # - --help
+    installPhase = ''
+      runHook preInstall
+
+      zig build -Dtarget=aarch64-linux-gnu -Drelease-safe=true -Dcpu=baseline --prefix $out install
+      install -d $out/share/man/man1
+
+      runHook postInstall
+    '';
+  });
+
+  # mepo = emulateBuildMachine (prev.mepo.override {
+  #   zig = (final.buildPackages.zig.overrideAttrs (upstream: {
+  #     cmakeFlags = (upstream.cmakeFlags or []) ++ [
+  #       "-DZIG_EXECUTABLE=${final.buildPackages.zig}/bin/zig"
+  #       "-DZIG_TARGET_TRIPLE=aarch64-linux-gnu"
+  #       # "-DZIG_MCPU=${final.targetPlatform.gcc.cpu}"
+  #     ];
+  #     # makeFlags = (upstream.makeFlags or []) ++ [
+  #     #   # stop at the second stage.
+  #     #   # the third stage would be a self-hosted compiler (i.e. build the compiler using what you just built),
+  #     #   # but that only works on native builds
+  #     #   "zig2"
+  #     # ];
+  #   }));
+  # });
+  # mepo = prev.mepo.overrideAttrs (upstream: {
+  #   installPhase = lib.replaceStrings [ "zig " ] [ "zig -Dtarget=aarch64-linux "] upstream.installPhase;
+  #   doCheck = false;
+  # });
+
+  # mepo =
+  #   # let
+  #   #   zig = final.zig.override {
+  #   #     inherit (emulated) stdenv;
+  #   #   };
+  #   #   # makeWrapper = final.makeWrapper.override {
+  #   #   #   inherit (emulated) stdenv;
+  #   #   # };
+  #   #   # makeWrapper = emulated.stdenv.mkDerivation final.makeWrapper;
+  #   # in
+  #   # (prev.mepo.overrideAttrs (upstream: {
+  #   #   checkPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.checkPhase;
+  #   #   installPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.installPhase;
+  #   # })).override {
+  #   #   inherit (emulated) stdenv;
+  #   #   inherit zig;
+  #   # };
+  # let
+  #   mepoDefn = {
+  #     stdenv
+  #     , upstreamMepo
+  #     , makeWrapper
+  #     , pkg-config
+  #     , zig
+  #     # buildInputs
+  #     , curl
+  #     , SDL2
+  #     , SDL2_gfx
+  #     , SDL2_image
+  #     , SDL2_ttf
+  #     , jq
+  #     , ncurses
+  #   }: stdenv.mkDerivation {
+  #     inherit (upstreamMepo)
+  #       pname
+  #       version
+  #       src
+  #       # buildInputs
+  #       preBuild
+  #       doCheck
+  #       postInstall
+  #       meta
+  #     ;
+  #     # moves pkg-config to buildInputs where zig can see it, and uses the host build of zig.
+  #     nativeBuildInputs = [ makeWrapper ];
+  #     buildInputs = [
+  #       curl SDL2 SDL2_gfx SDL2_image SDL2_ttf jq ncurses pkg-config
+  #     ];
+  #     checkPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstreamMepo.checkPhase;
+  #     installPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstreamMepo.installPhase;
+  #   };
+  # in
+  #   emulateBuildMachine (final.callPackage mepoDefn {
+  #     upstreamMepo = prev.mepo;
+  #     zig = final.zig.overrideAttrs (upstream: {
+  #       # TODO: for zig1 we can actually set ZIG_EXECUTABLE and use the build zig.
+  #       # zig2 doesn't support that.
+  #       postPatch = (upstream.postPatch or "") + ''
+  #         substituteInPlace CMakeLists.txt \
+  #           --replace "COMMAND zig1 " "COMMAND ${final.stdenv.hostPlatform.emulator final.buildPackages} $PWD/build/zig1 " \
+  #           --replace "COMMAND zig2 " "COMMAND ${final.stdenv.hostPlatform.emulator final.buildPackages} $PWD/build/zig2 "
+  #       '';
+  #     });
+  #     # zig = emulateBuildMachine (final.zig.overrideAttrs (upstream: {
+  #     #   # speed up the emulated build by skipping docs and tests
+  #     #   outputs = [ "out" ];
+  #     #   postBuild = "";  # don't build docs
+  #     #   doInstallCheck = false;
+  #     #   doCheck = false;
+  #     # }));
+  #   });
+  #   # (prev.mepo.override {
+  #   #   # emulate zig and stdenv to fix:
+  #   #   # - "/build/source/src/sdlshim.zig:1:20: error: C import failed"
+  #   #   # emulate makeWrapper to fix:
+  #   #   # - "error: makeWrapper/makeShellWrapper must be in nativeBuildInputs"
+  #   #   # inherit (emulated) makeWrapper stdenv;
+  #   #   inherit (emulated) stdenv;
+  #   #   inherit zig;
+  #   #   # inherit makeWrapper;
+  #   # }).overrideAttrs (upstream: {
+  #   #   # nativeBuildInputs = [ final.pkg-config makeWrapper ];
+  #   #   # nativeBuildInputs = [ final.pkg-config emulated.makeWrapper ];
+  #   #   # ref to zig by full path because otherwise it doesn't end up on the path...
+  #   #   #checkPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.checkPhase;
+  #   #   #installPhase = lib.replaceStrings [ "zig" ] [ "${zig}/bin/zig" ] upstream.installPhase;
+  #   # });
   # mepo = (prev.mepo.override {
   #   # emulate zig and stdenv to fix:
   #   # - "/build/source/src/sdlshim.zig:1:20: error: C import failed"
