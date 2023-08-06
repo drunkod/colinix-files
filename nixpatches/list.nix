@@ -232,12 +232,6 @@ in [
     hash = "sha256-8NqqLBbjt1fLj4ZYhat7wPqQSv/aez9IwgSK2b4CfW8=";
   })
 
-  (fetchpatch' {
-    title = "python310Packages.gssapi: support cross compilation";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/247048";
-    saneCommit = "4766ae46f863734fbe96dc4e537870b6b3894cf4";
-    hash = "sha256-7JZqAlcNFP6orJZCEqe5eodVxTUHeSLGyniRvw/+PuQ=";
-  })
   # (fetchpatch' {
   #   title = "perlPackages.FileBaseDir: 0.08 -> 0.09";
   #   saneCommit = "acc990b04bbe8c99587eadccc65f100c326ec204";
