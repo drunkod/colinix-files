@@ -89,13 +89,14 @@ let
       origBuilder = builder;
       origArgs = args;
 
-      QEMU_OPTS = "-m 4096";  # MiB of RAM
+      QEMU_OPTS = "-m 16386";  # MiB of RAM
       enableParallelBuilding = true;
 
       # finally, let nix know that this package should be built by the build system
       system = final.stdenv.buildPlatform.system;
     }) // {
       override = attrs: emulateBuilder (pkg.override attrs);
+      overrideAttrs = mergeFn: emulateBuilder (pkg.overrideAttrs mergeFn);
     }
     # alternatively, `proot` could let us get per-package binfmt:
     # - <https://proot-me.github.io/>
