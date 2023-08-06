@@ -844,24 +844,6 @@ in {
     # depsBuildBuild = (upstream.depsBuildBuild or []) ++ [ final.pkg-config ];
   });
 
-  # mepo_1_1 = emulateBuildMachine (prev.mepo_1_1.override {
-  #   zig_0_9 = final.zig_0_9.overrideAttrs (upstream: {
-  #     cmakeFlags = (upstream.cmakeFlags or []) ++ [
-  #       "-DZIG_EXECUTABLE=${final.buildPackages.zig_0_9}/bin/zig"
-  #     ];
-  #     doInstallCheck = false;
-  #   });
-  # });
-  mepo_1_1 = emulateBuildMachine (prev.mepo_1_1.override {
-    zig_0_9 = emulateBuildMachine (final.zig_0_9.overrideAttrs (upstream: {
-      cmakeFlags = (upstream.cmakeFlags or []) ++ [
-        # "-DZIG_EXECUTABLE=${final.buildPackages.zig_0_9}/bin/zig"
-        "-DZIG_TARGET_TRIPLE=aarch64-linux-gnu"
-      ];
-      doInstallCheck = false;
-    }));
-  });
-
   mepo = prev.mepo.overrideAttrs (upstream: {
     doCheck = false;
     nativeBuildInputs = upstream.nativeBuildInputs ++ [

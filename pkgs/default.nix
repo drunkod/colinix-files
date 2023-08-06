@@ -41,7 +41,6 @@ let
     ldd-aarch64 = callPackage ./additional/ldd-aarch64 { };
     lightdm-mobile-greeter = callPackage ./additional/lightdm-mobile-greeter { };
     linux-megous = callPackage ./additional/linux-megous { };
-    mepo_1_1 = callPackage ./additional/mepo_1_1 { };
     mpv-uosc-latest = callPackage ./additional/mpv-uosc-latest { };
     mx-sanebot = callPackage ./additional/mx-sanebot { };
     rtl8723cs-firmware = callPackage ./additional/rtl8723cs-firmware { };
