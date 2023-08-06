@@ -252,7 +252,7 @@ in [
     title = "xdg-utils: enable cross compilation";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/246954";
     saneCommit = "b7aa5e0c1ec06723cf1594de192703a65be21497";
-    hash = "sha256-jA84RKt4nOEZsBlACaqa0GeBiDdFOBYARgAq4NgTqtY=";
+    hash = "sha256-5iYzyjVlye7mhwhlZOHucVod/aPT3OrXolC9jAnB544=";
   })
   # (fetchpatch' {
   #   # N.B.: duplicates outstanding, merged PR: <https://github.com/NixOS/nixpkgs/pull/246362>
