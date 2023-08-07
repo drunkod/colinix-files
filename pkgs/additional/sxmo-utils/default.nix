@@ -162,6 +162,8 @@ stdenv.mkDerivation rec {
     scdoc
   ];
 
+  buildInputs = [ busybox ];  # needed here so stdenv's `patchShebangsAuto` hook sets the right interpreter
+
   installPhase = ''
     runHook preInstall
 
