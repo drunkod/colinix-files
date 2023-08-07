@@ -176,6 +176,17 @@ in [
     hash = "sha256-K3mG1kcyB7sQZ7ZRCdlinNsV6mCcl3eIUI2ldSmcbJE=";
   })
 
+  (fetchpatch' {
+    title = "gtk3: compile schemas even when cross compiling";
+    saneCommit = "62be06cac9e81bbdd9c9f0b69f85b594a4d8a121";
+    hash = "sha256-ui7ueC8c4nzDUU59pHMv0lmzSjG5XpjOLBge7VbBe4g=";
+  })
+  (fetchpatch' {
+    title = "gtk4: compile schemas even when cross compiling";
+    saneCommit = "3494157f35b2847ea09752a29e7e38e0f46fee70";
+    hash = "sha256-JMFLa/vLpp0V9UIlVMcBmnimxU32cMCn+oCV9fk/taY=";
+  })
+
   # (fetchpatch' {
   #   title = "hare-json: init at unstable-2023-02-25";
   #   saneCommit = "6c88c2b087755e8f60c9f61c6361dec2f7a38155";
