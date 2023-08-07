@@ -1,4 +1,5 @@
 { stdenv
+, bash
 , bc
 , bemenu
 , bonsai
@@ -42,14 +43,13 @@
 let
   # anything which any sxmo script or default hook in this package might invoke
   runtimeDeps = [
-    # bc  # busybox
+    bc  # also in busybox
     bemenu
     bonsai
-    busybox  # sxmo targets busybox, which differs from non-busybox utilities in subtle ways (e.g. `pidof` behavior)
     conky
     dbus
     # dmenu  # or dmenu-wayland? only used on x11?
-    # gnugrep  # busybox
+    gnugrep  # also in busybox
     gojq
     grim
     inotify-tools
@@ -162,7 +162,7 @@ stdenv.mkDerivation rec {
     scdoc
   ];
 
-  buildInputs = [ busybox ];  # needed here so stdenv's `patchShebangsAuto` hook sets the right interpreter
+  buildInputs = [ bash ];  # needed here so stdenv's `patchShebangsAuto` hook sets the right interpreter
 
   installPhase = ''
     runHook preInstall
