@@ -235,13 +235,12 @@ in [
     hash = "sha256-38sND/UNRj5WAYYKpzdrRBIOK4UAT14RzbIv49KmNNw=";
   })
 
-  (fetchpatch' {
-    # TODO: send this upstream!
-    title = "mepo: 1.1 -> 1.1.2";
-    saneCommit = "eee68d7146a6cd985481cdd8bca52ffb204de423";
-    hash = "sha256-uNerTwyFzivTU+o9bEKmNMFceOmy2AKONfKJWI5qkzo=";
-  })
-
+  # (fetchpatch' {
+  #   # TODO: send this upstream!
+  #   title = "mepo: 1.1 -> 1.1.2";
+  #   saneCommit = "eee68d7146a6cd985481cdd8bca52ffb204de423";
+  #   hash = "sha256-uNerTwyFzivTU+o9bEKmNMFceOmy2AKONfKJWI5qkzo=";
+  # })
 
   (fetchpatch' {
     title = "gthumb: make the webservices feature be optional";

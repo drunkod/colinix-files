@@ -851,7 +851,7 @@ in {
     # depsBuildBuild = (upstream.depsBuildBuild or []) ++ [ final.pkg-config ];
   });
 
-  mepo = prev.mepo.overrideAttrs (upstream: {
+  mepo-latest = prev.mepo-latest.overrideAttrs (upstream: {
     doCheck = false;
     nativeBuildInputs = upstream.nativeBuildInputs ++ [
       # zig hardcodes the /lib/ld-linux.so interpreter which breaks nix dynamic linking & dep tracking
