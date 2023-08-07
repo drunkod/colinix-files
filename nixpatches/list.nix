@@ -178,13 +178,13 @@ in [
 
   (fetchpatch' {
     title = "gtk3: compile schemas even when cross compiling";
-    saneCommit = "62be06cac9e81bbdd9c9f0b69f85b594a4d8a121";
-    hash = "sha256-ui7ueC8c4nzDUU59pHMv0lmzSjG5XpjOLBge7VbBe4g=";
+    saneCommit = "5ee69670071f583bdffe2718dc46763fa1698f92";
+    hash = "sha256-ZX3lY63qUW2XuwCoxffbLYoFxckDImKy+S8mqlYJcvk=";
   })
   (fetchpatch' {
     title = "gtk4: compile schemas even when cross compiling";
-    saneCommit = "ce52ebef321918ad94a31143a96db9f1672fe9a3";
-    hash = "sha256-SfVViHkOrbV8dd+iunBFO41YyW45bt3uvGR+uKWqbvg=";
+    saneCommit = "7a1c5e3a5d1ff82c8afa659c7f903d5309d5de6a";
+    hash = "sha256-Tz8NBcIqGE9rCqbOrixgbvApYDEAHWCg4lZbklL/xXc=";
   })
 
   # (fetchpatch' {
