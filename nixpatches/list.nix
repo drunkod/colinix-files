@@ -176,15 +176,20 @@ in [
     hash = "sha256-K3mG1kcyB7sQZ7ZRCdlinNsV6mCcl3eIUI2ldSmcbJE=";
   })
 
+  # (fetchpatch' {
+  #   title = "gtk3: compile schemas even when cross compiling";
+  #   saneCommit = "5ee69670071f583bdffe2718dc46763fa1698f92";
+  #   hash = "sha256-ZX3lY63qUW2XuwCoxffbLYoFxckDImKy+S8mqlYJcvk=";
+  # })
+  # (fetchpatch' {
+  #   title = "gtk4: compile schemas even when cross compiling";
+  #   saneCommit = "7a1c5e3a5d1ff82c8afa659c7f903d5309d5de6a";
+  #   hash = "sha256-Tz8NBcIqGE9rCqbOrixgbvApYDEAHWCg4lZbklL/xXc=";
+  # })
   (fetchpatch' {
-    title = "gtk3: compile schemas even when cross compiling";
-    saneCommit = "5ee69670071f583bdffe2718dc46763fa1698f92";
-    hash = "sha256-ZX3lY63qUW2XuwCoxffbLYoFxckDImKy+S8mqlYJcvk=";
-  })
-  (fetchpatch' {
-    title = "gtk4: compile schemas even when cross compiling";
-    saneCommit = "7a1c5e3a5d1ff82c8afa659c7f903d5309d5de6a";
-    hash = "sha256-Tz8NBcIqGE9rCqbOrixgbvApYDEAHWCg4lZbklL/xXc=";
+    title = "gtk{3,4}: compile schemas even when cross compiling";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/247844";
+    hash = "sha256-1CsjLgMvX0Lx500UDzal5HZi78hb7zBcb+AlNPF6NvA=";
   })
 
   # (fetchpatch' {
