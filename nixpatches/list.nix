@@ -395,10 +395,10 @@ in [
   })
 
   (fetchpatch' {
-    # TODO(2023/08/06): upstream. the closure looks fine
     title = "mate.engrampa: support cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/247841";
     saneCommit = "3c76cdaf837f48861e4c3347b480c9a18b5b4a72";
-    hash = "sha256-+4VhCmIpuM9opRhCvPsB7XYVQdHbdCTqlYsizbHga7Y=";
+    hash = "sha256-rT0CBTOFxHQAvxqjWeNRJ2jenDuNRSo+gVDoPFKzHSM=";
   })
 
   (fetchpatch' {
