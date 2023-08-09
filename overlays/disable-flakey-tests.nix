@@ -63,6 +63,14 @@ in {
           "pyarrow/tests/test_flight.py"
         ];
       });
+
+      seaborn = py-prev.seaborn.overridePythonAttrs (upstream: {
+        # 2023/08/09
+        disabledTestPaths = (upstream.disabledTestPaths or []) ++ [
+          "tests/test_categorical.py"
+          "tests/test_core.py"
+        ];
+      });
     })
   ];
 
