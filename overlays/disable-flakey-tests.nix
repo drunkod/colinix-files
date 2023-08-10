@@ -64,6 +64,11 @@ in {
         ];
       });
 
+      # 2023/08/09: unclear why it fails; probably can remove after next nixpkgs update
+      pillow = py-prev.pillow.overridePythonAttrs (_upstream: {
+        format = "setuptools";
+      });
+
       seaborn = py-prev.seaborn.overridePythonAttrs (upstream: {
         # 2023/08/09
         disabledTestPaths = (upstream.disabledTestPaths or []) ++ [
