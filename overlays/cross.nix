@@ -156,60 +156,40 @@ let
   # this is like binfmt, but configured to run *only* the emulated host and not the build machine
   # see: <https://proot-me.github.io/>
   # hinted at by: <https://www.tweag.io/blog/2022-03-31-running-wasm-native-hybrid-code/>
-  emulateBuilderProot = pkg:
-    lib.overrideDerivation pkg ({ builder, args, ... }: {
-      builder = "${final.buildPackages.bash}/bin/sh";
-      args = [ "-e" prootBuilder ];
-      origBuilder = builder;
-      origArgs = args;
+  #
+  # this doesn't quite work:
+  # - proot'd aarch64 shell will launch child processes in qemu
+  # - but those children won't launch their children in qemu
+  # need to somehow recursively proot...
+  # emulateBuilderProot = pkg:
+  #   lib.overrideDerivation pkg ({ builder, args, ... }: {
+  #     builder = "${final.buildPackages.bash}/bin/sh";
+  #     args = [ "-e" prootBuilder ];
+  #     origBuilder = builder;
+  #     origArgs = args;
 
-      enableParallelBuilding = true;  # TODO: inherit from `pkg`?
-      NIX_DEBUG = "6";
+  #     enableParallelBuilding = true;  # TODO: inherit from `pkg`?
+  #     NIX_DEBUG = "6";
 
-      # finally, let nix know that this package should be built by the build system
-      system = final.stdenv.buildPlatform.system;
-    }) // {
-      override = attrs: emulateBuilderProot (pkg.override attrs);
-      overrideAttrs = mergeFn: emulateBuilderProot (pkg.overrideAttrs mergeFn);
-    };
+  #     # finally, let nix know that this package should be built by the build system
+  #     system = final.stdenv.buildPlatform.system;
+  #   }) // {
+  #     override = attrs: emulateBuilderProot (pkg.override attrs);
+  #     overrideAttrs = mergeFn: emulateBuilderProot (pkg.overrideAttrs mergeFn);
+  #   };
 
-  prootBuilder = let
-    proot = "${final.buildPackages.proot}/bin/proot";
-    # prootFlags = "-r / -b /:/";
-    prootFlags = "-b /nix:/nix -b /tmp:/tmp";
-    # prootFlags = "-b /:/ -b ${final.bash}/bin/sh:/bin/sh";  # --mixed-mode false
-    qemu = "${final.buildPackages.qemu}/bin/qemu-aarch64";
-  in
-    final.pkgs.writeText "proot-run" ''
-      echo "proot: ${proot} -q ${qemu} ${prootFlags} $origBuilder $origArgs"
-      ${proot} -q ${qemu} ${prootFlags} $origBuilder $origArgs
-      echo "exited proot"
-    '';
-
-  emulateBuilderBinfmt = pkg:
-    lib.overrideDerivation pkg ({ builder, args, ...}: {
-      builder = "${final.buildPackages.bash}/bin/sh";
-      args = [ "-e" binfmtBuilder ];
-      origBuilder = builder;
-      origArgs = args;
-
-      # finally, let nix know that this package should be built by the build system
-      system = final.stdenv.buildPlatform.system;
-    }) // {
-      override = attrs: emulateBuilderBinfmt (pkg.override attrs);
-      overrideAttrs = mergeFn: emulateBuilderBinfmt (pkg.overrideAttrs mergeFn);
-    };
-
-  binfmtBuilder = let
-    sudo = "${final.buildPackages.sudo}/bin/sudo";
-    mount = "${final.buildPackages.util-linux.mount}/bin/mount";
-  in
-    final.pkgs.writeText "binfmt-run" ''
-      echo "binfmtBuilder: mounting binfmt_misc"
-      ${sudo} ${mount} binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
-      echo "binfmtBuilder: running $origBuilder $origArgs"
-      $origBuilder $origArgs
-    '';
+  # prootBuilder = let
+  #   proot = "${final.buildPackages.proot}/bin/proot";
+  #   # prootFlags = "-r / -b /:/";
+  #   prootFlags = "-b /nix:/nix -b /tmp:/tmp";
+  #   # prootFlags = "-b /:/ -b ${final.bash}/bin/sh:/bin/sh";  # --mixed-mode false
+  #   qemu = "${final.buildPackages.qemu}/bin/qemu-aarch64";
+  # in
+  #   final.pkgs.writeText "proot-run" ''
+  #     echo "proot: ${proot} -q ${qemu} ${prootFlags} $origBuilder $origArgs"
+  #     ${proot} -q ${qemu} ${prootFlags} $origBuilder $origArgs
+  #     echo "exited proot"
+  #   '';
 
   # given a package defined for build != host, transform it to build on the host.
   # i.e. build using the host's stdenv.
@@ -254,8 +234,7 @@ let
       });
 
   buildInQemu = pkg: emulateBuilderQemu (buildOnHost pkg);
-  buildInProot = pkg: emulateBuilderProot (buildOnHost pkg);
-  buildInBinfmt = pkg: emulateBuilderBinfmt (buildOnHost pkg);
+  # buildInProot = pkg: emulateBuilderProot (buildOnHost pkg);
 in {
   inherit emulated;
 
