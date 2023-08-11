@@ -67,55 +67,57 @@ let
   };
   emulated = mkEmulated final prev;
 
-  linuxMinimal = final.linux.override {
-    # customize stock linux to compile using less RAM
-    # default config is in:
-    # - <pkgs/os-specific/linux/kernel/common-config.nix>
-    structuredExtraConfig = with lib.kernel; {
-      # recommended by: <https://nixos.wiki/wiki/Linux_kernel#Too_high_ram_usage>
-      DEBUG_INFO_BTF = lib.mkForce no;
+  # linuxMinimal = final.linux.override {
+  #   # customize stock linux to compile using less RAM
+  #   # default config is in:
+  #   # - <pkgs/os-specific/linux/kernel/common-config.nix>
+  #   structuredExtraConfig = with lib.kernel; {
+  #     # recommended by: <https://nixos.wiki/wiki/Linux_kernel#Too_high_ram_usage>
+  #     DEBUG_INFO_BTF = lib.mkForce no;
 
-      # other debug-related things i can probably disable
-      CC_OPTIMIZE_FOR_SIZE = lib.mkForce yes;
-      DEBUG_INFO = lib.mkForce no;
-      DEBUG_KERNEL = lib.mkForce no;
-      GDB_SCRIPTS = lib.mkForce no;
-      SCHED_DEBUG = lib.mkForce no;
-      SUNRPC_DEBUG = lib.mkForce no;
+  #     # other debug-related things i can probably disable
+  #     CC_OPTIMIZE_FOR_SIZE = lib.mkForce yes;
+  #     DEBUG_INFO = lib.mkForce no;
+  #     DEBUG_KERNEL = lib.mkForce no;
+  #     GDB_SCRIPTS = lib.mkForce no;
+  #     SCHED_DEBUG = lib.mkForce no;
+  #     SUNRPC_DEBUG = lib.mkForce no;
 
-      # disable un-needed features
-      BT = no;
-      CAN = no;
-      DRM = no;  # uses a lot of space when compiling
-      FPGA = no;
-      GNSS = no;
-      IIO = no;  # 500 MB
-      INPUT_TOUCHSCREEN = no;
-      MEDIA_SDR_SUPPORT = no;
-      NFC = no;
-      SND = no;  # also uses a lot of disk space when compiling
-      SOUND = no;
-      WWAN = no;  # 1.4 GB (drivers/net/wireless)
+  #     # disable un-needed features
+  #     BT = no;
+  #     CAN = no;
+  #     DRM = no;  # uses a lot of space when compiling
+  #     FPGA = no;
+  #     GNSS = no;
+  #     IIO = no;  # 500 MB
+  #     INPUT_TOUCHSCREEN = no;
+  #     MEDIA_SDR_SUPPORT = no;
+  #     NFC = no;
+  #     SND = no;  # also uses a lot of disk space when compiling
+  #     SOUND = no;
+  #     # WWAN = no;  # 1.4 GB (drivers/net/wireless)  (but WWAN=no doesn't actually disable that?)
 
-      # we could try disabling these, but i wonder if anything relies on them (e.g. autoconf)
-      # FONTS = lib.mkForce no;
-      # FB = lib.mkForce no;
-      # WAN = lib.mkForce no;
-      # INET = no;
-      # MEMTEST = lib.mkForce no;
-      # # NET = lib.mkForce no;  # we need net (9pnet_virtio; unix) for sharing fs with the build machine
-      MEDIA_ANALOG_TV_SUPPORT = lib.mkForce no;
-      MEDIA_CAMERA_SUPPORT = lib.mkForce no;
-      MEDIA_DIGITAL_TV_SUPPORT = lib.mkForce no;  # 150 MB disk space when compiling
-      MICROCODE = lib.mkForce no;
-      STAGING = lib.mkForce no;  # 450 MB disk space when compiling
-    };
-  };
+  #     # we could try disabling these, but i wonder if anything relies on them (e.g. autoconf)
+  #     # FONTS = lib.mkForce no;
+  #     # FB = lib.mkForce no;
+  #     # WAN = lib.mkForce no;
+  #     # INET = no;
+  #     # MEMTEST = lib.mkForce no;
+  #     # # NET = lib.mkForce no;  # we need net (9pnet_virtio; unix) for sharing fs with the build machine
+  #     MEDIA_ANALOG_TV_SUPPORT = lib.mkForce no;
+  #     MEDIA_CAMERA_SUPPORT = lib.mkForce no;
+  #     MEDIA_DIGITAL_TV_SUPPORT = lib.mkForce no;  # 150 MB disk space when compiling
+  #     MICROCODE = lib.mkForce no;
+  #     STAGING = lib.mkForce no;  # 450 MB disk space when compiling
+
+  #     RTC_DRV_CMOS = yes;  # something in the above config changes disabled this...
+  #   };
+  # };
   # given a package that's defined for build == host,
   # build it from the native build machine by emulating the builder.
   emulateBuilderQemu = pkg: let
-    vmTools = final.buildPackages.vmTools.override {
-      kernel = linuxMinimal;
+    vmTools = final.vmTools.override {
+      kernel = final.linux-megous or final.linux;  #< HACK: guess at whatever deployed linux we're using, to avoid building two kernels
     };
     # fix up the nixpkgs command that runs a Linux OS inside QEMU:
     # qemu_kvm doesn't support x86_64 -> aarch64; but full qemu package does.
@@ -123,15 +125,16 @@ let
       [ "${final.buildPackages.qemu_kvm}" ]
       [ "${final.buildPackages.qemu}" ]
       vmTools.qemuCommandLinux;
+    vmRunCommand = final.buildPackages.vmTools.vmRunCommand qemuCommandLinux;
   in
     # without binfmt emulation, leverage the `vmTools.runInLinuxVM` infrastructure:
-    # final.vmTools.runInLinuxVM pkg
+    # final.buildPackages.vmTools.runInLinuxVM pkg
     #
-    # except `runInLinuxVM` doesn't seem to support cross compilation (what's its purpose, then?)
-    # so hack its components into something which *does* handle cross compilation
+    # except `runInLinuxVM` doesn't quite work OOTB (see above),
+    # so hack its components into something which *does* work.
     lib.overrideDerivation pkg ({ builder, args, ... }: {
       builder = "${final.buildPackages.bash}/bin/sh";
-      args = [ "-e" (vmTools.vmRunCommand qemuCommandLinux) ];
+      args = [ "-e" vmRunCommand ];
       # orig{Builder,Args} gets used by the vmRunCommand script:
       origBuilder = builder;
       origArgs = args;
@@ -253,7 +256,7 @@ let
   buildInProot = pkg: emulateBuilderProot (buildOnHost pkg);
   buildInBinfmt = pkg: emulateBuilderBinfmt (buildOnHost pkg);
 in {
-  inherit emulated linuxMinimal;
+  inherit emulated;
 
   # pkgsi686Linux = prev.pkgsi686Linux.extend (i686Self: i686Super: {
   #   # fixes eval-time error: "Unsupported cross architecture"
