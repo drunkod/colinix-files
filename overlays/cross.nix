@@ -67,52 +67,53 @@ let
   };
   emulated = mkEmulated final prev;
 
-  # linuxMinimal = final.linux.override {
-  #   # customize stock linux to compile using less RAM
-  #   # default config is in:
-  #   # - <pkgs/os-specific/linux/kernel/common-config.nix>
-  #   structuredExtraConfig = with lib.kernel; {
-  #     # recommended by: <https://nixos.wiki/wiki/Linux_kernel#Too_high_ram_usage>
-  #     DEBUG_INFO_BTF = lib.mkForce no;
+  linuxMinimal = final.linux.override {
+    # customize stock linux to compile using fewer resources.
+    # on desko, takes 24 min v.s. 35~40 min for linux-megous
+    # default config is in:
+    # - <pkgs/os-specific/linux/kernel/common-config.nix>
+    # documentation per config option is found with, for example:
+    # - `fd Kconfig . | xargs rg 'config SUNRPC_DEBUG'`
+    structuredExtraConfig = with lib.kernel; {
+      # recommended by: <https://nixos.wiki/wiki/Linux_kernel#Too_high_ram_usage>
+      DEBUG_INFO_BTF = lib.mkForce no;
 
-  #     # other debug-related things i can probably disable
-  #     CC_OPTIMIZE_FOR_SIZE = lib.mkForce yes;
-  #     DEBUG_INFO = lib.mkForce no;
-  #     DEBUG_KERNEL = lib.mkForce no;
-  #     GDB_SCRIPTS = lib.mkForce no;
-  #     SCHED_DEBUG = lib.mkForce no;
-  #     SUNRPC_DEBUG = lib.mkForce no;
+      # other debug-related things i can probably disable
+      CC_OPTIMIZE_FOR_SIZE = lib.mkForce yes;
+      DEBUG_INFO = lib.mkForce no;
+      DEBUG_KERNEL = lib.mkForce no;
+      GDB_SCRIPTS = lib.mkForce no;
+      SCHED_DEBUG = lib.mkForce no;
+      SUNRPC_DEBUG = lib.mkForce no;
 
-  #     # disable un-needed features
-  #     BT = no;
-  #     CAN = no;
-  #     DRM = no;  # uses a lot of space when compiling
-  #     FPGA = no;
-  #     GNSS = no;
-  #     IIO = no;  # 500 MB
-  #     INPUT_TOUCHSCREEN = no;
-  #     MEDIA_SDR_SUPPORT = no;
-  #     NFC = no;
-  #     SND = no;  # also uses a lot of disk space when compiling
-  #     SOUND = no;
-  #     # WWAN = no;  # 1.4 GB (drivers/net/wireless)  (but WWAN=no doesn't actually disable that?)
-
-  #     # we could try disabling these, but i wonder if anything relies on them (e.g. autoconf)
-  #     # FONTS = lib.mkForce no;
-  #     # FB = lib.mkForce no;
-  #     # WAN = lib.mkForce no;
-  #     # INET = no;
-  #     # MEMTEST = lib.mkForce no;
-  #     # # NET = lib.mkForce no;  # we need net (9pnet_virtio; unix) for sharing fs with the build machine
-  #     MEDIA_ANALOG_TV_SUPPORT = lib.mkForce no;
-  #     MEDIA_CAMERA_SUPPORT = lib.mkForce no;
-  #     MEDIA_DIGITAL_TV_SUPPORT = lib.mkForce no;  # 150 MB disk space when compiling
-  #     MICROCODE = lib.mkForce no;
-  #     STAGING = lib.mkForce no;  # 450 MB disk space when compiling
-
-  #     RTC_DRV_CMOS = yes;  # something in the above config changes disabled this...
-  #   };
-  # };
+      # disable un-needed features
+      BT = no;
+      CAN = no;
+      DRM = no;  # uses a lot of space when compiling
+      FPGA = no;
+      GNSS = no;
+      IIO = no;  # 500 MB
+      INPUT_TOUCHSCREEN = no;
+      MEDIA_SDR_SUPPORT = no;
+      NFC = no;
+      SND = no;  # also uses a lot of disk space when compiling
+      SOUND = no;
+      WAN = no;  # X.25 protocol support
+      WIRELESS = no;  # 1.4 GB (drivers/net/wireless), doesn't actually disable this
+      WWAN = no;  # Wireless WAN
+      # disable features nixos explicitly enables, which we still don't need
+      FONTS = lib.mkForce no;
+      FB = lib.mkForce no;
+      # INET = no;  # TCP/IP. `INET` means "IP network" (even when used on a LAN), not "Internet"
+      MEMTEST = lib.mkForce no;
+      # # NET = lib.mkForce no;  # we need net (9pnet_virtio; unix) for sharing fs with the build machine
+      MEDIA_ANALOG_TV_SUPPORT = lib.mkForce no;
+      MEDIA_CAMERA_SUPPORT = lib.mkForce no;
+      MEDIA_DIGITAL_TV_SUPPORT = lib.mkForce no;  # 150 MB disk space when compiling
+      MICROCODE = lib.mkForce no;
+      STAGING = lib.mkForce no;  # 450 MB disk space when compiling
+    };
+  };
   # given a package that's defined for build == host,
   # build it from the native build machine by emulating the builder.
   emulateBuilderQemu = pkg: let
