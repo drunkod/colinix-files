@@ -41,6 +41,7 @@
       # "lollypop"
       "mate.engrampa"  # archive manager
       "mepo"  # maps viewer
+      "mopidy"  # music server (like mpd)
       "mpv"
       # "networkmanagerapplet"
       # "newsflash"

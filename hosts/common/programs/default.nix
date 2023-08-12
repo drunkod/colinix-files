@@ -28,6 +28,7 @@
     ./lemoa.nix
     ./megapixels.nix
     ./mepo.nix
+    ./mopidy.nix
     ./mpv.nix
     ./msmtp.nix
     ./neovim.nix
