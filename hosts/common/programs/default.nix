@@ -4,6 +4,7 @@
   imports = [
     ./aerc.nix
     ./assorted.nix
+    ./cantata.nix
     ./chatty.nix
     ./cozy.nix
     ./element-desktop.nix
