@@ -1,16 +1,15 @@
 { stdenv
 , lib
+, desktop-file-utils
 , fetchFromGitLab
-, meson
 , gettext
 , glib
-, python3
-, gtk3
-, desktop-file-utils
-, ninja
-, python-setup-hook
-, wrapGAppsHook
 , gobject-introspection
+, gtk3
+, meson
+, ninja
+, python3
+, wrapGAppsHook
 }:
 let
   # optional deps: avahi, python-keyring
@@ -26,20 +25,23 @@ stdenv.mkDerivation rec {
     hash = "sha256-awPMXGruCB/2nwfDqYlc0Uu9E6VV1AleEZAw9Xdsbt8=";
   };
 
+  postPatch = ''
+    substituteInPlace src/meson.build \
+      --replace "python.find_installation('python3').full_path()" "'${pythonEnv}/bin/python3'"
+  '';
+
   nativeBuildInputs = [
+    gtk3  # for gtk-update-icon-cache
+    desktop-file-utils  # for update-desktop-database
     gettext  # for msgfmt
-    glib
-    # gtk3  # for gtk-update-icon-cache
+    glib  # for glib-compile-resources
+    gobject-introspection  # needed so wrapGAppsHook includes GI_TYPEPATHS for gtk3
     meson
     ninja
-    desktop-file-utils  # for update-desktop-database
     wrapGAppsHook
-    gobject-introspection  # needed so wrapGAppsHook includes GI_TYPEPATHS for gtk3
   ];
 
   buildInputs = [
-    pythonEnv
-    glib
     gtk3
   ];
 
