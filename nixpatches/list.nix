@@ -77,12 +77,11 @@ in [
     hash = "sha256-jDXYLlXaEBKMrZ2dgxc6ucrcX/5dtqoIIKw+Ay19vlc=";
   })
 
-  # broken...
-  # (fetchpatch' {
-  #   title = "g4music: init at 2.4";
-  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/242943";
-  #   hash = "sha256-kB79SI0v/6VYcr/Vb6n4KvqEvEiNPRVTF3kYsoxlwdM=";
-  # })
+  (fetchpatch' {
+    title = "g4music: init at 2.4";  #< actually v 3.2
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/242943";
+    hash = "sha256-O1uokuocr9T+RK1PsyclnYR37WxI8O6swp5y3kwDNMs=";
+  })
 
   # (fetchpatch {
   #   # stdenv: fix cc for pseudo-crosscompilation
