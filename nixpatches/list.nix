@@ -221,15 +221,6 @@ in [
     hash = "sha256-HaTr7GBCfK1I2e7K4k2dUGZ6hZf4PwtEFobLaSz262M=";
   })
 
-  # make alsa-project members overridable
-  (fetchpatch' {
-    title = "alsa-project: expose the scope as a top-level package to support overrides";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/246656";
-    saneCommit = "28f76deae50cc53f5f6a5e846e04426357b8ce2e";
-    # hash = "sha256-dBWStotLBa4LN7JmriTzoFX3/SQr/qxGO8glv3MNyZQ=";
-    hash = "sha256-QvurEnupAdPVVnHYl4DC1OqJronGt31REkTJO/alr60=";
-  })
-
   # pin to a pre-0.17.3 release
   # removing this and using stock 0.17.3 (also 0.17.4) causes:
   #   INFO lemmy_server::code_migrations: No Local Site found, creating it.
@@ -376,18 +367,6 @@ in [
     hash = "sha256-rT0CBTOFxHQAvxqjWeNRJ2jenDuNRSo+gVDoPFKzHSM=";
   })
 
-  (fetchpatch' {
-    title = "dtrx: 8.5.1 -> 8.5.3";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/246282";
-    saneCommit = "eba9bbc251db942ae27f87824cae643b5f3198c2";
-    # hash = "sha256-wgpjUXQ/ZnRY5AJ9xOL2BToA7hDaokDiMmPkMt0Y5go=";
-    hash = "sha256-awUDlibmxcJcdMZeBXcWR1U+P/GCxCH/lalhwZ5Er90=";
-  })
-  # (fetchpatch' {
-  #   title = "dtrx: don't double-wrap the binary";
-  #   saneCommit = "97a9d12b6c31a58e9067eae7cdcd3f53055c124c";
-  #   hash = "sha256-g+p96OrBOQAwwH7nwHBuM/KGeIrnBzh9u9lL0M0sYWo=";
-  # })
   (fetchpatch' {
     # TODO: send upstream
     title = "nixos/dconf: support cross compilation";
