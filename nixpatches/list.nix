@@ -368,8 +368,8 @@ in [
   })
 
   (fetchpatch' {
-    # TODO: send upstream
     title = "nixos/dconf: support cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/249093";
     saneCommit = "08f7cdebc58eeaa62cb349dab57db3be7a0c073d";
     hash = "sha256-gqHUGeTQnr0f99gqEdd+VANLkWO+joLxz5I0RSarznE=";
   })
