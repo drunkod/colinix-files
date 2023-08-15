@@ -967,7 +967,7 @@ in {
   });
 
   mepo = (prev.mepo.override {
-    # nixpkgs mepo correctly puts `zig_0_10.hook` in nativeBuildInputs,
+    # nixpkgs mepo correctly puts `zig_0_11.hook` in nativeBuildInputs,
     # but for some reason that tries to use the host zig instead of the build zig.
     zig_0_11 = final.buildPackages.zig_0_11;
   }).overrideAttrs (upstream: {
@@ -977,7 +977,7 @@ in {
       # this shouldn't have to be buildPackages.autoPatchelfHook...
       # but without specifying `buildPackages` the host coreutils ends up on the builder's path and breaks things
       final.buildPackages.autoPatchelfHook
-      # # zig hard-codes `pkg-config` inside lib/std/build.zig
+      # zig hard-codes `pkg-config` inside lib/std/build.zig
       (final.buildPackages.writeShellScriptBin "pkg-config" ''
         exec $PKG_CONFIG $@
       '')
