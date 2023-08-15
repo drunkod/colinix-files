@@ -1872,6 +1872,25 @@ in {
     )
   );
 
+  # 2023/07/31: upstreaming is blocked on playerctl
+  waybar = (prev.waybar.override {
+    runTests = false;
+    cavaSupport = false;  # doesn't cross compile
+    # hopefully fixes: "/nix/store/sc1pz0zaqwpai24zh7xx0brjinflmc6v-aarch64-unknown-linux-gnu-binutils-2.40/bin/aarch64-unknown-linux-gnu-ld: /nix/store/ghxl1zrfnvh69dmv7xa1swcbyx06va4y-wayland-1.22.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
+    wrapGAppsHook = final.wrapGAppsHook.override {
+      isGraphical = false;
+    };
+  }).overrideAttrs (upstream: {
+    depsBuildBuild = upstream.depsBuildBuild or [] ++ [ final.pkg-config ];
+  });
+
+  webkitgtk = prev.webkitgtk.overrideAttrs (upstream: {
+    # fixes "wayland-scanner: line 5: syntax error: unterminated quoted string"
+    # if this works i can maybe remove `wayland` from nativeBuildInputs altogether?
+    cmakeFlags = upstream.cmakeFlags ++ [
+      "-DWAYLAND_SCANNER=${final.buildPackages.wayland-scanner}/bin/wayland-scanner"
+    ];
+  });
   # webkitgtk = prev.webkitgtk.override { stdenv = final.ccacheStdenv; };
 
   webp-pixbuf-loader = prev.webp-pixbuf-loader.overrideAttrs (upstream: {
@@ -1896,18 +1915,6 @@ in {
       });
     };
   };
-
-  # 2023/07/31: upstreaming is blocked on playerctl
-  waybar = (prev.waybar.override {
-    runTests = false;
-    cavaSupport = false;  # doesn't cross compile
-    # hopefully fixes: "/nix/store/sc1pz0zaqwpai24zh7xx0brjinflmc6v-aarch64-unknown-linux-gnu-binutils-2.40/bin/aarch64-unknown-linux-gnu-ld: /nix/store/ghxl1zrfnvh69dmv7xa1swcbyx06va4y-wayland-1.22.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
-    wrapGAppsHook = final.wrapGAppsHook.override {
-      isGraphical = false;
-    };
-  }).overrideAttrs (upstream: {
-    depsBuildBuild = upstream.depsBuildBuild or [] ++ [ final.pkg-config ];
-  });
 
   # 2023/07/30: upstreaming is blocked on unar (gnustep), unless i also make that optional
   xarchiver = mvToNativeInputs [ final.libxslt ] prev.xarchiver;
