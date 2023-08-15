@@ -830,16 +830,6 @@ in {
   #   ];
   # });
 
-  # fixes "ERROR: Program 'glib-compile-resources' not found or not executable
-  # 2023/08/01: upstreaming is unblocked,implemented on servo
-  # - different failure mode though:
-  # - "configure: error: cannot run C compiled programs"
-  # - "If you meant to cross compile, use `--host`"
-  # nixpkgs merged 3.0 -> 3.5 update
-  # - <https://github.com/NixOS/nixpkgs/pull/245773/files>
-  # - still needs glib in native build inputs
-  # iio-sensor-proxy = addNativeInputs [ final.glib ] prev.iio-sensor-proxy;
-
   # fixes: "make: gcc: No such file or directory"
   # java-service-wrapper = useEmulatedStdenv prev.java-service-wrapper;
 
@@ -1833,13 +1823,6 @@ in {
   #     '';
   #   });
   # };
-  # 2023/07/31: upstreaming is unblocked,implemented
-  # upower = prev.upower.overrideAttrs (upstream: {
-  #   # cross-compiled builds seem to not create the installedTest files
-  #   outputs = lib.remove "installedTests" upstream.outputs;
-  #   postInstall = lib.replaceStrings [ "installedTests" ] [ "" ] upstream.postInstall;
-  #   postFixup = "";
-  # });
 
   # visidata = prev.visidata.override {
   #   # hdf5 / h5py don't cross-compile, but i don't use that file format anyway.
@@ -1925,17 +1908,6 @@ in {
   }).overrideAttrs (upstream: {
     depsBuildBuild = upstream.depsBuildBuild or [] ++ [ final.pkg-config ];
   });
-
-  # 2023/07/28: upstreaming is unblocked; implemented on servo pr/cross-2023-07-28 branch
-  # wvkbd = (
-  #   # "wayland-scanner: no such program"
-  #   mvToNativeInputs [ final.wayland-scanner ] prev.wvkbd
-  # ).overrideAttrs (upstream: {
-  #   postPatch = upstream.postPatch or "" + ''
-  #     substituteInPlace Makefile \
-  #       --replace "pkg-config" "$PKG_CONFIG"
-  #   '';
-  # });
 
   # 2023/07/30: upstreaming is blocked on unar (gnustep), unless i also make that optional
   xarchiver = mvToNativeInputs [ final.libxslt ] prev.xarchiver;
