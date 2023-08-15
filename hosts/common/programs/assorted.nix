@@ -51,6 +51,7 @@ in
     ];
     "sane-scripts.sys-utils" = declPackageSet [
       "sane-scripts.ip-port-forward"
+      "sane-scripts.sync-music"
     ];
 
 
