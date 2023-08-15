@@ -4,12 +4,9 @@
 #     - needed for File-BaseDir, used by File-MimeInfo
 #     - File-BaseDir can be updated to v0.09, which cross compiles with ease
 # - libgudev builds on servo branch
-# - gupnp builds on servo branch
 # - blueman builds on servo branch
 # - tracker builds on servo branch
-# - upower builds on servo branch
 # - directfb needs investigation on servo
-# - engrampa builds on servo branch
 #
 # non-binfmt build status:
 # - webkitgtk fails 90% through build:
@@ -27,7 +24,6 @@
 # - neovim-ruby fails; tries to run host ruby
 # - luajit fails; tries to run the host gcc
 # - cozy fails during install; can't run post_install_desktop_database.py
-# - kitty fails
 #
 # outstanding issues for software i don't have deployed:
 # - gdk-pixbuf doesn't generate `gdk-pixbuf-thumbnailer` on cross
@@ -36,6 +32,7 @@
 #   - nixos manually builds loader.cache in postInstall (via emulator).
 #   - even though we have loader.cache, ordering means that thumbnailer still can't be built.
 #   - solution is probably to integrate meson's cross_file stuff, and pushing all this emulation upstream.
+# - kitty doesn't cross compile
 
 final: prev:
 let
@@ -972,7 +969,7 @@ in {
   mepo = (prev.mepo.override {
     # nixpkgs mepo correctly puts `zig_0_10.hook` in nativeBuildInputs,
     # but for some reason that tries to use the host zig instead of the build zig.
-    zig_0_10 = final.buildPackages.zig_0_10;
+    zig_0_11 = final.buildPackages.zig_0_11;
   }).overrideAttrs (upstream: {
     dontUseZigCheck = true;
     nativeBuildInputs = upstream.nativeBuildInputs ++ [
@@ -987,6 +984,7 @@ in {
     ];
     postPatch = (upstream.postPatch or "") + ''
       substituteInPlace src/sdlshim.zig \
+        --replace 'cInclude("SDL2/SDL2_gfxPrimitives.h")' 'cInclude("SDL2_gfxPrimitives.h")' \
         --replace 'cInclude("SDL2/SDL_image.h")' 'cInclude("SDL_image.h")' \
         --replace 'cInclude("SDL2/SDL_ttf.h")' 'cInclude("SDL_ttf.h")'
       substituteInPlace build.zig \
