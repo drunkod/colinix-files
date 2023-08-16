@@ -1,5 +1,6 @@
 # upstreaming status:
-# - xdg-utils builds on servo branch
+# - playerctl is out for review
+# - xdg-utils is out for review
 #   - xdg-utils is blocked on perl5.36.0-Module-Build
 #     - needed for File-BaseDir, used by File-MimeInfo
 #     - File-BaseDir can be updated to v0.09, which cross compiles with ease
@@ -7,8 +8,6 @@
 # - blueman builds on servo branch
 # - tracker builds on servo branch
 # - directfb needs investigation on servo
-# patches need to be authored & sent upstream:
-# - playerctl (just disable docs on cross)
 #
 # non-binfmt build status:
 # - webkitgtk fails 90% through build:
@@ -1325,9 +1324,9 @@ in {
   #   ffadoSupport = false;
   # };
 
-  playerctl = prev.playerctl.overrideAttrs (upstream: {
-    mesonFlags = upstream.mesonFlags ++ [ "-Dgtk-doc=false" ];
-  });
+  # playerctl = prev.playerctl.overrideAttrs (upstream: {
+  #   mesonFlags = upstream.mesonFlags ++ [ "-Dgtk-doc=false" ];
+  # });
 
   # psqlodbc = prev.psqlodbc.override {
   #   # fixes "configure: error: odbc_config not found (required for unixODBC build)"

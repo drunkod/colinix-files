@@ -358,6 +358,13 @@ in [
     hash = "sha256-gqHUGeTQnr0f99gqEdd+VANLkWO+joLxz5I0RSarznE=";
   })
 
+  (fetchpatch' {
+    title = "playerctl: support cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/249512";
+    saneCommit = "67df31a8984ab3067af5b65446d2808b0aedadc6";
+    hash = "sha256-qY0bjMoFneC5VJ467TeiuOycLYNaVO7Xo/0fCauDZAM=";
+  })
+
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
   #   title = "matrix-appservice-irc: 0.38.0 -> 1.0.0";
