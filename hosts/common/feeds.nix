@@ -67,6 +67,8 @@ let
     (fromDb "craphound.com" // pol)
     ## Maggie Killjoy -- referenced by Cory Doctorow
     (fromDb "omny.fm/shows/cool-people-who-did-cool-stuff" // pol)
+    ## also Maggie Killjoy
+    (fromDb "feeds.megaphone.fm/behindthebastards" // pol)
     ## Jennifer Briney
     (fromDb "congressionaldish.libsyn.com" // pol)
     (fromDb "werenotwrong.fireside.fm" // pol)
