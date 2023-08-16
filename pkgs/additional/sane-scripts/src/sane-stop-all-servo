@@ -1,7 +1,7 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -i bash -p systemd
-sudo systemctl stop matrix-appservice-irc mx-puppet-discord
-sudo systemctl stop pleroma gitea matrix-synapse jellyfin transmission jackett
+sudo systemctl stop matrix-appservice-irc mx-puppet-discord mautrix-signal
+sudo systemctl stop pleroma gitea lemmy-ui matrix-synapse jellyfin transmission jackett
 sudo systemctl stop ejabberd goaccess i2p kiwix-serve navidrome
 # TODO: stop the freshrss timer
 sudo systemctl stop phpfpm-freshrss
