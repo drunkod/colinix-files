@@ -125,6 +125,8 @@ let
     (fromDb "feeds.simplecast.com/82FI35Px" // pol)
     ## Wireshark Podcast o_0
     (fromDb "sharkbytes.transistor.fm" // tech)
+    ## 3/4 German; 1/4 eps are English
+    (fromDb "omegataupodcast.net" // tech)
   ];
 
   texts = [
