@@ -30,18 +30,20 @@ in
         '';
 
         Restart = "on-failure";
+        RestartSec = "60s";  # can make this more frequent once stable?
 
         # sandboxing (taken from the service file shipped by eg25-manager):
-        ProtectControlGroups = true;
-        ProtectHome = true;
-        ProtectSystem = "strict";
-        RestrictSUIDSGID = true;
-        PrivateTmp = true;
-        MemoryDenyWriteExecute = true;
-        PrivateMounts = true;
-        NoNewPrivileges = true;
-        CapabilityBoundingSet = [ "" ];
-        LockPersonality = true;
+        # TODO: this is too strict and breaks access to e.g. /dev/ttyUSB2!
+        # ProtectControlGroups = true;
+        # ProtectHome = true;
+        # ProtectSystem = "strict";
+        # RestrictSUIDSGID = true;
+        # PrivateTmp = true;
+        # MemoryDenyWriteExecute = true;
+        # PrivateMounts = true;
+        # NoNewPrivileges = true;
+        # CapabilityBoundingSet = [ "" ];
+        # LockPersonality = true;
       };
       before = [ "ModemManager.service" ];
       wantedBy = [ "multi-user.target" ];
