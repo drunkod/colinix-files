@@ -53,19 +53,15 @@ in
   # - ambient light sensor causes screen brightness to be shakey
   # - phosh greeter may not appear after wake from sleep
   boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux-megous;
+  # boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux_latest;
 
   # alternatively, use nixos' kernel and add the stuff we want:
-  # # cross-compilation optimization:
-  # boot.kernelPackages =
-  #   let p = (import nixpkgs { localSystem = "x86_64-linux"; });
-  #   in p.pkgsCross.aarch64-multiplatform.linuxPackages_5_18;
-  # # non-cross:
-  # # boot.kernelPackages = pkgs.linuxPackages_5_18;
-
   # boot.kernelPatches = manjaroPatches ++ [
   #   (patchDefconfig kernelConfig)
   # ];
 
+  # configure nixos to build a compressed kernel image, since it doesn't usually do that for aarch64 target.
+  # without this i run out of /boot space in < 10 generations
   nixpkgs.hostPlatform.linux-kernel = {
     # defaults:
     name = "aarch64-multiplatform";
