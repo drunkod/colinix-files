@@ -6,7 +6,6 @@
 #     - File-BaseDir can be updated to v0.09, which cross compiles with ease
 # - libgudev builds on servo branch
 # - blueman builds on servo branch
-# - tracker builds on servo branch
 # - directfb needs investigation on servo
 #
 # non-binfmt build status:
@@ -1793,9 +1792,6 @@ in {
   #   '';
   # });
 
-  # 2023/07/31: upstreaming is unblocked,implemented on servo
-  # fixes "meson.build:204:12: ERROR: Can not run test applications in this cross environment."
-  # tracker = addNativeInputs [ final.mesonEmulatorHook ] prev.tracker;
   # fixes "meson.build:425:23: ERROR: Program 'glib-compile-schemas' not found or not executable"
   # 2023/07/31: upstreaming is unblocked,implemented on servo
   # tracker-miners = mvToNativeInputs [ final.glib ] (
