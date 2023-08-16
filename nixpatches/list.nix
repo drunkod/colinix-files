@@ -20,12 +20,6 @@ let
     );
 in [
 
-  (fetchpatch' {
-    title = "liberation_ttf_v1: fix build after #248865";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/249059";
-    hash = "sha256-hZwUk/nt5a670IUCd+iys0Cj9+oxEpsrFu9Y/zZ9Ccg=";
-  })
-
   # (fetchpatch' {
   #   # TODO: check back in on this around 2023-10-01
   #   title = "libkiwix: 12.0.0 -> 12.1.0";
