@@ -7,6 +7,8 @@
 # - blueman builds on servo branch
 # - tracker builds on servo branch
 # - directfb needs investigation on servo
+# patches need to be authored & sent upstream:
+# - playerctl (just disable docs on cross)
 #
 # non-binfmt build status:
 # - webkitgtk fails 90% through build:
@@ -20,7 +22,6 @@
 # - tuba fails trying to invoke the aarch64 gettext during build
 # - rpm (wanted by dtrx, but technically optional) fails during configure; can't find python
 # - portfolio fails during meson configure; finds host python, can't execute it
-# - playerctl fails during install; tries to run `playerctl-scan` (for building docs? should be easy fix)
 # - neovim-ruby fails; tries to run host ruby
 # - luajit fails; tries to run the host gcc
 # - cozy fails during install; can't run post_install_desktop_database.py
@@ -1317,11 +1318,16 @@ in {
       final.desktop-file-utils  # fixes "meson.build:116:8: ERROR: Program 'update-desktop-database' not found or not executable"
     ];
   } prev.phosh-mobile-settings;
+
   # pipewire = prev.pipewire.override {
   #   # avoid a dep on python3.10-PyQt5, which has mixed qt5 versions.
   #   # this means we lose firewire support (oh well..?)
   #   ffadoSupport = false;
   # };
+
+  playerctl = prev.playerctl.overrideAttrs (upstream: {
+    mesonFlags = upstream.mesonFlags ++ [ "-Dgtk-doc=false" ];
+  });
 
   # psqlodbc = prev.psqlodbc.override {
   #   # fixes "configure: error: odbc_config not found (required for unixODBC build)"
