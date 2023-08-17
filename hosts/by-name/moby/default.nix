@@ -37,7 +37,7 @@
   ];
 
   sane.gui.sxmo.enable = true;
-  sane.services.eg25-manager.enable = true;
+  # sane.services.eg25-manager.enable = true;
   # i only need eg25-manager for GPS purposes;
   # but modemmanager outright fails -- blocking eg25-manager -- unless i provide it a sim.
   sane.services.eg25-manager.package = pkgs.eg25-manager.override { withModemManager = false; };
