@@ -24,11 +24,6 @@ in [
     prUrl = "https://github.com/NixOS/nixpkgs/pull/249575";
     hash = "sha256-CjVAFRcnTjA9DpOdwFwifgriQ9QFFGzchMB0tIVlAQM=";
   })
-  (fetchpatch' {
-    title = "komga: 1.3.0 -> 1.3.1";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/249546";
-    hash = "sha256-F5rUwZi536r0NkJ2PNVuJK1eXG0lj8q8h9C91CgfhfA=";
-  })
 
   # (fetchpatch' {
   #   # TODO: check back in on this around 2023-10-01
