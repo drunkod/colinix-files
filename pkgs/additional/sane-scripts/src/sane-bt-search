@@ -230,7 +230,7 @@ class Client:
 def sort_results(torrents: list[Torrent], by: str) -> list[Torrent]:
     if by == 'seeders':
         return sorted(torrents, key=lambda t: (t.seeders, t), reverse=True)
-    elif by == 'source':
+    elif by == 'tracker':
         return sorted(torrents, key=lambda t: (-tracker_rank(t.tracker), t), reverse=True)
     assert False, f"unknown sort method: {by}"
 
@@ -252,7 +252,7 @@ def main(args: list[str]):
     parser = argparse.ArgumentParser(description='search torrent trackers')
     parser.add_argument('--full', action='store_true', help='show all results')
     parser.add_argument('--top', help='how many results to show (default: 5)')
-    parser.add_argument('--sort-by', default='seeders', help='how to rank matches (seeders, source)')
+    parser.add_argument('--sort-by', default='seeders', help='how to rank matches (seeders, tracker)')
     parser.add_argument('--json', action='store_true', help='output results in json')
     parser.add_argument('--verbose', action='store_true')
     parser.add_argument('--h265', action='store_true', help='show only H.265/HEVC results (might cause false negatives)')
