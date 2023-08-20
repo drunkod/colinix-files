@@ -115,13 +115,6 @@ in
     noCheck = true;
   };
   sane.fs."/mnt/desko-home" = sane-lib.fs.wantedDir;
-  fileSystems."/mnt/desko-root" = {
-    device = "colin@desko:/";
-    fsType = "fuse.sshfs";
-    options = fsOpts.sshRoot ++ fsOpts.noauto;
-    noCheck = true;
-  };
-  sane.fs."/mnt/desko-root" = sane-lib.fs.wantedDir;
 
   fileSystems."/mnt/moby-home" = {
     device = "colin@moby-hn:/home/colin";
