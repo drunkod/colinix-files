@@ -131,6 +131,7 @@ lib.mkMerge [
   }
 
   (remoteHome "desko")
+  (remoteHome "lappy")
   (remoteHome "moby")
 ]
 
