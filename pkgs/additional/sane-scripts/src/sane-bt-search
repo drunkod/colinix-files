@@ -69,7 +69,12 @@ def parse_time(t: str) -> datetime:
 
 DROP_CATS = { "dvd", "hd", "misc", "other", "sd", "uhd" }
 MANGA_CATS = { "books", "comics", "ebook" }
-KNOWN_CATS = frozenset(list(MANGA_CATS) + ["anime", "audio", "movies", "tv", "xxx"])
+VIDEO_CATS = { "anime", "movies", "tv" }
+KNOWN_CATS = frozenset(
+    list(MANGA_CATS) +
+    list(VIDEO_CATS) +
+    ["audio", "xxx"]
+)
 def clean_cat(c: str) -> str | None:
     if c in DROP_CATS: return None
     return c
@@ -85,14 +90,16 @@ def is_cat(cats: list[str], wanted_cats: list[str], default: bool = False) -> bo
         return any(c in wanted_cats for c in cats)
 
 class Filter:
-    def __init__(self, manga: bool=False, h265: bool=False):
-        self.manga = manga
+    def __init__(self, h265: bool=False, manga: bool=False, video: bool=False):
         self.h265 = h265
+        self.manga = manga
+        self.video = video
 
     def filter(self, t: 'Torrent', default: bool = False) -> bool:
         valid = True
-        valid = valid and (not self.manga or t.is_manga(default))
         valid = valid and (not self.h265 or t.is_h265())
+        valid = valid and (not self.manga or t.is_manga(default))
+        valid = valid and (not self.video or t.is_video(default))
         return valid
 
 
@@ -164,14 +171,17 @@ class Torrent:
             magnet=self.magnet,
         )
 
-    def is_manga(self, default: bool = False) -> bool:
-        return is_cat(self.categories, MANGA_CATS, default)
-
     def is_h265(self) -> bool:
         meta = self.title.lower()
         return "h265" in meta \
             or "x265" in meta \
             or "HEVC" in meta
+
+    def is_manga(self, default: bool = False) -> bool:
+        return is_cat(self.categories, MANGA_CATS, default)
+
+    def is_video(self, default: bool = False) -> bool:
+        return is_cat(self.categories, VIDEO_CATS, default)
 
 class Client:
     def __init__(self):
@@ -225,8 +235,9 @@ def main(args: list[str]):
     parser.add_argument('--top', help='how many results to show (default: 5)')
     parser.add_argument('--json', action='store_true', help='output results in json')
     parser.add_argument('--verbose', action='store_true')
-    parser.add_argument('--manga', action='store_true', help='show only manga results')
     parser.add_argument('--h265', action='store_true', help='show only H.265/HEVC results (might cause false negatives)')
+    parser.add_argument('--manga', action='store_true', help='show only manga results')
+    parser.add_argument('--video', action='store_true', help='show only video (tv or film)')
     parser.add_argument("query", help="text to search for in torrent titles/descriptions")
 
     args = parser.parse_args()
@@ -237,7 +248,7 @@ def main(args: list[str]):
     client = Client()
     all_results = client.query(args.query)
 
-    filter = Filter(manga=args.manga, h265=args.h265)
+    filter = Filter(h265=args.h265, manga=args.manga, video=args.video)
     filtered_results = filter_results(
         all_results,
         filter,
