@@ -97,10 +97,25 @@ class Filter:
 
     def filter(self, t: 'Torrent', default: bool = False) -> bool:
         valid = True
-        valid = valid and (not self.h265 or t.is_h265())
-        valid = valid and (not self.manga or t.is_manga(default))
-        valid = valid and (not self.video or t.is_video(default))
+        valid = valid and (not self.h265 or self.filter_h265(t))
+        valid = valid and (not self.manga or self.filter_manga(t, default))
+        valid = valid and (not self.video or self.filter_video(t, default))
         return valid
+
+    @staticmethod
+    def filter_h265(t: 'Torrent') -> bool:
+        meta = t.title.lower()
+        return "h265" in meta \
+            or "x265" in meta \
+            or "HEVC" in meta
+
+    @staticmethod
+    def filter_manga(t: 'Torrent', default: bool = False) -> bool:
+        return is_cat(t.categories, MANGA_CATS, default)
+
+    @staticmethod
+    def filter_video(t: 'Torrent', default: bool = False) -> bool:
+        return is_cat(t.categories, VIDEO_CATS, default)
 
 
 @dataclass(eq=True, order=True, unsafe_hash=True)
@@ -170,18 +185,6 @@ class Torrent:
             title=self.title,
             magnet=self.magnet,
         )
-
-    def is_h265(self) -> bool:
-        meta = self.title.lower()
-        return "h265" in meta \
-            or "x265" in meta \
-            or "HEVC" in meta
-
-    def is_manga(self, default: bool = False) -> bool:
-        return is_cat(self.categories, MANGA_CATS, default)
-
-    def is_video(self, default: bool = False) -> bool:
-        return is_cat(self.categories, VIDEO_CATS, default)
 
 class Client:
     def __init__(self):
