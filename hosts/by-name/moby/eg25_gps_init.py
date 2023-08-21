@@ -7,11 +7,20 @@
 #
 # this script downloads assisted GPS (AGPS) data via the system's default gateway (i.e. WiFi)
 # and shares that with the modem. this quickens the process of acquiring a GPS fix.
-# even with AGPS, an indoor fix is generally not possible (though i have seen the receiver
-# locate a _single_ satellite from indoors -- not enough for a fix).
-# even an outdoor fix within a suburban setting may take 10 minutes.
 #
-# expects to run on megi's kernel, with `CONFIG_MODEM_POWER=y`
+# this script expects to run on megi's kernel, with `CONFIG_MODEM_POWER=y`.
+#
+# EXPECTATIONS/TIPS:
+# - with the right environment, you may get a GPS fix in < 30s.
+# - indoors, you shouldn't expect to *ever* get a cold-start GPS fix.
+#   - maybe you'll track 1 satellite if lucky: enough to receive GPS time but not for a GPS fix.
+#   - get a fix outdoors, then walk indoors: GPS is smart enough to maintain a spotty fix.
+# - outdoors in suburbia, a fix might take 10-20 minutes.
+#   - i have better luck *placing my phone on the roof of my car* than holding it in the air with my hand.
+#   - maybe a big metal plate opposite the sky acts as a dish/antenna?
+# - in Seattle, i track several GLONASS and GPS sats: about an even split.
+#   - the GPS sats have better SNR.
+#   - modem seems to not show any BeiDou or Galileo sats even if i enable them.
 #
 # eg25 modem/GPS docs:
 # [GNSS-AP-Note]: https://wiki.pine64.org/images/0/09/Quectel_EC2x%26EG9x%26EG2x-G%26EM05_Series_GNSS_Application_Note_V1.3.pdf
@@ -36,7 +45,8 @@ import time
 
 POWER_ENDPOINT = "/sys/class/modem-power/modem-power/device/powered"
 # GNSS-AP-Note 1.4:
-# also at xtrapath5 and xtrapath6 subdomains
+# also at xtrapath5 and xtrapath6 subdomains.
+# the AGPS data here is an almanac good for 7 days.
 AGPS_DATA_URI_BASE = "https://xtrapath4.izatcloud.net"
 
 class AgpsDataVariant:
