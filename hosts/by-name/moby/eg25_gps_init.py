@@ -1,79 +1,30 @@
-#!/usr/bin/env python
-#!nix-shell -i python -p "python3.withPackages (ps: [  ])"
 #!/usr/bin/env nix-shell
+#!nix-shell -i python -p "python3.withPackages (ps: [  ])"
 
-# it's possible to interact with the AT device using just python builtin `file`:
-# - `wr = io.open(DEVICE, 'wb', 0)` to create an unbuffered writer
-# - `wr.write(b'ATI\r')`
-# - `rd = io.open(DEVICE, 'rb', 0)`
-# - `rd.read(1024)`  to read at most 1024 bytes
+# this script should run after ModemManager.service is started.
+# after running, the user may `cat /dev/ttyUSB1` to view NMEA-encoded GPS information.
+# the script attempts to be idempotent, such that it may be run multiple times per boot.
 #
-# the issue is that the read call has to be started before the write call.
-# i.e. if there's no reader when the modem replies, the modem's response gets thrown away.
+# this script downloads assisted GPS (AGPS) data via the system's default gateway (i.e. WiFi)
+# and shares that with the modem. this quickens the process of acquiring a GPS fix.
+# even with AGPS, an indoor fix is generally not possible (though i have seen the receiver
+# locate a _single_ satellite from indoors -- not enough for a fix).
+# even an outdoor fix within a suburban setting may take 10 minutes.
 #
-# /dev/ttyUSB2 is a character device
-# - as shown by `pathlib.Path('/dev/ttyUSB2').is_char_device()`
-# - that means `fcntl(fd, F_SETPIPE_SZ, ...)` can't be used to buffer it
-#
-# the driver for /dev/ttyUSB2 lives in megi's kernel tree:
-# - at drivers/misc/modem-power.c
-# - couple entry points for receiving messages:
-#   - mpwr_eg25_receive_msg is referenced by the mpwr_variant
-#     - path of mpwr_dev->variant->recv_msg
-#     - probably not directly callable externally
-#   - mpwr_serdev_receive_buf is referenced by mpwr_serdev_probe
-#     - passed into serdev_device_set_client_ops
-#     - probably the externally visible method then
-# - mpwr_eg25_receive_msg:
-#   - calls mpwr->variant->recv_msg
-#   - kfifo_in(&mpwr->kfifo, msg, msg_len);
-#   - kfifo_in(&mpwr->kfifo, "\n", 1);
-#   - wake_up(&mpwr->wait);
-#
-# - mpwr_serdev_receive_buf:
-#   - copies `msg` onto `mpwr->rcvbuf`
-#   - wraps `mpwr_serdev_receive_msg` in a loop
-# - mpwr_serdev_receive_msg:
-#   - has a valid `msg` char* when it's called (i.e., the data has _already_ been lifted off the serial port?)
-#   - copies the msg to `mpwr->msg`, but skips OK and ERROR messages
-# ^ these two seem to be not polling the device, but rather parsing the messages the dev has yielded
-#   and returning only as many characters as the user asked for
-#
-# Ok! so linux character device calls `mpwr_serdev_receive_msg` when the modem has data
-# - modem-power.c accumulates the characters into a buffer, and parses things like `OK` and `ERROR`.
-# - only full messages are pushed into mpwr_eg25_receive_msg, where they're placed into the kfifo.
-#   - note, a side effect of this is that \r\n is translated to just `\n`? or becomes `\r\n\n`?
-#
-# - mpwr_dev->kfifo is 4096B:
-#   - DECLARE_KFIFO(kfifo, unsigned char, 4096);
-#   - the kfifo isn't exposed to any external code
-#
-# - struct file_operations mpwr_fops
-#   - mpwr_read ; also _open, _release, _poll ; no seek
-#   - made user-visible during probe: `cdev_init(&mpwr->cdev, &mpwr_fops);`
-#   - mpwr_read:
-#     - wait_event_interruptible(mpwr->wait, !kfifo_is_empty(&mpwr->kfifo))
-#     - kfifo_to_user(&mpwr->kfifo, buf, len, &copied);
-#   - then... the driver should still accumulate into the kfifo even without an outstanding read,
-#     - and a subsequent read should grab from the fifo.
-#       - maybe a logic error with that `wait_event_interruptible`? or just another process is racing against me!
-#
-# actually, `lsof /dev/ttyUSB2` shows that ModemManager has it open.
-# - we're racing for data against ModemManager
-# i need to be using `mmcli --command` instead
-# - how to put ModemManager into "debug" mode?
+# expects to run on megi's kernel, with `CONFIG_MODEM_POWER=y`
 #
 # eg25 modem/GPS docs:
 # [GNSS-AP-Note]: https://wiki.pine64.org/images/0/09/Quectel_EC2x%26EG9x%26EG2x-G%26EM05_Series_GNSS_Application_Note_V1.3.pdf
 #
-# Global Navigation Satellite Systems:
+# most acronyms are defined inline, particularly near variable/class declarations.
+# glossary, for those which aren't:
+#
+# Global Navigation Satellite Systems (GNSS):
 # - GPS (US)
 # - GLONASS (RU)
 # - Galileo (EU)
 # - BeiDou (CN)
-#
-# eg25-manager docs suggest AGPS doesn't work for galileo?
-# - they enable only GPS and GLONASS
+# ^ these are all global systems, usable outside the country that owns them
 
 
 import argparse
