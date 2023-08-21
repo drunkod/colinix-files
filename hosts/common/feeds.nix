@@ -132,6 +132,8 @@ let
     (fromDb "sharkbytes.transistor.fm" // tech)
     ## 3/4 German; 1/4 eps are English
     (fromDb "omegataupodcast.net" // tech)
+    ## Lateral with Tom Scott
+    (mkPod "https://audioboom.com/channels/5097784.rss" // tech)
   ];
 
   texts = [
