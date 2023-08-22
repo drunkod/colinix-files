@@ -387,7 +387,7 @@ def main():
     parser.add_argument("--verbose", action='store_true', help="log each command before executing")
     parser.add_argument('--power-on', action='store_true', help="enable power to the modem")
     parser.add_argument('--enable-audio', action='store_true', help="configure audio for calling (?)")
-    paresr.add_argument('--enable-urc', action='store_true', help="enable support for Unsolicited Return Codes (?)")
+    parser.add_argument('--enable-urc', action='store_true', help="enable support for Unsolicited Return Codes (?)")
     parser.add_argument('--enable-gps', action='store_true', help="enable the GPS and acquire tracking until asked to stop")
     parser.add_argument('--enable-powersave', action='store_true', help="configure modem to sleep when possible")
     parser.add_argument('--dump-debug-info', action='store_true', help="don't initialize anything, just dump debugging data")
@@ -403,13 +403,13 @@ def main():
         sequencer.power_on()
     if args.enable_audio:
         sequencer.enable_audio()
-    if args.enable_urc():
+    if args.enable_urc:
         sequencer.enable_urc()
-    if args.enable_gps():
+    if args.enable_gps:
         sequencer.enable_gps()
-    if args.enable_powersave():
+    if args.enable_powersave:
         sequencer.enable_powersave()
-    if args.dump_debug_info():
+    if args.dump_debug_info:
         sequencer.dump_debug_info()
 
 if __name__ == '__main__':
