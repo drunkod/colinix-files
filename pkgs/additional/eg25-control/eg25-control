@@ -267,9 +267,13 @@ class Sequencer:
     def _at_autogps(self, enable: AutoGps) -> str:
         return self._at_structured_cmd("QGPSCFG", "autogps", enable)
 
-    def _get_assistance_data(self, variant: AgpsDataVariant) -> str:
-        self.executor.exec(["curl", f"{self.AGPS_DATA_URI_BASE}/{variant}", "-o", variant])
-        return variant
+    def _get_assistance_data(self, variant: AgpsDataVariant) -> str | None:
+        try:
+            self.executor.exec(["curl", f"{self.AGPS_DATA_URI_BASE}/{variant}", "-o", variant])
+            return variant
+        except subprocess.CalledProcessError as e:
+            logger.warning(f"AGPS data download failed: {e}")
+            return None  # TODO: could be smarter: return cached AGPS data?
 
     @log_scope("powering modem...", "modem powered")
     def power_on(self) -> None:
@@ -352,7 +356,9 @@ class Sequencer:
         # now = datetime.datetime.now().strftime('%Y/%m/%d,%H:%M:%S')  # UTC
         # self._at_structured_cmd("QGPSXTRATIME", value=f"0,\"{now}\"")
         locdata = self._get_assistance_data(AgpsDataVariant.gps_glonass_beidou)
-        self._mmcli([f"--location-inject-assistance-data={locdata}"])
+        if locdata:
+            self._mmcli([f"--location-inject-assistance-data={locdata}"])
+
         self._at_gnssconfig(GNSSConfig.gps_glonass_beidou_galileo)
         self._at_odpcontrol(ODPControl.disable)
         self._at_dpoenable(DPOEnable.disable)  # N.B.: eg25-manager uses `DPOEnable.enable`
