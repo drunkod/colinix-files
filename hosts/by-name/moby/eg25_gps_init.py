@@ -2,15 +2,21 @@
 #!nix-shell -i python -p "python3.withPackages (ps: [  ])"
 
 # this script should run after ModemManager.service is started.
+# typical invocation is `eg25_gps_init.py --enable-power --enable-gps`.
 # after running, the user may `cat /dev/ttyUSB1` to view NMEA-encoded GPS information.
 # the script attempts to be idempotent, such that it may be run multiple times per boot.
 #
 # this script downloads assisted GPS (AGPS) data via the system's default gateway (i.e. WiFi)
 # and shares that with the modem. this quickens the process of acquiring a GPS fix.
 #
+# the script may also configure other parts of the modem as `eg25-manager` does.
+# these options are less tested: see `--help` for more.
+#
 # PREREQUISITES/DEPENDENCIES:
 # this script expects to run on megi's kernel, with `CONFIG_MODEM_POWER=y`.
-# ModemManager, and by extension this script, REQUIRE A SIM CARD IN YOUR PHONE.
+# ModemManager must be launched with the `--debug` flag, so that `mmcli --command=...` works.
+#
+# ModemManager, and by extension this script, REQUIRES A SIM CARD IN YOUR PHONE.
 # the sim doesn't need to be "activated". you can buy a $1 SIM and never purchase
 # service and that works; it's just needed for ModemManager to boot the modem.
 # this isn't a fundamental requirement; if one did everything via serial instead of
@@ -298,7 +304,7 @@ class Sequencer:
         self._at_structured_cmd('QGPSCFG', 'agpsposmode')
 
     @log_scope("configuring audio...", "audio configured")
-    def config_audio(self) -> None:
+    def enable_audio(self) -> None:
         # cribbed from eg25-manager; i don't understand these
         # QDAI call shouldn't be necessary if using Megi's FW:
         # - <https://xnux.eu/devices/feature/modem-pp.html>
@@ -311,7 +317,7 @@ class Sequencer:
         self._at_structured_cmd("QCFG", "apready", "1,0,500")
 
     @log_scope("configuring urc...", "urc configured")
-    def config_urc(self) -> None:
+    def enable_urc(self) -> None:
         # cribbed from eg25-manager; i don't even know what URC is
         # URC configuration for PP 1.2 (APREADY pin connected):
         #   * RING URC: normal pulse length
@@ -329,7 +335,7 @@ class Sequencer:
         self._at_structured_cmd("QURCCFG", "urcport", "\"all\"")
 
     @log_scope("configuring gps...", "gps configured")
-    def config_gps(self) -> None:
+    def enable_gps(self) -> None:
         # set modem to use UTC time instead of local time.
         # modemmanager sends CTZU=3 during init and that causes `AT+CCLK?` to return a timestamp that's off by 600+ days
         # see: <https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/issues/360>
@@ -359,7 +365,7 @@ class Sequencer:
         self._at_structured_cmd("QGPS", value="1,255,1000,0,1")
 
     @log_scope("configuring powersave...", "powersave configured")
-    def config_powersave(self) -> None:
+    def enable_powersave(self) -> None:
         # Allow sleeping for power saving
         self._at_structured_cmd("QSCLK", value="1")
         # Disable fast poweroff for stability
@@ -379,6 +385,11 @@ def main():
     parser = argparse.ArgumentParser(description="initialize the eg25 Pinephone modem for GPS tracking")
     parser.add_argument("--dry-run", action='store_true', help="print commands instead of executing them")
     parser.add_argument("--verbose", action='store_true', help="log each command before executing")
+    parser.add_argument('--power-on', action='store_true', help="enable power to the modem")
+    parser.add_argument('--enable-audio', action='store_true', help="configure audio for calling (?)")
+    paresr.add_argument('--enable-urc', action='store_true', help="enable support for Unsolicited Return Codes (?)")
+    parser.add_argument('--enable-gps', action='store_true', help="enable the GPS and acquire tracking until asked to stop")
+    parser.add_argument('--enable-powersave', action='store_true', help="configure modem to sleep when possible")
     parser.add_argument('--dump-debug-info', action='store_true', help="don't initialize anything, just dump debugging data")
 
     args = parser.parse_args()
@@ -388,15 +399,17 @@ def main():
     executor = Executor(args.dry_run)
     sequencer = Sequencer(executor)
 
-    if not args.dump_debug_info:
+    if args.power_on:
         sequencer.power_on()
-        sequencer.at_check()
-        # sequencer.config_audio()
-        # sequencer.config_urc()
-        sequencer.config_gps()
-        # sequencer.config_powersave()
-
-    if args.verbose or args.dump_debug_info:
+    if args.enable_audio:
+        sequencer.enable_audio()
+    if args.enable_urc():
+        sequencer.enable_urc()
+    if args.enable_gps():
+        sequencer.enable_gps()
+    if args.enable_powersave():
+        sequencer.enable_powersave()
+    if args.dump_debug_info():
         sequencer.dump_debug_info()
 
 if __name__ == '__main__':
