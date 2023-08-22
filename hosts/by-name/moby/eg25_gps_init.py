@@ -209,14 +209,15 @@ class AutoGps:
     enable = "1"
 
 class Sequencer:
-    POWER_ENDPOINT = POWER_ENDPOINT
     AGPS_DATA_URI_BASE = AGPS_DATA_URI_BASE
-    def __init__(self, executor: Executor):
+    def __init__(self, executor: Executor, modem: str, power_endpoint: str):
         self.executor = executor
+        self.modem = modem
+        self.power_endpoint = power_endpoint
 
     def _mmcli(self, args: list[str], check: bool = True) -> str:
         return self.executor.exec(
-            ["mmcli", "--modem", "any"] + args,
+            ["mmcli", "--modem", self.modem] + args,
             check=check
         ).decode('utf-8')
 
@@ -272,7 +273,7 @@ class Sequencer:
 
     @log_scope("powering modem...", "modem powered")
     def power_on(self) -> None:
-        self.executor.write_file(self.POWER_ENDPOINT, b'1')
+        self.executor.write_file(self.power_endpoint, b'1')
         while self._try_mmcli([]) is None:
             logger.info("modem hasn't appeared: sleeping for 1s")
             time.sleep(1)  # wait for modem to appear
@@ -383,8 +384,12 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser(description="initialize the eg25 Pinephone modem for GPS tracking")
+    parser.add_argument('--modem', default='any', help='name of modem to configure (see mmcli --list-modems)')
+    parser.add_argument('--power-endpoint', default='/sys/class/modem-power/modem-power/device/powered', help='sysfs endpoint that can turn the modem on/off')
+
     parser.add_argument("--dry-run", action='store_true', help="print commands instead of executing them")
     parser.add_argument("--verbose", action='store_true', help="log each command before executing")
+
     parser.add_argument('--power-on', action='store_true', help="enable power to the modem")
     parser.add_argument('--enable-audio', action='store_true', help="configure audio for calling (?)")
     parser.add_argument('--enable-urc', action='store_true', help="enable support for Unsolicited Return Codes (?)")
@@ -397,7 +402,7 @@ def main():
         logging.getLogger().setLevel(logging.DEBUG)
 
     executor = Executor(args.dry_run)
-    sequencer = Sequencer(executor)
+    sequencer = Sequencer(executor, modem=args.modem, power_endpoint=args.power_endpoint)
 
     if args.power_on:
         sequencer.power_on()
