@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i python -p "python3.withPackages (ps: [  ])"
+#!nix-shell -i python3 -p "python3.withPackages (ps: [  ])" -p curl -p modemmanager
 
 # this script should run after ModemManager.service is started.
 # typical invocation is `eg25_gps_init.py --enable-power --enable-gps`.
