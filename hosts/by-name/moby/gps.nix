@@ -29,7 +29,7 @@
     # this is the default "agent", shipped by geoclue package: allow it to use location
     isAllowed = true;
     isSystem = false;
-    # users = [ "colin" ];  #< restrict to only one set of users, else allows all.
+    users = [ "colin" ];  #< restrict to only one set of users, else allows all.
   };
   systemd.services.geoclue.after = lib.mkForce [];  #< defaults to network-online, but not all my sources require network
 
