@@ -78,4 +78,6 @@
 ## NEW FEATURES:
 - migrate MAME cabinet to nix
     - boot it from PXE from servo?
+- deploy to new server, and use it as a remote builder
 - enable IPv6
+- package lemonade lemmy app: <https://linuxphoneapps.org/apps/ml.mdwalters.lemonade/>
