@@ -47,6 +47,9 @@ titlebar_border_thickness 1
 titlebar_padding 12 1
 title_align center
 
+# tabbed windows by default
+workspace_layout tabbed
+
 ### tab colors (#border #background #text [#indicator #childBorder])
 # focused & unfocused are the main interest
 # urgent is used when an inactive window wants attention (e.g. terminal rings a bell)
