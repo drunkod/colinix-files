@@ -14,6 +14,9 @@ from gi.repository import GWeather
 logger = logging.getLogger(__name__)
 
 class WeatherSource:
+    '''
+    this class abstracts operations which would query a remote weather server
+    '''
     def __init__(self):
         self.info = GWeather.Info()
         self.info.set_application_id('org.uninsane.sane-weather')
@@ -21,6 +24,10 @@ class WeatherSource:
         self.world = GWeather.Location.get_world()
 
     def query_loc(self, loc: GWeather.Location) -> None:
+        '''
+        query the weather for some location, asynchronously.
+        after calling, poll the `try_...` methods to check for results.
+        '''
         logger.debug(f"querying: {loc.get_coords()}")
         self.info.set_location(loc)
         self.info.update()
@@ -46,6 +53,12 @@ class ExitOp:
     pass
 
 class TopLevel:
+    """
+    this class acts as the "event loop" which glib apps expect.
+    caller sets up a "work queue" of everything they want to do, then calls `run`.
+    glib calls `poll` in a loop, and each time we try to work through another item in the work_queue.
+    when the work_queue is empty, exit glib's main loop & return to the caller (from `run`).
+    """
     def __init__(self):
         self._loop = GLib.MainLoop()
         self.source = WeatherSource()
