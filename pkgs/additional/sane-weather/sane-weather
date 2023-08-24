@@ -101,6 +101,12 @@ def main():
     logging.basicConfig()
 
     parser = argparse.ArgumentParser(description="acquire weather information for user display")
+    parser.add_argument(
+        '--station-code',
+        default='KSEA',
+        help='4-letter METAR weather station code for where we want to know weather\n '
+             'to find your station see here: <https://aviationweather.gov/metar>'
+    )
     parser.add_argument('--break-before', action='store_true', help='drop into a REPL before do anything (for debugging)')
     parser.add_argument('--break-after', action='store_true', help='drop into a REPL after completing the work (for debugging)')
     parser.add_argument('--verbose', action='store_true', help='enable verbose logging')
@@ -112,9 +118,7 @@ def main():
         GLib.log_set_debug_enabled(True)
 
     toplevel = TopLevel()
-    # for now, hardcoded; four-letter station code is that from METAR:
-    # - <https://aviationweather.gov/metar>
-    here = GWeather.Location.find_by_station_code(toplevel.source.world, 'KSEA')
+    here = GWeather.Location.find_by_station_code(toplevel.source.world, args.station_code)
 
     if args.break_before:
         code.interact(local=dict(**globals(), **locals()))
