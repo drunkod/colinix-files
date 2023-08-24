@@ -22,6 +22,18 @@ class WeatherSource:
         self.info = GWeather.Info()
         self.info.set_application_id('org.uninsane.sane-weather')
         self.info.set_contact_info('contact@uninsane.org')
+
+        self.info.set_enabled_providers(
+            # defaults to METAR | IWIN.
+            # options are:
+            # - IWIN   # graphical.weather.gov; provides daily min/max temp, precipitation
+            # - METAR  # aviationweather.gov; provides current time, wind, visibility, conditions, clouds, temperature, pressure
+            # - MET_NO
+            # - NWS    # api.weather.gov; provides hourly temperature, dewpoint, humidity, sky cover, wind, precipitation, snow; daily min/max temp,
+            # - OWM
+            GWeather.Provider.METAR |
+            GWeather.Provider.NWS
+        )
         self.world = GWeather.Location.get_world()
 
     def query_loc(self, loc: GWeather.Location) -> None:
