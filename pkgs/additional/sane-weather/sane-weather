@@ -1,6 +1,18 @@
 #!/usr/bin/env python3
 # to get GWeather logging, run with
 # `G_MESSAGES_DEBUG=GWeather`
+
+# queries weather from public (gov) sources and renders it to stdout.
+# primary consumer is conky.
+# very limited; libgweather is a little iffy and doesn't expose everything the raw APIs do
+#   e.g. no precise precipitation predictions.
+#
+# future work:
+# - consider using python-native pynws: <https://github.com/MatthewFlamm/pynws>
+#   - it's well-factored, exposing a nice interface but letting me dig as deep as i want wherever that's incomplete.
+# - render a graph with rain + temperature forecast
+#   - conky supports graphs with [execgraph](https://conky.cc/variables#execgraph)
+
 import argparse
 import code
 import gi
