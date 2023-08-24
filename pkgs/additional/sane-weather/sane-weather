@@ -95,7 +95,7 @@ class TopLevel:
             temp = self.source.try_get_celcius()
             if temp is not None:
                 del self.work_queue[0]
-                print(f"{int(temp)} C")
+                print(f"{int(temp)}°C")
         elif isinstance(work, DiagnosticsOp):
             del self.work_queue[0]
             # GWeather does transparent caching so that we don't usually hit the web
