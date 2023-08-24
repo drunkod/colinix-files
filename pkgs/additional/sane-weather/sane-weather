@@ -31,8 +31,10 @@ class WeatherSource:
             # - MET_NO
             # - NWS    # api.weather.gov; provides hourly temperature, dewpoint, humidity, sky cover, wind, precipitation, snow; daily min/max temp,
             # - OWM
-            GWeather.Provider.METAR |
-            GWeather.Provider.NWS
+            # METAR, if you only want immediate conditions
+            GWeather.Provider.METAR
+            # METAR + NWS, if you want a forecast
+            # GWeather.Provider.METAR | GWeather.Provider.NWS
         )
         self.world = GWeather.Location.get_world()
 
