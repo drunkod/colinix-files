@@ -5,6 +5,7 @@ import argparse
 import code
 import gi
 import logging
+import time
 
 gi.require_version('GWeather', '4.0')
 
@@ -39,18 +40,19 @@ class WeatherSource:
 
         return temp
 
-class QueryOp:
-    def __init__(self, loc: GWeather.Location):
-        self.loc = loc
+    # potentially interesting methods on GWeather.Info:
+    # - get_conditions              # returns '-'
+    # - get_forecast_list           # forecast as a list of GWeather.Info instances (daily if IWIN; hourly if NWS)
+    # - get_sky                     # like 'Clear sky'
+    # - get_sunrise, get_sunset     # like '13∶10', '03∶04' (utc time)
+    # - get_symbolic_icon_name      # like 'weather-clear-night-symbolic'
+    # - get_temp_min, get_temp_max  # returns '-'
+    # - get_temp_summary()          # same as get_temp()
+    # - get_update()                # like 'Thu, Aug 24 / 13∶00'
+    # - get_wind()                  # like 'North / 13.0 km/h'
+    # - get_visibility()            # like '16093m'
+    # - get_weather_summary()       # like 'Seattle-Tacoma International Airport: Clear sky'
 
-class PrintTempOp:
-    pass
-
-class DiagnosticsOp:
-    pass
-
-class ExitOp:
-    pass
 
 class TopLevel:
     """
@@ -91,10 +93,37 @@ class TopLevel:
             logger.debug("quitting GLib MainLoop")
             self.source.info.store_cache()
             self._loop.quit()
+        elif isinstance(work, IdleOp):
+            del self.work_queue[0]
+            logger.debug("micro sleep")
+            time.sleep(0.1)
         else:
             assert False, f"unknown work: {work}"
 
-        return True  # re-queue this idle fn
+        # micro sleep so we don't peg CPU
+        # TODO: i'm sure there's a better way than all of this
+        time.sleep(0.05)
+        # re-queue this idle fn
+        return True
+
+# operations:
+# think of these as public methods on the `TopLevel` class,
+# except abstracted as values for the sake of glib's event loop.
+class QueryOp:
+    def __init__(self, loc: GWeather.Location):
+        self.loc = loc
+
+class PrintTempOp:
+    pass
+
+class DiagnosticsOp:
+    pass
+
+class IdleOp:
+    pass
+
+class ExitOp:
+    pass
 
 
 def main():
@@ -126,6 +155,10 @@ def main():
     toplevel.enqueue(QueryOp(here))
     toplevel.enqueue(PrintTempOp())
     toplevel.enqueue(DiagnosticsOp())
+
+    # for _ in range(300):  # for debugging...
+    #     toplevel.enqueue(IdleOp())
+
     toplevel.run()
 
     if args.break_after:
