@@ -369,6 +369,14 @@ in {
   # bonsai = prev.bonsai.override {
   #   inherit (emulated) stdenv hare;
   # };
+
+  brightnessctl = prev.brightnessctl.overrideAttrs (upstream: {
+    postPatch = (upstream.postPatch or "") + ''
+      substituteInPlace Makefile \
+        --replace 'pkg-config' "$PKG_CONFIG"
+    '';
+  });
+
   # brltty = prev.brltty.override {
   #   # configure: error: no acceptable C compiler found in $PATH
   #   inherit (emulated) stdenv;
