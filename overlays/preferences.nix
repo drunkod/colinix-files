@@ -14,7 +14,6 @@
     # gnome-shell = gsuper.gnome-shell.override {
     #   evolution-data-server-gtk4 = evolution-data-server-gtk4.override {
     #     # avoid webkitgtk_6_0 build. lol.
-    #     # TODO: re-enable this.
     #     withGtk4 = false;
     #   };
     # };
