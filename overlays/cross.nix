@@ -1313,7 +1313,7 @@ in {
       nativeBuildInputs = [
         final.glib
         final.wayland-scanner
-        final.makeBinaryWrapper  # not makeWrapper only because nix complains
+        final.wrapGAppsHook
       ];
       # buildInputs = (upstream.buildInputs or []) ++ [
       #   # see `data/phog.in`
@@ -1332,8 +1332,11 @@ in {
     postPatch = (upstream.postPatch or "") + ''
       sed -i /phog_plugins_dir/d build-aux/post_install.py
     '';
-    postInstall = (upstream.postInstall or "") + ''
-      wrapProgram $out/bin/phog --prefix PATH : ${lib.makeBinPath [ final.bash final.squeekboard ]}
+    preFixup = (upstream.preFixup or "") + ''
+      gappsWrapperArgs+=(
+        --prefix PATH : ${lib.makeBinPath [ final.bash final.squeekboard ]}
+        --prefix XDG_DATA_DIRS : "${final.gnome.gnome-shell}/share/gsettings-schemas/${final.gnome.gnome-shell.name}"
+      )
     '';
   });
   phosh = prev.phosh.overrideAttrs (upstream: {
