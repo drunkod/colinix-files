@@ -353,13 +353,12 @@ in
           # settings.default_session.command = "${pkgs.phog}/bin/phog";
 
           # wrapper to launch phog and redirect logs to system journal.
-          # it's not labeled, just /nix/store/<...>
           settings.default_session.command =
           let
             systemd-cat = "${pkgs.systemd}/bin/systemd-cat";
             launch-phog = pkgs.writeShellScriptBin "launch-phog" ''
               echo "launching phog..." | ${systemd-cat}
-              G_MESSAGES_DEBUG=all ${pkgs.phog}/bin/phog 2>&1 | ${systemd-cat}
+              G_MESSAGES_DEBUG=all ${pkgs.phog}/bin/phog 2>&1 | ${systemd-cat} --identifier=phog
             '';
           in "${launch-phog}/bin/launch-phog" ;
         };
