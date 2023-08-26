@@ -37,7 +37,7 @@
 #   - live in ~/.local/state/sxmo.log
 #   - ~/.local/state/superd.log
 #   - ~/.local/state/superd/logs/<daemon>.log
-#   - `journalctl --user --boot`  (lightm redirects the sxmo session stdout => systemd)
+#   - `journalctl --user --boot`  (lightdm redirects the sxmo session stdout => systemd)
 #
 # - default components:
 #   - DE:                  sway (if wayland), dwm (if X)
@@ -65,13 +65,13 @@ in
       type = types.bool;
     };
     sane.gui.sxmo.greeter = mkOption {
-      type = types.enum [ "lightdm-mobile" "phog" "sway" ];
+      type = types.enum [ "lightdm-mobile" "greetd-phog" "sway" ];
       default = "lightdm-mobile";
-      # default = "phog";  # phog/greetd seems to significantly worsen graphics & perf. like it breaks GL acceleration? TODO: try phog via lightdm
+      # default = "greetd-phog";  # phog/greetd seems to significantly worsen graphics & perf. like it breaks GL acceleration? TODO: try phog via lightdm
       description = ''
         which greeter to use.
         "lightdm-mobile" => keypad style greeter. can only enter digits 0-9 as password.
-        "phog" => phosh-based greeter. keypad (0-9) with option to open an on-screen keyboard.
+        "greetd-phog" => phosh-based greeter. keypad (0-9) with option to open an on-screen keyboard.
         "sway" => layered sway greeter. behaves as if you booted to swaylock.
       '';
     };
@@ -345,18 +345,23 @@ in
         };
       })
 
-      (lib.mkIf (cfg.greeter == "phog") {
+      (lib.mkIf (cfg.greeter == "greetd-phog") {
         services.greetd = {
           enable = true;
-          settings.default_session.command = "${pkgs.phog}/bin/phog";
-          # this would be nice for debugging, but greetd swallows the logs:
-          # settings.default_session.command =
-          # let
-          #   launch-phog = pkgs.writeShellScriptBin "launch-phog" ''
-          #     echo "launching phog..."
-          #     G_MESSAGES_DEBUG=all ${pkgs.phog}/bin/phog
-          #   '';
-          # in "${launch-phog}/bin/launch-phog" ;
+
+          # launch directly: but stdout/stderr gets dropped
+          # settings.default_session.command = "${pkgs.phog}/bin/phog";
+
+          # wrapper to launch phog and redirect logs to system journal.
+          # it's not labeled, just /nix/store/<...>
+          settings.default_session.command =
+          let
+            systemd-cat = "${pkgs.systemd}/bin/systemd-cat";
+            launch-phog = pkgs.writeShellScriptBin "launch-phog" ''
+              echo "launching phog..." | ${systemd-cat}
+              G_MESSAGES_DEBUG=all ${pkgs.phog}/bin/phog 2>&1 | ${systemd-cat}
+            '';
+          in "${launch-phog}/bin/launch-phog" ;
         };
         environment.pathsToLink = [ "/share/wayland-sessions" ];
       })
