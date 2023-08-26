@@ -78,8 +78,8 @@ in
         "lightdm-mobile"
         "sway-gtkgreet"
       ];
-      default = "lightdm-mobile";
-      # default = "greetd-phog";
+      # default = "lightdm-mobile";
+      default = "greetd-sway-phog";
       description = ''
         which greeter to use.
         "greetd-phog"      => phosh-based greeter. keypad (0-9) with option to open an on-screen keyboard.
