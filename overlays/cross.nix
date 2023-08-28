@@ -370,12 +370,13 @@ in {
   #   inherit (emulated) stdenv hare;
   # };
 
-  brightnessctl = prev.brightnessctl.overrideAttrs (upstream: {
-    postPatch = (upstream.postPatch or "") + ''
-      substituteInPlace Makefile \
-        --replace 'pkg-config' "$PKG_CONFIG"
-    '';
-  });
+  # 2023/08/27: out for review: <https://github.com/NixOS/nixpkgs/pull/251947>
+  # brightnessctl = prev.brightnessctl.overrideAttrs (upstream: {
+  #   postPatch = (upstream.postPatch or "") + ''
+  #     substituteInPlace Makefile \
+  #       --replace 'pkg-config' "$PKG_CONFIG"
+  #   '';
+  # });
 
   # brltty = prev.brltty.override {
   #   # configure: error: no acceptable C compiler found in $PATH
@@ -928,27 +929,29 @@ in {
   #   # fixes "Run-time dependency vapigen found: NO (tried pkgconfig)"
   #   buildInputs = upstream.buildInputs ++ [ final.vala ];
   # });
-  libgweather = (prev.libgweather.override {
-    # we need introspection for bindings, used by e.g.
-    # - gnome.gnome-weather (javascript)
-    # - sane-weather (python)
-    #
-    # enabling introspection on cross is tricky because `gen_locations_variant.py`
-    # outputs binary files (Locations.bin) which use the endianness of the build machine
-    # OTOH, aarch64 and x86_64 have same endianness: why not just ignore the issue, then?
-    # upstream issue (loosely related): <https://gitlab.gnome.org/GNOME/libgweather/-/issues/154>
-    withIntrospection = true;
-  }).overrideAttrs (upstream: {
-    # TODO: the `is_cross_build` change to meson.build is in nixpkgs, but specifies the wrong filepath
-    #   (libgweather/meson.build instead of meson.build)
-    postPatch = (upstream.postPatch or "") + ''
-      sed -i '2i import os; os.environ["GI_TYPELIB_PATH"] = ""' build-aux/meson/gen_locations_variant.py
-      substituteInPlace meson.build \
-        --replace "g_ir_scanner.found() and not meson.is_cross_build()" "g_ir_scanner.found()"
-      substituteInPlace libgweather/meson.build \
-        --replace "dependency('vapigen'," "dependency('vapigen', native:true,"
-    '';
-  });
+
+  # TODO(2023/08/27): send out for PR: <https://github.com/NixOS/nixpkgs/compare/master...uninsane:nixpkgs:pr-cross-libgweather>
+  # libgweather = (prev.libgweather.override {
+  #   # we need introspection for bindings, used by e.g.
+  #   # - gnome.gnome-weather (javascript)
+  #   # - sane-weather (python)
+  #   #
+  #   # enabling introspection on cross is tricky because `gen_locations_variant.py`
+  #   # outputs binary files (Locations.bin) which use the endianness of the build machine
+  #   # OTOH, aarch64 and x86_64 have same endianness: why not just ignore the issue, then?
+  #   # upstream issue (loosely related): <https://gitlab.gnome.org/GNOME/libgweather/-/issues/154>
+  #   withIntrospection = true;
+  # }).overrideAttrs (upstream: {
+  #   # TODO: the `is_cross_build` change to meson.build is in nixpkgs, but specifies the wrong filepath
+  #   #   (libgweather/meson.build instead of meson.build)
+  #   postPatch = (upstream.postPatch or "") + ''
+  #     sed -i '2i import os; os.environ["GI_TYPELIB_PATH"] = ""' build-aux/meson/gen_locations_variant.py
+  #     substituteInPlace meson.build \
+  #       --replace "g_ir_scanner.found() and not meson.is_cross_build()" "g_ir_scanner.found()"
+  #     substituteInPlace libgweather/meson.build \
+  #       --replace "dependency('vapigen'," "dependency('vapigen', native:true,"
+  #   '';
+  # });
 
   # libsForQt5 = prev.libsForQt5.overrideScope' (self: super: {
   #   qgpgme = super.qgpgme.overrideAttrs (orig: {
