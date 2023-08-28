@@ -1314,8 +1314,6 @@ in {
   # fixes (meson) "Program 'glib-mkenums mkenums' not found or not executable"
   # 2023/07/27: upstreaming is blocked on p11-kit, argyllcms, libavif cross compilation
   phoc = mvToNativeInputs [ final.wayland-scanner final.glib ] prev.phoc;
-  # disable squeekboard because it takes 20 minutes to compile when emulated
-  phog = prev.phog.override { squeekboard = null; };
   phosh = prev.phosh.overrideAttrs (upstream: {
     buildInputs = upstream.buildInputs ++ [
       final.libadwaita  # "plugins/meson.build:41:2: ERROR: Dependency "libadwaita-1" not found, tried pkgconfig"
