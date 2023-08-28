@@ -25,6 +25,10 @@
 - REVIEW/integrate jellyfin dataDir config: <https://github.com/NixOS/nixpkgs/pull/233617>
 - remove `libsForQt5.callPackage` broadly: <https://github.com/NixOS/nixpkgs/issues/180841>
 
+#### upstreaming to non-nixpkgs repos
+- gtk: build schemas even on cross compilation: <https://github.com/NixOS/nixpkgs/pull/247844>
+- sxmo: add new app entries
+
 
 ## IMPROVEMENTS:
 ### security/resilience
