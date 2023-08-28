@@ -19,8 +19,10 @@
     # };
   });
 
-  # disable squeekboard because it takes 20 minutes to compile when emulated
-  phog = prev.phog.override { squeekboard = null; };
+  phog = super.phog.override {
+    # disable squeekboard because it takes 20 minutes to compile when emulated
+    squeekboard = null;
+  };
 
   pipewire = super.pipewire.override {
     # avoid a dep on python3.10-PyQt5, which has mixed qt5 versions.
