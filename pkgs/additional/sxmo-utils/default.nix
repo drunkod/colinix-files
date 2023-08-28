@@ -46,8 +46,6 @@ let
       })
     ];
     unmerged = [
-      # let NixOS manage the audio daemons (pulseaudio/pipewire)
-      ./0005-system-audio.patch
       # (fetchpatch {
       #   XXX: doesn't apply cleanly to 1.14.2 release
       #   # Don't wait for led or status bar in state change hooks
@@ -60,9 +58,21 @@ let
         url = "https://lists.sr.ht/~mil/sxmo-devel/patches/42876/mbox";
         hash = "sha256-Oa0MI0Kt9Xgl5L1KarHI6Yn4+vpRxUSujB1iY4hlK9c=";
       })
+
+      ## TODO: send these upstream
+      (fetchpatch {
+        name = "sxmo_hook_apps: add a few";
+        url = "https://git.uninsane.org/colin/sxmo-utils/commit/f99f474bf079da21a2afb5a97cbc9d52da496476.patch";
+        hash = "sha256-3WGgAJqiivUyC/wLpcxoQQq8b0qw+EVSfgHdVq+Iv4g=";
+      })
+
+      ## these might or might not be upstream-worthy
       ./0104-full-auto-rotate.patch
-      ./0105-more-apps.patch
       # ./0106-no-restart-lisgd.patch
+
+      ## not upstreamable
+      # let NixOS manage the audio daemons (pulseaudio/pipewire)
+      ./0005-system-audio.patch
     ];
   };
 in {
