@@ -362,6 +362,11 @@ in [
     saneCommit = "7a2d0a90cc558ea71dfc78356e61b0675b995634";
     hash = "sha256-5uOYxC4+ZMjIbO1oSA/8ffuftgHSbrGuKjw3EnCHakU=";
   })
+  (fetchpatch' {
+    title = "tuba: support cross compilation";
+    saneCommit = "fc1121488c2358644f2d149bebf049512471adc0";
+    hash = "sha256-ZTFC/bu/pO3s+SPQmKhvd+Y+tNE0KVK6bL+Br86A1eM=";
+  })
 
   # (fetchpatch' {
   #   # N.B.: compiles, but runtime error on launch suggestive of some module not being shipped
