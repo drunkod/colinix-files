@@ -116,8 +116,12 @@
 
 
     # TODO: move elsewhere...
-    # N.B.: the extra "" in ExecStart serves to force upstream ExecStart to be ignored
-    services.ModemManager.serviceConfig.ExecStart = [ "" "${pkgs.modemmanager}/bin/ModemManager --debug" ];
+    services.ModemManager.serviceConfig = {
+      # N.B.: the extra "" in ExecStart serves to force upstream ExecStart to be ignored
+      ExecStart = [ "" "${pkgs.modemmanager}/bin/ModemManager --debug" ];
+      # --debug sets DEBUG level logging: so reset
+      ExecStartPost = [ "${pkgs.modemmanager}/bin/mmcli --set-logging=INFO" ];
+    };
   };
 
   services.udev.extraRules = let
