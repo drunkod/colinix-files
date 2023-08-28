@@ -95,7 +95,7 @@ in
     };
     sane.gui.sxmo.package = mkOption {
       type = types.package;
-      default = pkgs.sxmo-utils;
+      default = pkgs.sxmo-utils-latest;
       description = ''
         sxmo base scripts and hooks collection.
         consider overriding the outputs under /share/sxmo/default_hooks
