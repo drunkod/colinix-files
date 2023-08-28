@@ -65,6 +65,11 @@ let
         url = "https://git.uninsane.org/colin/sxmo-utils/commit/f99f474bf079da21a2afb5a97cbc9d52da496476.patch";
         hash = "sha256-3WGgAJqiivUyC/wLpcxoQQq8b0qw+EVSfgHdVq+Iv4g=";
       })
+      (fetchpatch {
+        name = "sxmo_migrate: add option to disable configversion checks";
+        url = "https://git.uninsane.org/colin/sxmo-utils/commit/8949c64451973212a8aa50375396ec375c676d1e.patch";
+        hash = "sha256-Okjjwa2FBJOrDVZGrfaUEPGQY749+V4w0gALIBp50hQ=";
+      })
 
       ## these might or might not be upstream-worthy
       ./0104-full-auto-rotate.patch
