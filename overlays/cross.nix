@@ -869,17 +869,18 @@ in {
   #   inherit (emulated) stdenv;
   # };
 
-  kitty = prev.kitty.overrideAttrs (upstream: {
-    # fixes: "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
-    PKGCONFIG_EXE = "${final.buildPackages.pkg-config}/bin/${final.buildPackages.pkg-config.targetPrefix}pkg-config";
+  # kitty = prev.kitty.overrideAttrs (upstream: {
+  #   # fixes: "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
+  #   PKGCONFIG_EXE = "${final.buildPackages.pkg-config}/bin/${final.buildPackages.pkg-config.targetPrefix}pkg-config";
 
-    # when building docs, kitty's setup.py invokes `sphinx`, which tries to load a .so for the host.
-    # on cross compilation, that fails
-    KITTY_NO_DOCS = true;
-    patches = upstream.patches ++ [
-      ./kitty-no-docs.patch
-    ];
-  });
+  #   # when building docs, kitty's setup.py invokes `sphinx`, which tries to load a .so for the host.
+  #   # on cross compilation, that fails
+  #   KITTY_NO_DOCS = true;
+  #   patches = upstream.patches ++ [
+  #     ./kitty-no-docs.patch
+  #   ];
+  # });
+
   komikku = wrapGAppsHook4Fix prev.komikku;
   koreader = (prev.koreader.override {
     # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
