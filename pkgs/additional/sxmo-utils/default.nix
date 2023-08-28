@@ -62,8 +62,8 @@ let
       ## TODO: send these upstream
       (fetchpatch {
         name = "sxmo_hook_apps: add a few";
-        url = "https://git.uninsane.org/colin/sxmo-utils/commit/f99f474bf079da21a2afb5a97cbc9d52da496476.patch";
-        hash = "sha256-3WGgAJqiivUyC/wLpcxoQQq8b0qw+EVSfgHdVq+Iv4g=";
+        url = "https://git.uninsane.org/colin/sxmo-utils/commit/d39f0956859e41f408ccbdc0bff0b986bc483cdd.patch";
+        hash = "sha256-AVdvfzGmV/RydafBnrQsRJP42eU9VsFRc2/wgPUWocs=";
       })
       (fetchpatch {
         name = "sxmo_migrate: add option to disable configversion checks";
