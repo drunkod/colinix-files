@@ -4,6 +4,7 @@
 - why i need to manually restart `wireguard-wg-ovpns` on servo periodically
   - else DNS fails
 - fix epiphany URL bar input on moby
+- sxmo: wvkbd: missing font for icons on the 3rd page
 
 ## REFACTORING:
 
