@@ -70,6 +70,11 @@ let
         url = "https://git.uninsane.org/colin/sxmo-utils/commit/8949c64451973212a8aa50375396ec375c676d1e.patch";
         hash = "sha256-Okjjwa2FBJOrDVZGrfaUEPGQY749+V4w0gALIBp50hQ=";
       })
+      (fetchpatch {
+        name = "Makefile: use SYSCONFDIR instead of hardcoding /etc";
+        url = "https://git.uninsane.org/colin/sxmo-utils/commit/bbad10e074c335710e5ab171a0b1d96dddf160ed.patch";
+        hash = "sha256-jqxzGLjYXuJV6NB/4zsPdjuzNVyUCxPSlGMDW5XetZ8=";
+      })
 
       ## these might or might not be upstream-worthy
       ./0104-full-auto-rotate.patch
