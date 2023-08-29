@@ -13,6 +13,9 @@
 # - evolution-data-server needs investigation on servo
 # - gnome-clocks needs investigation on servo
 # - ibus needs investigation on servo
+# - luajit needs investigation on servo
+# - rpm needs investigation on servo
+# - waybar needs investigation on servo
 # - webkitgtk build fails at the nix layer (OOM?)
 #
 # non-binfmt build status:
