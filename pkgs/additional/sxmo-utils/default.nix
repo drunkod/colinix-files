@@ -44,6 +44,12 @@ let
         url = "https://lists.sr.ht/~mil/sxmo-devel/patches/42698/mbox";
         hash = "sha256-TrTlrthrpYdIMC8/RCMNaB8PcGQgtya/h2/uLNQDeWs=";
       })
+      (fetchpatch {
+        # merged ~2023/08/22
+        name = "Make config gesture toggle persistent";
+        url = "https://lists.sr.ht/~mil/sxmo-devel/patches/42876/mbox";
+        hash = "sha256-Oa0MI0Kt9Xgl5L1KarHI6Yn4+vpRxUSujB1iY4hlK9c=";
+      })
     ];
     unmerged = [
       # (fetchpatch {
