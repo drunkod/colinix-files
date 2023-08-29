@@ -53,11 +53,6 @@ let
       #   url = "https://lists.sr.ht/~mil/sxmo-devel/patches/43109/mbox";
       #   hash = "sha256-4uR2u6pa62y6SaRHYRn15YGDPILAs7py0mPbAjsgwM4=";
       # })
-      (fetchpatch {
-        name = "Make config gesture toggle persistent";
-        url = "https://lists.sr.ht/~mil/sxmo-devel/patches/42876/mbox";
-        hash = "sha256-Oa0MI0Kt9Xgl5L1KarHI6Yn4+vpRxUSujB1iY4hlK9c=";
-      })
 
       ## TODO: send these upstream
       (fetchpatch {
@@ -92,9 +87,9 @@ in {
     patches = patches.merged ++ patches.unmerged;
   };
   latest = callPackage ./common.nix {
-    version = "unstable-2023-08-11";
-    rev = "095678e77fcd9ad2c1ed1ffc98fc66d2f19ccf64";
-    hash = "sha256-TGj3zcwW7aS/5KXcUt0jyESZcNqHY/JZ5HCTgT7Qsbk=";
+    version = "unstable-2023-08-22";
+    rev = "a69fbb2222f8f3f53dde00045d413d96e508e88b";
+    hash = "sha256-87VBfZP86ofiZtSegg4AxpvZHruaiMZMl0vaL2PeyuQ=";
     patches = patches.unmerged;
   };
 }
