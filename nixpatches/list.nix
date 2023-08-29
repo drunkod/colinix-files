@@ -20,15 +20,15 @@ let
     );
 in [
   (fetchpatch' {
-    title = "komikku: 1.22.0 -> 1.23.0";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/249575";
-    hash = "sha256-CjVAFRcnTjA9DpOdwFwifgriQ9QFFGzchMB0tIVlAQM=";
-  })
-
-  (fetchpatch' {
     title = "phog: init at 0.1.3";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/251249";
     hash = "sha256-e38Z7sO7xDQHzE9UOfbptc6vJuONE5eP9JFp2Nzx53E=";
+  })
+
+  (fetchpatch' {
+    title = "nixos/update-users-groups: fix cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/251850";
+    hash = "sha256-uqx9sJ1zkwys9Ur35iXY3gZKVb52wlnBGkhBB5sc6WQ=";
   })
 
   # (fetchpatch' {
@@ -333,17 +333,19 @@ in [
     hash = "sha256-cGhJSby0K+e1hKPdPZjLFRKvwjGaTbq/kb6Fxj2v8g8=";
   })
   (fetchpatch' {
+    # TODO: send for review once thie libgnt patch above is merged
     title = "pidgin: support cross compilation";
     saneCommit = "caacbcc54e217f5ee9281422777a7f712765f71a";
     hash = "sha256-PDCp4GOm6hWcRob4kz7qXZfxAF6YbYrESx9idoS3e/s=";
   })
 
-  (fetchpatch' {
-    title = "nixos/dconf: support cross compilation";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/249093";
-    saneCommit = "08f7cdebc58eeaa62cb349dab57db3be7a0c073d";
-    hash = "sha256-gqHUGeTQnr0f99gqEdd+VANLkWO+joLxz5I0RSarznE=";
-  })
+  # (fetchpatch' {
+  #   # doesn't cleanly apply. TODO: see if this cross compiles now, thanks to <https://github.com/NixOS/nixpkgs/pull/234615>
+  #   title = "nixos/dconf: support cross compilation";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/249093";
+  #   saneCommit = "08f7cdebc58eeaa62cb349dab57db3be7a0c073d";
+  #   hash = "sha256-gqHUGeTQnr0f99gqEdd+VANLkWO+joLxz5I0RSarznE=";
+  # })
 
   (fetchpatch' {
     title = "playerctl: support cross compilation";
