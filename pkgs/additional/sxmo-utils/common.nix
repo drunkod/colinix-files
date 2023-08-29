@@ -34,6 +34,7 @@
 , rsync
 , scdoc
 , sfeed
+, slurp
 , superd
 , sway
 , swayidle
@@ -78,6 +79,7 @@ let
     procps  # pgrep
     pulseaudio  # pactl
     sfeed
+    slurp  # for sxmo_screenshot.sh
     superd
     sway
     swayidle
