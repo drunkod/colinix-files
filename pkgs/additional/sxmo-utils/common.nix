@@ -39,6 +39,7 @@
 , sway
 , swayidle
 , wob
+, wl-clipboard
 , wtype
 , wvkbd
 , xdg-user-dirs
@@ -83,6 +84,7 @@ let
     superd
     sway
     swayidle
+    wl-clipboard  # for wl-copy; sxmo_screenshot.sh
     wob
     wtype  # for sxmo_type
     wvkbd
