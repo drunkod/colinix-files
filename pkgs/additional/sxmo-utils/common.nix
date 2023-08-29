@@ -38,6 +38,7 @@
 , sway
 , swayidle
 , wob
+, wtype
 , wvkbd
 , xdg-user-dirs
 , xdotool
@@ -81,6 +82,7 @@ let
     sway
     swayidle
     wob
+    wtype  # for sxmo_type
     wvkbd
     xdg-user-dirs
     xrdb  # for sxmo_xinit AND sxmo_winit
