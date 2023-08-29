@@ -60,6 +60,14 @@ let
       #   hash = "sha256-4uR2u6pa62y6SaRHYRn15YGDPILAs7py0mPbAjsgwM4=";
       # })
 
+      (fetchpatch {
+        # [1/2] Makefile: obey PREFIX when installing udev rules
+        # [2/2] Makefile: use SYSCONFDIR instead of hardcoding /etc
+        name = "44110-multipatch-makefile-nixos";
+        url = "https://lists.sr.ht/~mil/sxmo-devel/patches/44110/mbox";
+        hash = "sha256-jXtwgOVGSjwWj7a36F6P+e63lKvk4OmFIzxTkf9yZMs=";
+      })
+
       ## TODO: send these upstream
       (fetchpatch {
         name = "sxmo_hook_apps: add a few";
@@ -70,11 +78,6 @@ let
         name = "sxmo_migrate: add option to disable configversion checks";
         url = "https://git.uninsane.org/colin/sxmo-utils/commit/8949c64451973212a8aa50375396ec375c676d1e.patch";
         hash = "sha256-Okjjwa2FBJOrDVZGrfaUEPGQY749+V4w0gALIBp50hQ=";
-      })
-      (fetchpatch {
-        name = "Makefile: use SYSCONFDIR instead of hardcoding /etc";
-        url = "https://git.uninsane.org/colin/sxmo-utils/commit/bbad10e074c335710e5ab171a0b1d96dddf160ed.patch";
-        hash = "sha256-jqxzGLjYXuJV6NB/4zsPdjuzNVyUCxPSlGMDW5XetZ8=";
       })
 
       ## these might or might not be upstream-worthy
