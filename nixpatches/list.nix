@@ -273,6 +273,9 @@ in [
   #   hash = "sha256-fAZpduh3JZeFixJ4yX0wkh/GRp0gYKsTT+XkNdpK7CU=";
   # })
   (fetchpatch' {
+    # TODO: split this apart for easier reviewing:
+    # - perlPackages.TestFile 1.443 -> 1.993
+    # - perlPackages.FileBaseDir 0.08 -> 0.09
     title = "xdg-utils: enable cross compilation";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/246954";
     saneCommit = "b7aa5e0c1ec06723cf1594de192703a65be21497";
