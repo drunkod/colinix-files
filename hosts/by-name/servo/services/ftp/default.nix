@@ -3,8 +3,15 @@
 # - config options: <https://github.com/drakkan/sftpgo/blob/main/docs/full-configuration.md>
 # - config defaults: <https://github.com/drakkan/sftpgo/blob/main/sftpgo.json>
 # - nixos options: <repo:nixos/nixpkgs:nixos/modules/services/web-apps/sftpgo.nix>
+# - nixos example: <repo:nixos/nixpkgs:nixos/tests/sftpgo.nix>
 #
 # sftpgo is a FTP server that also supports WebDAV, SFTP, and web clients.
+#
+# TODO: change umask so sftpgo-created files default to 644.
+# - it does indeed appear that the 600 is not something sftpgo is explicitly doing.
+#
+# TODO: enforce a "quota" by placing /playground on a btrfs subvolume
+# - sane.persist API could expose a `subvolume` option to make this feel natural
 
 
 { lib, pkgs, sane-lib, ... }:
@@ -33,19 +40,41 @@ let
   # home_dir:
   # - it seems (empirically) that a user can't cd above their home directory.
   #   though i don't have a reference for that in the docs.
-  # TODO: don't reuse /var/nfs/export here. formalize this some other way.
   authResponseSuccess = {
     status = 1;
     username = "anonymous";
     expiration_date = 0;
-    home_dir = "/var/nfs/export";
-    uid = 65534;
-    gid = 65534;
+    home_dir = "/var/lib/sftpgo/export";
+    # uid/gid 0 means to inherit sftpgo uid.
+    # - i.e. users can't read files which Linux user `sftpgo` can't read
+    # - uploaded files belong to Linux user `sftpgo`
+    # other uid/gid values aren't possible for localfs backend, unless i let sftpgo use `sudo`.
+    uid = 0;
+    gid = 0;
+    # uid = 65534;
+    # gid = 65534;
     max_sessions = 0;
+    # quota_*: 0 means to not use SFTP's quota system
     quota_size = 0;
-    quota_files = 100000;
+    quota_files = 0;
     permissions = {
       "/" = [ "list" "download" ];
+      "/playground" = [
+        # read-only:
+        "list"
+        "download"
+        # write:
+        "upload"
+        "overwrite"
+        "delete"
+        "rename"
+        "create_dirs"
+        "create_symlinks"
+        # intentionally omitted:
+        # "chmod"
+        # "chown"
+        # "chtimes"
+      ];
     };
     upload_bandwidth = 0;
     download_bandwidth = 0;
@@ -54,6 +83,9 @@ let
       denied_ip = [];
     };
     public_keys = [];
+    # other fields:
+    # ? groups
+    # ? virtual_folders
   };
   authResponseFail = {
     username = "";
@@ -131,7 +163,38 @@ in
       data_provider = {
         driver = "memory";
         external_auth_hook = "${authProgram}";
+        # track_quota:
+        # - 0: disable quota tracking
+        # - 1: quota is updated on every upload/delete, even if user has no quota restriction
+        # - 2: quota is updated on every upload/delete, but only if user/folder has a quota restriction  (default, i think)
+        # track_quota = 2;
       };
     };
+  };
+
+  fileSystems."/var/lib/sftpgo/export/media" = {
+    # everything in here could be considered publicly readable (based on the viewer's legal jurisdiction)
+    device = "/var/lib/uninsane/media";
+    options = [ "rbind" ];
+  };
+  sane.persist.sys.plaintext = [
+    { user = "sftpgo"; group = "sftpgo"; path = "/var/lib/sftpgo/export/playground"; }
+  ];
+  sane.fs."/var/lib/sftpgo/export/playground/README.md" = {
+    wantedBy = [ "sftpgo.service" ];
+    file.text = ''
+      this directory is intentionally read+write by anyone.
+      there are no rules, except a server-level quota:
+      - share files
+      - write poetry
+      - be a friendly troll
+    '';
+  };
+  sane.fs."/var/lib/sftpgo/export/README.md" = {
+    wantedBy = [ "sftpgo.service" ];
+    file.text = ''
+      - media/         read-only:  Videos, Music, Books, etc
+      - playground/    read-write: use it to share files with other users of this server
+    '';
   };
 }
