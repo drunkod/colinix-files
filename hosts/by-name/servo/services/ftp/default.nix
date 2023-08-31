@@ -9,10 +9,65 @@
 
 { lib, pkgs, sane-lib, ... }:
 let
-  authProgram = pkgs.static-nix-shell.mkBash {
+  # user permissions:
+  # - see <repo:drakkan/sftpgo:internal/dataprovider/user.go>
+  # - "*" = grant all permissions
+  # - read-only perms:
+  #   - "list" = list files and directories
+  #   - "download"
+  # - rw perms:
+  #   - "upload"
+  #   - "overwrite" = allow uploads to replace existing files
+  #   - "delete" = delete files and directories
+  #     - "delete_files"
+  #     - "delete_dirs"
+  #   - "rename" = rename files and directories
+  #     - "rename_files"
+  #     - "rename_dirs"
+  #   - "create_dirs"
+  #   - "create_symlinks"
+  #   - "chmod"
+  #   - "chown"
+  #   - "chtimes" = change atime/mtime (access and modification times)
+  #
+  # home_dir:
+  # - it seems (empirically) that a user can't cd above their home directory.
+  #   though i don't have a reference for that in the docs.
+  # TODO: don't reuse /var/nfs/export here. formalize this some other way.
+  authResponseSuccess = {
+    status = 1;
+    username = "anonymous";
+    expiration_date = 0;
+    home_dir = "/var/nfs/export";
+    uid = 65534;
+    gid = 65534;
+    max_sessions = 0;
+    quota_size = 0;
+    quota_files = 100000;
+    permissions = {
+      "/" = [ "list" "download" ];
+    };
+    upload_bandwidth = 0;
+    download_bandwidth = 0;
+    filters = {
+      allowed_ip = [];
+      denied_ip = [];
+    };
+    public_keys = [];
+  };
+  authResponseFail = {
+    username = "";
+  };
+  authSuccessJson = pkgs.writeText "sftp-auth-success.json" (builtins.toJSON authResponseSuccess);
+  authFailJson = pkgs.writeText "sftp-auth-fail.json" (builtins.toJSON authResponseFail);
+  unwrappedAuthProgram = pkgs.static-nix-shell.mkBash {
     pname = "sftpgo_external_auth_hook";
     src = ./.;
+    pkgs = [ "coreutils" ];
   };
+  authProgram = pkgs.writeShellScript "sftpgo-auth-hook" ''
+    ${unwrappedAuthProgram}/bin/sftpgo_external_auth_hook ${authFailJson} ${authSuccessJson}
+  '';
 in
 {
   # Client initiates a FTP "control connection" on port 21.
@@ -66,13 +121,16 @@ in
 
         banner = ''
           Welcome, friends, to Colin's read-only FTP server! Also available via NFS on the same host.
+          Username: "anonymous"
+          Password: "anonymous"
+          CONFIGURE YOUR CLIENT FOR "PASSIVE" mode, e.g. `ftp --passive uninsane.org`
           Please let me know if anything's broken or not as it should be. Otherwise, browse and DL freely :)
         '';
 
       };
       data_provider = {
         driver = "memory";
-        external_auth_hook = "${authProgram}/bin/sftpgo_external_auth_hook";
+        external_auth_hook = "${authProgram}";
       };
     };
   };
