@@ -41,11 +41,20 @@ in
     enable = true;
     settings = {
       ftpd = {
-        bindings = [{
-          address = "10.0.10.5";
-          port = 21;
-          debug = true;
-        }];
+        bindings = [
+          {
+            # binding this means any wireguard client can connect
+            address = "10.0.10.5";
+            port = 21;
+            debug = true;
+          }
+          {
+            # binding this means any LAN client can connect
+            address = "10.78.79.51";
+            port = 21;
+            debug = true;
+          }
+        ];
 
         # active mode is susceptible to "bounce attacks", without much benefit over passive mode
         disable_active_mode = true;
