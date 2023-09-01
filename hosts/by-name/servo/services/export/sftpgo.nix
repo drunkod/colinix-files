@@ -9,9 +9,6 @@
 #
 # TODO: change umask so sftpgo-created files default to 644.
 # - it does indeed appear that the 600 is not something sftpgo is explicitly doing.
-#
-# TODO: enforce a "quota" by placing /playground on a btrfs subvolume
-# - sane.persist API could expose a `subvolume` option to make this feel natural
 
 
 { config, lib, pkgs, sane-lib, ... }:
@@ -126,6 +123,7 @@ in
 
   services.sftpgo = {
     enable = true;
+    group = "export";
     settings = {
       ftpd = {
         bindings = [
@@ -172,22 +170,10 @@ in
     };
   };
 
-  # fileSystems."/var/lib/sftpgo/export/media" = {
-  #   # everything in here could be considered publicly readable (based on the viewer's legal jurisdiction)
-  #   device = "/var/lib/uninsane/media";
-  #   options = [ "rbind" ];
-  # };
-  # sane.persist.sys.plaintext = [
-  #   { user = "sftpgo"; group = "sftpgo"; path = "/var/lib/sftpgo/export/playground"; }
-  # ];
-  # sane.fs."/var/lib/sftpgo/export/playground/README.md" = {
-  #   wantedBy = [ "sftpgo.service" ];
-  #   file.text = ''
-  #     this directory is intentionally read+write by anyone.
-  #     there are no rules, except a server-level quota:
-  #     - share files
-  #     - write poetry
-  #     - be a friendly troll
-  #   '';
-  # };
+  users.users.sftpgo.extraGroups = [ "export" ];
+
+  systemd.services.sftpgo.serviceConfig = {
+    ReadOnlyPaths = [ "/var/export" ];
+    ReadWritePaths = [ "/var/export/playground" ];
+  };
 }
