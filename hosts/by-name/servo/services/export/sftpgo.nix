@@ -44,7 +44,7 @@ let
     status = 1;
     username = "anonymous";
     expiration_date = 0;
-    home_dir = "/var/lib/sftpgo/export";
+    home_dir = "/var/export";
     # uid/gid 0 means to inherit sftpgo uid.
     # - i.e. users can't read files which Linux user `sftpgo` can't read
     # - uploaded files belong to Linux user `sftpgo`
@@ -172,23 +172,14 @@ in
     };
   };
 
-  fileSystems."/var/lib/sftpgo/export/media" = {
-    # everything in here could be considered publicly readable (based on the viewer's legal jurisdiction)
-    device = "/var/lib/uninsane/media";
-    options = [ "rbind" ];
-  };
+  # fileSystems."/var/lib/sftpgo/export/media" = {
+  #   # everything in here could be considered publicly readable (based on the viewer's legal jurisdiction)
+  #   device = "/var/lib/uninsane/media";
+  #   options = [ "rbind" ];
+  # };
   # sane.persist.sys.plaintext = [
   #   { user = "sftpgo"; group = "sftpgo"; path = "/var/lib/sftpgo/export/playground"; }
   # ];
-  fileSystems."/var/lib/sftpgo/export/playground" = {
-    device = config.fileSystems."/mnt/persist/ext".device;
-    fsType = "btrfs";
-    options = [
-      "subvol=export-playground"
-      "compress=zstd"
-      "defaults"
-    ];
-  };
   # sane.fs."/var/lib/sftpgo/export/playground/README.md" = {
   #   wantedBy = [ "sftpgo.service" ];
   #   file.text = ''
@@ -199,11 +190,4 @@ in
   #     - be a friendly troll
   #   '';
   # };
-  sane.fs."/var/lib/sftpgo/export/README.md" = {
-    wantedBy = [ "sftpgo.service" ];
-    file.text = ''
-      - media/         read-only:  Videos, Music, Books, etc
-      - playground/    read-write: use it to share files with other users of this server
-    '';
-  };
 }

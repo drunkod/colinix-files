@@ -56,12 +56,6 @@
   #
   # 10.0.0.0/8 to export (readonly) both to LAN (unencrypted) and wg vpn (encrypted)
   services.nfs.server.exports = ''
-    /var/nfs/export 10.78.79.0/22(ro,crossmnt,fsid=0,subtree_check) 10.0.10.0/24(rw,no_root_squash,crossmnt,fsid=0,subtree_check)
+    /var/export 10.78.79.0/22(ro,crossmnt,fsid=0,subtree_check) 10.0.10.0/24(rw,no_root_squash,crossmnt,fsid=0,subtree_check)
   '';
-
-  fileSystems."/var/nfs/export/media" = {
-    # everything in here could be considered publicly readable (based on the viewer's legal jurisdiction)
-    device = "/var/lib/uninsane/media";
-    options = [ "rbind" ];
-  };
 }
