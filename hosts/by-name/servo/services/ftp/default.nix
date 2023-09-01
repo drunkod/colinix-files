@@ -14,7 +14,7 @@
 # - sane.persist API could expose a `subvolume` option to make this feel natural
 
 
-{ lib, pkgs, sane-lib, ... }:
+{ config, lib, pkgs, sane-lib, ... }:
 let
   # user permissions:
   # - see <repo:drakkan/sftpgo:internal/dataprovider/user.go>
@@ -177,19 +177,28 @@ in
     device = "/var/lib/uninsane/media";
     options = [ "rbind" ];
   };
-  sane.persist.sys.plaintext = [
-    { user = "sftpgo"; group = "sftpgo"; path = "/var/lib/sftpgo/export/playground"; }
-  ];
-  sane.fs."/var/lib/sftpgo/export/playground/README.md" = {
-    wantedBy = [ "sftpgo.service" ];
-    file.text = ''
-      this directory is intentionally read+write by anyone.
-      there are no rules, except a server-level quota:
-      - share files
-      - write poetry
-      - be a friendly troll
-    '';
+  # sane.persist.sys.plaintext = [
+  #   { user = "sftpgo"; group = "sftpgo"; path = "/var/lib/sftpgo/export/playground"; }
+  # ];
+  fileSystems."/var/lib/sftpgo/export/playground" = {
+    device = config.fileSystems."/mnt/persist/ext".device;
+    fsType = "btrfs";
+    options = [
+      "subvol=export-playground"
+      "compress=zstd"
+      "defaults"
+    ];
   };
+  # sane.fs."/var/lib/sftpgo/export/playground/README.md" = {
+  #   wantedBy = [ "sftpgo.service" ];
+  #   file.text = ''
+  #     this directory is intentionally read+write by anyone.
+  #     there are no rules, except a server-level quota:
+  #     - share files
+  #     - write poetry
+  #     - be a friendly troll
+  #   '';
+  # };
   sane.fs."/var/lib/sftpgo/export/README.md" = {
     wantedBy = [ "sftpgo.service" ];
     file.text = ''
