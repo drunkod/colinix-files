@@ -18,11 +18,11 @@
 
 # federation/support matrix:
 # - avatars
-#   - nixnet.services: works in MUCs but not DMs (as of 2023 H1)
-#   - movim.eu: works in DMs, MUCs untested  (as of 2023/08/29)
+#   - nixnet.services + dino: works in MUCs but not DMs (as of 2023 H1)
+#   - movim.eu + dino: works in DMs, MUCs untested  (as of 2023/08/29)
 # - calls
-#   - local: audio, video, works in DMs  (as of 2023/08/29)
-#   - movim.eu: audio, video, works in DMs, no matter which side initiated  (as of 2023/08/30)
+#   - local + dino: audio, video, works in DMs  (as of 2023/08/29)
+#   - movim.eu + dino: audio, video, works in DMs, no matter which side initiated  (as of 2023/08/30)
 let
   # TODO: this range could be larger, but right now that's costly because each element is its own UPnP forward
   # TURN port range (inclusive)
