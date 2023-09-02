@@ -58,8 +58,8 @@ in
       sane.gui.greetd.sway.enable = true;  # have greetd launch a sway compositor in which we host a greeter
       sane.gui.greetd.sway.gtkgreet = lib.mkIf cfg.useGreeter {
         enable = true;
-        sessionName = "sway-on-gtkgreet";
-        sessionCmd = "${pkgs.sway}/bin/sway --debug";
+        session.name = "sway-on-gtkgreet";
+        session.command = "${pkgs.sway}/bin/sway --debug";
       };
 
       # unlike other DEs, sway configures no audio stack

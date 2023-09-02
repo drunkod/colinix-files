@@ -338,8 +338,8 @@ in
           enable = true;
           sway.enable = true;
           sway.gtkgreet.enable = true;
-          sway.gtkgreet.sessionName = "sxmo-on-gtkgreet";
-          sway.gtkgreet.sessionCmd = "${cfg.package}/bin/sxmo_winit.sh";
+          sway.gtkgreet.session.name = "sxmo-on-gtkgreet";
+          sway.gtkgreet.session.command = "${cfg.package}/bin/sxmo_winit.sh";
         };
       })
 

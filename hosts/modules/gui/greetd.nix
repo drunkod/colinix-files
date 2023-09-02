@@ -18,6 +18,9 @@ in
     };
     sane.gui.greetd.session.command = mkOption {
       type = types.string;
+      description = ''
+        name to use for the default session in syslog.
+      '';
     };
     sane.gui.greetd.session.name = mkOption {
       default = "greetd-session";
@@ -51,21 +54,20 @@ in
         have sway launch gtkgreet instead of directly presenting a desktop.
       '';
     };
-    # TODO: follow same structure as the options above...
-    sane.gui.greetd.sway.gtkgreet.sessionCmd = mkOption {
+    sane.gui.greetd.sway.gtkgreet.session.command = mkOption {
       type = types.string;
       description = ''
         command for gtkgreet to execute on successful authentication.
       '';
     };
-    sane.gui.greetd.sway.gtkgreet.sessionName = mkOption {
+    sane.gui.greetd.sway.gtkgreet.session.name = mkOption {
       type = types.string;
       description = ''
         name to use for the default session in syslog and in the gtkgreet menu.
         note that this `sessionName` will become a binary on the user's PATH.
       '';
     };
-    sane.gui.greetd.sway.gtkgreet.sessionUser = mkOption {
+    sane.gui.greetd.sway.gtkgreet.session.user = mkOption {
       type = types.string;
       default = "colin";
       description = ''
@@ -91,14 +93,14 @@ in
     })
     (lib.mkIf cfg.sway.gtkgreet.enable (
       let
-        inherit (cfg.sway.gtkgreet) sessionName sessionCmd sessionUser;
-        sessionProvider = runWithLogger sessionName sessionCmd;
+        inherit (cfg.sway.gtkgreet) session;
+        sessionProvider = runWithLogger session.name session.command;
       in {
         # gtkgreet shows the --command argument in the UI
         # - so we want it to look nice (not a /nix/store/... path)
         # - to do that we put it in the user's PATH.
-        sane.gui.greetd.sway.greeterCmd = "${pkgs.greetd.gtkgreet}/bin/gtkgreet --layer-shell --command ${sessionName}";
-        users.users.${sessionUser}.packages = [ sessionProvider ];
+        sane.gui.greetd.sway.greeterCmd = "${pkgs.greetd.gtkgreet}/bin/gtkgreet --layer-shell --command ${session.name}";
+        users.users.${session.user}.packages = [ sessionProvider ];
       }
     ))
 
