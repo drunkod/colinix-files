@@ -51,6 +51,7 @@ in
         have sway launch gtkgreet instead of directly presenting a desktop.
       '';
     };
+    # TODO: follow same structure as the options above...
     sane.gui.greetd.sway.gtkgreet.sessionCmd = mkOption {
       type = types.string;
       description = ''
@@ -78,21 +79,14 @@ in
       sane.gui.greetd.session = if cfg.sway.greeterCmd != null then {
         name = "sway-as-greeter";
         command = let
-          swayAsGreeter = runWithLogger
-            "sway-as-greeter"
-            "${pkgs.sway}/bin/sway --debug --config ${swayAsGreeterConfig}";
           swayAsGreeterConfig = pkgs.writeText "sway-as-greeter-config" ''
             exec ${cfg.sway.greeterCmd}
           '';
-        in "${swayAsGreeter}/bin/sway-as-greeter";
+        in "${pkgs.sway}/bin/sway --debug --config ${swayAsGreeterConfig}";
       } else {
         name = "sway";
         user = lib.mkDefault "colin";
-        command = let
-          swayWithLogging = runWithLogger
-            "sway"
-            "${pkgs.sway}/bin/sway --debug";
-        in "${swayWithLogging}/bin/sway";
+        command = "${pkgs.sway}/bin/sway --debug";
       };
     })
     (lib.mkIf cfg.sway.gtkgreet.enable (
