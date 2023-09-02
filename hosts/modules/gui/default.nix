@@ -73,7 +73,7 @@
       "electrum"
       "element-desktop"
       # "font-manager"  #< depends on webkitgtk4_0 (expensive to build)
-      # "gajim"  # XMPP client
+      "gajim"  # XMPP client. cross build tries to import host gobject-introspection types (2023/09/01)
       "gimp"  # broken on phosh
       "gnome.dconf-editor"
       # "gnome.file-roller"
