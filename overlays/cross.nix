@@ -514,14 +514,14 @@ in {
   });
 
   # 2023/07/31: upstreaming is blocked on ostree dep
-  # flatpak = prev.flatpak.overrideAttrs (upstream: {
-  #   # fixes "No package 'libxml-2.0' found"
-  #   buildInputs = upstream.buildInputs ++ [ final.libxml2 ];
-  #   configureFlags = upstream.configureFlags ++ [
-  #     "--enable-selinux-module=no"  # fixes "checking for /usr/share/selinux/devel/Makefile... configure: error: cannot check for file existence when cross compiling"
-  #     "--disable-gtk-doc"  # fixes "You must have gtk-doc >= 1.20 installed to build documentation for Flatpak"
-  #   ];
-  # });
+  flatpak = prev.flatpak.overrideAttrs (upstream: {
+    # fixes "No package 'libxml-2.0' found"
+    buildInputs = upstream.buildInputs ++ [ final.libxml2 ];
+    configureFlags = upstream.configureFlags ++ [
+      "--enable-selinux-module=no"  # fixes "checking for /usr/share/selinux/devel/Makefile... configure: error: cannot check for file existence when cross compiling"
+      "--disable-gtk-doc"  # fixes "You must have gtk-doc >= 1.20 installed to build documentation for Flatpak"
+    ];
+  });
 
   # future: use `buildRustPackage`?
   # - find another rust package that uses a `-sys` crate (with a build script)?
@@ -1313,6 +1313,7 @@ in {
   # fixes "/nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 2: --prefix=ods_manager: command not found"
   # - dbus-glib should maybe be removed from buildInputs, too? but doing so breaks upstream configure
   obex_data_server = addNativeInputs [ final.dbus-glib ] prev.obex_data_server;
+
   # openfortivpn = prev.openfortivpn.override {
   #   # fixes "checking for /proc/net/route... configure: error: cannot check for file existence when cross compiling"
   #   inherit (emulated) stdenv;
@@ -1321,6 +1322,8 @@ in {
   #   # fixes "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
   #   inherit (emulated) stdenv;
   # };
+
+  # 2023/09/02: upstreaming is implemented on servo `wip-ostree` branch
   ostree = prev.ostree.overrideAttrs (upstream: {
     # fixes: "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
     # new failure mode: "./src/libotutil/ot-gpg-utils.h:22:10: fatal error: gpgme.h: No such file or directory"
