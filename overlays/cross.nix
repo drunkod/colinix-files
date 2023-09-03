@@ -1321,12 +1321,18 @@ in {
   #   # fixes "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
   #   inherit (emulated) stdenv;
   # };
-  # ostree = prev.ostree.overrideAttrs (upstream: {
-  #   # fixes: "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
-  #   # new failure mode: "./src/libotutil/ot-gpg-utils.h:22:10: fatal error: gpgme.h: No such file or directory"
-  #   # buildInputs = lib.remove final.gpgme upstream.buildInputs;
-  #   nativeBuildInputs = upstream.nativeBuildInputs ++ [ final.gpgme ];
-  # });
+  ostree = prev.ostree.overrideAttrs (upstream: {
+    # fixes: "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
+    # new failure mode: "./src/libotutil/ot-gpg-utils.h:22:10: fatal error: gpgme.h: No such file or directory"
+    # buildInputs = lib.remove final.gpgme upstream.buildInputs;
+    # nativeBuildInputs = upstream.nativeBuildInputs ++ [ final.gpgme ];
+    # buildInputs = lib.remove final.gjs upstream.buildInputs;
+    # configureFlags = lib.remove "--enable-installed-tests" upstream.configureFlags;
+    postPatch = (upstream.postPatch or "") + ''
+      substituteInPlace Makefile-libostree.am \
+        --replace "CC=gcc" "CC=${final.stdenv.cc.targetPrefix}cc"
+    '';
+  });
 
   # fixes (meson) "Program 'glib-mkenums mkenums' not found or not executable"
   # 2023/07/27: upstreaming is blocked on p11-kit, argyllcms, libavif cross compilation
