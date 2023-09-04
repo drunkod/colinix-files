@@ -12,7 +12,6 @@
 
   # sane.guest.enable = true;
   sane.gui.sxmo.enable = true;
-  sane.gui.sxmo.greeter = "greetd-sway-gtkgreet";
   boot.loader.efi.canTouchEfiVariables = false;
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
