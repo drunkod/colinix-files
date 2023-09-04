@@ -22,9 +22,29 @@ let
   emoji-cmd = "${pkgs.splatmoji}/bin/splatmoji -s medium-light type";
 
   # mod = "Mod1";  # Alt
-  mod = "Mod4";  # Super
+  mod = "Mod4";  # Super (Logo key)
+  xwayland = "disable";
 in ''
-  # xwayland disable
+  # xwayland enable|disable|force
+  # - enable: lazily launch xwayland on first client connection
+  # - disable: never launch xwayland
+  # - force: launch xwayland immediately on boot
+  # XWayland exposes a X11 server that translates the protocol to a wayland backend, allowing legacy x11-only GUI apps.
+  # XWayland uses about 35MB RSS even when idle
+  xwayland ${xwayland}
+
+  set $mod ${mod}
+  set $term ${terminal-cmd}
+  set $menu ${launcher-cmd}
+  set $emoji_picker ${emoji-cmd}
+  set $locker ${lock-cmd}
+  set $snippets_picker ${snip-cmd}
+  set $screenshot ${screenshot-cmd}
+  set $brightness_up ${brightness-up-cmd}
+  set $brightness_down ${brightness-down-cmd}
+  set $volume_up ${vol-up-cmd}
+  set $volume_down ${vol-down-cmd}
+  set $mute ${mute-cmd}
 
   ### default font
   font pango:monospace 8
@@ -50,66 +70,66 @@ in ''
   client.background #ffffff
 
   ### key bindings
-  floating_modifier ${mod}
+  floating_modifier $mod
   ## media keys
-  bindsym XF86AudioRaiseVolume exec ${vol-up-cmd}
-  bindsym XF86AudioLowerVolume exec ${vol-down-cmd}
-  bindsym ${mod}+Page_Up exec ${vol-up-cmd}
-  bindsym ${mod}+Page_Down exec ${vol-down-cmd}
-  bindsym XF86AudioMute exec ${mute-cmd}
-  bindsym XF86MonBrightnessUp exec ${brightness-up-cmd}
-  bindsym XF86MonBrightnessDown exec ${brightness-down-cmd}
+  bindsym XF86AudioRaiseVolume exec $volume_up
+  bindsym XF86AudioLowerVolume exec $volume_down
+  bindsym $mod+Page_Up exec $volume_up
+  bindsym $mod+Page_Down exec $volume_down
+  bindsym XF86AudioMute exec $mute
+  bindsym XF86MonBrightnessUp exec $brightness_up
+  bindsym XF86MonBrightnessDown exec $brightness_down
   ## special functions
-  bindsym ${mod}+Print exec ${screenshot-cmd}
-  bindsym ${mod}+l exec ${lock-cmd}
-  bindsym ${mod}+s exec ${snip-cmd}
-  bindsym ${mod}+slash exec ${emoji-cmd}
-  bindsym ${mod}+d exec ${launcher-cmd}
-  bindsym ${mod}+Return exec ${terminal-cmd}
-  bindsym ${mod}+Shift+q kill
-  bindsym ${mod}+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
-  bindsym ${mod}+Shift+c reload
+  bindsym $mod+Print exec $screenshot
+  bindsym $mod+l exec $locker
+  bindsym $mod+s exec $snippets_picker
+  bindsym $mod+slash exec $emoji_picker
+  bindsym $mod+d exec $menu
+  bindsym $mod+Return exec $term
+  bindsym $mod+Shift+q kill
+  bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+  bindsym $mod+Shift+c reload
   ## layout
-  bindsym ${mod}+b splith
-  bindsym ${mod}+v splitv
-  bindsym ${mod}+f fullscreen toggle
-  bindsym ${mod}+a focus parent
-  bindsym ${mod}+w layout tabbed
-  bindsym ${mod}+e layout toggle split
-  bindsym ${mod}+Shift+space floating toggle
-  bindsym ${mod}+space focus mode_toggle
-  bindsym ${mod}+r mode resize
+  bindsym $mod+b splith
+  bindsym $mod+v splitv
+  bindsym $mod+f fullscreen toggle
+  bindsym $mod+a focus parent
+  bindsym $mod+w layout tabbed
+  bindsym $mod+e layout toggle split
+  bindsym $mod+Shift+space floating toggle
+  bindsym $mod+space focus mode_toggle
+  bindsym $mod+r mode resize
   ## movement
-  bindsym ${mod}+Up focus up
-  bindsym ${mod}+Down focus down
-  bindsym ${mod}+Left focus left
-  bindsym ${mod}+Right focus right
-  bindsym ${mod}+Shift+Up move up
-  bindsym ${mod}+Shift+Down move down
-  bindsym ${mod}+Shift+Left move left
-  bindsym ${mod}+Shift+Right move right
+  bindsym $mod+Up focus up
+  bindsym $mod+Down focus down
+  bindsym $mod+Left focus left
+  bindsym $mod+Right focus right
+  bindsym $mod+Shift+Up move up
+  bindsym $mod+Shift+Down move down
+  bindsym $mod+Shift+Left move left
+  bindsym $mod+Shift+Right move right
   ## workspaces
-  bindsym ${mod}+1 workspace number 1
-  bindsym ${mod}+2 workspace number 2
-  bindsym ${mod}+3 workspace number 3
-  bindsym ${mod}+4 workspace number 4
-  bindsym ${mod}+5 workspace number 5
-  bindsym ${mod}+6 workspace number 6
-  bindsym ${mod}+7 workspace number 7
-  bindsym ${mod}+8 workspace number 8
-  bindsym ${mod}+9 workspace number 9
-  bindsym ${mod}+Shift+1 move container to workspace number 1
-  bindsym ${mod}+Shift+2 move container to workspace number 2
-  bindsym ${mod}+Shift+3 move container to workspace number 3
-  bindsym ${mod}+Shift+4 move container to workspace number 4
-  bindsym ${mod}+Shift+5 move container to workspace number 5
-  bindsym ${mod}+Shift+6 move container to workspace number 6
-  bindsym ${mod}+Shift+7 move container to workspace number 7
-  bindsym ${mod}+Shift+8 move container to workspace number 8
-  bindsym ${mod}+Shift+9 move container to workspace number 9
+  bindsym $mod+1 workspace number 1
+  bindsym $mod+2 workspace number 2
+  bindsym $mod+3 workspace number 3
+  bindsym $mod+4 workspace number 4
+  bindsym $mod+5 workspace number 5
+  bindsym $mod+6 workspace number 6
+  bindsym $mod+7 workspace number 7
+  bindsym $mod+8 workspace number 8
+  bindsym $mod+9 workspace number 9
+  bindsym $mod+Shift+1 move container to workspace number 1
+  bindsym $mod+Shift+2 move container to workspace number 2
+  bindsym $mod+Shift+3 move container to workspace number 3
+  bindsym $mod+Shift+4 move container to workspace number 4
+  bindsym $mod+Shift+5 move container to workspace number 5
+  bindsym $mod+Shift+6 move container to workspace number 6
+  bindsym $mod+Shift+7 move container to workspace number 7
+  bindsym $mod+Shift+8 move container to workspace number 8
+  bindsym $mod+Shift+9 move container to workspace number 9
   ## "scratchpad" = ??
-  bindsym ${mod}+Shift+minus move scratchpad
-  bindsym ${mod}+minus scratchpad show
+  bindsym $mod+Shift+minus move scratchpad
+  bindsym $mod+minus scratchpad show
 
   ### defaults
   mode "resize" {
