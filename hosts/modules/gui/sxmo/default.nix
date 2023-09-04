@@ -288,6 +288,7 @@ in
             # this amounts to:
             # - setting env vars (e.g. getting the hooks onto PATH)
             # - placing default configs in ~ for sxmo-launched services (sxmo_migrate.sh)
+            # - binding vol/power buttons (sxmo_swayinitconf.sh)
             # - launching sxmo_hook_start.sh
             source ${cfg.package}/etc/profile.d/sxmo_init.sh
             # XXX: upstream sources `profile` later (after sxmo_migrate)
