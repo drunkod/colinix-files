@@ -77,23 +77,22 @@ in
     sane.gui.sxmo.greeter = mkOption {
       type = types.enum [
         "greetd-phog"
+        "greetd-sway-gtkgreet"
         "greetd-sway-phog"
         "greetd-sxmo"
         "lightdm-mobile"
-        "sway-gtkgreet"
       ];
       # default = "lightdm-mobile";
       default = "greetd-sway-phog";
       description = ''
         which greeter to use.
-        "greetd-phog"      => phosh-based greeter. keypad (0-9) with option to open an on-screen keyboard.
-        "greetd-sway-phog" => phog, but uses sway as the compositor instead of phoc.
+        "greetd-phog"          => phosh-based greeter. keypad (0-9) with option to open an on-screen keyboard.
+        "greetd-sway-phog"     => phog, but uses sway as the compositor instead of phoc.
                               requires a patched phog, since sway doesn't provide the Wayland global "zphoc_layer_shell_effects_v1".
-        "greetd-sxmo"      => launch sxmo directly from greetd, no auth.
-                              this means no keychain unlocked or encrypted home mounted.
-        "lightdm-mobile"   => keypad style greeter. can only enter digits 0-9 as password.
-        "sway-gtkgreet"    => layered sway greeter. behaves as if you booted to swaylock.
-                              this isn't practically usable on mobile because of keyboard input.
+        "greetd-sxmo"          => launch sxmo directly from greetd, no auth.
+                                  this means no keychain unlocked or encrypted home mounted.
+        "lightdm-mobile"       => keypad style greeter. can only enter digits 0-9 as password.
+        "greetd-sway-gtkgreet" => layered sway greeter. keyboard-only user/pass input; impractical on mobile.
       '';
     };
     sane.gui.sxmo.package = mkOption {
@@ -373,7 +372,7 @@ in
         };
       })
 
-      (lib.mkIf (cfg.greeter == "sway-gtkgreet") {
+      (lib.mkIf (cfg.greeter == "greetd-sway-gtkgreet") {
         sane.gui.greetd = {
           enable = true;
           sway.enable = true;
