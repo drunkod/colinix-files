@@ -27,6 +27,9 @@
       # - SXMO_SWAY_SCALE
       # see <repo:mil/sxmo-utils:scripts/deviceprofiles>
       # SXMO_DEVICE_NAME = "pine64,pinephone-1.2";
+      # if sxmo doesn't know the device, it can't decide whether to use one_button or three_button mode
+      #   and so it just wouldn't handle any button inputs (sxmo_hook_inputhandler.sh not on path)
+      SXMO_DEVICE_NAME = "three_button_touchscreen";
     };
     package = pkgs.sxmo-utils-latest.overrideAttrs (base: {
       postPatch = (base.postPatch or "") + ''
