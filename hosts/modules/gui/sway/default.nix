@@ -26,6 +26,63 @@ in
         populate ~/.config/sway/config & co with defaults provided by this module.
       '';
     };
+    sane.gui.sway.config = {
+      extra_lines = mkOption {
+        type = types.lines;
+        default = "";
+        description = ''
+          extra lines to append to the sway config
+        '';
+      };
+      font = mkOption {
+        type = types.string;
+        default = "pango:monospace 11";
+        description = ''
+          default font (for e.g. window titles)
+        '';
+      };
+      mod = mkOption {
+        type = types.string;
+        default = "Mod4";
+        description = ''
+          Super key (for non-application shortcuts).
+          - "Mod1" for Alt
+          - "Mod4" for logo key
+        '';
+      };
+      workspace_layout = mkOption {
+        type = types.string;
+        default = "default";
+        description = ''
+          how to arrange windows within new workspaces, by default:
+          - "default" (split)
+          - "tabbed"
+          - etc
+        '';
+      };
+
+      # TODO: split these into their own option scope
+      brightness_down_cmd = mkOption {
+        type = types.string;
+        default = "${pkgs.brightnessctl}/bin/brightnessctl set -2%";
+        description = "command to run when use wants to decrease screen brightness";
+      };
+      brightness_up_cmd = mkOption {
+        type = types.string;
+        default = "${pkgs.brightnessctl}/bin/brightnessctl set +2%";
+        description = "command to run when use wants to increase screen brightness";
+      };
+      screenshot_cmd = mkOption {
+        type = types.string;
+        default = "${pkgs.sway-contrib.grimshot}/bin/grimshot copy area";
+        description = "command to run when user wants to take a screenshot";
+      };
+      status_cmd = mkOption {
+        type = types.string;
+        default = "${pkgs.i3status}/bin/i3status";
+        description = "command to run that populates the status section of the topbar";
+      };
+    };
     sane.gui.sway.waybar.top = mkOption {
       type = types.submodule {
         # `attrsOf types.anything` (v.s. plain `attrs`) causes merging of the toplevel items.
@@ -165,7 +222,10 @@ in
           builtins.readFile ./waybar-style.css;
 
         ".config/sway/config" = lib.mkIf cfg.installConfigs {
-          symlink.target = import ./sway-config.nix { inherit pkgs; };
+          symlink.target = import ./sway-config.nix {
+            inherit pkgs;
+            inherit (cfg) config;
+          };
         };
       };
     })
