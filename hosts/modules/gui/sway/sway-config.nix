@@ -14,11 +14,12 @@ let
   screenshot_cmd = "${pkgs.sway-contrib.grimshot}/bin/grimshot copy area";
   # "bookmarking"/snippets inspired by Luke Smith:
   # - <https://www.youtube.com/watch?v=d_11QaTlf1I>
-  # TODO: snip_cmd is complex enough it should be its own package and not embedded -- pipes and all -- into the sway config
-  snip_file = ../snippets.txt;
-  list_snips = "cat ${snip_file} ~/.config/sane-sway/snippets.txt";
-  strip_comments = "${sed} 's/ #.*$//'";
-  snip_cmd = "${wtype} $(${list_snips} | ${fuzzel} -d -i -w 60 | ${strip_comments})";
+  snip_cmd = pkgs.writeShellScript "type_snippet.sh" ''
+    snippet=$(cat ${../snippets.txt} ~/.config/sane-sway/snippets.txt | \
+      ${fuzzel} -d -i -w 60 | \
+      ${sed} 's/ #.*$//')
+    ${wtype} "$snippet"
+  '';
   # TODO: splatmoji release > 1.2.0 should allow `-s none` to disable skin tones
   emoji_cmd = "${pkgs.splatmoji}/bin/splatmoji -s medium-light type";
 
