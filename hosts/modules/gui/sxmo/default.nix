@@ -232,6 +232,15 @@ in
                   source "$XDG_CONFIG_HOME/sxmo/profile"
                   _sxmo_load_environments
                   _sxmo_prepare_dirs
+                  # migrate tells sxmo to provide the following default files:
+                  # - ~/.config/sxmo/profile
+                  # - ~/.config/fontconfig/conf.d/50-sxmo.conf
+                  # - ~/.config/sxmo/sway
+                  # - ~/.config/foot/foot.ini
+                  # - ~/.config/mako/config
+                  # - ~/.config/sxmo/bonsai_tree.json
+                  # - ~/.config/wob/wob.ini
+                  # - ~/.config/sxmo/conky.conf
                   sxmo_migrate.sh sync
 
                   # kill anything leftover from the previous sxmo run. this way we can (try to) be reentrant
