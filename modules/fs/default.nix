@@ -159,7 +159,8 @@ let
     options = {
       inherit (propagatedGenerateMod.options) acl;
       target = mkOption {
-        type = types.coercedTo types.package toString types.str;
+        type = types.coercedTo types.path toString
+          (types.coercedTo types.package toString types.str);
         description = "fs path to link to";
       };
       text = mkOption {
