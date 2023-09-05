@@ -50,17 +50,16 @@ workspace_layout $default_workspace_layout
 ### key bindings
 floating_modifier $mod
 #### media keys
-bindsym XF86AudioRaiseVolume exec $volume_up
-bindsym XF86AudioLowerVolume exec $volume_down
 bindsym $mod+Page_Up exec $volume_up
 bindsym $mod+Page_Down exec $volume_down
-bindsym XF86AudioMute exec $mute
-bindsym XF86AudioPlay exec @playerctl@ play-pause
-bindsym XF86AudioStop exec @playerctl@ stop
-bindsym XF86AudioNext exec @playerctl@ next
-bindsym XF86AudioPrev exec @playerctl@ previous
-bindsym XF86MonBrightnessUp exec $brightness_up
-bindsym XF86MonBrightnessDown exec $brightness_down
+# --locked means to keep the binding active even when display is locked/off
+bindsym --locked XF86AudioMute exec $mute
+bindsym --locked XF86AudioPlay exec @playerctl@ play-pause
+bindsym --locked XF86AudioStop exec @playerctl@ stop
+bindsym --locked XF86AudioNext exec @playerctl@ next
+bindsym --locked XF86AudioPrev exec @playerctl@ previous
+bindsym --locked XF86MonBrightnessUp exec $brightness_up
+bindsym --locked XF86MonBrightnessDown exec $brightness_down
 
 #### special functions
 bindsym $mod+Print exec $screenshot

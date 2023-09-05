@@ -29,9 +29,14 @@ in
     sane.gui.sway.config = {
       extra_lines = mkOption {
         type = types.lines;
-        default = "";
         description = ''
           extra lines to append to the sway config
+        '';
+        default = ''
+          # XXX: sway needs exclusive control of XF86Audio{Raise,Lower}Volume, so assign this from a block that it can override.
+          # TODO: factor the bindings out into proper options and be less hacky?
+          bindsym --locked XF86AudioRaiseVolume exec $volume_up
+          bindsym --locked XF86AudioLowerVolume exec $volume_down
         '';
       };
       font = mkOption {
