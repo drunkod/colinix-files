@@ -2,6 +2,8 @@
 # format specifiers: https://fmt.dev/latest/syntax.html#syntax
 # this is merged with the sway/waybar-top.nix defaults
 {
+  height = 26;
+
   modules-left = [ "sway/workspaces" ];
   modules-center = [ ];
   modules-right = [ "custom/sxmo" ];
