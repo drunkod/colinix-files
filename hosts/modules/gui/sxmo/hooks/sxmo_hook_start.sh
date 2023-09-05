@@ -18,12 +18,13 @@ sxmo_hook_statusbar.sh all
 sxmo_daemons.sh start statusbar_periodics sxmo_run_aligned.sh 60 \
 	sxmo_hook_statusbar.sh periodics
 
-superctl start mako
+# don't: mako can be started lazily (via dbus activation, i think)
+#   superctl start mako
 superctl start sxmo_wob
 superctl start sxmo_menumode_toggler
 superctl start bonsaid
 # don't: sway background is managed externally
-# swaymsg output '*' bg "$SXMO_BG_IMG" fill
+#   swaymsg output '*' bg "$SXMO_BG_IMG" fill
 
 # To setup initial lock state
 sxmo_hook_unlock.sh
@@ -48,7 +49,7 @@ if [ "$(command -v ModemManager)" ]; then
 fi
 
 # don't: conky is managed externally
-# superctl start sxmo_conky
+#   superctl start sxmo_conky
 
 # Monitor the battery
 superctl start sxmo_battery_monitor
@@ -64,6 +65,7 @@ superctl start sxmo_soundmonitor
 
 # rotate UI based on physical display angle by default
 if [ -n "$SXMO_AUTOROTATE" ]; then
+	# TODO: this could use ~/.cache/sxmo/sxmo.autorotate like for lisgd above
 	sxmo_daemons.sh start autorotate sxmo_autorotate.sh
 fi
 
