@@ -5,7 +5,7 @@
   { # TOP BAR
     layer = "top";
     height = 40;
-    modules-left = ["sway/workspaces" "sway/mode"];
+    modules-left = ["sway/workspaces"];
     modules-center = ["sway/window"];
     modules-right = ["custom/media" "clock" "battery" "memory" "cpu" "network"];
     "sway/window" = {
