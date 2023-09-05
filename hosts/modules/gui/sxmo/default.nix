@@ -242,6 +242,9 @@ in
                   pkill superd
 
                   # configure vol/power-button input mapping (upstream SXMO has this in sway config)
+                  echo "sxmo_init: configuring sway bindings with:"
+                  echo "SXMO_POWER_BUTTON: $SXMO_POWER_BUTTON"
+                  echo "SXMO_VOLUME_BUTTON: $SXMO_VOLUME_BUTTON"
                   sxmo_swayinitconf.sh
 
                   echo "sxmo_init: invoking sxmo_hook_start.sh with:"
