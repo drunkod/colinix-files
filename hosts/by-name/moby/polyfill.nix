@@ -116,6 +116,8 @@
       ];
       DEFAULT_COUNTRY = "US";
 
+      SXMO_AUTOROTATE = "1";  # enable auto-rotation at launch. has no meaning in stock/upstream sxmo-utils
+
       # BEMENU lines (wayland DMENU):
       # - camera is 9th entry
       # - flashlight is 10th entry
@@ -159,13 +161,5 @@
       WVKBD_LANDSCAPE_LAYERS = "landscape,special,emoji";
       WVKBD_LAYERS = "full,special,emoji";
     };
-    package = pkgs.sxmo-utils-latest.overrideAttrs (base: {
-      postPatch = (base.postPatch or "") + ''
-        cat <<EOF >> ./configs/default_hooks/sxmo_hook_start.sh
-        # rotate UI based on physical display angle by default
-        sxmo_daemons.sh start autorotate sxmo_autorotate.sh
-        EOF
-      '';
-    });
   };
 }
