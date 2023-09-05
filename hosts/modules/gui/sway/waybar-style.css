@@ -49,19 +49,19 @@ window#waybar {
   background-color: #e64291;
 }
 
-#clock,
-#battery,
-#cpu,
-#memory,
-#disk,
-#temperature,
 #backlight,
+#battery,
+#clock,
+#cpu,
+#custom-media,
+#disk,
+#idle_inhibitor,
+#memory,
+#mode,
 #network,
 #pulseaudio,
-#custom-media,
+#temperature,
 #tray,
-#mode,
-#idle_inhibitor,
 #mpd {
   /* without padding the text/icons are unreadable */
   padding: 0 10px;
