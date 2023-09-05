@@ -9,13 +9,6 @@
 # - <https://itsfoss.com/content/images/2023/04/nixos-tutorials.png>
 
 { lib, pkgs, sane-lib, ... }:
-let
-  # TODO: generate this from the .svg
-  # bg = ./nixos-bg-02.png;
-  bg = pkgs.runCommand "nixos-bg.png" { nativeBuildInputs = [ pkgs.inkscape ]; } ''
-    inkscape ${./nixos-bg-02.svg} -o $out
-  '';
-in
 {
   sane.programs.firefox.config = {
     # compromise impermanence for the sake of usability
@@ -134,7 +127,6 @@ in
       # - close is 16th entry
       SXMO_BEMENU_LANDSCAPE_LINES = "11";  # default 8
       SXMO_BEMENU_PORTRAIT_LINES = "16";  # default 16
-      SXMO_BG_IMG = "${bg}";
       SXMO_LOCK_IDLE_TIME = "15";  # how long between screenoff -> lock -> back to screenoff (default: 8)
       # gravity: how far to tilt the device before the screen rotates
       # for a given setting, normal <-> invert requires more movement then left <-> right
