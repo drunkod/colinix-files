@@ -339,16 +339,8 @@ in
         in
           lib.generators.toKeyValue { inherit mkKeyValue; } cfg.settings;
 
-        sane.user.fs.".config/sxmo/conky.conf".symlink.target = let
-          battery_estimate = pkgs.static-nix-shell.mkBash {
-            pname = "battery_estimate";
-            src = ./.;
-          };
-        in pkgs.substituteAll {
-          src = ./conky-config;
-          bat = "${battery_estimate}/bin/battery_estimate";
-          weather = "timeout 20 ${pkgs.sane-weather}/bin/sane-weather";
-        };
+        sane.user.fs.".config/sxmo/conky.conf".symlink.target
+          = "../conky/conky.conf";
       }
 
       (lib.mkIf (cfg.greeter == "lightdm-mobile") {
