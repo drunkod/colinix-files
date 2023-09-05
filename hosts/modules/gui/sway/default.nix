@@ -26,6 +26,27 @@ in
         populate ~/.config/sway/config & co with defaults provided by this module.
       '';
     };
+    sane.gui.sway.waybar.top = mkOption {
+      type = types.submodule {
+        # `attrsOf types.anything` (v.s. plain `attrs`) causes merging of the toplevel items.
+        # this allows for `waybar.top.x = lib.mkDefault a;` with `waybar.top.x = b;` to resolve to `b`.
+        # but note that `waybar.top.x.y = <multiple assignment>` won't be handled as desired.
+        freeformType = types.attrsOf types.anything;
+      };
+      default = {};
+      description = ''
+        Waybar configuration for the bar at the top of the display.
+        see: <https://github.com/Alexays/Waybar/wiki/Configuration>
+        example:
+        ```nix
+        {
+          height = 40;
+          modules-left = [ "sway/workspaces" "sway/mode" ];
+          ...
+        }
+        ```
+      '';
+    };
   };
 
   config = lib.mkMerge [
@@ -49,6 +70,9 @@ in
 
         secrets.".config/sane-sway/snippets.txt" = ../../../../secrets/common/snippets.txt.bin;
       };
+
+      # default waybar
+      sane.gui.sway.waybar.top = import ./waybar-top.nix { inherit lib pkgs; };
     }
 
     (lib.mkIf cfg.enable {
@@ -131,18 +155,18 @@ in
         })
       ];
 
-      sane.user.fs = lib.mkIf cfg.installConfigs {
-        ".config/sway/config".symlink.target =
-          import ./sway-config.nix { inherit pkgs; };
-
+      sane.user.fs = {
         ".config/waybar/config".symlink.target =
-          let
-            waybar-config = import ./waybar-config.nix { inherit pkgs; };
-          in
-            (pkgs.formats.json {}).generate "waybar-config.json" waybar-config;
+          (pkgs.formats.json {}).generate "waybar-config.json" [
+            ({ layer = "top"; } // cfg.waybar.top)
+          ];
 
         ".config/waybar/style.css".symlink.text =
           builtins.readFile ./waybar-style.css;
+
+        ".config/sway/config" = lib.mkIf cfg.installConfigs {
+          symlink.target = import ./sway-config.nix { inherit pkgs; };
+        };
       };
     })
   ];

@@ -192,6 +192,7 @@ in
           # we manage these ourselves  (TODO: merge these into sway config as well)
           useGreeter = false;
           installConfigs = false;
+          waybar.top = import ./waybar-top.nix;
         };
 
         sane.programs.sxmoApps.enableFor.user.colin = true;
@@ -314,15 +315,6 @@ in
             sxmo_hook_start.sh
           '';
         };
-
-        sane.user.fs.".config/waybar/config".symlink.target =
-          let
-            waybar-config = import ./waybar-config.nix { inherit pkgs; };
-          in
-            (pkgs.formats.json {}).generate "waybar-config.json" waybar-config;
-
-        sane.user.fs.".config/waybar/style.css".symlink.text =
-          builtins.readFile ./waybar-style.css;
 
         sane.user.fs.".config/sxmo/conky.conf".symlink.target = let
           battery_estimate = pkgs.static-nix-shell.mkBash {
