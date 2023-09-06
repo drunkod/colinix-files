@@ -5,6 +5,7 @@
 # debugging:
 # - `journalctl --user -u swaync`
 # - `G_MESSAGES_DEBUG=all swaync`
+# - reveal notification center: `swaync-client -t -sw`
 #
 # configuration defaults can be found in:
 # - /run/current-system/etc/profiles/per-user/colin/etc/xdg/swaync/
