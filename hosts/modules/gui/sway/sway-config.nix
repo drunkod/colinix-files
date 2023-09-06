@@ -41,6 +41,7 @@ in pkgs.substituteAll {
     brightness_up_cmd
     extra_lines
     screenshot_cmd
+    status_cmd
     font
     mod
     workspace_layout
