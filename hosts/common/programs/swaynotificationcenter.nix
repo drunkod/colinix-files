@@ -2,7 +2,9 @@
 # sway notification daemon
 # alternative to mako, dunst, etc
 #
-# query: `journalctl --user -u swaync`
+# debugging:
+# - `journalctl --user -u swaync`
+# - `G_MESSAGES_DEBUG=all swaync`
 #
 # configuration defaults can be found in:
 # - /run/current-system/etc/profiles/per-user/colin/etc/xdg/swaync/
