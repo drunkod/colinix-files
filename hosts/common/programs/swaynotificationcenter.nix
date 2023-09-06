@@ -29,27 +29,36 @@
       notification-icon-size = 64;
       notification-body-image-height = 100;
       notification-body-image-width = 200;
-      timeout = 10;
+      timeout = 30;
       timeout-low = 5;
       timeout-critical = 0;
       fit-to-screen = true;
       control-center-width = 500;
       control-center-height = 600;
-      notification-window-width = 500;
+      notification-window-width = 400;
       keyboard-shortcuts = true;
       image-visibility = "when-available";
-      transition-time = 200;
+      transition-time = 100;
       hide-on-clear = false;
       hide-on-action = true;
       script-fail-notify = true;
       scripts = {
+        # example-script = {
+        #   exec = "echo 'Do something...'";
+        #   urgency = "Normal";
+        # };
+        # example-action-script": {
+        #   exec = "echo 'Do something actionable!'";
+        #   urgency = "Normal";
+        #   run-on = "action";
+        # };
       };
       notification-visibility = {
-        example-name = {
-          state = "muted";
-          urgency = "Low";
-          app-name = "Spotify";
-        };
+        # example-name = {
+        #   state = "muted";
+        #   urgency = "Low";
+        #   app-name = "Spotify";
+        # };
       };
       widgets = [
         "inhibitors"
