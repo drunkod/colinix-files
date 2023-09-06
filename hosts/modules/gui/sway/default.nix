@@ -93,11 +93,6 @@ in
         default = "${pkgs.sway-contrib.grimshot}/bin/grimshot copy area";
         description = "command to run when user wants to take a screenshot";
       };
-      status_cmd = mkOption {
-        type = types.string;
-        default = "${pkgs.i3status}/bin/i3status";
-        description = "command to run that populates the status section of the topbar";
-      };
     };
     sane.gui.sway.waybar.extra_style = mkOption {
       type = types.lines;

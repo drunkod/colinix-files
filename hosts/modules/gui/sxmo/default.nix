@@ -219,7 +219,6 @@ in
             brightness_down_cmd = "sxmo_brightness.sh down";
             brightness_up_cmd = "sxmo_brightness.sh up";
             screenshot_cmd = "sxmo_screenshot.sh";
-            status_cmd = "sxmo_status_watch.sh -o pango";
             extra_lines =
               let
                 sxmo_init = pkgs.writeShellScript "sxmo_init.sh" ''
