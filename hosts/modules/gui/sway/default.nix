@@ -39,15 +39,15 @@ in
           bindsym --locked XF86AudioLowerVolume exec $volume_down
         '';
       };
+      background = mkOption {
+        type = types.path;
+      };
       font = mkOption {
         type = types.string;
         default = "pango:monospace 11";
         description = ''
           default font (for e.g. window titles)
         '';
-      };
-      background = mkOption {
-        type = types.path;
       };
       mod = mkOption {
         type = types.string;
@@ -66,6 +66,14 @@ in
           - "default" (split)
           - "tabbed"
           - etc
+        '';
+      };
+      xwayland = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          whether or not to enable xwayland (allows running X11 apps on sway).
+          some electron apps (e.g. element-desktop) require xwayland.
         '';
       };
 

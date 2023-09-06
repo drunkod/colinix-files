@@ -211,9 +211,11 @@ in
             # - `bindsym $mod+Shift+p exec sxmo_appmenu.sh sys`
             # - `input * xkb_options compose:ralt`
             # these could be added, but i don't see much benefit.
-            mod = "Mod1";  # prefer Alt
             font = "Sxmo 10";
+            mod = "Mod1";  # prefer Alt
+            xwayland = false;  # disable to reduce RAM usage.
             workspace_layout = "tabbed";
+
             brightness_down_cmd = "sxmo_brightness.sh down";
             brightness_up_cmd = "sxmo_brightness.sh up";
             screenshot_cmd = "sxmo_screenshot.sh";
