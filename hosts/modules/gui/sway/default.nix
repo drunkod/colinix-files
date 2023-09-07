@@ -19,13 +19,6 @@ in
       default = true;
       type = types.bool;
     };
-    sane.gui.sway.installConfigs = mkOption {
-      default = true;
-      type = types.bool;
-      description = ''
-        populate ~/.config/sway/config & co with defaults provided by this module.
-      '';
-    };
     sane.gui.sway.config = {
       extra_lines = mkOption {
         type = types.lines;
@@ -246,11 +239,9 @@ in
         ".config/waybar/style.css".symlink.text =
           (builtins.readFile ./waybar-style.css) + cfg.waybar.extra_style;
 
-        ".config/sway/config" = lib.mkIf cfg.installConfigs {
-          symlink.target = import ./sway-config.nix {
+        ".config/sway/config".symlink.target = import ./sway-config.nix {
             inherit pkgs;
             inherit (cfg) config;
-          };
         };
       };
     })
