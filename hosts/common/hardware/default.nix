@@ -1,6 +1,10 @@
 { lib, pkgs, ... }:
 
 {
+  imports = [
+    ./x86_64.nix
+  ];
+
   boot.initrd.supportedFilesystems = [ "ext4" "btrfs" "ext2" "ext3" "vfat" ];
   # useful emergency utils
   boot.initrd.extraUtilsCommands = ''
