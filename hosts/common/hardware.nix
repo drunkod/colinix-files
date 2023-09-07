@@ -26,6 +26,7 @@
 
   # powertop will default to putting USB devices -- including HID -- to sleep after TWO SECONDS
   powerManagement.powertop.enable = false;
+  powerManagement.cpuFreqGovernor = "powersave";
 
   services.logind.extraConfig = ''
     # don’t shutdown when power button is short-pressed
