@@ -27,12 +27,6 @@ in [
   #   hash = "sha256-e38Z7sO7xDQHzE9UOfbptc6vJuONE5eP9JFp2Nzx53E=";
   # })
 
-  (fetchpatch' {
-    title = "nixos/update-users-groups: fix cross compilation";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/251850";
-    hash = "sha256-uqx9sJ1zkwys9Ur35iXY3gZKVb52wlnBGkhBB5sc6WQ=";
-  })
-
   # (fetchpatch' {
   #   # TODO: check back in on this around 2023-10-01
   #   title = "libkiwix: 12.0.0 -> 12.1.0";
@@ -254,8 +248,8 @@ in [
   (fetchpatch' {
     title = "gthumb: make the webservices feature be optional";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/240602";
-    saneCommit = "50767d5746fd80657e997b43fc5d82ba0c2c2447";
-    hash = "sha256-lXuLHdSPhWol9X5QX4cxnZqoVGUWEQTCZLmosvLX+WY=";
+    saneCommit = "e83130f2770c314b2a482e1792b010da66cdd5de";
+    hash = "sha256-aQjjm4uP3RaAkKykTNFmnrf2fyY2FcwKerRprlO2cnQ=";
   })
 
   (fetchpatch' {
