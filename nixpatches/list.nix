@@ -28,6 +28,29 @@ in [
   # })
 
   # (fetchpatch' {
+  #   # merged 2023/09/07, but into staging
+  #   title = "waf: fix cross-compilation";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/252874";
+  #   hash = "sha256-DjwhbH9o6uoj1Ahb8eE6cEnlIKtQCL61P0v22H9fOiQ=";
+  # })
+
+  # (fetchpatch' {
+  #   # needed for subsequent "disable pipewireSupport in qemu-user" patch
+  #   # merged 2023/09/07
+  #   title = "qemu: add pipewire support (8.1 feature)";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/253660";
+  #   hash = "sha256-sABTNJHBQEF8YuXit4+zG/lyK4eRJz6MkRDpaeKe+z8=";
+  # })
+
+  # (fetchpatch' {
+  #   # fixes infinite recursion in cross qemu compile.
+  #   # merged 2023/09/07
+  #   title = "lib/systems: disable pipewireSupport in qemu-user";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/253913";
+  #   hash = "sha256-D2fnB4eOvbew0tea7Y1LH7GQJF3Pch/9DLEChf/ZNxs=";
+  # })
+
+  # (fetchpatch' {
   #   # TODO: check back in on this around 2023-10-01
   #   title = "libkiwix: 12.0.0 -> 12.1.0";
   #   prUrl = "https://github.com/NixOS/nixpkgs/pull/246700";
