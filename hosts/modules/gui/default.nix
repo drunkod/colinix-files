@@ -134,6 +134,7 @@
   ];
 
   hardware.opengl = lib.mkIf config.sane.programs.guiApps.enabled ({
+    enable = true;
     driSupport = lib.mkDefault true;
   } // (lib.optionalAttrs pkgs.stdenv.isx86_64 {
     # for 32 bit applications
