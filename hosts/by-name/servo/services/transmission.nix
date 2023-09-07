@@ -51,7 +51,7 @@
     incomplete-dir = "/var/lib/uninsane/media/incomplete";
     # transmission regularly fails to move stuff from the incomplete dir to the main one, so disable:
     # TODO: uncomment this line!
-    # incomplete-dir-enabled = false;
+    incomplete-dir-enabled = false;
   };
 
   systemd.services.transmission.after = [ "wireguard-wg-ovpns.service" ];
