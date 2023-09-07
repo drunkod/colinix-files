@@ -16,7 +16,12 @@
 { ... }:
 {
   sane.programs.swaynotificationcenter = {
-    # fs.".config/swaync/style.css".symlink.text = ...
+    fs.".config/swaync/style.css".symlink.text = ''
+      /* avoid black-on-black text that the default style ships */
+      window {
+        color: rgb(255, 255, 255);
+      }
+    '';
     fs.".config/swaync/config.json".symlink.text = builtins.toJSON {
       "$schema" = "/etc/xdg/swaync/configSchema.json";
       positionX = "right";
