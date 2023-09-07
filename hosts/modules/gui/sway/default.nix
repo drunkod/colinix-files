@@ -161,12 +161,14 @@ in
       # swap in these lines to use SDDM instead of `services.greetd`.
       # services.xserver.displayManager.sddm.enable = true;
       # services.xserver.enable = true;
-      sane.gui.greetd.enable = true;
-      sane.gui.greetd.sway.enable = true;  # have greetd launch a sway compositor in which we host a greeter
-      sane.gui.greetd.sway.gtkgreet = lib.mkIf cfg.useGreeter {
+      sane.gui.greetd = lib.mkIf cfg.useGreeter {
         enable = true;
-        session.name = "sway-on-gtkgreet";
-        session.command = "${pkgs.sway}/bin/sway --debug";
+        sway.enable = true;  # have greetd launch a sway compositor in which we host a greeter
+        sway.gtkgreet = {
+          enable = true;
+          session.name = "sway-on-gtkgreet";
+          session.command = "${pkgs.sway}/bin/sway --debug";
+        };
       };
 
       # unlike other DEs, sway configures no audio stack
