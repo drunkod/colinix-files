@@ -73,6 +73,7 @@ let
     ## Jennifer Briney
     (fromDb "congressionaldish.libsyn.com" // pol)
     (fromDb "werenotwrong.fireside.fm" // pol)
+    (fromDb "politicalorphanage.libsyn.com" // pol)
     # (mkPod "https://podcasts.la.utexas.edu/this-is-democracy/feed/podcast/" // pol // weekly)
     ## Civboot -- https://anchor.fm/civboot
     (fromDb "anchor.fm/s/34c7232c/podcast/rss" // tech)
