@@ -19,22 +19,6 @@
     # };
   });
 
-  # dino = super.dino.override {
-  #   gtk4 = gtk4.overrideAttrs (upstream: {
-  #     patches = (upstream.patches or []) ++ [
-  #       (fetchpatch2 {
-  #         # 2023/09/08: this allows gtk4 apps to request window activation from sway more reliably.
-  #         # e.g. if they send a notification, and i click that notification, the app can request focus.
-  #         # without this patch, dino (and probably other gtk4 apps) have quirks on moby:
-  #         # - they can only request activation after i've typed something into them (i.e. triggered a keyboard event for which they're listening).
-  #         name = "gdk/wayland: Provide latest touch serial even after a touch ended";
-  #         url = "https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/5782.patch";
-  #         hash = "sha256-OwOUAFB+Q+FJ+TEDohfpA2stHPq3c0cAFfJf3mFRvPQ=";
-  #       })
-  #     ];
-  #   });
-  # };
-
   phog = super.phog.override {
     # disable squeekboard because it takes 20 minutes to compile when emulated
     squeekboard = null;
