@@ -51,7 +51,11 @@ let
     MODEM_POWER = lib.mkIf (!withModemPower) no;
     # normally a module; try inline? for vibration/haptics
     INPUT_GPIO_VIBRA = yes;
-    # INPUT_PWM_VIBRA = yes;
+    INPUT_PWM_VIBRA = yes;
+    PWM_SUN4I = yes;
+    # DRM_SUN4I = yes;
+    # DRM_SUN8I_MIXER = yes;
+    # DRM_SUN6I_DSI = yes;
 
     # taken from mobile-nixos config?? or upstream megous config??
     RTL8723CS = module;
