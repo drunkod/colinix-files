@@ -3,12 +3,8 @@
 { lib, config, pkgs, ... }:
 {
   sane.programs.mako = {
-    package = pkgs.mako.overrideAttrs (upstream: {
-      postInstall = (upstream.postInstall or "") + ''
-        # we control mako as a systemd service, so have dbus not automatically activate it.
-        rm $out/share/dbus-1/services/fr.emersion.mako.service
-      '';
-    });
+    # we control mako as a systemd service, so have dbus not automatically activate it.
+    package = pkgs.rmDbusServices pkgs.mako;
     fs.".config/mako/config".symlink.text = ''
       # notification interaction mapping
       # "on-touch" defaults to "dismiss", which isn't nice for touchscreens.
