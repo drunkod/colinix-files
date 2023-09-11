@@ -14,7 +14,7 @@
 # - examples:
 #   - thread: <https://github.com/ErikReider/SwayNotificationCenter/discussions/183>
 #   - buttons-grid and menubar: <https://gist.github.com/JannisPetschenka/fb00eec3efea9c7fff8c38a01ce5d507>
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 {
   sane.programs.swaynotificationcenter = {
     configOption = with lib; mkOption {
@@ -31,6 +31,8 @@
       };
       default = {};
     };
+    # prevent dbus from automatically activating swaync so i can manage it as a systemd service instead
+    package = pkgs.rmDbusServices pkgs.swaynotificationcenter;
     fs.".config/swaync/style.css".symlink.text = ''
       /* avoid black-on-black text that the default style ships */
       window {
