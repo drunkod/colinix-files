@@ -110,11 +110,14 @@ in lib.makeScope newScope (self: with self; {
   sponsorblock = (wrapAddon unwrapped.sponsorblock {})
     .withPostPatch ''
       # patch sponsorblock to not show the help tab on first launch.
+      #
       # XXX: i tried to build sponsorblock from source and patch this *before* it gets webpack'd,
       # but web shit is absolutely cursed and building from source requires a fucking PhD
       # (if you have one, feel free to share your nix package)
+      #
+      # NB: in source this is `if (!userID)...`, but the build process mangles the names
       substituteInPlace js/background.js \
-        --replace 'default.config.userId)' 'default.config.userID && false)'
+        --replace 'default.config.userID)' 'default.config.userID && false)'
     '';
 
   ublacklist = wrapAddon unwrapped.ublacklist {};
