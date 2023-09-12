@@ -146,19 +146,17 @@
         };
       };
     };
-  };
-
-  # TODO: give `sane.programs` native support for defining services
-  systemd.user.services.swaync = lib.mkIf config.sane.programs.swaynotificationcenter.enabled {
-    # swaync ships its own service, but i want to add `environment` variables and flags for easier debugging.
-    # seems that's not possible without defining an entire nix-native service (i.e. this).
-    description = "Swaync desktop notification daemon";
-    wantedBy = [ "default.target" ];
-    serviceConfig.ExecStart = "${config.sane.programs.swaynotificationcenter.package}/bin/swaync";
-    serviceConfig.Type = "dbus";
-    serviceConfig.BusName = "org.freedesktop.Notifications";
-    serviceConfig.Restart = "on-failure";
-    serviceConfig.RestartSec = "10s";
-    environment.G_MESSAGES_DEBUG = "all";
+    services.swaync = {
+      # swaync ships its own service, but i want to add `environment` variables and flags for easier debugging.
+      # seems that's not possible without defining an entire nix-native service (i.e. this).
+      description = "Swaync desktop notification daemon";
+      wantedBy = [ "default.target" ];
+      serviceConfig.ExecStart = "${config.sane.programs.swaynotificationcenter.package}/bin/swaync";
+      serviceConfig.Type = "simple";
+      # serviceConfig.BusName = "org.freedesktop.Notifications";
+      serviceConfig.Restart = "on-failure";
+      serviceConfig.RestartSec = "10s";
+      environment.G_MESSAGES_DEBUG = "all";
+    };
   };
 }
