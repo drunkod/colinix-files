@@ -52,6 +52,7 @@
 import argparse
 import datetime
 import logging
+import os
 import subprocess
 import sys
 import time
@@ -124,6 +125,11 @@ class Executor:
     def mkdir(self, path: str) -> None:
         logger.debug(f"mkdir {path}")
         os.makedirs(path, exist_ok=True)
+
+    @destructive
+    def mv(self, from_: str, to: str) -> None:
+        logger.debug(f"mv {from_} -> {to}")
+        os.rename(from_, to)
 
     @destructive(return_=b'')
     def exec(self, cmd: list[str], check: bool = True) -> bytes:
@@ -286,26 +292,30 @@ class Sequencer:
         return self._at_structured_cmd("QGPSCFG", "autogps", enable)
 
     def _download_assistance_data(self, variant: AgpsDataVariant) -> str | None:
+        self.executor.mkdir("new")
+        out_path = f"new/{variant}"
         try:
-            self.executor.exec(["curl", f"{self.AGPS_DATA_URI_BASE}/{variant}", "-o", variant])
-            return variant
+            self.executor.exec(["curl", f"{self.AGPS_DATA_URI_BASE}/{variant}", "-o", out_path])
+            return out_path
         except subprocess.CalledProcessError as e:
             logger.warning(f"AGPS data download failed: {e}")
-            return None  # TODO: could be smarter: return cached AGPS data?
+            return None
 
     def _cache_assistance_data(self, fresh_path: str) -> None:
         '''call after successful upload to indicate that the data recently retrieved should be cached'''
         if fresh_path.startswith("cache/"):
             return  # if the caller used cached data, avoid updating its timestamp
 
-        # TODO: we should use fs time for this
-        now = datetime.datetime.now().strftime(ON_DISK_TIME_FMT)
+        variant = os.path.basename(fresh_path)
         try:
-            self.executor.mkdir("cache")
-            self.executor.exec(["mv", fresh_path, "cache"])
-            self.executor.write_file(f"cache/{fresh_path}.ts", now.encode())
-        except subprocess.CalledProcessError as e:
-            logger.warning(f"failed to cache AGPS data: {e}")
+            timestamp = datetime.datetime.fromtimestamp(os.stat(fresh_path).st_mtime)
+        except FileNotFoundError as e:
+            logger.warning(f"failed to cache previously-downloaded assistance data: {e}")
+            return
+
+        self.executor.mkdir("cache")
+        self.executor.mv(fresh_path, f"cache/{variant}")
+        self.executor.write_file(f"cache/{variant}.ts", timestamp.encode())
 
     def _get_cached_assistance_data(self, variant: AgpsDataVariant) -> tuple[bool, str | None]:
         '''
