@@ -185,11 +185,17 @@ in
         };
         buttons-grid = {
           actions = [
+            # {
+            #   type = "toggle";
+            #   label = "feedbackd";
+            #   command = "${systemctl-toggle}/bin/systemctl-toggle --user feedbackd";
+            #   active = "${pkgs.systemd}/bin/systemctl is-active --user feedbackd.service";
+            # }
             {
               type = "toggle";
-              label = "feedbackd";
-              command = "${systemctl-toggle}/bin/systemctl-toggle --user feedbackd";
-              active = "${pkgs.systemd}/bin/systemctl is-active --user feedbackd.service";
+              label = "gps";
+              command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle eg25-control-gps";
+              active = "${pkgs.systemd}/bin/systemctl is-active eg25-control-gps.service";
             }
           ];
         };
