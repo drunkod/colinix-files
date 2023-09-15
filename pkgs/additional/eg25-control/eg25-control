@@ -313,18 +313,12 @@ class Sequencer:
         locdata_path might be a cached locdata or a new locdata.
         '''
         variant = os.path.basename(locdata_path)
-        try:
-            timestamp = datetime.datetime.fromtimestamp(os.stat(locdata_path).st_mtime)
-        except FileNotFoundError as e:  # main reason to handle this is so --dry-run works
-            logger.warning(f"failed to mark previously-downloaded assistance data: {e}")
-            return
 
         if good:
             # N.B.: if locdata_path is something that exists in cache/,
-            # then this rename is a safe no-op (no-op renames don't update ctime/mtime).
+            # then this rename is a safe no-op.
             self.executor.mkdir("cache")
             self.executor.mv(locdata_path, f"cache/{variant}")
-            self.executor.write_file(f"cache/{variant}.ts", timestamp.encode())  # TODO: why aren't we using fs-native timestamps here?
         else:
             self.executor.rm(locdata_path)
 
@@ -335,18 +329,16 @@ class Sequencer:
         - whether cached data is fresh (i.e. won't benefit from an update)
         - a path to the cached AGPS data, or None if no valid cached entry
         '''
-        last_cache_datestr = self.executor.read_file(f"{cache_dir}/{variant}.ts", default=b'').decode('utf-8')
-        if not last_cache_datestr:
-            return False, None
+
+        locdata_path = f"{cache_dir}/{variant}"
 
         try:
-            last_cache_date = datetime.datetime.strptime(last_cache_datestr, ON_DISK_TIME_FMT)
-        except ValueError as e:
-            logger.warning(f"failed to decode cache timestamp for {variant}: {e}")
+            last_cache_date = datetime.datetime.fromtimestamp(os.stat(locdata_path).st_ctime)
+        except FileNotFoundError as e:
             return False, None
 
         is_fresh = datetime.datetime.now() - last_cache_date < AGPS_CACHE_REFRESH_AFTER
-        return is_fresh, f"{cache_dir}/{variant}"
+        return is_fresh, locdata_path
 
     def _get_any_assistance_data(self, variant: AgpsDataVariant) -> tuple[bool, list[str]]:
         '''
