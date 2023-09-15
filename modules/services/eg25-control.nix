@@ -12,9 +12,17 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    users.groups.eg25-control = {};
+    users.users.eg25-control = {
+      group = "eg25-control";
+      isSystemUser = true;
+    };
+    # TODO: persist eg25-control cache/new dirs
+
     systemd.services.eg25-control-powered = {
       description = "power to the Qualcomm eg25 modem used by PinePhone";
       serviceConfig = {
+        User = "eg25-control";
         Type = "simple";
         RemainAfterExit = true;
         ExecStart = "${cfg.package}/bin/eg25-control --power-on --verbose";
@@ -32,6 +40,7 @@ in
       # - want to upload almanac even when GPS *isn't* enabled, if we have internet connection.
       description = "background GPS tracking";
       serviceConfig = {
+        User = "eg25-control";
         Type = "simple";
         RemainAfterExit = true;
         ExecStart = "${cfg.package}/bin/eg25-control --enable-gps --dump-debug-info --verbose";
