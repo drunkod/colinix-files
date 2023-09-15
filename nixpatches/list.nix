@@ -19,11 +19,6 @@ let
       // (if title != null then { name = title; } else {})
     );
 in [
-  (fetchpatch' {
-    title = "trust-dns: 0.22.1 -> 0.23.0";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/254827";
-    hash = "sha256-0EPLiv+Ha943C5/l24pyY+VEUOEJ6UG9rr+EHTzFR0Q=";
-  })
 
   # (fetchpatch' {
   #   # disabled, at least until the PR is updated to use `pkg-config` instead of `pkgconfig`.
