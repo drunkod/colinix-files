@@ -131,6 +131,25 @@ in
       hide-on-action = true;
       script-fail-notify = true;
       scripts = {
+        # a script can match regex on these fields. only fired if all listed fields match:
+        # - app-name
+        # - desktop-entry
+        # - summary
+        # - body
+        # - urgency (Low/Normal/Critical)
+        # - category
+        # additionally, the script can be run either on receipt or action:
+        # - run-on = "receive" or "action"
+        # when script is run, these env vars are available:
+        # - SWAYNC_BODY
+        # - SWAYNC_DESKTOP_ENTRY
+        # - SWAYNC_URGENCY
+        # - SWAYNC_TIME
+        # - SWAYNC_APP_NAME
+        # - SWAYNC_CATEGORY
+        # - SWAYNC_REPLACES_ID
+        # - SWAYNC_ID
+        # - SWAYNC_SUMMARY
         sound-im = {
           # trigger notification sound on behalf of these IM clients.
           # TODO: dispatch calls separately!
