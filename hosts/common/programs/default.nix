@@ -29,7 +29,6 @@
     ./helix.nix
     ./imagemagick.nix
     ./jellyfin-media-player.nix
-    ./kitty
     ./komikku.nix
     ./koreader
     ./libreoffice.nix

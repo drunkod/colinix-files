@@ -41,7 +41,6 @@
 #   - nixos manually builds loader.cache in postInstall (via emulator).
 #   - even though we have loader.cache, ordering means that thumbnailer still can't be built.
 #   - solution is probably to integrate meson's cross_file stuff, and pushing all this emulation upstream.
-# - kitty doesn't cross compile
 
 final: prev:
 let
@@ -884,18 +883,6 @@ in {
   #   # in node-dependencies-jellyfin-web: "node: command not found"
   #   inherit (emulated) stdenv;
   # };
-
-  # kitty = prev.kitty.overrideAttrs (upstream: {
-  #   # fixes: "FileNotFoundError: [Errno 2] No such file or directory: 'pkg-config'"
-  #   PKGCONFIG_EXE = "${final.buildPackages.pkg-config}/bin/${final.buildPackages.pkg-config.targetPrefix}pkg-config";
-
-  #   # when building docs, kitty's setup.py invokes `sphinx`, which tries to load a .so for the host.
-  #   # on cross compilation, that fails
-  #   KITTY_NO_DOCS = true;
-  #   patches = upstream.patches ++ [
-  #     ./kitty-no-docs.patch
-  #   ];
-  # });
 
   komikku = wrapGAppsHook4Fix prev.komikku;
   koreader = (prev.koreader.override {
