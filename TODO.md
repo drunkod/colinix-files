@@ -73,6 +73,7 @@
 - moby: theme GTK apps (i.e. non-adwaita styles)
   - especially, make the menubar collapsible
   - try Gradience tool specifically for theming adwaita? <https://linuxphoneapps.org/apps/com.github.gradienceteam.gradience/>
+- phog: remove the gnome-shell runtime dependency to save hella closure size
 
 #### non-moby
 - neovim: set up language server (lsp; rnix-lsp; nvim-lspconfig)
