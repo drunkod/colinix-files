@@ -108,6 +108,13 @@ in [
     hash = "sha256-jDXYLlXaEBKMrZ2dgxc6ucrcX/5dtqoIIKw+Ay19vlc=";
   })
 
+  (fetchpatch' {
+    title = "g4music: 3.2 -> 3.3";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/255440";
+    saneCommit = "1af1d8b85525228638631b0b553f1275ce0eac22";
+    hash = "sha256-d0mQMDl8SBfDHaIrMxIX9AJVx53sOS35n5hq7LXVAhY=";
+  })
+
   # (fetchpatch {
   #   # stdenv: fix cc for pseudo-crosscompilation
   #   # closed because it breaks pkgsStatic (as of 2023/02/12)
