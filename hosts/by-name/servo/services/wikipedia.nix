@@ -12,7 +12,7 @@ lib.mkIf false
 
   services.mediawiki.enable = true;
   services.mediawiki.name = "Uninsane Wiki";
-  services.mediawiki.hashedPasswordFile = config.sops.secrets.mediawiki_pw.path;
+  services.mediawiki.passwordFile = config.sops.secrets.mediawiki_pw.path;
   services.mediawiki.extraConfig = ''
     # Disable anonymous editing
     $wgGroupPermissions['*']['edit'] = false;
