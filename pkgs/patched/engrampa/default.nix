@@ -1,9 +1,10 @@
 { mate
 , fetchFromGitHub
+, lib
 }:
 mate.engrampa.overrideAttrs (super: {
   pname = "engrampa-sane";
-  src = fetchFromGitHub {
+  src = lib.warnIf (super.version != "1.26.1") fetchFromGitHub {
     owner = "mate-desktop";
     repo = "engrampa";
     # point to a version > 1.27.0, for working cross compilation.
