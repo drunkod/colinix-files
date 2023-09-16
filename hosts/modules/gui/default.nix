@@ -73,7 +73,7 @@
       # "chromium"  # chromium takes hours to build. brave is chromium-based, distributed in binary form, so prefer it.
       "electrum"
       "element-desktop"
-      # "font-manager"  #< depends on webkitgtk4_0 (expensive to build)
+      "font-manager"
       "gajim"  # XMPP client. cross build tries to import host gobject-introspection types (2023/09/01)
       "gimp"  # broken on phosh
       "gnome.dconf-editor"
