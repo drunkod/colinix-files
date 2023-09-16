@@ -72,7 +72,6 @@ let
     # fluffychat-moby = callPackage ./additional/fluffychat-moby { };
     fractal-latest = callPackage ./additional/fractal-latest { };
     # kaiteki = callPackage ./additional/kaiteki { };
-    # tokodon = libsForQt5.callPackage ./additional/tokodon { };
 
     # old rpi packages that may or may not still work
     # bootpart-tow-boot-rpi-aarch64 = callPackage ./additional/bootpart-tow-boot-rpi-aarch64 { };
