@@ -54,9 +54,11 @@ in
         Restart = "on-failure";
         RestartSec = "10s";
       };
-      environment = lib.mkIf cfg.config.proxied {
+      environment = {
+        G_MESSAGES_DEBUG = "all";
+      } // (lib.optionalAttrs cfg.config.proxied {
         FEEDBACK_THEME = "/home/colin/.config/feedbackd/themes/proxied.json";
-      };
+      });
     };
   };
 
