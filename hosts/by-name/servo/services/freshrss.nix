@@ -22,7 +22,7 @@
   services.freshrss.enable = true;
   services.freshrss.baseUrl = "https://rss.uninsane.org";
   services.freshrss.virtualHost = "rss.uninsane.org";
-  services.freshrss.passwordFile = config.sops.secrets.freshrss_passwd.path;
+  services.freshrss.hashedPasswordFile = config.sops.secrets.freshrss_passwd.path;
 
   systemd.services.freshrss-import-feeds =
   let
