@@ -50,14 +50,10 @@
 
 ### user experience
 #### moby
-- eg25-control:
-  - add a `poweroff` command
-  - toggle via SwayNC
 - SwayNC:
   - don't show MPRIS if no players detected
     - this is a problem of playerctld, i guess
   - add option to change audio output
-  - add option to toggle GPS on/off
   - fix colors (red alert) to match overall theme
 - moby: tune GPS
   - run only geoclue, and not gpsd, to save power?
