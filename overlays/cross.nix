@@ -562,6 +562,14 @@ in {
   #     in
   #       lib.optionals (final.stdenv.hostPlatform != final.stdenv.buildPlatform) [ "--cross-file=${crossFile}" ]
   #     );
+  #   # 2023/09/15: fails with:
+  #   # - error: linking with `/nix/store/75slks1wr3b3sxr5advswjzg9lvbv9jc-gcc-wrapper-12.3.0/bin/cc` failed: exit status: 1
+  #   # - error: could not compile `gst-plugin-gtk4` (lib) due to previous error
+  #   # seems it's trying to link something for the build platform instead of the host platform
+  #   # fractal-next 5.beta2 is using gst-plugin-gtk4 0.11.
+  #   # - gst-plugin-gtk4 tip is at 0.12.0-alpha1, but that's not published to Crates.io
+  #   # - <https://lib.rs/crates/gst-plugin-gtk4>
+  #   # - no obvious PRs that merged after 0.11 release relevant to cross compilation
   # });
 
   # 2023/07/31: upstreaming is unblocked -- if i can rework to not use emulation
