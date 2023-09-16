@@ -212,6 +212,11 @@ in
 
     fluffychat-moby.persist.plaintext = [ ".local/share/chat.fluffy.fluffychat" ];
 
+    font-manager.package = pkgs.font-manager.override {
+      # build without the "Google Fonts" integration feature, to save closure / avoid webkitgtk_4_0
+      withWebkit = false;
+    };
+
     # MS GitHub stores auth token in .config
     # TODO: we can populate gh's stuff statically; it even lets us use the same oauth across machines
     gh.persist.private = [ ".config/gh" ];

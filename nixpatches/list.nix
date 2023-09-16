@@ -115,6 +115,13 @@ in [
     hash = "sha256-d0mQMDl8SBfDHaIrMxIX9AJVx53sOS35n5hq7LXVAhY=";
   })
 
+  (fetchpatch' {
+    title = "font-manager: allow building without webkit";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/255466";
+    saneCommit = "54931faf9a276818bc4a9d88562b0010da534577";
+    hash = "sha256-3mCN75894v+HzeNf+hZ1t+cI9Lo+KFGFNEER6oReEoY=";
+  })
+
   # (fetchpatch {
   #   # stdenv: fix cc for pseudo-crosscompilation
   #   # closed because it breaks pkgsStatic (as of 2023/02/12)
