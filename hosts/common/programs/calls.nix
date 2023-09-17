@@ -21,6 +21,7 @@ in
 {
   sane.programs.calls = {
     persist.private = [
+      # ".cache/folks"      # contact avatars?
       # ".config/calls"
       ".local/share/calls"  # call "records"
       # .local/share/folks  # contacts?
