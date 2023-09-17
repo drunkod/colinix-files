@@ -15,18 +15,35 @@
 #   - e.g. activated by callaudiod?
 #   - looks like `gnome-calls --daemon` does that?
 { config, lib, ... }:
-
+let
+  cfg = config.sane.programs.calls;
+in
 {
   sane.programs.calls = {
     persist.private = [
+      # ".config/calls"
       ".local/share/calls"  # call "records"
       # .local/share/folks  # contacts?
     ];
+    secrets.".config/calls/sip-account.cfg" = ../../../secrets/common/gnome_calls_sip-account.cfg.bin;
     suggestedPrograms = [
       "feedbackd"  # needs `phone-incoming-call`, in particular
     ];
+
+    services.gnome-calls = {
+      description = "gnome-calls daemon to monitor incoming SIP calls";
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        # add --verbose for more debugging
+        ExecStart = "${cfg.package}/bin/gnome-calls --daemon";
+        Type = "simple";
+        Restart = "on-failure";
+        RestartSec = "10s";
+      };
+      environment.G_MESSAGES_DEBUG = "all";
+    };
   };
-  programs.calls = lib.mkIf config.sane.programs.calls.enabled {
+  programs.calls = lib.mkIf cfg.enabled {
     enable = true;
   };
 }
