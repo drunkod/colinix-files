@@ -311,12 +311,13 @@ in
         # environment.pathsToLink = [ "/share/sxmo" ];
 
         systemd.services."sxmo-set-permissions" = {
+          # TODO: some of these could be modified to be udev rules
           description = "configure specific /sys and /dev nodes to be writable by sxmo scripts";
           serviceConfig = {
             Type = "oneshot";
             ExecStart = "${package}/bin/sxmo_setpermissions.sh";
           };
-          wantedBy = [ "multi-user.service" ];
+          wantedBy = [ "multi-user.target" ];
         };
 
         # if superd fails to start a service within 100ms, it'll try to start again
