@@ -19,6 +19,7 @@
       "tuiApps"
     ] ++ [
       "alacritty"  # terminal emulator
+      "calls"  # gnome calls (dialer/handler)
       # "celluloid"  # mpv frontend
       "chatty"  # matrix/xmpp/irc client
       "cozy"  # audiobook player
