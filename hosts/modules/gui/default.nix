@@ -48,7 +48,7 @@
       "mate.engrampa"  # archive manager
       "mepo"  # maps viewer
       "mpv"
-      # "networkmanagerapplet"
+      "networkmanagerapplet"  # for nm-connection-editor: it's better than not having any gui!
       # "newsflash"
       "pavucontrol"
       # "picard"  # music tagging
