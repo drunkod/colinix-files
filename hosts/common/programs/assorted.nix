@@ -62,6 +62,7 @@ in
       "dig"
       "dtc"  # device tree [de]compiler
       "efibootmgr"
+      "ethtool"
       "fatresize"
       "fd"
       "file"
