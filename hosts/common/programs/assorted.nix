@@ -75,6 +75,7 @@ in
       "inetutils"  # for telnet
       "iotop"
       "iptables"
+      "iw"
       "jq"
       "killall"
       "lsof"
