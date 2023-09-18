@@ -112,14 +112,14 @@ in [
     title = "g4music: 3.2 -> 3.3";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/255440";
     saneCommit = "1af1d8b85525228638631b0b553f1275ce0eac22";
-    hash = "sha256-d0mQMDl8SBfDHaIrMxIX9AJVx53sOS35n5hq7LXVAhY=";
+    hash = "sha256-tzqimuhVI88sM59kCQz1kNkv33Mko/9ls978dsEx3uM=";
   })
 
   (fetchpatch' {
     title = "font-manager: allow building without webkit";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/255466";
     saneCommit = "54931faf9a276818bc4a9d88562b0010da534577";
-    hash = "sha256-3mCN75894v+HzeNf+hZ1t+cI9Lo+KFGFNEER6oReEoY=";
+    hash = "sha256-EpGJ708Zrr8fU8Je5elxHTmrsXbEsKGz5xEsC0tgoyE=";
   })
 
   # (fetchpatch {
