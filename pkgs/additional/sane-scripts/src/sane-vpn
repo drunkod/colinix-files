@@ -5,23 +5,28 @@ oper="$1"
 region="$2"
 # region should be e.g. `us` or `ukr`
 
-vpns=$(systemctl list-unit-files | grep wg-quick-ovpnd- | cut -f 1 -d ' ' | sed s'/^wg-quick-ovpnd-\([a-zA-Z-]*\)\.service$/\1/g')
+vpns=$(systemctl list-unit-files | grep wg-quick- | cut -f 1 -d ' ' | sed s'/^wg-quick-\([a-zA-Z-]*\)\.service$/\1/g')
 
-if ! [ $(echo "$vpns" | grep "^$region$") ]
-then
+if [ $(echo "$vpns" | grep "^$region$") ]; then
+  iface="$region"
+elif [ $(echo "$vpns" | grep "^vpn-$region$") ]; then
+  iface="vpn-$region"
+elif [ $(echo "$vpns" | grep "^ovpnd-$region$") ]; then
+  iface="ovpnd-$region"
+else
   echo "invalid vpn name '$region'"
   echo "choices:"
   echo "$vpns"
   exit 1
 fi
 
-iface=wg-quick-ovpnd-$region.service
+service="wg-quick-$iface.service"
 
 echo before: $(sane-ip-check --no-upnp)
 if [ "$oper" == up ]; then
-  sudo systemctl start $iface
+  sudo systemctl start "$service"
 elif [ "$oper" == down ]; then
-  sudo systemctl stop $iface
+  sudo systemctl stop "$service"
 else
   echo "invalid operation '$oper'"
   exit 1

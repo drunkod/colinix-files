@@ -34,7 +34,6 @@ let
   };
 
   # TODO: this should live in the same file as hosts/modules/wg-home.nix...
-  # TODO: update sane-vpn script to also allow activating/deactiving this interface
   def-servo = def-wg-vpn "vpn-servo" {
     endpoint = config.sane.hosts.by-name."servo".wg-home.endpoint;
     publicKey = config.sane.hosts.by-name."servo".wg-home.pubkey;
