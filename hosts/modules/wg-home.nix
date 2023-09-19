@@ -38,6 +38,14 @@ in
       default = false;
       description = "whether to make this port visible on the WAN";
     };
+    sane.services.wg-home.routeThroughServo = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        whether to contact peers by routing through a stationary server.
+        should be true for all "clients", and false for that stationary server.
+      '';
+    };
     sane.services.wg-home.ip = mkOption {
       type = types.str;
     };
@@ -79,12 +87,13 @@ in
           all-peers = mapAttrsToList (_: hostcfg: hostcfg.wg-home) config.sane.hosts.by-name;
           peer-list = filter (p: p.ip != null && p.ip != cfg.ip && p.pubkey != null) all-peers;
         in
-          if cfg.ip == server-cfg.ip then
-            # if we're the server, then we maintain the entire client list
-            mkClientPeers peer-list
+          if cfg.routeThroughServo then
+            # if acting as a client, then maintain a single peer -- the server -- which does the actual routing
+            [ (mkServerPeer peer-list) ]
           else
-            # but if we're a client, we maintain a single peer -- the server -- which does the actual routing
-            [ (mkServerPeer peer-list) ];
+            # if acting as a server, route to each peer individually
+            mkClientPeers peer-list
+      ;
     };
   };
 }
