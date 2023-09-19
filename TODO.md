@@ -91,6 +91,7 @@
   - install [devhelp](https://wiki.gnome.org/Apps/Devhelp)  (gnome)
 - have xdg-open parse `<repo:...> URIs (or adjust them so that it _can_ parse)
 - sane-bt-search: show details like 5.1 vs stereo, h264 vs h265
+  - maybe just color these "keywords" in all search results?
 - uninsane.org: make URLs relative to allow local use (and as offline homepage)
 - email: fix so that local mail doesn't go to junk
   - git sendmail flow adds the DKIM signatures, but gets delivered locally w/o having the sig checked, so goes into Junk
