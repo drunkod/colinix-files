@@ -259,6 +259,20 @@ in
               command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle wg-quick-vpn-servo";
               active = "${pkgs.systemd}/bin/systemctl is-active wg-quick-vpn-servo.service";
             }
+          ] ++ lib.optionals config.sane.programs.calls.config.autostart [
+            {
+              type = "toggle";
+              label = "SIP";
+              command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle gnome-calls";
+              active = "${pkgs.systemd}/bin/systemctl is-active gnome-calls";
+            }
+          ] ++ lib.optionals config.sane.programs.dino.config.autostart [
+            {
+              type = "toggle";
+              label = "jingle";  # XMPP calls
+              command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle dino";
+              active = "${pkgs.systemd}/bin/systemctl is-active dino";
+            }
           ];
         };
         dnd = {
