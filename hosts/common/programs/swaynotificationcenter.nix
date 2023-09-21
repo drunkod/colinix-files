@@ -213,9 +213,14 @@ in
         # - `category`: string
         #
         # test rules by using `notify-send` (libnotify)
-        sxmo-extraneous = {
+        sxmo-extraneous-daemons = {
           state = "ignored";
           summary = "(sxmo_hook_lisgd|Autorotate) (Stopped|Started)";
+        };
+        sxmo-extraneous-warnings = {
+          state = "ignored";
+          # "Modem crashed! 30s recovery.": happens on sxmo_hook_postwake.sh (i.e. unlock)
+          summary = "^Modem crashed.*$";
         };
       };
       widgets = [
