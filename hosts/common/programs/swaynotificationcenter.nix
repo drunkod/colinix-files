@@ -268,15 +268,15 @@ in
             {
               type = "toggle";
               label = "SIP";
-              command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle gnome-calls";
-              active = "${pkgs.systemd}/bin/systemctl is-active gnome-calls";
+              command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle --user gnome-calls";
+              active = "${pkgs.systemd}/bin/systemctl is-active --user gnome-calls";
             }
           ] ++ lib.optionals config.sane.programs.dino.config.autostart [
             {
               type = "toggle";
               label = "jingle";  # XMPP calls
-              command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle dino";
-              active = "${pkgs.systemd}/bin/systemctl is-active dino";
+              command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle --user dino";
+              active = "${pkgs.systemd}/bin/systemctl is-active --user dino";
             }
           ];
         };
