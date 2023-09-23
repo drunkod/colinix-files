@@ -107,6 +107,7 @@ in
       type = types.attrsOf types.path;
       default = {
         "sxmo_hook_start.sh" = ./hooks/sxmo_hook_start.sh;
+        "sxmo_hook_inputhandler.sh" = ./hooks/sxmo_hook_inputhandler.sh;
       };
       description = ''
         extra hooks to add with higher priority than the builtins
