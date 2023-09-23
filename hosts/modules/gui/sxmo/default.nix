@@ -108,6 +108,7 @@ in
       default = {
         "sxmo_hook_start.sh" = ./hooks/sxmo_hook_start.sh;
         "sxmo_hook_inputhandler.sh" = ./hooks/sxmo_hook_inputhandler.sh;
+        "sxmo_hook_postwake.sh" = ./hooks/sxmo_hook_postwake.sh;
       };
       description = ''
         extra hooks to add with higher priority than the builtins
