@@ -256,17 +256,21 @@
             # let the user handle that edge case by re-running this whole command
             nixos-rebuild --flake '.#${host}' ${action} --target-host colin@${addr} --use-remote-sudo $@
           '';
+
+          # pkg updating.
+          # a cleaner alternative lives here: <https://discourse.nixos.org/t/how-can-i-run-the-updatescript-of-personal-packages/25274/2>
           mkUpdater = attrPath: {
             type = "app";
             program = let
               pkg = pkgs.lib.getAttrFromPath attrPath sanePkgs;
               strAttrPath = pkgs.lib.concatStringsSep "." attrPath;
-            in builtins.toString (pkgs.writeShellScript "update-${pkg.name}" ''
+              command = pkgs.lib.escapeShellArgs pkg.updateScript.command;
+            in builtins.toString (pkgs.writeShellScript "update-${strAttrPath}" ''
               export UPDATE_NIX_NAME=${pkg.name}
               export UPDATE_NIX_PNAME=${pkg.pname}
               export UPDATE_NIX_OLD_VERSION=${pkg.version}
               export UPDATE_NIX_ATTR_PATH=${strAttrPath}
-              ${pkgs.lib.escapeShellArgs pkg.updateScript.command}
+              ${command}
             '');
           };
           mkUpdatersNoAliases = basePath: pkgs.lib.concatMapAttrs
@@ -283,30 +287,23 @@
               updaters = mkUpdatersNoAliases basePath;
               invokeUpdater = name: pkg:
                 let
-                  subUpdater =
-                    if pkg.type or "" == "app" then
-                      # simple package
-                      basePath ++ [ name ]
-                    else if (pkg.all or {}).type or "" == "app" then
-                      # package group
-                      basePath ++ [ name "all" ]
-                    else null;  # possibly a collection which can't be updated as one.
-                  updatePath = builtins.concatStringsSep "." ([ "update" "pkgs" ] ++ subUpdater);
-                in pkgs.lib.optionalString (subUpdater != null) (
-                  "nix run '.#${updatePath}'"
-              );
+                  # in case `name` has a `.` in it, we have to quote it
+                  escapedPath = builtins.map (p: ''"${p}"'') (basePath ++ [ name ]);
+                  updatePath = builtins.concatStringsSep "." ([ "update" "pkgs" ] ++ escapedPath);
+                in pkgs.lib.escapeShellArgs [
+                  "nix" "run" ".#${updatePath}"
+                ];
             in {
-              all = {
+              #all = {
                 type = "app";
                 program = builtins.toString (pkgs.writeShellScript
-                  "update-${builtins.concatStringsSep "-" basePath}"
-                  (
-                    builtins.concatStringsSep
-                      "\n"
-                      (pkgs.lib.mapAttrsToList invokeUpdater updaters)
-                      )
+                  (builtins.concatStringsSep "-" (["update"] ++ basePath))
+                  (builtins.concatStringsSep
+                    "\n"
+                    (pkgs.lib.mapAttrsToList invokeUpdater updaters)
+                  )
                 );
-              };
+              #};
             } // updaters;
         in {
           help = {
@@ -316,10 +313,10 @@
                 commands:
                 - `nix run '.#help'`
                   - show this message
-                - `nix run '.#update.feeds'`
+                - `nix run '.#update.pkgs'`
+                  - updates every package
+                - `nix run '.#update.pkgs.feeds'`
                   - updates metadata for all feeds
-                - `nix run '.#update.pkgs.firefox-extensions.unwrapped.bypass-paywalls-clean'`
-                  - runs the `updateScript` for the corresponding pkg, if it has one
                 - `nix run '.#init-feed' <url>`
                 - `nix run '.#deploy-{lappy,moby,moby-test,servo}' [nixos-rebuild args ...]`
                 - `nix run '.#check-nur'`
@@ -328,16 +325,11 @@
               cat ${helpMsg}
             '');
           };
-          update.feeds = {
-            type = "app";
-            program = "${pkgs.feeds.updateScript}";
-          };
-
           update.pkgs = mkUpdaters [];
 
           init-feed = {
             type = "app";
-            program = "${pkgs.feeds.initFeedScript}";
+            program = "${pkgs.feeds.init-feed}";
           };
 
           deploy-lappy = {
