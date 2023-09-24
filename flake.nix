@@ -246,6 +246,7 @@
       apps."x86_64-linux" =
         let
           pkgs = self.legacyPackages."x86_64-linux";
+          sanePkgs = import ./pkgs { inherit pkgs; };
           deployScript = host: addr: action: pkgs.writeShellScript "deploy-${host}" ''
             nix build '.#nixosConfigurations.${host}.config.system.build.toplevel' --out-link ./result-${host} $@
             sudo nix sign-paths -r -k /run/secrets/nix_serve_privkey $(readlink ./result-${host})
@@ -258,7 +259,7 @@
           mkUpdater = attrPath: {
             type = "app";
             program = let
-              pkg = pkgs.lib.getAttrFromPath attrPath pkgs;
+              pkg = pkgs.lib.getAttrFromPath attrPath sanePkgs;
               strAttrPath = pkgs.lib.concatStringsSep "." attrPath;
             in builtins.toString (pkgs.writeShellScript "update-${pkg.name}" ''
               export UPDATE_NIX_NAME=${pkg.name}
@@ -268,6 +269,15 @@
               ${pkgs.lib.escapeShellArgs pkg.updateScript.command}
             '');
           };
+          mkUpdaters = basePath: pkgs.lib.concatMapAttrs
+            (name: pkg:
+              if pkg.recurseForDerivations or false then {
+                "${name}" = mkUpdaters (basePath ++ [ name ]);
+              } else if pkg.updateScript or null != null then {
+                "${name}" = mkUpdater (basePath ++ [ name ]);
+              } else {}
+            )
+            (pkgs.lib.getAttrFromPath basePath sanePkgs);
         in {
           help = {
             type = "app";
@@ -276,8 +286,10 @@
                 commands:
                 - `nix run '.#help'`
                   - show this message
-                - `nix run '.#update-feeds'`
+                - `nix run '.#update.feeds'`
                   - updates metadata for all feeds
+                - `nix run '.#update.pkgs.firefox-extensions.unwrapped.bypass-paywalls-clean'`
+                  - runs the `updateScript` for the corresponding pkg, if it has one
                 - `nix run '.#init-feed' <url>`
                 - `nix run '.#deploy-{lappy,moby,moby-test,servo}' [nixos-rebuild args ...]`
                 - `nix run '.#check-nur'`
@@ -286,13 +298,12 @@
               cat ${helpMsg}
             '');
           };
-          update-feeds = {
+          update.feeds = {
             type = "app";
             program = "${pkgs.feeds.updateScript}";
           };
 
-          update-bpc = mkUpdater [ "firefox-extensions" "unwrapped" "bypass-paywalls-clean" ];
-          update-gpodder-adaptive = mkUpdater [ "gpodder-adaptive" ];
+          update.pkgs = mkUpdaters [];
 
           init-feed = {
             type = "app";
