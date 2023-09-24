@@ -269,7 +269,7 @@
               ${pkgs.lib.escapeShellArgs pkg.updateScript.command}
             '');
           };
-          mkUpdaters = basePath: pkgs.lib.concatMapAttrs
+          mkUpdatersNoAliases = basePath: pkgs.lib.concatMapAttrs
             (name: pkg:
               if pkg.recurseForDerivations or false then {
                 "${name}" = mkUpdaters (basePath ++ [ name ]);
@@ -278,6 +278,36 @@
               } else {}
             )
             (pkgs.lib.getAttrFromPath basePath sanePkgs);
+          mkUpdaters = basePath:
+            let
+              updaters = mkUpdatersNoAliases basePath;
+              invokeUpdater = name: pkg:
+                let
+                  subUpdater =
+                    if pkg.type or "" == "app" then
+                      # simple package
+                      basePath ++ [ name ]
+                    else if (pkg.all or {}).type or "" == "app" then
+                      # package group
+                      basePath ++ [ name "all" ]
+                    else null;  # possibly a collection which can't be updated as one.
+                  updatePath = builtins.concatStringsSep "." ([ "update" "pkgs" ] ++ subUpdater);
+                in pkgs.lib.optionalString (subUpdater != null) (
+                  "nix run '.#${updatePath}'"
+              );
+            in {
+              all = {
+                type = "app";
+                program = builtins.toString (pkgs.writeShellScript
+                  "update-${builtins.concatStringsSep "-" basePath}"
+                  (
+                    builtins.concatStringsSep
+                      "\n"
+                      (pkgs.lib.mapAttrsToList invokeUpdater updaters)
+                      )
+                );
+              };
+            } // updaters;
         in {
           help = {
             type = "app";
