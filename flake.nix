@@ -273,37 +273,40 @@
               ${command}
             '');
           };
-          mkUpdatersNoAliases = basePath: pkgs.lib.concatMapAttrs
+          mkUpdatersNoAliases = opts: basePath: pkgs.lib.concatMapAttrs
             (name: pkg:
               if pkg.recurseForDerivations or false then {
-                "${name}" = mkUpdaters (basePath ++ [ name ]);
+                "${name}" = mkUpdaters opts (basePath ++ [ name ]);
               } else if pkg.updateScript or null != null then {
                 "${name}" = mkUpdater (basePath ++ [ name ]);
               } else {}
             )
             (pkgs.lib.getAttrFromPath basePath sanePkgs);
-          mkUpdaters = basePath:
+          mkUpdaters = { ignore ? [] }@opts: basePath:
             let
-              updaters = mkUpdatersNoAliases basePath;
+              updaters = mkUpdatersNoAliases opts basePath;
               invokeUpdater = name: pkg:
                 let
+                  fullPath = basePath ++ [ name ];
+                  doUpdateByDefault = !builtins.elem fullPath ignore;
+
                   # in case `name` has a `.` in it, we have to quote it
-                  escapedPath = builtins.map (p: ''"${p}"'') (basePath ++ [ name ]);
+                  escapedPath = builtins.map (p: ''"${p}"'') fullPath;
                   updatePath = builtins.concatStringsSep "." ([ "update" "pkgs" ] ++ escapedPath);
-                in pkgs.lib.escapeShellArgs [
-                  "nix" "run" ".#${updatePath}"
-                ];
-            in {
-              #all = {
-                type = "app";
-                program = builtins.toString (pkgs.writeShellScript
-                  (builtins.concatStringsSep "-" (["update"] ++ basePath))
-                  (builtins.concatStringsSep
-                    "\n"
-                    (pkgs.lib.mapAttrsToList invokeUpdater updaters)
-                  )
+                in pkgs.lib.optionalString doUpdateByDefault (
+                  pkgs.lib.escapeShellArgs [
+                    "nix" "run" ".#${updatePath}"
+                  ]
                 );
-              #};
+            in {
+              type = "app";
+              program = builtins.toString (pkgs.writeShellScript
+                (builtins.concatStringsSep "-" (["update"] ++ basePath))
+                (builtins.concatStringsSep
+                  "\n"
+                  (pkgs.lib.mapAttrsToList invokeUpdater updaters)
+                )
+              );
             } // updaters;
         in {
           help = {
@@ -315,7 +318,7 @@
                   - show this message
                 - `nix run '.#update.pkgs'`
                   - updates every package
-                - `nix run '.#update.pkgs.feeds'`
+                - `nix run '.#update.feeds'`
                   - updates metadata for all feeds
                 - `nix run '.#init-feed' <url>`
                 - `nix run '.#deploy-{lappy,moby,moby-test,servo}' [nixos-rebuild args ...]`
@@ -325,7 +328,8 @@
               cat ${helpMsg}
             '');
           };
-          update.pkgs = mkUpdaters [];
+          update.pkgs = mkUpdaters { ignore = [ ["feeds"] ]; } [];
+          update.feeds = mkUpdaters {} [ "feeds" ];
 
           init-feed = {
             type = "app";
