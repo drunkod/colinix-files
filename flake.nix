@@ -48,16 +48,19 @@
 
     mobile-nixos = {
       # <https://github.com/nixos/mobile-nixos>
+      # only used for building disk images, not relevant after deployment
       url = "github:nixos/mobile-nixos";
       flake = false;
     };
     sops-nix = {
       # <https://github.com/Mic92/sops-nix>
+      # used to distribute secrets to my hosts
       url = "github:Mic92/sops-nix";
       # inputs.nixpkgs.follows = "nixpkgs";
       inputs.nixpkgs.follows = "nixpkgs-unpatched";
     };
     uninsane-dot-org = {
+      # provides the package to deploy <https://uninsane.org>, used only when building the servo host
       url = "git+https://git.uninsane.org/colin/uninsane";
       # inputs.nixpkgs.follows = "nixpkgs";
       inputs.nixpkgs.follows = "nixpkgs-unpatched";
