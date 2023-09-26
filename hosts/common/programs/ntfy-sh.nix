@@ -28,7 +28,7 @@ in
       path = [ cfg.package ];
       script = ''
         topic=$(cat ~/.config/ntfy-sh/topic)
-        ntfy sub "https://ntfy.uninsane.org/$topic"
+        ntfy sub "https://ntfy.uninsane.org:2587/$topic"
       '';
       serviceConfig = {
         Type = "simple";
