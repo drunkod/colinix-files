@@ -100,13 +100,16 @@ in lib.makeScope newScope (self: with self; {
     # get names from:
     # - ~/ref/nix-community/nur-combined/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
     # `wget ...xpi`; `unar ...xpi`; `cat */manifest.json | jq '.browser_specific_settings.gecko.id'`
-    #
-    # TODO: give these updateScript's
     browserpass-extension = callPackage ./browserpass-extension { };
     bypass-paywalls-clean = callPackage ./bypass-paywalls-clean { };
-    ether-metamask = fetchAddon "ether-metamask" "webextension@metamask.io"
-      "sha256-MFb68cPM/tQ3+b3mx2doMaXX3FiAiMOttHu8zL/9BbY=";
 
+    ether-metamask = fetchVersionedAddon rec {
+      extid = "webextension@metamask.io";
+      pname = "ether-metamask";
+      url = "https://github.com/MetaMask/metamask-extension/releases/download/v${version}/metamask-firefox-${version}.zip";
+      version = "11.1.0";
+      hash = "sha256-Rcm5lC2yKs4ghxF05WYNhSdVQ+VX0uog7h2lLYJeai8=";
+    };
     i2p-in-private-browsing = fetchVersionedAddon rec {
       extid = "i2ppb@eyedeekay.github.io";
       pname = "i2p-in-private-browsing";
