@@ -108,11 +108,17 @@ in lib.makeScope newScope (self: with self; {
       "sha256-MFb68cPM/tQ3+b3mx2doMaXX3FiAiMOttHu8zL/9BbY=";
     i2p-in-private-browsing = fetchAddon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io"
       "sha256-aS8Alj/UNgcTp/TDWPN69wSn0GxDsQx44dtxrybdPXo=";
-    sidebery = fetchAddon "sidebery" "{3c078156-979c-498b-8990-85f7987dd929}"
-      "sha256-9ZJCehxo0+Ua7iCNBViPOXAklpV3cf2Et2qT42QTi/U=";
     ublock-origin = fetchAddon "ublock-origin" "uBlock0@raymondhill.net"
       "sha256-OTJQbOTfMG5Np1J9k9YP4EIc8VBFwvTqc1idmgkCJms=";
 
+    sidebery = fetchVersionedAddon rec {
+      extid = "{3c078156-979c-498b-8990-85f7987dd929}";
+      pname = "sidebery";
+      # N.B.: unsure if this URL format is stable
+      url = "https://github.com/mbnuqw/sidebery/releases/download/v${version}/sidebery-${version}-unsigned.zip";
+      version = "5.0.0";
+      hash = "sha256-tHTU/l8ct+tY1/H+nZf3VlMlwoYn68+0pgeuFzm91XY=";
+    };
     sponsorblock = fetchVersionedAddon rec {
       extid = "sponsorBlocker@ajay.app";
       pname = "sponsorblock";
