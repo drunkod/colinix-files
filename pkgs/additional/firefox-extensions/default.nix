@@ -103,10 +103,10 @@ in lib.makeScope newScope (self: with self; {
 
     sponsorblock = stdenv.mkDerivation rec {
       pname = "sponsorblock";
-      version = "5.4.19";
+      version = "5.4.21";
       src = fetchurl {
         url = "https://github.com/ajayyy/SponsorBlock/releases/download/${version}/FirefoxSignedInstaller.xpi";
-        hash = "sha256-fCXqdUMhTqJTXVrfsQl7wkXYL4NxnZCM7aI5H0PN1pQ=";
+        hash = "sha256-mfCHD46FgmCQ8ugg58ML19zIllBQEJthfheTrEObs7M=";
       };
 
       dontUnpack = true;
