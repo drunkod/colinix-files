@@ -137,8 +137,8 @@ in lib.makeScope newScope (self: with self; {
       # N.B.: a handful of versions are released unsigned
       # url = "https://github.com/gorhill/uBlock/releases/download/${version}/uBlock0_${version}.signed.xpi";
       url = "https://github.com/gorhill/uBlock/releases/download/${version}/uBlock0_${version}.firefox.signed.xpi";
-      version = "1.52.0";
-      hash = "sha256-OTJQbOTfMG5Np1J9k9YP4EIc8VBFwvTqc1idmgkCJms=";
+      version = "1.52.3b0";
+      hash = "sha256-6idJQXOguCPXgs1RP6mKUjZK3lzSAkjvpDPVcWUfacI=";
     };
   };
 
