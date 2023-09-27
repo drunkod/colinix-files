@@ -23,6 +23,11 @@
   sane.zsh.showDeadlines = false;  # unlikely to act on them when in shell
   sane.services.wg-home.enable = true;
   sane.services.wg-home.ip = config.sane.hosts.by-name."moby".wg-home.ip;
+  sane.wowlan.enable = true;
+  sane.wowlan.patterns = [
+    { destPort = 22; }  # wake on SSH
+    { srcPort = 2587; }  # wake on `ntfy-sh` push from servo
+  ];
 
   # XXX colin: phosh doesn't work well with passwordless login,
   # so set this more reliable default password should anything go wrong
