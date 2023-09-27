@@ -10,6 +10,12 @@
 # wakeup sources can be monitored with:
 # - `cat /proc/interrupts | rg rtw_wifi_gpio_wakeup`
 # - e.g. `cat /sys/kernel/irq/25/actions` (if the above points to irq 25)
+#
+# caveats:
+# - can take 15s or more from when the packet is broadcast to when an application services it.
+# - WiFi doesn't respond to arp queries, so the sender might not actually know how to route
+#   the packet to WiFi device at all.
+#   run `arp -s <ip-addr> <mac-addr>` on the sender to hardcode an arp association.
 
 { config, lib, pkgs, ... }:
 let
