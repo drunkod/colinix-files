@@ -106,9 +106,14 @@ in lib.makeScope newScope (self: with self; {
     bypass-paywalls-clean = callPackage ./bypass-paywalls-clean { };
     ether-metamask = fetchAddon "ether-metamask" "webextension@metamask.io"
       "sha256-MFb68cPM/tQ3+b3mx2doMaXX3FiAiMOttHu8zL/9BbY=";
-    i2p-in-private-browsing = fetchAddon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io"
-      "sha256-aS8Alj/UNgcTp/TDWPN69wSn0GxDsQx44dtxrybdPXo=";
 
+    i2p-in-private-browsing = fetchVersionedAddon rec {
+      extid = "i2ppb@eyedeekay.github.io";
+      pname = "i2p-in-private-browsing";
+      url = "https://github.com/eyedeekay/I2P-in-Private-Browsing-Mode-Firefox/releases/download/${version}/i2ppb@eyedeekay.github.io.xpi";
+      version = "1.47";
+      hash = "sha256-LnR5z3fqNJywlr/khFdV4qloKGQhbxNZQvWCEgz97DU=";
+    };
     sidebery = fetchVersionedAddon rec {
       extid = "{3c078156-979c-498b-8990-85f7987dd929}";
       pname = "sidebery";
