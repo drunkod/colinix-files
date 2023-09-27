@@ -81,6 +81,20 @@ let
     # extid can be found by unar'ing the above xpi, and copying browser_specific_settings.gecko.id field
     passthru = { inherit extid; };
   };
+  fetchVersionedAddon = { version, url, hash, extid, pname ? extid }: stdenv.mkDerivation {
+    inherit pname version;
+    src = fetchurl {
+      inherit url hash;
+    };
+    dontUnpack = true;
+    installPhase = ''
+      cp $src $out
+    '';
+
+    passthru.updateScript = nix-update-script { };
+    passthru.extid = extid;
+  };
+
 in lib.makeScope newScope (self: with self; {
   unwrapped = lib.recurseIntoAttrs {
     # get names from:
@@ -101,21 +115,12 @@ in lib.makeScope newScope (self: with self; {
     ublock-origin = fetchAddon "ublock-origin" "uBlock0@raymondhill.net"
       "sha256-OTJQbOTfMG5Np1J9k9YP4EIc8VBFwvTqc1idmgkCJms=";
 
-    sponsorblock = stdenv.mkDerivation rec {
+    sponsorblock = fetchVersionedAddon rec {
+      extid = "sponsorBlocker@ajay.app";
       pname = "sponsorblock";
       version = "5.4.21";
-      src = fetchurl {
-        url = "https://github.com/ajayyy/SponsorBlock/releases/download/${version}/FirefoxSignedInstaller.xpi";
-        hash = "sha256-mfCHD46FgmCQ8ugg58ML19zIllBQEJthfheTrEObs7M=";
-      };
-
-      dontUnpack = true;
-      installPhase = ''
-        cp $src $out
-      '';
-
-      passthru.updateScript = nix-update-script { };
-      passthru.extid = "sponsorBlocker@ajay.app";
+      url = "https://github.com/ajayyy/SponsorBlock/releases/download/${version}/FirefoxSignedInstaller.xpi";
+      hash = "sha256-mfCHD46FgmCQ8ugg58ML19zIllBQEJthfheTrEObs7M=";
     };
   };
 
