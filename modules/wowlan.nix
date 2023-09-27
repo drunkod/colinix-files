@@ -16,6 +16,9 @@
 # - WiFi doesn't respond to arp queries, so the sender might not actually know how to route
 #   the packet to WiFi device at all.
 #   run `arp -s <ip-addr> <mac-addr>` on the sender to hardcode an arp association.
+# - packet matching happens below the OS, so it's not generic over virtual network devices like tunnels.
+#   Wake On Lan with a VPN effectively requires that you wake on *every* packet routed via that VPN
+#   since the meaning within any packet isn't obvious to the chipset.
 
 { config, lib, pkgs, ... }:
 let
