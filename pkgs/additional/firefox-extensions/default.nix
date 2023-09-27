@@ -75,12 +75,17 @@ let
     };
   });
 
-  fetchAddon = name: extid: hash: fetchurl {
-    inherit name hash;
-    url = "https://addons.mozilla.org/firefox/downloads/latest/${name}/latest.xpi";
-    # extid can be found by unar'ing the above xpi, and copying browser_specific_settings.gecko.id field
-    passthru = { inherit extid; };
-  };
+  # fetchAddon: fetch an addon directly from the mozilla store.
+  #             prefer NOT to use this, because moz store doesn't offer versioned release access
+  #             which breaks caching/reproducibility and such.
+  #             (maybe the `latest.xpi` URL redirects to a versioned URI visible if i used curl?)
+  # fetchAddon = name: extid: hash: fetchurl {
+  #   inherit name hash;
+  #   url = "https://addons.mozilla.org/firefox/downloads/latest/${name}/latest.xpi";
+  #   # extid can be found by unar'ing the above xpi, and copying browser_specific_settings.gecko.id field
+  #   passthru = { inherit extid; };
+  # };
+
   fetchVersionedAddon = { extid, version, url, hash ? "", pname ? extid }: stdenv.mkDerivation {
     inherit pname version;
     src = fetchurl {
