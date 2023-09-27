@@ -80,7 +80,7 @@ let
 
       # IP frame: <https://en.wikipedia.org/wiki/Internet_Protocol_version_4#Header>
       ## Version, Internet Header Length. 0x45 = 69 decimal
-      69
+      null  # should be 69 (0x45), but fails to wake if i include this
       ## Differentiated Services Code Point (DSCP), Explicit Congestion Notification (ECN)
       null
       ## total length
