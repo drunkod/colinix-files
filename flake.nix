@@ -334,6 +334,9 @@
               '';
             in builtins.toString (pkgs.writeShellScript "nixos-config-help" ''
               cat ${helpMsg}
+              echo ""
+              echo "complete flake structure:"
+              nix flake show --option allow-import-from-derivation true
             '');
           };
           update.pkgs = mkUpdaters { ignore = [ ["feeds"] ]; } [];
