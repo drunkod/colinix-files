@@ -101,9 +101,6 @@ in lib.makeScope newScope (self: with self; {
       "sha256-diKkwxe1C35wsGNQd0yHh9BenPRSmGiRmCdmnW8sTD4=";
     ublock-origin = fetchAddon "ublock-origin" "uBlock0@raymondhill.net"
       "sha256-OTJQbOTfMG5Np1J9k9YP4EIc8VBFwvTqc1idmgkCJms=";
-
-    # TODO: build bypass-paywalls from source? it's mysteriously disappeared from the Mozilla store.
-    # bypass-paywalls-clean = fetchAddon "bypass-paywalls-clean" "{d133e097-46d9-4ecc-9903-fa6a722a6e0e}" "sha256-oUwdqdAwV3DezaTtOMx7A/s4lzIws+t2f08mwk+324k=";
   };
 
   browserpass-extension = (wrapAddon unwrapped.browserpass-extension {})
