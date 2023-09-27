@@ -108,8 +108,6 @@ in lib.makeScope newScope (self: with self; {
       "sha256-MFb68cPM/tQ3+b3mx2doMaXX3FiAiMOttHu8zL/9BbY=";
     i2p-in-private-browsing = fetchAddon "i2p-in-private-browsing" "i2ppb@eyedeekay.github.io"
       "sha256-aS8Alj/UNgcTp/TDWPN69wSn0GxDsQx44dtxrybdPXo=";
-    ublock-origin = fetchAddon "ublock-origin" "uBlock0@raymondhill.net"
-      "sha256-OTJQbOTfMG5Np1J9k9YP4EIc8VBFwvTqc1idmgkCJms=";
 
     sidebery = fetchVersionedAddon rec {
       extid = "{3c078156-979c-498b-8990-85f7987dd929}";
@@ -132,6 +130,15 @@ in lib.makeScope newScope (self: with self; {
       url = "https://github.com/iorate/ublacklist/releases/download/v${version}/ublacklist-v${version}-firefox.zip";
       version = "8.3.5";
       hash = "sha256-NAUkRXzFgwnIyP+uPAccQZUuHHxYFZakxrfMvp2yftg=";
+    };
+    ublock-origin = fetchVersionedAddon rec {
+      extid = "uBlock0@raymondhill.net";
+      pname = "ublock-origin";
+      # N.B.: a handful of versions are released unsigned
+      # url = "https://github.com/gorhill/uBlock/releases/download/${version}/uBlock0_${version}.signed.xpi";
+      url = "https://github.com/gorhill/uBlock/releases/download/${version}/uBlock0_${version}.firefox.signed.xpi";
+      version = "1.52.0";
+      hash = "sha256-OTJQbOTfMG5Np1J9k9YP4EIc8VBFwvTqc1idmgkCJms=";
     };
   };
 
