@@ -25,7 +25,7 @@ let
   cfg = config.sane.wowlan;
   patternOpts = with lib; types.submodule {
     options = {
-      destPort = mkOption {
+      ipv4.destPort = mkOption {
         type = types.nullOr types.port;
         default = null;
         description = ''
@@ -34,7 +34,7 @@ let
           (e.g. this machine made a long-running HTTP request, and the other side finally has data for us).
         '';
       };
-      srcPort = mkOption {
+      ipv4.srcPort = mkOption {
         type = types.nullOr types.port;
         default = null;
         description = ''
@@ -59,12 +59,10 @@ let
     "0" + (lib.toHexString b)
   else
     lib.toHexString b;
-  # formatPattern: patternOpts -> String
+  # formatIpv4Pattern: patternOpts.ipv4 -> String
   # produces a string like this (example matches source port=0x0a1b):
   # "-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:0a:1b:-:-"
-  #
-  # N.B.: the produced patterns match ONLY IPv4 -- not IPv6!
-  formatPattern = pat: let
+  formatIpv4Pattern = pat: let
     destPortBytes = if pat.destPort != null then {
       high = pat.destPort / 256;
       low = lib.mod pat.destPort 256;
@@ -139,7 +137,7 @@ in
       path = [ pkgs.iw pkgs.wirelesstools ];
       script = let
         writePattern = pat: ''
-          iwpriv wlan0 wow_set_pattern pattern=${formatPattern pat}
+          iwpriv wlan0 wow_set_pattern pattern=${formatIpv4Pattern pat.ipv4}
         '';
         writePatterns = lib.concatStringsSep
           "\n"
