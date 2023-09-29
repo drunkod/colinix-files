@@ -19,6 +19,12 @@ let
       // (if title != null then { name = title; } else {})
     );
 in [
+  (fetchpatch' {
+    # merged 2023/09/28. fixes lemmy build
+    title = "lemmy-ui: add missed build dependency";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/257769";
+    hash = "sha256-Z0fHlsycsSUoniXYoD1H+Kti1Vk5TFBC38TbtUR+ZPg=";
+  })
   # (fetchpatch' {
   #   # fixes /mnt/servo-nfs mount failures
   #   # 2023/09/21: doesn't apply
