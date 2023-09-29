@@ -534,6 +534,13 @@ in {
   #   # seems to hang when compiling fractal
   #   inherit (emulated) cargo meson rustc rustPlatform stdenv;
   # };
+  fractal-latest = prev.fractal-latest.override {
+    # fixes "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+    # seems to hang when compiling fractal
+    fractal-next = final.fractal-next.override {
+      inherit (emulated) cargo meson rustc rustPlatform stdenv;
+    };
+  };
   # fractal-next = prev.fractal-next.overrideAttrs (upstream: {
   #   env = let
   #     inherit (final) buildPackages stdenv rust;
