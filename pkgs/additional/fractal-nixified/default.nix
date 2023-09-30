@@ -1,14 +1,11 @@
 # Cargo.nix and crate-hashes.json were created with:
-# - `nix run '.#crate2nix' -- generate -f https://gitlab.gnome.org/GNOME/fractal`
+# - `nix shell -f https://github.com/kolloch/crate2nix/tarball/master`
+#   - `crate2nix generate -f ~/ref/repos/gnome/fractal/Cargo.toml`
+# or, once 0.11 reaches nixpkgs:
+# - `nix run '.#crate2nix' -- generate -f ~/ref/repos/gnome/fractal/Cargo.toml`
+#
+# then:
 # - `sed -i 's/target."curve25519_dalek_backend"/target."curve25519_dalek_backend" or ""/g' Cargo.nix`
-# - in Cargo.nix change the fractal source from `src = ../../../../../ref/repos/gnome/fractal to
-# src = pkgs.fetchFromGitLab {
-#   domain = "gitlab.gnome.org";
-#   owner = "GNOME";
-#   repo = "fractal";
-#   rev = "350a65cb0a221c70fc3e4746898036a345ab9ed8";
-#   hash = "sha256-z6uURqMG5pT8rXZCv5IzTjXxtt/f4KUeCDSgk90aWdo=";
-# };
 
 { pkgs
 , buildPackages
@@ -44,6 +41,10 @@ let
           rev = "350a65cb0a221c70fc3e4746898036a345ab9ed8";
           hash = "sha256-z6uURqMG5pT8rXZCv5IzTjXxtt/f4KUeCDSgk90aWdo=";
         };
+      };
+
+      clang-sys = attrs: attrs // {
+        LIBCLANG_PATH = "${buildPackages.llvmPackages.libclang.lib}/lib";
       };
       gdk-pixbuf-sys = gtkDeps;
       gdk4-wayland-sys = gtkDeps;
