@@ -16,6 +16,7 @@
 , glib
 , gst_all_1
 , gtk4
+, gtksourceview5
 , libadwaita
 , libshumate
 , pipewire
@@ -95,7 +96,7 @@ let
       };
       libshumate-sys = attrs: attrs // {
         nativeBuildInputs = [ pkg-config ];
-        buildInputs = [ libshumate ];
+        buildInputs = [ libshumate gtk4 ];
       };
       libspa-sys = attrs: attrs // {
         nativeBuildInputs = [ pkg-config rustPlatform.bindgenHook ];
@@ -124,13 +125,10 @@ let
         # '';
         # LIBCLANG_PATH = "${buildPackages.llvmPackages.libclang.lib}/lib";
       };
-      # js_int = attrs: attrs // {
-      #   features = attrs.features ++ [ "serde" "std" ];
-      # };
-      # serde_derive = attrs: attrs // {
-      #   crateName = "serde_derive-x86_64-unknown-linux-gnu";
-      #   sha256 = "";
-      # };
+      sourceview5-sys = attrs: attrs // {
+        nativeBuildInputs = [ pkg-config ];
+        buildInputs = [ gtksourceview5 ];
+      };
     };
     # defaultCrateOverrides = pkgs.defaultCrateOverrides // {
     #   js_int = attrs: attrs // {
