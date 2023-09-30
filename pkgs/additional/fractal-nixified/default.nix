@@ -15,6 +15,25 @@ let
   cargoNix = import ./Cargo.nix {
     inherit pkgs;
     release = false;
+    defaultCrateOverrides = pkgs.defaultCrateOverrides // {
+      fractal = attrs: attrs // {
+        src = pkgs.fetchFromGitLab {
+          domain = "gitlab.gnome.org";
+          owner = "GNOME";
+          repo = "fractal";
+          rev = "350a65cb0a221c70fc3e4746898036a345ab9ed8";
+          hash = "sha256-z6uURqMG5pT8rXZCv5IzTjXxtt/f4KUeCDSgk90aWdo=";
+        };
+      };
+    };
+    # defaultCrateOverrides = pkgs.defaultCrateOverrides // {
+    #   js_int = attrs: attrs // {
+    #     features = attrs.features ++ [ "serde" ];
+    #   };
+    #   serde = attrs: attrs // {
+    #     features = attrs.features ++ [ "derive" "serde_derive" ];
+    #   };
+    # };
   };
 in
   cargoNix.workspaceMembers.fractal.build
