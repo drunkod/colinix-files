@@ -12,13 +12,11 @@
 
 { pkgs
 , buildPackages
-, clang
 , dbus-glib
 , glib
 , gst_all_1
 , gtk4
 , libadwaita
-, libclang
 , libshumate
 , pipewire
 , pkg-config
@@ -100,26 +98,31 @@ let
         buildInputs = [ libshumate ];
       };
       libspa-sys = attrs: attrs // {
+        nativeBuildInputs = [ pkg-config rustPlatform.bindgenHook ];
+        buildInputs = [ pipewire ];
+
+        # bindgenHook does the equivalent of this:
+        # preConfigure = (attrs.preConfigure or "") + ''
+        #   # export BINDGEN_EXTRA_CLANG_ARGS="$NIX_CFLAGS_COMPILE"
+        #   export BINDGEN_EXTRA_CLANG_ARGS="$(< ${clang}/nix-support/cc-cflags) $(< ${clang}/nix-support/libc-cflags) $(< ${clang}/nix-support/libcxx-cxxflags) $NIX_CFLAGS_COMPILE"
+        # '';
+        # LIBCLANG_PATH = "${buildPackages.llvmPackages.libclang.lib}/lib";
+      };
+      libspa = attrs: attrs // {
+        # not sure why the non-sys version of this crate needs pkg-config??
         nativeBuildInputs = [ pkg-config ];
         buildInputs = [ pipewire ];
-        # alternative to this is add `rustPlatform.bindgenHook` to nativeBuildInputs.
-        # i'm just copying the logic from build-support/rust/hooks/rust-bindgen-hook.sh anyway
-        preConfigure = (attrs.preConfigure or "") + ''
-          # export BINDGEN_EXTRA_CLANG_ARGS="$NIX_CFLAGS_COMPILE"
-          export BINDGEN_EXTRA_CLANG_ARGS="$(< ${clang}/nix-support/cc-cflags) $(< ${clang}/nix-support/libc-cflags) $(< ${clang}/nix-support/libcxx-cxxflags) $NIX_CFLAGS_COMPILE"
-        '';
-        LIBCLANG_PATH = "${buildPackages.llvmPackages.libclang.lib}/lib";
       };
       pipewire-sys = attrs: attrs // {
-        nativeBuildInputs = [ pkg-config ];
+        nativeBuildInputs = [ pkg-config rustPlatform.bindgenHook ];
         buildInputs = [ pipewire ];
-        # alternative to this is add `rustPlatform.bindgenHook` to nativeBuildInputs.
-        # i'm just copying the logic from build-support/rust/hooks/rust-bindgen-hook.sh anyway
-        preConfigure = (attrs.preConfigure or "") + ''
-          # export BINDGEN_EXTRA_CLANG_ARGS="$NIX_CFLAGS_COMPILE"
-          export BINDGEN_EXTRA_CLANG_ARGS="$(< ${clang}/nix-support/cc-cflags) $(< ${clang}/nix-support/libc-cflags) $(< ${clang}/nix-support/libcxx-cxxflags) $NIX_CFLAGS_COMPILE"
-        '';
-        LIBCLANG_PATH = "${buildPackages.llvmPackages.libclang.lib}/lib";
+
+        # bindgenHook does the equivalent of this:
+        # preConfigure = (attrs.preConfigure or "") + ''
+        #   # export BINDGEN_EXTRA_CLANG_ARGS="$NIX_CFLAGS_COMPILE"
+        #   export BINDGEN_EXTRA_CLANG_ARGS="$(< ${clang}/nix-support/cc-cflags) $(< ${clang}/nix-support/libc-cflags) $(< ${clang}/nix-support/libcxx-cxxflags) $NIX_CFLAGS_COMPILE"
+        # '';
+        # LIBCLANG_PATH = "${buildPackages.llvmPackages.libclang.lib}/lib";
       };
       # js_int = attrs: attrs // {
       #   features = attrs.features ++ [ "serde" "std" ];
