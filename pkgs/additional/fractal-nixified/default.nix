@@ -25,6 +25,13 @@ let
           hash = "sha256-z6uURqMG5pT8rXZCv5IzTjXxtt/f4KUeCDSgk90aWdo=";
         };
       };
+      # js_int = attrs: attrs // {
+      #   features = attrs.features ++ [ "serde" "std" ];
+      # };
+      # serde_derive = attrs: attrs // {
+      #   crateName = "serde_derive-x86_64-unknown-linux-gnu";
+      #   sha256 = "";
+      # };
     };
     # defaultCrateOverrides = pkgs.defaultCrateOverrides // {
     #   js_int = attrs: attrs // {
