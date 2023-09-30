@@ -88,8 +88,11 @@ let
           gtk4
           glib
         ];
-        verbose = true;
         CARGO_PKG_REPOSITORY = "nixpkgs";
+        # it wants `type = [ "cdylib" "rlib" ]` but that causes a link format failure on cross compilation
+        #   (tries to link aarch64 gstgtk4.o file with the x86_64 linker).
+        # default if unspecified it `type = [ "lib" ]`
+        type = [ "rlib" ];
       };
       libadwaita-sys = attrs: attrs // {
         nativeBuildInputs = [ pkg-config ];
