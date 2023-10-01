@@ -196,8 +196,10 @@ in
     ];
 
     devPkgs = declPackageSet [
+      "cargo"
       "clang"
       "nodejs"
+      "rustc"
       "tree-sitter"
     ];
 
