@@ -8,6 +8,8 @@
 # - `sed -i 's/target."curve25519_dalek_backend"/target."curve25519_dalek_backend" or ""/g' Cargo.nix`
 
 { pkgs
+, lib
+, stdenv
 , appstream-glib
 , buildPackages
 , cargo
@@ -24,9 +26,11 @@
 , openssl
 , pipewire
 , pkg-config
+, rust
 , rustPlatform
 , sqlite
 , wrapGAppsHook4
+, writeText
 , xdg-desktop-portal
 }:
 let
@@ -78,51 +82,22 @@ let
           sqlite
           xdg-desktop-portal
         ];
+
+        mesonFlags = let
+          # ERROR: 'rust' compiler binary not defined in cross or native file
+          crossFile = writeText "cross-file.conf" ''
+          [binaries]
+          rust = [ 'rustc', '--target', '${rust.toRustTargetSpec stdenv.hostPlatform}' ]
+        '';
+        in
+          lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [ "--cross-file=${crossFile}" ];
+
         postPatch = ''
           substituteInPlace src/meson.build \
             --replace 'cargo_options,'  "" \
             --replace "cargo, 'build',"  "'bash', 'crate2nix_cmd.sh'," \
             --replace "'src' / rust_target" "'target/bin'"
         '';
-        preBuild = ''
-          build_bin() {
-            # build_bin is what buildRustCrate would use to invoke rustc, but we want to drive the build
-            # with meson instead. however, meson doesn't know how to plumb our rust dependencies into cargo,
-            # so we still need to use build_bin for just one portion of the build.
-            #
-            # so, this mocks out the original build_bin:
-            # - we patch upstream fractal to call our `crate2nix_cmd.sh` when it wants to compile the rust.
-            # - we don't actually invoke meson (ninja) at all here, but rather in the `installPhase`.
-            #   if we invoked it here, the whole build would just get re-done in installPhase anyway.
-            #
-            # rustc invocation copied from <pkgs/build-support/rust/build-rust-crate/lib.sh>
-            echo "set -x" > crate2nix_cmd.sh
-            echo "rmdir target/bin" >> crate2nix_cmd.sh
-            echo "rmdir target" >> crate2nix_cmd.sh
-            echo "ln -s ../target ." >> crate2nix_cmd.sh
-            crate_name_=fractal
-            main_file=../src/main.rs
-            echo "rustc "\
-              "--crate-name $crate_name_ "\
-              "$main_file "\
-              "--crate-type bin "\
-              "$BIN_RUSTC_OPTS "\
-              "--out-dir target/bin "\
-              "-L dependency=target/deps "\
-              "$LINK "\
-              "$EXTRA_LINK_ARGS "\
-              "$EXTRA_LINK_ARGS_BINS "\
-              "$EXTRA_LIB "\
-              "--cap-lints allow "\
-              "$BUILD_OUT_DIR "\
-              "$EXTRA_BUILD "\
-              "$EXTRA_FEATURES "\
-              "$EXTRA_RUSTC_FLAGS "\
-              "--color ''${colors}" \
-              >> crate2nix_cmd.sh
-            }
-        '';
-
         postConfigure = ''
           # copied from <pkgs/development/tools/build-managers/meson/setup-hook.sh>
           mesonFlags="--prefix=$prefix $mesonFlags"
@@ -142,6 +117,46 @@ let
 
           meson setup build $mesonFlags "''${mesonFlagsArray[@]}"
           cd build
+        '';
+        preBuild = ''
+          build_bin() {
+            # build_bin is what buildRustCrate would use to invoke rustc, but we want to drive the build
+            # with meson instead. however, meson doesn't know how to plumb our rust dependencies into cargo,
+            # so we still need to use build_bin for just one portion of the build.
+            #
+            # so, this mocks out the original build_bin:
+            # - we patch upstream fractal to call our `crate2nix_cmd.sh` when it wants to compile the rust.
+            # - we don't actually invoke meson (ninja) at all here, but rather in the `installPhase`.
+            #   if we invoked it here, the whole build would just get re-done in installPhase anyway.
+            #
+            # rustc invocation copied from <pkgs/build-support/rust/build-rust-crate/lib.sh>
+            crate_name_=fractal
+            main_file=../src/main.rs
+            cat >> crate2nix_cmd.sh <<EOF
+              set -x
+              rmdir target/bin
+              rmdir target
+              ln -s ../target .
+              rustc \
+              -C linker=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc \
+              --crate-name $crate_name_ \
+              $main_file \
+              --crate-type bin \
+              $BIN_RUSTC_OPTS \
+              --out-dir target/bin \
+              -L dependency=target/deps \
+              $LINK \
+              $EXTRA_LINK_ARGS \
+              $EXTRA_LINK_ARGS_BINS \
+              $EXTRA_LIB \
+              --cap-lints allow \
+              $BUILD_OUT_DIR \
+              $EXTRA_BUILD \
+              $EXTRA_FEATURES \
+              $EXTRA_RUSTC_FLAGS \
+              --color ''${colors}
+        EOF
+          }
         '';
 
         installPhase = "ninjaInstallPhase";
