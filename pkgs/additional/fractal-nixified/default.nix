@@ -59,26 +59,26 @@ let
         outputs = [ "out" ];  # default is "out" and "lib", but that somehow causes cycles
         outputDev = [ "out" ];
         nativeBuildInputs = [
-          glib
-          gtk4
+          appstream-glib  # optional, for validation
+          desktop-file-utils  # for update-desktop-database
+          glib  # for glib-compile-resources, gettext
+          gtk4  # for gtk4-update-icon-cache
           meson
           ninja
           pkg-config
-          desktop-file-utils
-          appstream-glib
           wrapGAppsHook4
         ];
         buildInputs = [
           glib
-          gst_all_1.gstreamer
-          gst_all_1.gst-plugins-base
           gst_all_1.gst-plugins-bad
+          gst_all_1.gst-plugins-base
+          gst_all_1.gstreamer
           gtk4
           gtksourceview5
           libadwaita
+          libshumate
           openssl
           pipewire
-          libshumate
           sqlite
           xdg-desktop-portal
         ];
