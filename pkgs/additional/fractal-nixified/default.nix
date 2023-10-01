@@ -8,17 +8,27 @@
 # - `sed -i 's/target."curve25519_dalek_backend"/target."curve25519_dalek_backend" or ""/g' Cargo.nix`
 
 { pkgs
+, appstream-glib
 , buildPackages
+, cargo
 , dbus-glib
+, desktop-file-utils
 , glib
 , gst_all_1
 , gtk4
 , gtksourceview5
 , libadwaita
 , libshumate
+, meson
+, ninja
+, openssl
 , pipewire
 , pkg-config
 , rustPlatform
+, rustc
+, sqlite
+, wrapGAppsHook4
+, xdg-desktop-portal
 }:
 let
   gtkDeps = attrs: attrs // {
@@ -32,6 +42,7 @@ let
   cargoNix = import ./Cargo.nix {
     inherit pkgs;
     release = false;
+    rootFeatures = [ ];  #< avoids --cfg feature="default", simplifying the rustc CLI so that i can pass it around easier
     defaultCrateOverrides = pkgs.defaultCrateOverrides // {
       fractal = attrs: attrs // {
         src = pkgs.fetchFromGitLab {
@@ -41,6 +52,111 @@ let
           rev = "350a65cb0a221c70fc3e4746898036a345ab9ed8";
           hash = "sha256-z6uURqMG5pT8rXZCv5IzTjXxtt/f4KUeCDSgk90aWdo=";
         };
+        codegenUnits = 256;  #< this does get plumbed, but doesn't seem to affect build speed
+        outputs = [ "out" ];  # default is "out" and "lib", but that somehow causes cycles
+        outputDev = [ "out" ];
+        nativeBuildInputs = [
+          # TODO: maybe not all of these are needed anymore (cargo?)
+          glib
+          gtk4
+          meson
+          ninja
+          pkg-config
+          rustPlatform.bindgenHook
+          # rustPlatform.cargoSetupHook
+          cargo
+          rustc
+          desktop-file-utils
+          appstream-glib
+          wrapGAppsHook4
+        ];
+        buildInputs = [
+          glib
+          gst_all_1.gstreamer
+          gst_all_1.gst-plugins-base
+          gst_all_1.gst-plugins-bad
+          gtk4
+          gtksourceview5
+          libadwaita
+          openssl
+          pipewire
+          libshumate
+          sqlite
+          xdg-desktop-portal
+        ];
+        postPatch = ''
+          substituteInPlace src/meson.build \
+            --replace 'cargo_options,'  "" \
+            --replace "cargo, 'build',"  "'bash', 'crate2nix_cmd.sh'," \
+            --replace "'src' / rust_target" "'target/bin'"
+        '';
+        preBuild = ''
+          build_bin() {
+            # build_bin is what buildRustCrate would use to invoke rustc, but we want to drive the build
+            # with meson instead. however, meson doesn't know how to plumb our rust dependencies into cargo,
+            # so we still need to use build_bin for just one portion of the build.
+            #
+            # so, this mocks out the original build_bin:
+            # - we patch upstream fractal to call our `crate2nix_cmd.sh` when it wants to compile the rust.
+            # - we invoke meson (ninja) here, after buildRustCrate has prepared the dependency layout
+            #
+            # rustc invocation copied from <pkgs/build-support/rust/build-rust-crate/lib.sh>
+            echo "set -x" > crate2nix_cmd.sh
+            echo "rmdir target/bin" >> crate2nix_cmd.sh
+            echo "rmdir target" >> crate2nix_cmd.sh
+            echo "ln -s ../target ." >> crate2nix_cmd.sh
+            crate_name_=fractal
+            main_file=../src/main.rs
+            echo "rustc "\
+              "--crate-name $crate_name_ "\
+              "$main_file "\
+              "--crate-type bin "\
+              "$BIN_RUSTC_OPTS "\
+              "--out-dir target/bin "\
+              "-L dependency=target/deps "\
+              "$LINK "\
+              "$EXTRA_LINK_ARGS "\
+              "$EXTRA_LINK_ARGS_BINS "\
+              "$EXTRA_LIB "\
+              "--cap-lints allow "\
+              "$BUILD_OUT_DIR "\
+              "$EXTRA_BUILD "\
+              "$EXTRA_FEATURES "\
+              "$EXTRA_RUSTC_FLAGS "\
+              "--color ''${colors}" \
+              >> crate2nix_cmd.sh
+
+            local flagsArray=(
+                -j"$NIX_BUILD_CORES"
+                $ninjaFlags "''${ninjaFlagsArray[@]}"
+            )
+
+            echoCmd 'build flags' "''${flagsArray[@]}"
+            TERM=dumb ninja "''${flagsArray[@]}"
+          }
+        '';
+        postConfigure = ''
+          # copied from <pkgs/development/tools/build-managers/meson/setup-hook.sh>
+          mesonFlags="--prefix=$prefix $mesonFlags"
+          mesonFlags="\
+              --libdir=''${!outputLib}/lib --libexecdir=''${!outputLib}/libexec \
+              --bindir=''${!outputBin}/bin --sbindir=''${!outputBin}/sbin \
+              --includedir=''${!outputInclude}/include \
+              --mandir=''${!outputMan}/share/man --infodir=''${!outputInfo}/share/info \
+              --localedir=''${!outputLib}/share/locale \
+              -Dauto_features=''${mesonAutoFeatures:-enabled} \
+              -Dwrap_mode=''${mesonWrapMode:-nodownload} \
+              $mesonFlags"
+
+          mesonFlags="''${crossMesonFlags+$crossMesonFlags }--buildtype=''${mesonBuildType:-plain} $mesonFlags"
+
+          echo "meson flags: $mesonFlags ''${mesonFlagsArray[@]}"
+
+          meson setup build $mesonFlags "''${mesonFlagsArray[@]}"
+          cd build
+        '';
+        # TODO: `ninjaInstallPhase` re-runs the rustc build...
+        installPhase = "ninjaInstallPhase";
       };
 
       clang-sys = attrs: attrs // {
