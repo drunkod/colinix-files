@@ -25,7 +25,6 @@
 , pipewire
 , pkg-config
 , rustPlatform
-, rustc
 , sqlite
 , wrapGAppsHook4
 , xdg-desktop-portal
@@ -56,16 +55,11 @@ let
         outputs = [ "out" ];  # default is "out" and "lib", but that somehow causes cycles
         outputDev = [ "out" ];
         nativeBuildInputs = [
-          # TODO: maybe not all of these are needed anymore (cargo?)
           glib
           gtk4
           meson
           ninja
           pkg-config
-          rustPlatform.bindgenHook
-          # rustPlatform.cargoSetupHook
-          cargo
-          rustc
           desktop-file-utils
           appstream-glib
           wrapGAppsHook4
