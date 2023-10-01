@@ -13,8 +13,8 @@
 , appstream-glib
 , buildPackages
 , cargo
-, dbus-glib
 , desktop-file-utils
+, gdk-pixbuf
 , glib
 , gst_all_1
 , gtk4
@@ -34,17 +34,9 @@
 , xdg-desktop-portal
 }:
 let
-  gtkDeps = attrs: attrs // {
-    # see: <https://github.com/nix-community/crate2nix/issues/286>
-    # gtk -sys packages declare their system dependencies in Cargo.toml like:
-    # `[package.metadata.system-deps.gstreamer_1_0]`
-    nativeBuildInputs = [ pkg-config ];
-    buildInputs = [ dbus-glib gtk4 ];
-    verbose = true;  #< doesn't seem to do anything
-  };
   cargoNix = import ./Cargo.nix {
     inherit pkgs;
-    release = false;
+    release = false;  #< TODO: find a way for release build to not take 2.5 hours (uses a single core)
     rootFeatures = [ ];  #< avoids --cfg feature="default", simplifying the rustc CLI so that i can pass it around easier
     defaultCrateOverrides = pkgs.defaultCrateOverrides // {
       fractal = attrs: attrs // {
@@ -84,7 +76,8 @@ let
         ];
 
         mesonFlags = let
-          # ERROR: 'rust' compiler binary not defined in cross or native file
+          # this gets meson to shutup about rustc not producing executables.
+          # kinda silly though, since we patch out the actual cargo (rustc) invocations.
           crossFile = writeText "cross-file.conf" ''
           [binaries]
           rust = [ 'rustc', '--target', '${rust.toRustTargetSpec stdenv.hostPlatform}' ]
@@ -132,13 +125,14 @@ let
             # rustc invocation copied from <pkgs/build-support/rust/build-rust-crate/lib.sh>
             crate_name_=fractal
             main_file=../src/main.rs
+            fix_link="-C linker=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc"
             cat >> crate2nix_cmd.sh <<EOF
               set -x
               rmdir target/bin
               rmdir target
               ln -s ../target .
               rustc \
-              -C linker=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc \
+              $fix_link \
               --crate-name $crate_name_ \
               $main_file \
               --crate-type bin \
@@ -165,12 +159,26 @@ let
       clang-sys = attrs: attrs // {
         LIBCLANG_PATH = "${buildPackages.llvmPackages.libclang.lib}/lib";
       };
-      # TODO: these can be reduced
-      gdk-pixbuf-sys = gtkDeps;
-      gdk4-wayland-sys = gtkDeps;
-      gdk4-x11-sys = gtkDeps;
-      gio-sys = gtkDeps;
-      gobject-sys = gtkDeps;
+      gdk-pixbuf-sys = attrs: attrs // {
+        nativeBuildInputs = [ pkg-config ];
+        buildInputs = [ gdk-pixbuf ];
+      };
+      gdk4-wayland-sys = attrs: attrs // {
+        nativeBuildInputs = [ pkg-config ];
+        buildInputs = [ gtk4 ];  # depends on "gtk4_wayland"
+      };
+      gdk4-x11-sys = attrs: attrs // {
+        nativeBuildInputs = [ pkg-config ];
+        buildInputs = [ gtk4 ];  # depends on "gtk4_x11"
+      };
+      gio-sys = attrs: attrs // {
+        nativeBuildInputs = [ pkg-config ];
+        buildInputs = [ glib ];
+      };
+      gobject-sys = attrs: attrs // {
+        nativeBuildInputs = [ pkg-config ];
+        buildInputs = [ glib ];
+      };
       gstreamer-audio-sys = attrs: attrs // {
         nativeBuildInputs = [ pkg-config ];
         buildInputs = [ gst_all_1.gst-plugins-base ];
@@ -254,14 +262,6 @@ let
         buildInputs = [ gtksourceview5 ];
       };
     };
-    # defaultCrateOverrides = pkgs.defaultCrateOverrides // {
-    #   js_int = attrs: attrs // {
-    #     features = attrs.features ++ [ "serde" ];
-    #   };
-    #   serde = attrs: attrs // {
-    #     features = attrs.features ++ [ "derive" "serde_derive" ];
-    #   };
-    # };
   };
 in
   cargoNix.workspaceMembers.fractal.build
