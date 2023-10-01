@@ -577,6 +577,7 @@ in {
   #   # - gst-plugin-gtk4 tip is at 0.12.0-alpha1, but that's not published to Crates.io
   #   # - <https://lib.rs/crates/gst-plugin-gtk4>
   #   # - no obvious PRs that merged after 0.11 release relevant to cross compilation
+  #   # patching gst-plugin-gtk4 to not build cdylib fixes the issue in the `fractal-nixified` variant of this package
   # });
 
   # 2023/07/31: upstreaming is unblocked -- if i can rework to not use emulation
