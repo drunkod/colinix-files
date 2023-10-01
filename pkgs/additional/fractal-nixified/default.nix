@@ -98,7 +98,8 @@ let
             #
             # so, this mocks out the original build_bin:
             # - we patch upstream fractal to call our `crate2nix_cmd.sh` when it wants to compile the rust.
-            # - we invoke meson (ninja) here, after buildRustCrate has prepared the dependency layout
+            # - we don't actually invoke meson (ninja) at all here, but rather in the `installPhase`.
+            #   if we invoked it here, the whole build would just get re-done in installPhase anyway.
             #
             # rustc invocation copied from <pkgs/build-support/rust/build-rust-crate/lib.sh>
             echo "set -x" > crate2nix_cmd.sh
@@ -125,16 +126,9 @@ let
               "$EXTRA_RUSTC_FLAGS "\
               "--color ''${colors}" \
               >> crate2nix_cmd.sh
-
-            local flagsArray=(
-                -j"$NIX_BUILD_CORES"
-                $ninjaFlags "''${ninjaFlagsArray[@]}"
-            )
-
-            echoCmd 'build flags' "''${flagsArray[@]}"
-            TERM=dumb ninja "''${flagsArray[@]}"
-          }
+            }
         '';
+
         postConfigure = ''
           # copied from <pkgs/development/tools/build-managers/meson/setup-hook.sh>
           mesonFlags="--prefix=$prefix $mesonFlags"
@@ -155,13 +149,14 @@ let
           meson setup build $mesonFlags "''${mesonFlagsArray[@]}"
           cd build
         '';
-        # TODO: `ninjaInstallPhase` re-runs the rustc build...
+
         installPhase = "ninjaInstallPhase";
       };
 
       clang-sys = attrs: attrs // {
         LIBCLANG_PATH = "${buildPackages.llvmPackages.libclang.lib}/lib";
       };
+      # TODO: these can be reduced
       gdk-pixbuf-sys = gtkDeps;
       gdk4-wayland-sys = gtkDeps;
       gdk4-x11-sys = gtkDeps;
