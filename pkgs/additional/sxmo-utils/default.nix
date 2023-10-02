@@ -74,6 +74,12 @@ let
         hash = "sha256-ZcUD2UWPM8PxGM9TBnGe8JCJgMC72OZYzctDf2o7Ub0=";
       })
 
+      (fetchpatch {
+        name = ''sxmo_wmmenu.sh: add "Kill window" option'';
+        url = "https://lists.sr.ht/~mil/sxmo-devel/patches/45263/mbox";
+        hash = "sha256-qDvlLecAjxcKXP7tvhMnySkWPkj6oV0Z0Qm3kudazdk=";
+      })
+
       ## these might or might not be upstream-worthy
       ./0104-full-auto-rotate.patch
       # ./0106-no-restart-lisgd.patch
@@ -104,11 +110,6 @@ let
         name = "sxmo_hook_apps: launch apps via the window manager";
         url = "https://git.uninsane.org/colin/sxmo-utils/commit/0087acfecedf9d1663c8b526ed32e1e2c3fc97f9.patch";
         hash = "sha256-YwlGM/vx3ZrBShXJJYuUa7FTPQ4CFP/tYffJzUxC7tI=";
-      })
-      (fetchpatch {
-        name = ''sxmo_wmmenu.sh: add "Kill window" option'';
-        url = "https://git.uninsane.org/colin/sxmo-utils/commit/f5148542f9e458aa2b9798c5953ae7a303abc78e.patch";
-        hash = "sha256-2bmFrmBp//3VSXI96OwadfrYhobSWKnosv5tueKUwbE=";
       })
     ];
   };
