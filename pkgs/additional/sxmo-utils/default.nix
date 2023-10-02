@@ -102,8 +102,8 @@ let
         #     - sxmo_appmenu.sh applications
         #       - <application, e.g. chatty>
         name = "sxmo_hook_apps: launch apps via the window manager";
-        url = "https://git.uninsane.org/colin/sxmo-utils/commit/45782db02f6f54f9921db09cb1e3f7108b46d5f8.patch";
-        hash = "sha256-FlbiF9B3GcUsozssXSaUoQpRPNj9DOTkcBnQaue+Ve4=";
+        url = "https://git.uninsane.org/colin/sxmo-utils/commit/0087acfecedf9d1663c8b526ed32e1e2c3fc97f9.patch";
+        hash = "sha256-YwlGM/vx3ZrBShXJJYuUa7FTPQ4CFP/tYffJzUxC7tI=";
       })
     ];
   };
