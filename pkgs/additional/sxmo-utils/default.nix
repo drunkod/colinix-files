@@ -105,6 +105,11 @@ let
         url = "https://git.uninsane.org/colin/sxmo-utils/commit/0087acfecedf9d1663c8b526ed32e1e2c3fc97f9.patch";
         hash = "sha256-YwlGM/vx3ZrBShXJJYuUa7FTPQ4CFP/tYffJzUxC7tI=";
       })
+      (fetchpatch {
+        name = ''sxmo_wmmenu.sh: add "Kill window" option'';
+        url = "https://git.uninsane.org/colin/sxmo-utils/commit/f5148542f9e458aa2b9798c5953ae7a303abc78e.patch";
+        hash = "sha256-2bmFrmBp//3VSXI96OwadfrYhobSWKnosv5tueKUwbE=";
+      })
     ];
   };
 in {
