@@ -110,7 +110,7 @@ in lib.mkMerge [
   systemd.services =
     let
       sed = "${pkgs.gnused}/bin/sed";
-      zoneDir = "/var/lib/trust-dns";
+      stateDir = "/var/lib/trust-dns";
       zoneTemplate = pkgs.writeText "uninsane.org.zone.in" config.sane.dns.zones."uninsane.org".rendered;
 
       anativeMap = {
@@ -118,7 +118,8 @@ in lib.mkMerge [
         hn = bindHn;
         wan = "%AWAN%";  # substituted in preStart
       };
-      zoneFor = flavor: "${zoneDir}/${flavor}/uninsane.org.zone";
+      zoneDirFor = flavor: "${stateDir}/${flavor}";
+      zoneFor = flavor: "${zoneDirFor flavor}/uninsane.org.zone";
       mkTrustDnsService = opts: flavor: let
         flags = let baseCfg = config.services.trust-dns; in
           (lib.optional baseCfg.debug "--debug") ++ (lib.optional baseCfg.quiet "--quiet");
@@ -133,7 +134,7 @@ in lib.mkMerge [
             listen_addrs_ipv4 = opts.listen or [ anative ];
           }
         ));
-        configFile = "${zoneDir}/${flavor}-config.toml";
+        configFile = "${stateDir}/${flavor}-config.toml";
 
         anative = anativeMap."${flavor}";
         port = opts.port or 53;
@@ -145,6 +146,7 @@ in lib.mkMerge [
           wan=$(cat '${config.sane.services.dyn-dns.ipPath}')
           ${sed} s/%AWAN%/$wan/ ${configTemplate} > ${configFile}
         '' + lib.optionalString (!opts ? config) ''
+          mkdir ${zoneDirFor flavor}
           ${sed} \
             -e s/%CNAMENATIVE%/servo.${flavor}/ \
             -e s/%ANATIVE%/${anative}/ \
@@ -155,7 +157,7 @@ in lib.mkMerge [
           ExecStart = ''
             ${pkgs.trust-dns}/bin/trust-dns \
             --port ${builtins.toString port} \
-            --zonedir ${zoneDir}/${flavor}/ \
+            --zonedir ${zoneDirFor flavor}/ \
             --config ${configFile} ${flagsStr}
           '';
         };
