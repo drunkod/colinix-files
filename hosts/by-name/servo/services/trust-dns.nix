@@ -2,8 +2,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  bindLan = config.sane.hosts.by-name."servo".lan-ip;
-  bindHn = config.sane.hosts.by-name."servo".wg-home.ip;
+  nativeAddrs = lib.mapAttrs (_name: builtins.head) config.sane.dns.zones."uninsane.org".inet.A;
   bindOvpn = "10.0.1.5";
 in lib.mkMerge [
 {
@@ -44,7 +43,7 @@ in lib.mkMerge [
 
     CNAME."native" = "%CNAMENATIVE%";
     A."@" =      "%ANATIVE%";
-    A."wan" = "%AWAN%";
+    A."servo.wan" = "%AWAN%";
     A."servo.lan" = config.sane.hosts.by-name."servo".lan-ip;
     A."servo.hn" = config.sane.hosts.by-name."servo".wg-home.ip;
 
@@ -113,11 +112,6 @@ in lib.mkMerge [
       stateDir = "/var/lib/trust-dns";
       zoneTemplate = pkgs.writeText "uninsane.org.zone.in" config.sane.dns.zones."uninsane.org".rendered;
 
-      anativeMap = {
-        lan = bindLan;
-        hn = bindHn;
-        wan = "%AWAN%";  # substituted in preStart
-      };
       zoneDirFor = flavor: "${stateDir}/${flavor}";
       zoneFor = flavor: "${zoneDirFor flavor}/uninsane.org.zone";
       mkTrustDnsService = opts: flavor: let
@@ -125,7 +119,8 @@ in lib.mkMerge [
           (lib.optional baseCfg.debug "--debug") ++ (lib.optional baseCfg.quiet "--quiet");
         flagsStr = builtins.concatStringsSep " " flags;
 
-        # TODO: since we compute the config here, we can customize the listen address right here instead of doing a string substitution.
+        anative = nativeAddrs."servo.${flavor}";
+
         toml = pkgs.formats.toml { };
         configTemplate = opts.config or (toml.generate "trust-dns-${flavor}.toml" (
           (
@@ -136,7 +131,6 @@ in lib.mkMerge [
         ));
         configFile = "${stateDir}/${flavor}-config.toml";
 
-        anative = anativeMap."${flavor}";
         port = opts.port or 53;
       in {
         description = "trust-dns Domain Name Server (serving ${flavor})";
@@ -146,7 +140,7 @@ in lib.mkMerge [
           wan=$(cat '${config.sane.services.dyn-dns.ipPath}')
           ${sed} s/%AWAN%/$wan/ ${configTemplate} > ${configFile}
         '' + lib.optionalString (!opts ? config) ''
-          mkdir ${zoneDirFor flavor}
+          mkdir -p ${zoneDirFor flavor}
           ${sed} \
             -e s/%CNAMENATIVE%/servo.${flavor}/ \
             -e s/%ANATIVE%/${anative}/ \
@@ -166,7 +160,7 @@ in lib.mkMerge [
         wantedBy = [ "multi-user.target" ];
       };
     in {
-      trust-dns-wan = mkTrustDnsService { listen = [ bindLan bindOvpn ]; } "wan";
+      trust-dns-wan = mkTrustDnsService { listen = [ nativeAddrs."servo.lan" bindOvpn ]; } "wan";
       trust-dns-lan = mkTrustDnsService { port = 1053; } "lan";
       trust-dns-hn = mkTrustDnsService { port = 1053; } "hn";
       trust-dns-hn-resolver = mkTrustDnsService {
@@ -185,13 +179,13 @@ in lib.mkMerge [
           # instance of trust-dns which is strictly a resolver, with no authority.
           # hence, this config: a resolver which forwards to the actual authority.
 
-          listen_addrs_ipv4 = ["${bindHn}"]
+          listen_addrs_ipv4 = ["${nativeAddrs."servo.hn"}"]
           listen_addrs_ipv6 = []
 
           [[zones]]
           zone = "uninsane.org"
           zone_type = "Forward"
-          stores = { type = "forward", name_servers = [{ socket_addr = "${bindHn}:1053", protocol = "udp", trust_nx_responses = true }] }
+          stores = { type = "forward", name_servers = [{ socket_addr = "${nativeAddrs."servo.hn"}:1053", protocol = "udp", trust_nx_responses = true }] }
 
           [[zones]]
           # forward the root zone to the local DNS resolver
