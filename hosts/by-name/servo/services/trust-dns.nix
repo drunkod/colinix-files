@@ -1,10 +1,11 @@
+# TODO: split this file apart into smaller files to make it easier to understand
 { config, lib, pkgs, ... }:
 
 let
   bindLan = config.sane.hosts.by-name."servo".lan-ip;
   bindHn = config.sane.hosts.by-name."servo".wg-home.ip;
   bindOvpn = "10.0.1.5";
-in
+in lib.mkMerge [
 {
   services.trust-dns.enable = true;
 
@@ -69,15 +70,55 @@ in
 
   services.trust-dns.settings.zones = [ "uninsane.org" ];
 
-  services.trust-dns.package =
+  # TODO: can i transform this into some sort of service group?
+  # have `systemctl restart trust-dns.service` restart all the individual services?
+  systemd.services.trust-dns.serviceConfig = {
+    DynamicUser = lib.mkForce false;
+    User = "trust-dns";
+    Group = "trust-dns";
+    wantedBy = lib.mkForce [];
+  };
+  systemd.services.trust-dns.enable = false;
+
+  users.groups.trust-dns = {};
+  users.users.trust-dns = {
+    group = "trust-dns";
+    isSystemUser = true;
+  };
+
+  # sane.services.dyn-dns.restartOnChange = [ "trust-dns.service" ];
+
+  networking.nat.enable = true;
+  networking.nat.extraCommands = ''
+    # redirect incoming DNS requests from LAN addresses
+    #   to the LAN-specialized DNS service
+    # N.B.: use the `nixos-*` chains instead of e.g. PREROUTING
+    #   because they get cleanly reset across activations or `systemctl restart firewall`
+    #   instead of accumulating cruft
+    iptables -t nat -A nixos-nat-pre -p udp --dport 53 \
+      -m iprange --src-range 10.78.76.0-10.78.79.255 \
+      -j DNAT --to-destination :1053
+    iptables -t nat -A nixos-nat-pre -p tcp --dport 53 \
+      -m iprange --src-range 10.78.76.0-10.78.79.255 \
+      -j DNAT --to-destination :1053
+  '';
+  sane.ports.ports."1053" = {
+    # because the NAT above redirects in nixos-nat-pre, LAN requests behave as though they arrived on the external interface at the redirected port.
+    # TODO: try nixos-nat-post instead?
+    # TODO: or, don't NAT from port 53 -> port 1053, but rather nat from LAN addr to a loopback addr.
+    # - this is complicated in that loopback is a different interface than eth0, so rewriting the destination address would cause the packets to just be dropped by the interface
+    protocol = [ "udp" "tcp" ];
+    visibleTo.lan = true;
+    description = "colin-redirected-dns-for-lan-namespace";
+  };
+}
+{
+  systemd.services =
     let
       sed = "${pkgs.gnused}/bin/sed";
-      zone-dir = "/var/lib/trust-dns";
-      zone-wan = "${zone-dir}/wan/uninsane.org.zone";
-      zone-lan = "${zone-dir}/lan/uninsane.org.zone";
-      zone-hn = "${zone-dir}/hn/uninsane.org.zone";
-      zone-template = pkgs.writeText "uninsane.org.zone.in" config.sane.dns.zones."uninsane.org".rendered;
-      hn-resolver-config = pkgs.writeText "hn-resolver-config.toml" ''
+      zoneDir = "/var/lib/trust-dns";
+      zoneTemplate = pkgs.writeText "uninsane.org.zone.in" config.sane.dns.zones."uninsane.org".rendered;
+      hnResolverConfig = pkgs.writeText "hn-resolver-config.toml" ''
         # i host a resolver in the wireguard VPN so that clients can resolve DNS through the VPN.
         # (that's what this file achieves).
         #
@@ -107,111 +148,68 @@ in
         stores = { type = "forward", name_servers = [{ socket_addr = "127.0.0.53:53", protocol = "udp", trust_nx_responses = true }] }
       '';
 
-      # TODO: rework this shell script to be independent systemd services per trust-dns instance.
-    in pkgs.writeShellScriptBin "trust-dns" ''
-      # intercept args meant for the real trust-dns, so i can modify them
-      _arg__config="$1" # --config
-      shift
-      orig_config="$1"  # /path/to/config.toml
-      shift
+      anativeMap = {
+        lan = bindLan;
+        hn = bindHn;
+        wan = "$wan";  # evaluated at runtime
+      };
+      zoneFor = flavor: "${zoneDir}/${flavor}/uninsane.org.zone";
+      mkTrustDnsService = opts: flavor: let
+        flags = let baseCfg = config.services.trust-dns; in
+          (lib.optional baseCfg.debug "--debug") ++ (lib.optional baseCfg.quiet "--quiet");
+        flagsStr = builtins.concatStringsSep " " flags;
 
-      # compute IP address of self for each interface
-      mkdir -p ${zone-dir}/{wan,lan,hn}
-      wan=$(cat '${config.sane.services.dyn-dns.ipPath}')
-      lan=${bindLan}
-      hn=${bindHn}
-      lanAndOvpn='${bindLan}", "${bindOvpn}'
+        # TODO: since we compute the config here, we can customize the listen address right here instead of doing a string substitution.
+        toml = pkgs.formats.toml { };
+        origConfig = toml.generate "trust-dns.toml" (
+          lib.filterAttrsRecursive (_: v: v != null) config.services.trust-dns.settings
+        );
 
-      # create specializations that resolve native.uninsane.org to different CNAMEs
-      ${sed} \
-        -e s/%AWAN%/$wan/ \
-        -e s/%CNAMENATIVE%/wan/ \
-        -e s/%ANATIVE%/$wan/ \
-        ${zone-template} > ${zone-wan}
-      # to service WAN, listen both on LAN interface and the OVPN interface
-      sed "s/%LISTEN%/$lanAndOvpn/" $orig_config > ${zone-dir}/wan-config.toml
+        configFile = "${zoneDir}/${flavor}-config.toml";
+        anative = anativeMap."${flavor}";
+        listen = opts.listen or anative;
+        port = opts.port or 53;
+        makeConfig = if opts ? config then
+          "ln -sf ${opts.config} ${configFile}"
+        else ''
+          wan=$(cat '${config.sane.services.dyn-dns.ipPath}')
+          ${sed} \
+            -e s/%AWAN%/$wan/ \
+            -e s/%CNAMENATIVE%/servo.${flavor}/ \
+            -e s/%ANATIVE%/${anative}/ \
+           ${zoneTemplate} > ${zoneFor flavor}
+          # listen only on the desired interfaces
+          sed 's/%LISTEN%/${listen}/' ${origConfig} > ${configFile}
+        '';
+      in {
+        description = "trust-dns Domain Name Server (serving ${flavor})";
+        unitConfig.Documentation = "https://trust-dns.org/";
 
-      ${sed} \
-        -e s/%AWAN%/$wan/ \
-        -e s/%CNAMENATIVE%/servo.lan/ \
-        -e s/%ANATIVE%/$lan/ \
-        ${zone-template} > ${zone-lan}
-      # to service LAN, listen only on the LAN
-      sed s/%LISTEN%/$lan/ $orig_config > ${zone-dir}/lan-config.toml
+        preStart = makeConfig;
+        serviceConfig = config.systemd.services.trust-dns.serviceConfig // {
+          ExecStart = ''
+            ${pkgs.trust-dns}/bin/trust-dns \
+            --port ${builtins.toString port} \
+            --zonedir ${zoneDir}/${flavor}/ \
+            --config ${configFile} ${flagsStr}
+          '';
+        };
 
-      ${sed} \
-        -e s/%AWAN%/$wan/ \
-        -e s/%CNAMENATIVE%/servo.hn/ \
-        -e s/%ANATIVE%/$hn/ \
-       ${zone-template} > ${zone-hn}
-      # to service wireguard, listen only on hn
-      sed s/%LISTEN%/$hn/ $orig_config > ${zone-dir}/hn-config.toml
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+      };
+    in {
+      trust-dns-wan = mkTrustDnsService { listen = ''${bindLan}", "${bindOvpn}''; } "wan";
+      trust-dns-lan = mkTrustDnsService { port = 1053; } "lan";
+      trust-dns-hn = mkTrustDnsService { port = 1053; } "hn";
+      trust-dns-hn-resolver = mkTrustDnsService { config = hnResolverConfig; } "hn-resolver";
+    };
 
-      # launch the different interfaces, separately
-      ${pkgs.trust-dns}/bin/trust-dns \
-        --zonedir "${zone-dir}/wan/" --config "${zone-dir}/wan-config.toml" \
-        "$@" &
-      WANPID=$!
-
-      ${pkgs.trust-dns}/bin/trust-dns --port 1053 \
-        --zonedir "${zone-dir}/lan/" --config "${zone-dir}/lan-config.toml" \
-        "$@" &
-      LANPID=$!
-
-      ln -sf ${hn-resolver-config} ${zone-dir}/hn-resolver-config.toml
-      ${pkgs.trust-dns}/bin/trust-dns \
-        --config "${zone-dir}/hn-resolver-config.toml" \
-        "$@" &
-      HNRESOLVERPID=$!
-
-      ${pkgs.trust-dns}/bin/trust-dns --port 1053 \
-        --zonedir "${zone-dir}/hn/" --config "${zone-dir}/hn-config.toml" \
-        "$@" &
-      HNPID=$!
-
-      # wait until any of the processes exits, then kill them all and exit error
-      while kill -0 $WANPID $LANPID $HNRESOLVERPID $HNPID; do
-        sleep 5
-      done
-      kill $WANPID $LANPID $HNRESOLVERPID $HNPID
-      exit 1
-    '';
-
-  systemd.services.trust-dns.serviceConfig = {
-    DynamicUser = lib.mkForce false;
-    User = "trust-dns";
-    Group = "trust-dns";
-  };
-  users.groups.trust-dns = {};
-  users.users.trust-dns = {
-    group = "trust-dns";
-    isSystemUser = true;
-  };
-
-  sane.services.dyn-dns.restartOnChange = [ "trust-dns.service" ];
-
-  networking.nat.enable = true;
-  networking.nat.extraCommands = ''
-    # redirect incoming DNS requests from LAN addresses
-    #   to the LAN-specialized DNS service
-    # N.B.: use the `nixos-*` chains instead of e.g. PREROUTING
-    #   because they get cleanly reset across activations or `systemctl restart firewall`
-    #   instead of accumulating cruft
-    iptables -t nat -A nixos-nat-pre -p udp --dport 53 \
-      -m iprange --src-range 10.78.76.0-10.78.79.255 \
-      -j DNAT --to-destination :1053
-    iptables -t nat -A nixos-nat-pre -p tcp --dport 53 \
-      -m iprange --src-range 10.78.76.0-10.78.79.255 \
-      -j DNAT --to-destination :1053
-  '';
-  sane.ports.ports."1053" = {
-    # because the NAT above redirects in nixos-nat-pre, LAN requests behave as though they arrived on the external interface at the redirected port.
-    # TODO: try nixos-nat-post instead?
-    # TODO: or, don't NAT from port 53 -> port 1053, but rather nat from LAN addr to a loopback addr.
-    # - this is complicated in that loopback is a different interface than eth0, so rewriting the destination address would cause the packets to just be dropped by the interface
-    protocol = [ "udp" "tcp" ];
-    visibleTo.lan = true;
-    description = "colin-redirected-dns-for-lan-namespace";
-  };
-
+  sane.services.dyn-dns.restartOnChange = [
+    "trust-dns-wan.service"
+    "trust-dns-lan.service"
+    "trust-dns-hn.service"
+    # "trust-dns-hn-resolver.service"  # doesn't need restart because it doesn't know about WAN IP
+  ];
 }
+]
