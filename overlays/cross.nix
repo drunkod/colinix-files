@@ -695,10 +695,13 @@ in {
       nativeBuildInputs = orig.nativeBuildInputs ++ [ final.libgcrypt final.openssh final.glib ];
     });
     gnome-maps = super.gnome-maps.overrideAttrs (upstream: {
-      # fixes: "ERROR: Program 'gjs' not found or not executable"
       postPatch = (upstream.postPatch or "") + ''
+        # fixes: "ERROR: Program 'gjs' not found or not executable"
         substituteInPlace meson.build \
           --replace "find_program('gjs')" "find_program('${final.gjs}/bin/gjs')"
+        # fixes missing `gapplication` binary when not on PATH (needed for non-cross build too)
+        substituteInPlace data/org.gnome.Maps.desktop.in.in \
+          --replace "gapplication" "${final.glib.bin}/bin/gapplication"
       '';
     });
     # fixes: "Program gdbus-codegen found: NO"
