@@ -1,7 +1,8 @@
 { pkgs, ... }:
 {
   sane.programs.fractal = {
-    package = pkgs.fractal-latest;
+    package = pkgs.fractal-nixified;
+    # package = pkgs.fractal-latest;
     # package = pkgs.fractal-next;
 
     persist.private = [
