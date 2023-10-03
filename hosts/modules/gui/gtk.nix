@@ -180,8 +180,31 @@ let
       # other Tokyonight-* omitted
     };
     icon-theme = {
+      # find icon themes via `nix-locate share/icons/Adwaita`
+      # then determine the name here by building and `ls result/share/icons`
+      # this misses quite a few icon themes that aren't Adwaita-based.
+      # for those, try `nix-locate share/icons`?
       Adwaita = gnome.adwaita-icon-theme;
+      Arc = arc-icon-theme;
       HighContrast = gnome.gnome-themes-extra;  # gtk-3.0
+      Humanity = humanity-icon-theme;
+      Humanity-Dark = humanity-icon-theme;
+      Numix = numix-icon-theme;
+      Numix-Light = numix-icon-theme;
+      Paper = paper-icon-theme;
+      Paper-Mono-Dark = paper-icon-theme;
+      Pop = pop-icon-theme;
+      Tela-circle = tela-circle-icon-theme;
+      Tela-circle-dark = tela-circle-icon-theme;
+      Tela-circle-light = tela-circle-icon-theme;
+      elementary-xfce = elementary-xfce-icon-theme;
+      elementary-xfce-dark = elementary-xfce-icon-theme;
+      elementary-xfce-darker = elementary-xfce-icon-theme;
+      elementary-xfce-darkest = elementary-xfce-icon-theme;
+      kora = kora-icon-theme;
+      kora-light = kora-icon-theme;
+      kora-light-panel = kora-icon-theme;
+      kora-pgrey = kora-icon-theme;
     };
   };
 in
