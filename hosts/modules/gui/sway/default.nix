@@ -197,6 +197,7 @@ in
       sane.gui.gtk.enable = lib.mkDefault true;
       # sane.gui.gtk.gtk-theme = lib.mkDefault "Fluent-Light-compact";
       sane.gui.gtk.gtk-theme = lib.mkDefault "Tokyonight-Light-B";
+      sane.gui.gtk.icon-theme = lib.mkDefault "Pop";
 
       # swap in these lines to use SDDM instead of `services.greetd`.
       # services.xserver.displayManager.sddm.enable = true;

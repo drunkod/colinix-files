@@ -185,15 +185,15 @@ let
       # this misses quite a few icon themes that aren't Adwaita-based.
       # for those, try `nix-locate share/icons`?
       Adwaita = gnome.adwaita-icon-theme;
-      Arc = arc-icon-theme;
+      Arc = arc-icon-theme;  # 4.5/5, meh icon for "vertical ellipsis".
       HighContrast = gnome.gnome-themes-extra;  # gtk-3.0
       Humanity = humanity-icon-theme;
       Humanity-Dark = humanity-icon-theme;
-      Numix = numix-icon-theme;
+      Numix = numix-icon-theme;  # 4/5, meh icon for "back".
       Numix-Light = numix-icon-theme;
-      Paper = paper-icon-theme;
+      Paper = paper-icon-theme;  # 4/5, weird icon for "info".
       Paper-Mono-Dark = paper-icon-theme;
-      Pop = pop-icon-theme;
+      Pop = pop-icon-theme;  # 5/5
       Tela-circle = tela-circle-icon-theme;
       Tela-circle-dark = tela-circle-icon-theme;
       Tela-circle-light = tela-circle-icon-theme;
