@@ -410,10 +410,12 @@ class Sequencer:
         self._at_structured_cmd('QGPSLOC', value='0', check=False)
         logger.debug('dumping AGPS positioning mode bitfield')
         self._at_structured_cmd('QGPSCFG', 'agpsposmode')
-        logger.debug('dumping last modem GPS output, if available')
-        gpsout = self.executor.read_file(GPS_STREAM_ENDPOINT)
-        gpslines = gpsout.decode('utf-8').split('\n')[-12:]
-        logger.debug('\n'.join(gpslines))
+
+        # N.B.: /dev/ttyUSB1 can block indefinitely on reads (particularly when competing with another consumer)
+        # logger.debug('dumping last modem GPS output, if available')
+        # gpsout = self.executor.read_file(GPS_STREAM_ENDPOINT)
+        # gpslines = gpsout.decode('utf-8').split('\n')[-12:]
+        # logger.debug('\n'.join(gpslines))
 
     @log_scope("configuring audio...", "audio configured")
     def enable_audio(self) -> None:
