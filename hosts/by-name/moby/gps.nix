@@ -65,4 +65,5 @@
   ];
 
   sane.services.eg25-control.enable = true;
+  sane.programs.where-am-i.enableFor.user.colin = true;
 }
