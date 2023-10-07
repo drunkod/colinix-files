@@ -7,15 +7,16 @@
 # - `screen /dev/ttyUSB2 115200`
 #   - `AT+QGPSCFG="nmeasrc",1`
 #   - `AT+QGPS=1`
+# this process is automated by my `eg25-control` program and services (`eg25-control-powered`, `eg25-control-gps`)
+# - see the `modules/` directory further up this repository.
 #
-# now, something like `gpsd` can directly read from /dev/ttyUSB1.
+# now, something like `gpsd` can directly read from /dev/ttyUSB1,
+# or geoclue can query the GPS directly through modem-manager
 #
 # initial GPS fix can take 15+ minutes.
-# meanwhile, services like eg25-manager can speed this up by uploading assisted GPS data to the modem.
+# meanwhile, services like eg25-manager or eg25-control-freshen-agps can speed this up by uploading assisted GPS data to the modem.
 #
-# geoclue somehow fits in here as a geospatial provider that leverages GPS and also other sources like radio towers
-#
-# support:
+# support/help:
 # - geoclue, gnome-maps
 #   - irc: #gnome-maps on irc.gimp.org
 #   - Matrix: #gnome-maps:gnome.org  (unclear if bridged to IRC)
@@ -27,6 +28,12 @@
 # - `mepo`: uses gpsd, minimalist, flaky, and buttons are kinda hard to activate on mobile
 # - puremaps?
 # - osmin?
+#
+# known/outstanding bugs:
+# - `systemctl start eg25-control-gps` can the hang the whole system (2023/10/06)
+#   - i think it's actually `eg25-control-powered` which does this (started by the gps)
+#   - best guess is modem draws so much power at launch that other parts of the system see undervoltage
+#   - workaround is to hard power-cycle the system. the modem may not bring up after reboot: leave unpowered for 60s and boot again.
 #
 # future work:
 # - integrate with [wigle](https://www.wigle.net/) for offline equivalent to Mozilla Location Services
