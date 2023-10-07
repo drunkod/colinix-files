@@ -34,6 +34,8 @@
 #   ```
 #   - observed after a suspension of 67 minutes.
 #   - WiFi chip *should* have a way to wake on connection state change, i just need to enable it?
+#     - `iw phy phy0 wowlan enable disconnect` => Invalid argument (-22)
+#     - `iw phy0 wowlan enable net-detect ...` (from man example) => Operation not supported (-95)
 
 { config, lib, pkgs, ... }:
 let
