@@ -19,6 +19,21 @@
 # - packet matching happens below the OS, so it's not generic over virtual network devices like tunnels.
 #   Wake On Lan with a VPN effectively requires that you wake on *every* packet routed via that VPN
 #   since the meaning within any packet isn't obvious to the chipset.
+#
+# known problems:
+# - may fail to wake on LAN, with the following signature after power-button wake:
+#   ```
+#   wpa_supplicant: wlan0: CTRL-EVENT-DISCONNECTED bssid=xx:xx:xx:xx:xx:xx reason=6
+#   wpa_supplicant: wlan0: Trying to associate with xx:xx:xx:xx:xx:xx (SSID='xx' freq=2437 MHz)
+#   wpa_supplicant: wlan0: CTRL-EVENT-REGDOM-CHANGE init=CORE type=WORLD
+#   wpa_supplicant: wlan0: CTRL-EVENT-STARTED-CHANNEL-SWITCH freq=2437 ht_enabled=1 ch_offset=0 ch_width=20 MHz cf1=2437 cf2=0
+#   wpa_supplicant: wlan0: Associated with xx:xx:xx:xx:xx:xx
+#   wpa_supplicant: wlan0: CTRL-EVENT-SUBNET-STATUS-UPDATE status=0
+#   wpa_supplicant: wlan0: WPA: Key negotiation completed with xx:xx:xx:xx:xx:xx [PTK=CCMP GTK=CCMP]
+#   wpa_supplicant: wlan0: CTRL-EVENT-CONNECTED - Connection to xx:xx:xx:xx:xx:xx completed [id=0 id_str=]
+#   ```
+#   - observed after a suspension of 67 minutes.
+#   - WiFi chip *should* have a way to wake on connection state change, i just need to enable it?
 
 { config, lib, pkgs, ... }:
 let
