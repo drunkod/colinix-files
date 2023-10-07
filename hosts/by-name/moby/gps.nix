@@ -38,7 +38,7 @@
 # future work:
 # - integrate with [wigle](https://www.wigle.net/) for offline equivalent to Mozilla Location Services
 
-{ lib, ... }:
+{ config, lib, ... }:
 {
   # test gpsd with `gpspipe -w -n 10 2> /dev/null | grep -m 1 TPV | jq '.lat, .lon' | tr '\n' ' '`
   # ^ should return <lat> <long>
@@ -54,10 +54,10 @@
     isAllowed = true;
     isSystem = false;
     # XXX: setting users != [] might be causing `where-am-i` to time out
-    # users = [
-    #   # restrict to only one set of users. empty array (default) means "allow any user to access geolocation".
-    #   (builtins.toString config.users.users.colin.uid)
-    # ];
+    users = [
+      # restrict to only one set of users. empty array (default) means "allow any user to access geolocation".
+      (builtins.toString config.users.users.colin.uid)
+    ];
   };
   systemd.services.geoclue.after = lib.mkForce [];  #< defaults to network-online, but not all my sources require network
   users.users.geoclue.extraGroups = [
