@@ -113,8 +113,8 @@ let
       })
       (fetchpatch {
         name = "suspend: block if Dino is in a call";
-        url = "https://git.uninsane.org/colin/sxmo-utils/commit/9427e4d1251599bbc822db477f387926ede90554.patch";
-        hash = "sha256-VSlrbfbsAGeih852ArQMFZtTxE+ADMk2OPXSKVpCPS0=";
+        url = "https://git.uninsane.org/colin/sxmo-utils/commit/50c1a63f9858dcfcd7717960f1adbc90535af295.patch";
+        hash = "sha256-E3I34yWptA+KhdwUFgy2OQjnIgnsp1jw8qRH/XIErdA=";
       })
     ];
   };
