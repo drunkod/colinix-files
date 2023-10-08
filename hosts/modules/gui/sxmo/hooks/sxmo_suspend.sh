@@ -11,11 +11,11 @@
 
 suspend_time=300
 
-sxmo_log "calling suspend with suspend_time <$suspend_time>"
+sxmo_log "calling suspend for duration: $suspend_time"
 
 rtcwake -m mem -s "$suspend_time" || exit 1
 
-cat /proc/net/rtl8723cs/wlan0/wowlan_last_wake_reason
+sxmo_log "exited suspend: $(cat /proc/net/rtl8723cs/wlan0/wowlan_last_wake_reason)"
 
 sxmo_hook_postwake.sh
 
