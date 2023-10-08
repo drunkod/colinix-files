@@ -90,7 +90,7 @@ let
     suspend = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_suspend.sh";
       src = ./hooks;
-      pkgs = [ "coreutils" "util-linux" ];
+      pkgs = [ "util-linux" ];
     };
   };
 in
