@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i bash -p util-linux
+#!nix-shell -i bash -p coreutils -p util-linux
 
 # yeah, this isn't technically a hook, but the hook infrastructure isn't actually
 # restricted to stuff that starts with sxmo_hook_ ...
@@ -14,6 +14,8 @@ suspend_time=300
 sxmo_log "calling suspend with suspend_time <$suspend_time>"
 
 rtcwake -m mem -s "$suspend_time" || exit 1
+
+cat /proc/net/rtl8723cs/wlan0/wowlan_last_wake_reason
 
 sxmo_hook_postwake.sh
 
