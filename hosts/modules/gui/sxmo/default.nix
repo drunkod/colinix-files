@@ -87,6 +87,11 @@ let
       src = ./hooks;
       pkgs = [ "superd" "xdg-user-dirs" ];
     };
+    suspend = pkgs.static-nix-shell.mkBash {
+      pname = "sxmo_suspend.sh";
+      src = ./hooks;
+      pkgs = [ "coreutils" "util-linux" ];
+    };
   };
 in
 {
@@ -176,6 +181,7 @@ in
         "sxmo_hook_postwake.sh" = "${hookPkgs.postwake}/bin/sxmo_hook_postwake.sh";
         "sxmo_hook_rotate.sh" = "${hookPkgs.rotate}/bin/sxmo_hook_rotate.sh";
         "sxmo_hook_start.sh" = "${hookPkgs.start}/bin/sxmo_hook_start.sh";
+        "sxmo_suspend.sh" = "${hookPkgs.suspend}/bin/sxmo_suspend.sh";
       };
       description = ''
         extra hooks to add with higher priority than the builtins
