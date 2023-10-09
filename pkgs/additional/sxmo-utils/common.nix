@@ -171,7 +171,7 @@ stdenv.mkDerivation rec {
         ;;
         (*)
           wrapProgram "$f" \
-            --prefix PATH : "${lib.makeBinPath runtimeDeps}"
+            --suffix PATH : "${lib.makeBinPath runtimeDeps}"
         ;;
       esac
     done
