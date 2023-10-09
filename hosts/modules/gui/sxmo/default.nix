@@ -11,6 +11,8 @@
 #   - implements sxmo as a direct systemd service -- apparently no DM
 #   - packages sxmo-utils
 #     - injects PATH into each script
+# other OS works:
+# - <https://git.sr.ht/~aren/sxmo-utils> (arch)
 # - perhaps sxmo-utils is best packaged via the `resholve` shell solver?
 #
 # sxmo upstream links:
