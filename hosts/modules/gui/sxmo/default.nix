@@ -246,12 +246,12 @@ in
           "guiApps"
           "bemenu"  # specifically to import its theming
           "sfeed"      # want this here so that the user's ~/.sfeed/sfeedrc gets created
-          "superd"     # make superctl (used by sxmo) be on PATH
+          # "superd"     # make superctl (used by sxmo) be on PATH
         ];
 
         persist.cryptClearOnBoot = [
           # builds to be 10's of MB per day
-          ".local/state/superd/logs"
+          # ".local/state/superd/logs"
         ];
       };
     }
@@ -413,25 +413,25 @@ in
         # start the service many times.
         # see <repo:craftyguy/superd:internal/cmd/cmd.go>
         # TODO: better fix may be to patch `sxmo_hook_lisgdstart.sh` and force it to behave as a singleton
-        systemd.services."dedupe-sxmo-lisgd" = {
-          description = "kill duplicate lisgd processes started by superd";
-          serviceConfig = {
-            Type = "oneshot";
-          };
-          script = ''
-            if [ "$(${pkgs.procps}/bin/pgrep -c lisgd)" -gt 1 ]; then
-              echo 'killing duplicated lisgd daemons'
-              ${pkgs.psmisc}/bin/killall lisgd  # let superd restart it
-            fi
-          '';
-          wantedBy = [ "multi-user.target" ];
-        };
-        systemd.timers."dedupe-sxmo-lisgd" = {
-          wantedBy = [ "dedupe-sxmo-lisgd.service" ];
-          timerConfig = {
-            OnUnitActiveSec = "2min";
-          };
-        };
+        # systemd.services."dedupe-sxmo-lisgd" = {
+        #   description = "kill duplicate lisgd processes started by superd";
+        #   serviceConfig = {
+        #     Type = "oneshot";
+        #   };
+        #   script = ''
+        #     if [ "$(${pkgs.procps}/bin/pgrep -c lisgd)" -gt 1 ]; then
+        #       echo 'killing duplicated lisgd daemons'
+        #       ${pkgs.psmisc}/bin/killall lisgd  # let superd restart it
+        #     fi
+        #   '';
+        #   wantedBy = [ "multi-user.target" ];
+        # };
+        # systemd.timers."dedupe-sxmo-lisgd" = {
+        #   wantedBy = [ "dedupe-sxmo-lisgd.service" ];
+        #   timerConfig = {
+        #     OnUnitActiveSec = "2min";
+        #   };
+        # };
 
         sane.user.fs = lib.mkMerge [
           {
@@ -483,14 +483,28 @@ in
         ];
 
         sane.user.services = let
-          sxmoPath = [ "/home/colin/.config/sxmo/hooks" package ] ++ package.runtimeDeps ++ [
-            "/run/current-system/sw"  # for flock wrapper
-            "/run/wrappers"  # for doas
-          ];
+          sxmoPath = [
+            "/etc/profiles/per-user/colin"  # so as to launch user-enabled applications (like g4music, etc)
+            "/run/wrappers"  # for doas, and anything else suid
+            "/run/current-system/sw"  # for things installed system-wide, especially flock
+          ] ++ [ package ] ++ package.runtimeDeps;
+          sxmoEnvSetup = ''
+            # mimic my sxmo_init.sh a bit. refer to the actual sxmo_init.sh above for details.
+            # the specific ordering, and the duplicated profile sourcing, matters.
+            export HOME="''${HOME:-/home/colin}"
+            export XDG_CONFIG_HOME="''${XDG_CONFIG_HOME:-$HOME/.config}"
+            source "$XDG_CONFIG_HOME/sxmo/profile"
+            source ${package}/etc/profile.d/sxmo_init.sh
+            source "$XDG_CONFIG_HOME/sxmo/profile"
+            export PATH="$XDG_CONFIG_HOME/sxmo/hooks:$PATH"
+          '';
           sxmoService = name: {
             description = "sxmo ${name}";
             path = sxmoPath;
-            serviceConfig.ExecStart = "${pkgs.coreutils}/bin/env sxmo_${name}.sh";
+            script = ''
+              ${sxmoEnvSetup}
+              exec sxmo_${name}.sh
+            '';
             serviceConfig.Type = "simple";
             serviceConfig.Restart = "always";
             serviceConfig.RestartSec = "20s";
@@ -511,13 +525,14 @@ in
           bonsaid = {
             description = "programmable input dispatcher";
             path = sxmoPath;
-            # systemd expands %E to $XDG_CONFIG_HOME
-            serviceConfig.ExecStart = "${pkgs.bonsai}/bin/bonsaid -t %E/sxmo/bonsai_tree.json";
-            serviceConfig.ExecStartPre = "${pkgs.coreutils}/bin/rm -f %t/bonsai";  # systemd expands %t to $XDG_RUNTIME_DIR
+            script = ''
+              ${sxmoEnvSetup}
+              ${pkgs.coreutils}/bin/rm -f $XDG_RUNTIME_DIR/bonsai
+              exec ${pkgs.bonsai}/bin/bonsaid -t $XDG_CONFIG_HOME/sxmo/bonsai_tree.json
+            '';
             serviceConfig.Type = "simple";
             serviceConfig.Restart = "always";
             serviceConfig.RestartSec = "5s";
-            environment.SXMO_STATE = "/run/user/1000/sxmo.state";  #< TODO: this is $XDG_RUNTIME_DIR/sxmo.state
           };
         };
       }
