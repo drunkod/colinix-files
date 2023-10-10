@@ -56,6 +56,9 @@
 #       - CONFIG_ROAMING_FLAG = 0x3
 # - may fail to wake on LAN, even without any signature like the above
 #   - observed after a suspension of 10 minutes, trying to contact from laptop (laptop would have previously not contacted moby)
+#
+# TODO: remove this file
+# it's been obsoleted by hosts/modules/gui/sxmo/hooks/sxmo_suspend.sh
 
 
 { config, lib, pkgs, ... }:

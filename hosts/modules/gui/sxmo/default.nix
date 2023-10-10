@@ -91,7 +91,7 @@ let
     suspend = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_suspend.sh";
       src = ./hooks;
-      pkgs = [ "util-linux" ];
+      pkgs = [ "coreutils" "rtl8723cs-wowlan" "time" "util-linux" ];
     };
   };
 in
