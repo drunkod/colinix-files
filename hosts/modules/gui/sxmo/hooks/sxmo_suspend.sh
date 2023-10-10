@@ -19,11 +19,11 @@ doas rtl8723cs-wowlan arp --dest-ip 10.78.79.54
 
 echo "calling suspend for duration: $suspend_time"
 
-start=$(date "+%s")
+start="$(date "+%s")"
 rtcwake -m mem -s "$suspend_time" || exit 1
-end=$(date "+%s")
-duration=$(("$end" - "$start")
-echo "suspended for $duration seconds"
+#We woke up again
+time_spent="$(( $(date "+%s") - start ))"
+echo "suspended for $time_spent seconds"
 
 sxmo_hook_postwake.sh
 
