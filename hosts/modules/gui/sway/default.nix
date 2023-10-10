@@ -230,6 +230,10 @@ in
         # emulate pulseaudio for legacy apps (e.g. sxmo-utils)
         pulse.enable = true;
       };
+      # rtkit/RealtimeKit: allow applications which want realtime audio (e.g. Dino? Pulseaudio server?) to request it.
+      # this might require more configuration (e.g. polkit-related) to work exactly as desired.
+      # - readme outlines requirements: <https://github.com/heftig/rtkit>
+      security.rtkit.enable = true;
       # persist per-device volume levels
       sane.user.persist.plaintext = [ ".local/state/wireplumber" ];
 
