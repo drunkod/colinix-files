@@ -154,6 +154,16 @@ let
     #     hash = "sha256-DnLDseL1Ar5gE31CQUTrGNxxNu88jGCzj8ko99Z8vUA=";
     #   };
     # }
+    {
+      # experimental: set CONFIG_ARP_KEEP_ALIVE and CONFIG_GTK_OL if CONFIG_WOWLAN=y
+      # this patch just uncomments some commented-out #defines.
+      # they were commented out from the first time megi imported this driver, never touched.
+      name = "enable-wowlan-offloads";
+      patch = fetchpatch {
+        url = "https://git.uninsane.org/colin/linux/commit/c4d2d12e31ae70bb43c6190eccc49e42ad645090.patch";
+        hash = "sha256-B1rxeVu6y5hP/iMLSbl3ExwrEIXL7WShWsMFh6ko6yk=";
+      };
+    }
   ] ++ lib.optionals (!withModemPower) [
     {
       # Drop modem-power from DT to allow eg25-manager to have full control.

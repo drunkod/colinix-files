@@ -27,6 +27,8 @@
 #     - CONFIG_SUSPEND_TYPE = 0  (i think this is correct)
 #     - CONFIG_LPS_MODE = 1  (setting to 0 would disable LPS)
 #   - maybe ARP gets disabled as part of the power saving features (iw phy ... power-save; CONFIG_POWER_SAVING=y)?
+#   - driver code hints that some things like wake on arp are conditional on the state of AP association at the `wowlan enable` call.
+#     so maybe it's proper to call `iw wowlan enable` immediately before *every* suspend instead of just once at boot
 # - packet matching happens below the OS, so it's not generic over virtual network devices like tunnels.
 #   Wake On Lan with a VPN effectively requires that you wake on *every* packet routed via that VPN
 #   since the meaning within any packet isn't obvious to the chipset.
@@ -44,6 +46,7 @@
 #   wpa_supplicant: wlan0: CTRL-EVENT-CONNECTED - Connection to xx:xx:xx:xx:xx:xx completed [id=0 id_str=]
 #   ```
 #   - observed after a suspension of 67 minutes.
+#   - but also observed after a suspension of just 5 minutes.
 #   - WiFi chip *should* have a way to wake on connection state change, i just need to enable it?
 #     - `iw phy phy0 wowlan enable disconnect` => Invalid argument (-22)
 #     - `iw phy0 wowlan enable net-detect ...` (from man example) => Operation not supported (-95)
