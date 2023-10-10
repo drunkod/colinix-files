@@ -56,6 +56,22 @@
 #       - CONFIG_ROAMING_FLAG = 0x3
 # - may fail to wake on LAN, even without any signature like the above
 #   - observed after a suspension of 10 minutes, trying to contact from laptop (laptop would have previously not contacted moby)
+# - may disassociate from WiFi and *refuse to reassociate even via nmtui, restarting NetworkManager/wpa_supplicant/polkit*
+#   - solution is `modprobe -r 8723cs && modprobe 8723cs`, then way a couple minutes.
+#   - possible this only happens when the driver is compiled with CONFIG_GTK_OL (or CONFIG_ARP_KEEP_ALIVE).
+#   - signature:
+#     - `Oct 10 14:42:40 moby sxmo_autosuspend-start[1312366]: DEBUG:__main__:invoking: iwpriv wlan0 wow_set_pattern pattern=-:-:-:-:-:-:-:-:-:-:-:-:08:00:-:-:-:-:-:-:-:-:-:06:-:-:-:-:-:-:-:-:-:-:-:-:00:16`
+#     - `Oct 10 14:42:40 moby kernel: [Warning] Error C2H ID=128, len=126`
+#     - `Oct 10 14:42:55 moby NetworkManager[2750]: <warn>  [1696948975.4162] device (wlan0): link timed out.`
+#     - `Oct 10 14:42:55 moby NetworkManager[2750]: <warn>  [1696948975.4749] device (wlan0): Activation: failed for connection 'xx'`
+#     - `Oct 10 14:42:59 moby wpa_supplicant[2845]: wlan0: CTRL-EVENT-STARTED-CHANNEL-SWITCH freq=2437 ht_enabled=1 ch_offset=0 ch_width=20 MHz cf1=2437 cf2=0`
+#     - `Oct 10 14:43:00 moby wpa_supplicant[2845]: wlan0: CTRL-EVENT-ASSOC-REJECT status_code=1`
+#     - `Oct 10 14:43:00 moby wpa_supplicant[2845]: wlan0: CTRL-EVENT-SSID-TEMP-DISABLED id=0 ssid="xx" auth_failures=1 duration=10 reason=CONN_FAILED`
+#     - `Oct 10 14:43:00 moby wpa_supplicant[2845]: wlan0: CTRL-EVENT-REGDOM-CHANGE init=CORE type=WORLD`
+#     - (then wpa_supplicant tries again)
+#     - `Oct 10 14:43:24 moby NetworkManager[2750]: <warn>  [1696949004.4165] device (wlan0): Activation: (wifi) association took too long`
+#     - `Oct 10 14:43:24 moby NetworkManager[2750]: <warn>  [1696949004.4201] device (wlan0): Activation: (wifi) asking for new secrets`
+#     - (above wpa_supplicant entries and these last two NM entries then repeat multiple times per minute, until driver reprobe)
 #
 # TODO: remove this file
 # it's been obsoleted by hosts/modules/gui/sxmo/hooks/sxmo_suspend.sh

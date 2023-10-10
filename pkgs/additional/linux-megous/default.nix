@@ -158,6 +158,8 @@ let
       # experimental: set CONFIG_ARP_KEEP_ALIVE and CONFIG_GTK_OL if CONFIG_WOWLAN=y
       # this patch just uncomments some commented-out #defines.
       # they were commented out from the first time megi imported this driver, never touched.
+      # this may be problematic, occasionally requiring a driver re-probe. see other notes on wowlan/8723cs.
+      # if continued errors, try removing the CONFIG_GTK_OL and keeping just CONFIG_ARP_KEEP_ALIVE
       name = "enable-wowlan-offloads";
       patch = fetchpatch {
         url = "https://git.uninsane.org/colin/linux/commit/c4d2d12e31ae70bb43c6190eccc49e42ad645090.patch";
