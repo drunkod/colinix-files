@@ -19,8 +19,11 @@ sudo rtl8723cs-wowlan arp --dest-ip 10.78.79.54
 
 echo "calling suspend for duration: $suspend_time"
 
-# XXX: run this in `env` to get the `time` binary instead of the builtin
-echo "suspended for: $(env time -f "%e" rtcwake -m mem -s $suspend_time) seconds" || exit 1
+start=$(date "+%s")
+rtcwake -m mem -s "$suspend_time" || exit 1
+end=$(date "+%s")
+duration=$(("$end" - "$start")
+echo "suspended for $duration seconds"
 
 sxmo_hook_postwake.sh
 
