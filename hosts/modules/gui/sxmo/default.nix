@@ -75,6 +75,7 @@ let
     };
     postwake = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_hook_postwake.sh";
+      pkgs = [ "coreutils" ];
       src = ./hooks;
     };
     rotate = pkgs.static-nix-shell.mkBash {
@@ -90,7 +91,7 @@ let
     suspend = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_suspend.sh";
       src = ./hooks;
-      pkgs = [ "coreutils" "util-linux" ];
+      pkgs = [ "util-linux" ];
     };
   };
 in
