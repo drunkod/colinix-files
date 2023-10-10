@@ -4,7 +4,7 @@
 }:
 
 static-nix-shell.mkPython3Bin {
-  pname = "rtl8723cs_wowlan";
+  pname = "rtl8723cs-wowlan";
   src = ./.;
   pkgs = {
     inherit iw wirelesstools;

@@ -63,7 +63,7 @@ let
   cfg = config.sane.wowlan;
   patternOpts = with lib; types.submodule {
     options = {
-      ipv4.destPort = mkOption {
+      tcp.destPort = mkOption {
         type = types.nullOr types.port;
         default = null;
         description = ''
@@ -72,7 +72,7 @@ let
           (e.g. this machine made a long-running HTTP request, and the other side finally has data for us).
         '';
       };
-      ipv4.srcPort = mkOption {
+      tcp.sourcePort = mkOption {
         type = types.nullOr types.port;
         default = null;
         description = ''
@@ -81,115 +81,16 @@ let
           (e.g. sshing *into* this machine).
         '';
       };
-      arp.queryIp = mkOption {
-        type = types.nullOr (types.listOf types.int);
+      arp.destIp = mkOption {
+        type = types.nullOr types.string;
         default = null;
         description = ''
           IP address being queried.
-          e.g. `[ 192 168 0 100 ]`
+          e.g. `"192.168.0.100"`
         '';
       };
     };
   };
-  # bytesToStr: [ u8|null ] -> String
-  #             format an array of octets into a pattern recognizable by iwpriv.
-  #             a null byte means "don't care" at its position.
-  bytesToStr = bytes: lib.concatStringsSep ":" (
-    builtins.map
-      (b: if b == null then "-" else hexByte b)
-      bytes
-  );
-  # format a byte as hex, with leading zero to force a width of two characters.
-  # the wlan driver doesn't parse single-character hex bytes.
-  hexByte = b: if b < 16 then
-    "0" + (lib.toHexString b)
-  else
-    lib.toHexString b;
-
-  etherTypes.ipv4 = [ 08 00 ];  # 0x0800 = IPv4
-  etherTypes.arp = [ 08 06 ];  # 0x0806 = ARP
-  formatEthernetFrame = ethertype: dataBytes: let
-    bytes = [
-      # ethernet frame: <https://en.wikipedia.org/wiki/Ethernet_frame#Structure>
-      ## dest MAC address (this should be the device's MAC, but i think that's implied?)
-      null null null null null null
-      ## src MAC address
-      null null null null null null
-      ## ethertype: <https://en.wikipedia.org/wiki/EtherType#Values>
-    ] ++ etherTypes."${ethertype}"
-      ++ dataBytes;
-  in bytesToStr bytes;
-
-  formatArpPattern = pat:
-    formatEthernetFrame "arp" ([
-      # ARP frame: <https://en.wikipedia.org/wiki/Address_Resolution_Protocol#Packet_structure>
-      ## hardware type
-      null null
-      ## protocol type. same coding as EtherType
-      08 00  # 0x0800 = IPv4
-      ## hardware address length (i.e. MAC)
-      06
-      ## protocol address length (i.e. IP address)
-      04
-      ## operation
-      00 01  # 0x0001 = request
-      ## sender hardware address
-      null null null null null null
-      ## sender protocol address
-      null null null null
-      ## target hardware address
-      ## this is left as "Don't Care" because the packets we want to match
-      ## are those mapping protocol addr -> hw addr.
-      ## sometimes clients do include this field if they've seen the address before though
-      null null null null null null
-      ## target protocol address
-    ] ++ pat.queryIp);
-
-  # formatIpv4Pattern: patternOpts.ipv4 -> String
-  # produces a string like this (example matches source port=0x0a1b):
-  # "-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:0a:1b:-:-"
-  formatIpv4Pattern = pat: let
-    destPortBytes = if pat.destPort != null then {
-      high = pat.destPort / 256;
-      low = lib.mod pat.destPort 256;
-    } else {
-      high = null; low = null;
-    };
-    srcPortBytes = if pat.srcPort != null then {
-      high = pat.srcPort / 256;
-      low = lib.mod pat.srcPort 256;
-    } else {
-      high = null; low = null;
-    };
-  in
-    formatEthernetFrame "ipv4" [
-      # IP frame: <https://en.wikipedia.org/wiki/Internet_Protocol_version_4#Header>
-      ## Version, Internet Header Length. 0x45 = 69 decimal
-      null  # should be 69 (0x45), but fails to wake if i include this
-      ## Differentiated Services Code Point (DSCP), Explicit Congestion Notification (ECN)
-      null
-      ## total length
-      null null
-      ## identification
-      null null
-      ## flags, fragment offset
-      null null
-      ## Time-to-live
-      null
-      ## protocol: <https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers>
-      6  # 6 = TCP
-      ## header checksum
-      null null
-      ## source IP addr
-      null null null null
-      ## dest IP addr
-      null null null null
-
-      # TCP frame: <https://en.wikipedia.org/wiki/Transmission_Control_Protocol#TCP_segment_structure>
-      srcPortBytes.high srcPortBytes.low
-      destPortBytes.high destPortBytes.low
-      ## rest is Don't Care
-    ];
 in
 {
   options = with lib; {
@@ -211,24 +112,33 @@ in
   config = lib.mkIf cfg.enable {
     systemd.services.wowlan = {
       description = "configure the WiFi chip to wake the system on specific activity";
-      path = [ pkgs.iw pkgs.wirelesstools ];
+      path = [ pkgs.rtl8723cs-wowlan ];
       script = let
-        extractPatterns = pat: lib.flatten [
-          (lib.optional (pat.ipv4 != { destPort = null; srcPort = null; }) (formatIpv4Pattern pat.ipv4))
-          (lib.optional (pat.arp != { queryIp = null; }) (formatArpPattern pat.arp))
-        ];
-        allPatterns = lib.flatten (builtins.map extractPatterns cfg.patterns);
-        encodePattern = pat: ''
-          iwpriv wlan0 wow_set_pattern pattern=${pat}
-        '';
-        encodedPatterns = lib.concatStringsSep
-          "\n"
-          (builtins.map encodePattern allPatterns);
+        tcpArgs = { destPort, sourcePort }:
+          [ "tcp" ]
+          ++ lib.optionals (destPort != null) [ "--dest-port" (builtins.toString destPort) ]
+          ++ lib.optionals (sourcePort != null) [ "--source-port" (builtins.toString sourcePort) ]
+        ;
+        arpArgs = { destIp }:
+          [ "arp" ]
+          ++ lib.optionals (destIp != null) [ "--dest-ip" (builtins.toString destIp) ]
+        ;
+        maybeCallHelper = maybe: args:
+          lib.optionalString
+            maybe
+            ((lib.escapeShellArgs ([ "rtl8723cs-wowlan" ] ++ args)) + "\n")
+        ;
+        applyPattern = pat:
+          (maybeCallHelper (pat.tcp != { destPort = null; sourcePort = null; }) (tcpArgs pat.tcp))
+          +
+          (maybeCallHelper (pat.arp != { destIp = null; }) (arpArgs pat.arp))
+        ;
+        appliedPatterns = lib.concatStringsSep
+          ""
+          (builtins.map applyPattern cfg.patterns);
       in ''
-        set -x
-        iw phy0 wowlan enable any
-        iwpriv wlan0 wow_set_pattern clean
-        ${encodedPatterns}
+        rtl8723cs-wowlan enable-clean
+        ${appliedPatterns}
       '';
       serviceConfig = {
         # TODO: re-run this periodically, just to be sure?

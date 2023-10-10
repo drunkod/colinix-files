@@ -25,9 +25,9 @@
   sane.services.wg-home.ip = config.sane.hosts.by-name."moby".wg-home.ip;
   sane.wowlan.enable = true;
   sane.wowlan.patterns = [
-    { ipv4.destPort = 22; }  # wake on SSH
-    { ipv4.srcPort = 2587; }  # wake on `ntfy-sh` push from servo
-    { arp.queryIp = [ 10 78 79 54 ]; }  # wake when somebody is doing an ARP query against us
+    { tcp.destPort = 22; }  # wake on SSH
+    { tcp.sourcePort = 2587; }  # wake on `ntfy-sh` push from servo
+    { arp.destIp = "10.78.79.54"; }  # wake when somebody is doing an ARP query against us
   ];
 
   # XXX colin: phosh doesn't work well with passwordless login,
