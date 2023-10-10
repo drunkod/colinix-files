@@ -185,7 +185,7 @@ def main():
 
     if args.type_ == 'enable_clean':
         exec_(['iw', 'phy0', 'wowlan', 'enable', 'any'])
-        exec_(['iwprv', 'wlan0', 'wow_set_pattern', 'clean'])
+        exec_(['iwpriv', 'wlan0', 'wow_set_pattern', 'clean'])
 
     frame = None
     if args.type_ == 'arp':
