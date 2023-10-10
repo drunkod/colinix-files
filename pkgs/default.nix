@@ -52,6 +52,7 @@ let
     mx-sanebot = callPackage ./additional/mx-sanebot { };
     phog = callPackage ./additional/phog { };
     rtl8723cs-firmware = callPackage ./additional/rtl8723cs-firmware { };
+    rtl8723cs-wowlan = callPackage ./additional/rtl8723cs-wowlan { };
     sane-scripts = lib.recurseIntoAttrs (callPackage ./additional/sane-scripts { });
     sane-weather = callPackage ./additional/sane-weather { };
     static-nix-shell = callPackage ./additional/static-nix-shell { };
