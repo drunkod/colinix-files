@@ -99,6 +99,7 @@ in
           # overcome poor defaults
           "lsof" = "lsof -P";  #< lsof: use port *numbers*, not names
           "tcpdump" = "tcpdump -n";  #< tcpdump: use port *numbers*, not names
+          "l" = "eza --long --time-style=long-iso";  #< better `ls`
         };
         setOptions = [
           # docs: `man zshoptions`

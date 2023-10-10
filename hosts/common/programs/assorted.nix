@@ -123,6 +123,7 @@ in
       "dmidecode"
       "dtrx"  # `unar` alternative, "Do The Right eXtraction"
       "efivar"
+      "eza"  # a better 'ls'
       # "flashrom"
       "git"  # needed as a user package, for config.
       # "gnupg"
