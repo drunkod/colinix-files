@@ -8,10 +8,10 @@
 #   - komikku -> python3.10-brotlicffi -> python3.10-cffi
 #   - many others. python3.10-cffi seems to be the offender which infects 70% of consumers though
 # - 2023/10/10: moreutils pulls in unnecessarily many emulated deps
-# - 2023/10/11: build binutils-wrapper is pulled in by `dtrx`
-#   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/akma6vck7rikb4ckzmys4gxkjs0jxin5-binutils-wrapper-2.40
 # - 2023/10/11: build ruby is pulled in by `neovim`:
 #   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/5xbwwbyjmc1xvjzhghk6r89rn4ylidv8-ruby-3.1.4
+# - 2023/10/11: build coreutils pulled in by rpm
+#   - nix why-depends --all /nix/store/gjwd2x507x7gjycl5q0nydd39d3nkwc5-dtrx-8.5.3-aarch64-unknown-linux-gnu /nix/store/y9gr7abwxvzcpg5g73vhnx1fpssr5frr-coreutils-9.3
 #
 # upstreaming status:
 #
@@ -373,6 +373,15 @@ in {
   #     });
   #   };
 
+  # binutils = prev.binutils.override {
+  #   # fix that resulting binary files would specify build #!sh as their interpreter.
+  #   # dtrx is the primary beneficiary of this.
+  #   # this doesn't actually cause mass rebuilding.
+  #   # note that this isn't enough to remove all build references:
+  #   # - expand-response-params still references build stuff.
+  #   shell = final.runtimeShell;
+  # };
+
   # 2023/08/03: upstreaming is unblocked,implemented on servo, but has x86 in the runtime closure
   # blueman = prev.blueman.overrideAttrs (orig: {
   #   # configure: error: ifconfig or ip not found, install net-tools or iproute2
@@ -480,6 +489,13 @@ in {
     buildInputs = upstream.buildInputs ++ [ final.vala ];
     mesonFlags = lib.remove "-Dvapi=false" upstream.mesonFlags;
   });
+
+  dtrx = prev.dtrx.override {
+    # `binutils` is the nix wrapper, which reads nix-related env vars
+    # before passing on to e.g. `ld`.
+    # dtrx probably only needs `ar` at runtime, not even `ld`.
+    binutils = final.binutils-unwrapped;
+  };
 
   # emacs = prev.emacs.override {
   #   # fixes "configure: error: cannot run test program while cross compiling"
