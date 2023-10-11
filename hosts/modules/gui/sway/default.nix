@@ -279,7 +279,13 @@ in
         extraPackages = [];  # nixos adds swaylock, swayidle, foot, dmenu by default
         # extraOptions = [ "--debug" ];
         # "wrapGAppsHook wrapper to execute sway with required environment variables for GTK applications."
-        wrapperFeatures.gtk = true;
+        # this literally just sets XDG_DATA_DIRS to the gtk3 gsettings-schemas before launching sway.
+        # notably, this pulls in the *build* gtk3 -- probably not in an incompatible way
+        # but still as a mistake, and wasteful for cross compilation
+        wrapperFeatures.gtk = false;
+        # this sets XDG_CURRENT_DESKTOP=sway
+        # and makes sure that sway is launched dbus-run-session.
+        wrapperFeatures.base = true;
         package = cfg.package;
       };
       programs.xwayland.enable = cfg.config.xwayland;
