@@ -70,8 +70,8 @@ let
   hookPkgs = {
     inputhandler = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_hook_inputhandler.sh";
-      src = ./hooks;
       pkgs = [ "coreutils" ];
+      src = ./hooks;
     };
     postwake = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_hook_postwake.sh";
@@ -80,18 +80,23 @@ let
     };
     rotate = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_hook_rotate.sh";
-      src = ./hooks;
       pkgs = [ "sway" ];
+      src = ./hooks;
+    };
+    screenoff = pkgs.static-nix-shell.mkBash {
+      pname = "sxmo_hook_screenoff.sh";
+      pkgs = [ "sway" ];
+      src = ./hooks;
     };
     start = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_hook_start.sh";
-      src = ./hooks;
       pkgs = [ "systemd" "xdg-user-dirs" ];
+      src = ./hooks;
     };
     suspend = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_suspend.sh";
-      src = ./hooks;
       pkgs = [ "coreutils" "rtl8723cs-wowlan" "time" "util-linux" ];
+      src = ./hooks;
     };
   };
 in
@@ -183,6 +188,7 @@ in
         "sxmo_hook_inputhandler.sh" = "${hookPkgs.inputhandler}/bin/sxmo_hook_inputhandler.sh";
         "sxmo_hook_postwake.sh" = "${hookPkgs.postwake}/bin/sxmo_hook_postwake.sh";
         "sxmo_hook_rotate.sh" = "${hookPkgs.rotate}/bin/sxmo_hook_rotate.sh";
+        "sxmo_hook_screenoff.sh" = "${hookPkgs.screenoff}/bin/sxmo_hook_screenoff.sh";
         "sxmo_hook_start.sh" = "${hookPkgs.start}/bin/sxmo_hook_start.sh";
         "sxmo_suspend.sh" = "${hookPkgs.suspend}/bin/sxmo_suspend.sh";
       };
