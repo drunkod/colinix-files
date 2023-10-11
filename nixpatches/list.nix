@@ -19,6 +19,12 @@ let
       // (if title != null then { name = title; } else {})
     );
 in [
+  (fetchpatch' {
+    # merged *into staging* 2023/10/05
+    title = "mesa: don't depend on build python";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/259109";
+    hash = "sha256-uSTWxAFPasx7MwNimqypUln9lowh+W3dMb5b+gM9kd0=";
+  })
   # (fetchpatch' {
   #   # disabled, at least until the PR is updated to use `pkg-config` instead of `pkgconfig`.
   #   # the latter is an alias, which breaks nix-index
