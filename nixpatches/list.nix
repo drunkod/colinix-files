@@ -279,26 +279,28 @@ in [
     saneCommit = "8a171b49aca406f8220f016e56964b3fae53a3df";
     hash = "sha256-R11IYatGhSXxZnJxJid519Oc9Kh56D9NT2/cxf2CLuM=";
   })
-  (fetchpatch' {
-    title = "gcr_4: support cross compilation";
-    saneCommit = "a8c3d69236fa67382a8c18cc1ef0f34610fd3275";
-    hash = "sha256-UnLqkkpXxBKaqlsoD1jUIigZkxgLtNpjmMHOx10HpfE=";
-  })
-  (fetchpatch' {
-    title = "networkmanager-openvpn: support cross compilation";
-    saneCommit = "6f53c267fbeb2ff543f075032a7e73af2d4bcb9e";
-    hash = "sha256-gq9AyKH7/k2ZVSZ3jpPJPt3uAM+CllXQnaiC1tE1r/8=";
-  })
-  (fetchpatch' {
-    title = "WIP: networkmanager-sstp: support cross compilation";
-    saneCommit = "6de63fe320406ec9a509db721c52b3894a93bda2";
-    hash = "sha256-EY3bQuv/80JbpquUJhc89CcYAgN9A9KkpsSitw/684I=";
-  })
-  (fetchpatch' {
-    title = "WIP: networkmanager-l2tp: support cross compilation";
-    saneCommit = "7a4191c570b0e5a1ab257222c26a4a2ecb945037";
-    hash = "sha256-FiPJhHGqZ8MFwLY+1t6HgbK6ndomFSYUKvApvrikRHE=";
-  })
+  # (fetchpatch' {
+  #   # not correct: build time dependencies end up in runtime closure
+  #   title = "gcr_4: support cross compilation";
+  #   saneCommit = "a8c3d69236fa67382a8c18cc1ef0f34610fd3275";
+  #   hash = "sha256-UnLqkkpXxBKaqlsoD1jUIigZkxgLtNpjmMHOx10HpfE=";
+  # })
+  # these probably work, but i don't use them
+  # (fetchpatch' {
+  #   title = "networkmanager-openvpn: support cross compilation";
+  #   saneCommit = "6f53c267fbeb2ff543f075032a7e73af2d4bcb9e";
+  #   hash = "sha256-gq9AyKH7/k2ZVSZ3jpPJPt3uAM+CllXQnaiC1tE1r/8=";
+  # })
+  # (fetchpatch' {
+  #   title = "WIP: networkmanager-sstp: support cross compilation";
+  #   saneCommit = "6de63fe320406ec9a509db721c52b3894a93bda2";
+  #   hash = "sha256-EY3bQuv/80JbpquUJhc89CcYAgN9A9KkpsSitw/684I=";
+  # })
+  # (fetchpatch' {
+  #   title = "WIP: networkmanager-l2tp: support cross compilation";
+  #   saneCommit = "7a4191c570b0e5a1ab257222c26a4a2ecb945037";
+  #   hash = "sha256-FiPJhHGqZ8MFwLY+1t6HgbK6ndomFSYUKvApvrikRHE=";
+  # })
   (fetchpatch' {
     title = "gtkspell2: support cross compilation";
     saneCommit = "56348833b4411e9fe2016c24c7fc4af1e3c1d28a";
@@ -312,7 +314,7 @@ in [
     hash = "sha256-cGhJSby0K+e1hKPdPZjLFRKvwjGaTbq/kb6Fxj2v8g8=";
   })
   (fetchpatch' {
-    # TODO: send for review once thie libgnt patch above is merged
+    # TODO: send for review once the libgnt patch above is merged
     title = "pidgin: support cross compilation";
     saneCommit = "caacbcc54e217f5ee9281422777a7f712765f71a";
     hash = "sha256-PDCp4GOm6hWcRob4kz7qXZfxAF6YbYrESx9idoS3e/s=";

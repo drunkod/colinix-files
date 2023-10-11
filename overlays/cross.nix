@@ -1,9 +1,14 @@
+# outstanding issues:
+# - 2023/10/10: build python3 is pulled in by many things
+#   - nix why-depends --all /nix/store/8g3kd2jxifq10726p6317kh8srkdalf5-nixos-system-moby-23.11.20231011.dirty /nix/store/pzf6dnxg8gf04xazzjdwarm7s03cbrgz-python3-3.10.12/bin/python3.10
+#   - blueman
+#   - gstreamer-vaapi -> gstreamer-dev -> glib-dev
+#   - phog -> gnome-shell
+#   - portfolio -> {glib,cairo,pygobject}-dev
+#   - komikku -> python3.10-brotlicffi -> python3.10-cffi
+#   - many others. python3.10-cffi seems to be the offender which infects 70% of consumers though
+#
 # upstreaming status:
-# - playerctl is out for review
-# - xdg-utils is out for review
-#   - xdg-utils is blocked on perl5.36.0-Module-Build
-#     - needed for File-BaseDir, used by File-MimeInfo
-#     - File-BaseDir can be updated to v0.09, which cross compiles with ease
 #
 # - blueman builds on servo branch
 # - libgudev builds on servo branch
@@ -612,11 +617,19 @@ in {
     outputs = lib.remove "devdoc" upstream.outputs;
   });
 
-  # 2023/07/31: upstreaming is unblocked,implemented on servo
-  # gcr_4 = (
-  #   # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
-  #   mvToNativeInputs [ final.gnupg final.openssh ] prev.gcr_4
-  # );
+  # 2023/07/31: upstreaming is unblocked
+  # N.B.: should be able to remove gnupg/ssh from {native}buildInputs when upstreaming
+  gcr_4 = prev.gcr_4.overrideAttrs (upstream: {
+    # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
+    mesonFlags = (upstream.mesonFlags or []) ++ [
+      "-Dgpg_path=${final.gnupg}/bin/gpg"
+    ];
+  });
+  gcr = prev.gcr.overrideAttrs (upstream: {
+    mesonFlags = (upstream.mesonFlags or []) ++ [
+      "-Dgpg_path=${final.gnupg}/bin/gpg"
+    ];
+  });
   # gnustep = prev.gnustep.overrideScope' (self: super: {
   #   # gnustep is going to need a *lot* of work/domain-specific knowledge to truly cross-compile,
   #   # base = emulated.gnustep.base;
