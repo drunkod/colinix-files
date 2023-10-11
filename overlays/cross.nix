@@ -13,9 +13,6 @@
 #   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/2j7b1ngdvqd0bidb6bn9icskwm6sq63v-perl-5.38.0
 # - 2023/10/11: build ruby is pulled in by `neovim`:
 #   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/5xbwwbyjmc1xvjzhghk6r89rn4ylidv8-ruby-3.1.4
-# - 2023/10/11: build gdk-pixbuf is pulled in by `libavif` and its webkit consumers:
-#   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/gz865vffhvi3zcnswm9k6jnzg2ar948k-gdk-pixbuf-2.42.10
-#   - also drags in build glib, libtiff, etc.
 # - 2023/10/11: build diffutils is pulled in by `snapper`:
 #   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/q56n7lhjw724i7b33qaqra61p7m7c0cd-diffutils-3.10
 #
@@ -953,16 +950,6 @@ in {
       buildPackages.stdenv = emulated.stdenv;  # it uses buildPackages.stdenv for HOST_CC
     });
   };
-  libavif = prev.libavif.overrideAttrs (upstream: {
-    # unique build failure encountered only when cross compiling WITH binfmt enabled.
-    # without binfmt it compiles fine.
-    postInstall = let
-      gdkPixbufModuleFile = "${placeholder "out"}/${final.gdk-pixbuf.binaryDir}/avif-loaders.cache";
-    in ''
-      GDK_PIXBUF_MODULE_FILE=${gdkPixbufModuleFile} \
-        gdk-pixbuf-query-loaders --update-cache
-    '';
-  });
   # libgweather = rmNativeInputs [ final.glib ] (prev.libgweather.override {
   #   # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
   #   #   but presumably that's just a different way to emulate it.
