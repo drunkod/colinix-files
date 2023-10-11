@@ -70,6 +70,12 @@ let
         url = "https://lists.sr.ht/~mil/sxmo-devel/patches/45470/mbox";
         hash = "sha256-ev+NLR4g68MWB4RENh7mCth02lTaXxCIAL/af5l8Mrw=";
       })
+      (fetchpatch {
+        # merged ~2023/10/11
+        name = "autorotate: allow all four orientations";
+        url = "https://lists.sr.ht/~mil/sxmo-devel/patches/45541/mbox";
+        hash = "sha256-7oT5Y4JynyDvrojgdcpASvZ1sYo7U+1jBpPswuBkEX8=";
+      })
     ];
     unmerged = [
       # (fetchpatch {
@@ -84,13 +90,6 @@ let
         name = "sxmo_migrate: add option to disable configversion checks";
         url = "https://lists.sr.ht/~mil/sxmo-devel/patches/44155/mbox";
         hash = "sha256-ZcUD2UWPM8PxGM9TBnGe8JCJgMC72OZYzctDf2o7Ub0=";
-      })
-
-      ## these might or might not be upstream-worthy
-      (fetchpatch {
-        name = "sxmo_autorotate: allow all four orientations";
-        url = "https://git.uninsane.org/colin/sxmo-utils/commit/e3aadb4b53fcf83c233b0ebfb31504f35c1bf68c.patch";
-        hash = "sha256-oZ2EZ50p61//rv2tSKfLIZIJpBoOgCYIjhvsKX/8kJw=";
       })
 
       ## not upstreamable
@@ -139,8 +138,8 @@ in {
   };
   latest = callPackage ./common.nix {
     version = "unstable-2023-10-10";
-    rev = "2547af4cbc1b36087fd8067ce46f5ca62be31773";
-    hash = "sha256-14ciTSM3L7cBEPhQvY1k62ZKe0ToXNFwqgQ4w6Fd6ro=";
+    rev = "c33408abb560dac52de52d878840945c12a75a32";
+    hash = "sha256-VYUYN5S6qmsNpxMq7xFfgsGcbjIjqvuj36AG+NeMHTM=";
     patches = patches.unmerged ++ patches.unmerged-tip-only;
   };
 }
