@@ -10,8 +10,6 @@
 # - 2023/10/10: moreutils pulls in unnecessarily many emulated deps
 # - 2023/10/11: build binutils-wrapper is pulled in by `dtrx`
 #   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/akma6vck7rikb4ckzmys4gxkjs0jxin5-binutils-wrapper-2.40
-# - 2023/10/11: build perl is pulled in by `enchant` & its many consumers:
-#   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/2j7b1ngdvqd0bidb6bn9icskwm6sq63v-perl-5.38.0
 # - 2023/10/11: build ruby is pulled in by `neovim`:
 #   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/5xbwwbyjmc1xvjzhghk6r89rn4ylidv8-ruby-3.1.4
 #
@@ -857,6 +855,15 @@ in {
   # hdf5 = prev.hdf5.override {
   #   inherit (emulated) stdenv;
   # };
+
+  hspell = prev.hspell.overrideAttrs (upstream: {
+    # build perl is needed by the Makefile,
+    # but $out/bin/multispell (which is simply copied from src) should use host perl
+    buildInputs = (upstream.buildInputs or []) ++ [ final.perl ];
+    postInstall = ''
+      patchShebangs --update $out/bin/multispell
+    '';
+  });
 
   # "setup: line 1595: ant: command not found"
   # i2p = mvToNativeInputs [ final.ant final.gettext ] prev.i2p;
