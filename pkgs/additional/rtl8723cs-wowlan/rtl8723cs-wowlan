@@ -1,13 +1,11 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i python3 -p "python3.withPackages (ps: [  ])" -p iw -p moreutils -p wirelesstools
+#!nix-shell -i python3 -p "python3.withPackages (ps: [  ])" -p hostname-debian -p iw -p wirelesstools
 # vim: set filetype=python :
 
 # common operations:
 # enable-clean
 # arp --dest-ip A.B.C.D
 # tcp --source-port N
-
-KNOWN_INTERFACES = ("wlan0", "wlp3s0", "enp5s0")
 
 import argparse
 import logging
@@ -21,17 +19,9 @@ def octet_to_hex(o: int) -> str:
 
 def get_ipaddrs() -> list['IpAddr']:
     ''' return the IP address of all known interfaces '''
-    addrs = []
-    for iface in KNOWN_INTERFACES:
-        try:
-            # errors if interface isn't known, or ip addr fails to parse (e.g. 'NON-IP')
-            maybe_addr = subprocess.check_output(['ifdata', '-pa', iface]).decode('utf-8')
-            addr = IpAddr(maybe_addr)
-        except: pass
-        else:
-            addrs.append(addr)
-    logger.debug(f'get_ipaddrs got: {[str(a) for a in addrs]}')
-    return addrs
+    addrs = subprocess.check_output(['hostname', '--all-ip-addresses']).decode('utf-8').strip().split(' ')
+    logger.debug(f'get_ipaddrs got: {addrs}')
+    return [ IpAddr(a) for a in addrs ]
 
 
 class Encodable:

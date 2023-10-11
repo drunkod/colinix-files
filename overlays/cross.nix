@@ -7,7 +7,6 @@
 #   - portfolio -> {glib,cairo,pygobject}-dev
 #   - komikku -> python3.10-brotlicffi -> python3.10-cffi
 #   - many others. python3.10-cffi seems to be the offender which infects 70% of consumers though
-# - 2023/10/10: moreutils pulls in unnecessarily many emulated deps
 # - 2023/10/11: build ruby is pulled in by `neovim`:
 #   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/5xbwwbyjmc1xvjzhghk6r89rn4ylidv8-ruby-3.1.4
 # - 2023/10/11: build coreutils pulled in by rpm
@@ -1233,13 +1232,6 @@ in {
   #   #   runHook postInstall
   #   # '';
   # });
-
-  moreutils = prev.moreutils.override {
-    # depends on perl IPC-Run -> IO-Tty, the latter does not cross
-    # - IO-Tty stands very small chance of ever compiling w/o straight up emulation.
-    # N.B. only perl+perlPackages have to be emulated, but emulating stdenv actually reduces the closure
-    inherit (emulated) perl perlPackages stdenv;
-  };
 
   mpv-unwrapped = prev.mpv-unwrapped.overrideAttrs (upstream: {
     # 2023/10/10: upstreaming is easiest to do after the next staging -> master merge
