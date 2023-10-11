@@ -40,3 +40,12 @@ wowlan_text="$(cat /proc/net/rtl8723cs/wlan0/wowlan_last_wake_reason)"
 wowlan_bits="${wowlan_text/last wake reason: /}"
 wowlan_reason="${wowlan_reason[$wowlan_bits]}"
 echo "exited suspend: $wowlan_text ($wowlan_reason)"
+if [ "$wowlan_bits" != "0x00" ]; then
+        # give time for userspace to respond to the wake event.
+        # IM clients might have to re-establish TCP connections, perform sync, etc
+        # until finally receiving the event which the system woke for,
+        # TODO: if we suspended only very briefly, likely all the networking is in sync
+        # and we don't have to wait this long.
+        # there's no easy way *here* to know how long we slept for, though.
+        sxmo_wakelock.sh lock postwake_work 25s
+fi
