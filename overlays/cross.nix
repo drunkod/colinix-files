@@ -1236,6 +1236,7 @@ in {
 
   moreutils = prev.moreutils.override {
     # depends on perl IPC-Run -> IO-Tty, the latter does not cross
+    # - IO-Tty stands very small chance of ever compiling w/o straight up emulation.
     # N.B. only perl+perlPackages have to be emulated, but emulating stdenv actually reduces the closure
     inherit (emulated) perl perlPackages stdenv;
   };
