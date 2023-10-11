@@ -56,6 +56,10 @@
 #       - CONFIG_ROAMING_FLAG = 0x3
 # - may fail to wake on LAN, even without any signature like the above
 #   - observed after a suspension of 10 minutes, trying to contact from laptop (laptop would have previously not contacted moby)
+#   - in many cases the wake reason is still 0x23, even as it sleeps for the whole alloted 300s.
+#     - then it's likely a race condition with the WiFi chip raising the wake signal *as* the CPU is falling asleep, and the CPU misses it.
+#     - this is testable: phone would wake 100% if all networked services are disabled (so it's not receiving packets near the time it enters sleep)
+#     - TODO: change the wake event from edge-triggered to level-triggered.
 # - may disassociate from WiFi and *refuse to reassociate even via nmtui, restarting NetworkManager/wpa_supplicant/polkit*
 #   - solution is `modprobe -r 8723cs && modprobe 8723cs`, then way a couple minutes.
 #   - possible this only happens when the driver is compiled with CONFIG_GTK_OL (or CONFIG_ARP_KEEP_ALIVE).
