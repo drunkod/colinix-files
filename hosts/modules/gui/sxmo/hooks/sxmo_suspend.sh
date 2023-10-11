@@ -36,7 +36,7 @@ doas rtl8723cs-wowlan tcp --dest-port 22
 # wake on notification (ntfy/Universal Push)
 doas rtl8723cs-wowlan tcp --source-port 2587
 # wake if someone doesn't know how to route to us, because that could obstruct the above
-doas rtl8723cs-wowlan arp --dest-ip 10.78.79.54
+doas rtl8723cs-wowlan arp --dest-ip SELF
 
 echo "calling suspend for duration: $suspend_time"
 

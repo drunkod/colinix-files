@@ -1,11 +1,13 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i python3 -p "python3.withPackages (ps: [  ])" -p iw -p wirelesstools
+#!nix-shell -i python3 -p "python3.withPackages (ps: [  ])" -p iw -p moreutils -p wirelesstools
 # vim: set filetype=python :
 
 # common operations:
 # enable-clean
 # arp --dest-ip A.B.C.D
 # tcp --source-port N
+
+KNOWN_INTERFACES = ("wlan0", "wlp3s0", "enp5s0")
 
 import argparse
 import logging
@@ -16,6 +18,21 @@ logger = logging.getLogger(__name__)
 def octet_to_hex(o: int) -> str:
     ''' format an octet as a two-character hex string (lowercase) '''
     return '%02X' % o
+
+def get_ipaddrs() -> list['IpAddr']:
+    ''' return the IP address of all known interfaces '''
+    addrs = []
+    for iface in KNOWN_INTERFACES:
+        try:
+            # errors if interface isn't known, or ip addr fails to parse (e.g. 'NON-IP')
+            maybe_addr = subprocess.check_output(['ifdata', '-pa', iface]).decode('utf-8')
+            addr = IpAddr(maybe_addr)
+        except: pass
+        else:
+            addrs.append(addr)
+    logger.debug(f'get_ipaddrs got: {[str(a) for a in addrs]}')
+    return addrs
+
 
 class Encodable:
     @staticmethod
@@ -47,6 +64,13 @@ class IpAddr(Encodable):
     def __init__(self, addr: str):
         pieces = addr.split('.')
         self._octets = [int(p) if p else 0 for p in pieces]
+
+    @staticmethod
+    def parse_any(addr: str) -> list['IpAddr']:
+        if addr == 'SELF':
+            return get_ipaddrs()
+        else:
+            return [IpAddr(addr)]
 
     def octets(self) -> list[int]:
         return self._octets
@@ -137,9 +161,13 @@ class TcpFrame(Encodable):
         ]
 
 
-def build_arp(dest_ip: str|None = None) -> EthernetFrame:
-    dest_ip = IpAddr(dest_ip) if dest_ip is not None else None
-    return EthernetFrame(EtherType.ARP, ArpFrame(dest_ip))
+def build_arp(dest_ip: str|None = None) -> list[EthernetFrame]:
+    dest_ips = IpAddr.parse_any(dest_ip) if dest_ip is not None else []
+    # if no known IPs, wake on any ARP.
+    # the only way we could see an ARP message at this point is if the controller associates with a network
+    # while we're sleep (or while racing to sleep)
+    if dest_ips == []: dest_ips = [None]
+    return [EthernetFrame(EtherType.ARP, ArpFrame(ip)) for ip in dest_ips]
 
 def build_tcp(source_port: int|None = None, dest_port: int|None = None) -> EthernetFrame:
     source_port = Port(source_port) if source_port is not None else None
@@ -169,7 +197,7 @@ def main():
 
     arp_parser = subparsers.add_parser('arp', help="wake on ARP request")
     arp_parser.set_defaults(type_='arp')
-    arp_parser.add_argument('--dest-ip')
+    arp_parser.add_argument('--dest-ip', help="a.b.c.d or the special 'SELF' for automatic")
 
     tcp_parser = subparsers.add_parser('tcp', help="wake on TCP packet")
     tcp_parser.set_defaults(type_='tcp')
@@ -187,13 +215,13 @@ def main():
         exec_(['iw', 'phy0', 'wowlan', 'enable', 'any'])
         exec_(['iwpriv', 'wlan0', 'wow_set_pattern', 'clean'])
 
-    frame = None
+    frames = []
     if args.type_ == 'arp':
-        frame = build_arp(dest_ip=args.dest_ip)
+        frames = build_arp(dest_ip=args.dest_ip)
     if args.type_ == 'tcp':
-        frame = build_tcp(source_port=args.source_port, dest_port=args.dest_port)
+        frames = [ build_tcp(source_port=args.source_port, dest_port=args.dest_port) ]
 
-    if frame is not None:
+    for frame in frames:
         pattern = str(frame)
         exec_(['iwpriv', 'wlan0', 'wow_set_pattern', f'pattern={pattern}'])
 
