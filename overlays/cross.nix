@@ -1207,6 +1207,20 @@ in {
     inherit (emulated) perl perlPackages stdenv;
   };
 
+  mpv-unwrapped = prev.mpv-unwrapped.overrideAttrs (upstream: {
+    # 2023/10/10: upstreaming is easiest to do after the next staging -> master merge
+    #   otherwise the result will still have a transient dep on python.
+    #   - <https://github.com/NixOS/nixpkgs/pull/259109>
+    # nativeBuildInputs = lib.remove final.python3 upstream.nativeBuildInputs;
+    # umpv gets the build python, somehow -- even with python3 removed from nativeBuildInputs.
+    # and mpv_identify.sh gets the build bash.
+    # patch these both to use the host files
+    buildInputs = (upstream.buildInputs or []) ++ [ final.bash final.python3 ];
+    postFixup = (upstream.postFixup or "") + ''
+      patchShebangs --update --host $out/bin/umpv $out/bin/mpv_identify.sh
+    '';
+  });
+
   # mpvScripts = prev.mpvScripts // {
   #   # "line 1: pkg-config: command not found"
   #   #   "mpris.c:1:10: fatal error: gio/gio.h: No such file or directory"
