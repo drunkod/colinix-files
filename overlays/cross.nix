@@ -7,6 +7,17 @@
 #   - portfolio -> {glib,cairo,pygobject}-dev
 #   - komikku -> python3.10-brotlicffi -> python3.10-cffi
 #   - many others. python3.10-cffi seems to be the offender which infects 70% of consumers though
+# - 2023/10/11: build binutils-wrapper is pulled in by `dtrx`
+#   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/akma6vck7rikb4ckzmys4gxkjs0jxin5-binutils-wrapper-2.40
+# - 2023/10/11: build perl is pulled in by `enchant` & its many consumers:
+#   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/2j7b1ngdvqd0bidb6bn9icskwm6sq63v-perl-5.38.0
+# - 2023/10/11: build ruby is pulled in by `neovim`:
+#   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/5xbwwbyjmc1xvjzhghk6r89rn4ylidv8-ruby-3.1.4
+# - 2023/10/11: build gdk-pixbuf is pulled in by `libavif` and its webkit consumers:
+#   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/gz865vffhvi3zcnswm9k6jnzg2ar948k-gdk-pixbuf-2.42.10
+#   - also drags in build glib, libtiff, etc.
+# - 2023/10/11: build diffutils is pulled in by `snapper`:
+#   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/q56n7lhjw724i7b33qaqra61p7m7c0cd-diffutils-3.10
 #
 # upstreaming status:
 #
