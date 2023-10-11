@@ -6,9 +6,30 @@
 #
 # this script is only called by sxmo_autosuspend, which is small, so if i wanted to
 # be more proper i could instead re-implement autosuspend + integrations.
+#
+# N.B.: if any wake locks are acquired between invocation of this script and the
+# rtcwake call below, suspend will fail -- even if those locks are released during
+# the same period.
+#
+# this is because the caller of this script writes /sys/power/wakeup_count, and the
+# kernel checks consistency with that during the actual suspend request.
+# see: <https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-power>
+#
+# for this reason, keep this script as short as possible.
+#
+# common sources of wakelocks (which one may wish to reduce) include:
+# - `sxmo_led.sh blink` (every 2s, by default)
 
 suspend_time=300
 
+# TODO: don't do this wowlan stuff every single time.
+# - it's costly (can take like 1sec)
+# - it seems to actually block suspension quite often
+#   - possibly rtl8723cs takes time to apply wowlan changes during which suspension is impossible
+# alternative is to introduce some layer of cache:
+# - do so in a way such that WiFi connection state changes invalidate the cache
+#   - because wowlan enable w/o connection may well behave differently than w/ connection
+# - calculating IP addr from link, and then caching on the args we call our helper with may well suffice
 doas rtl8723cs-wowlan enable-clean
 # wake on ssh
 doas rtl8723cs-wowlan tcp --dest-port 22
