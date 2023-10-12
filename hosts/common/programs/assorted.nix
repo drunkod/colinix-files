@@ -67,6 +67,7 @@ in
       "file"
       # "fwupd"
       "gawk"
+      "gdb"  # to debug segfaults
       "git"
       "gptfdisk"
       "hdparm"
@@ -135,6 +136,7 @@ in
       "lm_sensors"  # for sensors-detect. TODO: what needs this? lift into the consumer
       "lshw"
       # "memtester"
+      "mercurial"  # hg
       "neovim"  # needed as a user package, for swap persistence
       # "nettools"
       # "networkmanager"
