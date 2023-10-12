@@ -25,6 +25,11 @@ in [
     prUrl = "https://github.com/NixOS/nixpkgs/pull/259109";
     hash = "sha256-uSTWxAFPasx7MwNimqypUln9lowh+W3dMb5b+gM9kd0=";
   })
+  (fetchpatch' {
+    title = "rpm: 4.18.1 -> 4.19.0";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/260558";
+    hash = "sha256-FDY/OLh7bNRixEuPlrIeyW/kJYNPnelLsplfKCsjHKQ=";
+  })
   # (fetchpatch' {
   #   # disabled, at least until the PR is updated to use `pkg-config` instead of `pkgconfig`.
   #   # the latter is an alias, which breaks nix-index

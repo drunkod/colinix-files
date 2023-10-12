@@ -9,7 +9,9 @@
 #   - many others. python3.10-cffi seems to be the offender which infects 70% of consumers though
 # - 2023/10/11: build ruby is pulled in by `neovim`:
 #   - nix why-depends --all /nix/store/rhli8vhscv93ikb43639c2ysy3a6dmzp-nixos-system-moby-23.11.20231011.30c7fd8 /nix/store/5xbwwbyjmc1xvjzhghk6r89rn4ylidv8-ruby-3.1.4
-# - 2023/10/11: build coreutils pulled in by rpm
+#
+# partially fixed:
+# - 2023/10/11: build coreutils pulled in by rpm 4.18.1, but NOT by 4.19.0
 #   - nix why-depends --all /nix/store/gjwd2x507x7gjycl5q0nydd39d3nkwc5-dtrx-8.5.3-aarch64-unknown-linux-gnu /nix/store/y9gr7abwxvzcpg5g73vhnx1fpssr5frr-coreutils-9.3
 #
 # upstreaming status:
@@ -1750,7 +1752,9 @@ in {
   # implemented (broken) on servo cross-staging-2023-07-30 branch
   rpm = prev.rpm.overrideAttrs (upstream: {
     # fixes "python too old". might also be specifiable as a configure flag?
-    env = upstream.env // {
+    env = upstream.env // lib.optionalAttrs (upstream.version == "4.18.1") {
+      # 4.19.0 upgrade should fix cross compilation.
+      # see: <https://github.com/NixOS/nixpkgs/pull/260558>
       PYTHON = final.python3.interpreter;
     };
   });
