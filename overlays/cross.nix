@@ -905,6 +905,14 @@ in {
   #   buildPackages.gtk-doc = final.gtk-doc;
   # });
 
+  graphicsmagick = prev.graphicsmagick.overrideAttrs (upstream: {
+    # by default the build holds onto a reference to build `mv`
+    # N.B.: `imagemagick` package has this identical issue
+    configureFlags = upstream.configureFlags ++ [
+      "MVDelegate=${final.coreutils}/bin/mv"
+    ];
+  });
+
   # fixes: "make: gcc: No such file or directory"
   # java-service-wrapper = useEmulatedStdenv prev.java-service-wrapper;
 

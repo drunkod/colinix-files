@@ -31,6 +31,11 @@ in [
     hash = "sha256-FDY/OLh7bNRixEuPlrIeyW/kJYNPnelLsplfKCsjHKQ=";
   })
   # (fetchpatch' {
+  #   title = "graphicsmagick: 1.3.39 -> 1.3.42";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/218163";
+  #   hash = "sha256-E1Xfi7BRpAvqAzfChjWRG1Ar5dsFMm/yu7NXnDc95PM=";
+  # })
+  # (fetchpatch' {
   #   # disabled, at least until the PR is updated to use `pkg-config` instead of `pkgconfig`.
   #   # the latter is an alias, which breaks nix-index
   #   title = "phog: init at 0.1.3";
