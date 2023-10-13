@@ -128,11 +128,15 @@ class ArpFrame(Encodable):
         ] + Encodable.get_octets(self.dest_ip, 4)
 
 class TcpFrame(Encodable):
-    def __init__(self, source_port: Port|None=None, dest_port: Port|None=None):
+    def __init__(self, source_port: Port|None=None, dest_port: Port|None=None, dest_ip: IpAddr|None = None):
         self.source_port = source_port
         self.dest_port = dest_port
+        self.dest_ip = dest_ip
 
     def octets(self) -> list[int|None]:
+        source_port_ = Encodable.get_octets(self.source_port, 2)
+        dest_port_ = Encodable.get_octets(self.dest_port, 2)
+        dest_ip_ = Encodable.get_octets(self.dest_ip, 4)
         return [
             # IP frame: <https://en.wikipedia.org/wiki/Internet_Protocol_version_4#Header>
             ## Version, Internet Header Length. 0x45 = 69 decimal
@@ -154,27 +158,28 @@ class TcpFrame(Encodable):
             ## source IP addr
             None, None, None, None,
             ## dest IP addr
-            None, None, None, None,
+            dest_ip_[0], dest_ip_[1], dest_ip_[2], dest_ip_[3],
 
             # TCP frame: <https://en.wikipedia.org/wiki/Transmission_Control_Protocol#TCP_segment_structure>
-            Encodable.get_octet(self.source_port, 0), Encodable.get_octet(self.source_port, 1),
-            Encodable.get_octet(self.dest_port, 0), Encodable.get_octet(self.dest_port, 1),
+            source_port_[0], source_port_[1],
+            dest_port_[0], dest_port_[1],
             ## rest is Don't Care
         ]
 
+def ips_from_str(ip: str|None = None) -> list[IpAddr|None]:
+    ''' return all known IPs, or [ None ] if IP addr isn't known '''
+    ips = IpAddr.parse_any(ip) if ip is not None else []
+    return ips or [None]
 
 def build_arp(dest_ip: str|None = None) -> list[EthernetFrame]:
-    dest_ips = IpAddr.parse_any(dest_ip) if dest_ip is not None else []
-    # if no known IPs, wake on any ARP.
-    # the only way we could see an ARP message at this point is if the controller associates with a network
-    # while we're sleep (or while racing to sleep)
-    if dest_ips == []: dest_ips = [None]
+    dest_ips = ips_from_str(dest_ip)
     return [EthernetFrame(EtherType.ARP, ArpFrame(ip)) for ip in dest_ips]
 
-def build_tcp(source_port: int|None = None, dest_port: int|None = None) -> EthernetFrame:
+def build_tcp(source_port: int|None = None, dest_port: int|None = None, dest_ip: str|None = None) -> list[EthernetFrame]:
     source_port = Port(source_port) if source_port is not None else None
     dest_port = Port(dest_port) if dest_port is not None else None
-    return EthernetFrame(EtherType.IPv4, TcpFrame(source_port=source_port, dest_port=dest_port))
+    dest_ips = ips_from_str(dest_ip)
+    return [EthernetFrame(EtherType.IPv4, TcpFrame(source_port=source_port, dest_port=dest_port, dest_ip=ip)) for ip in dest_ips]
 
 def exec_with(executor, args: list[str]):
     logger.debug("invoking: {}".format(' '.join(args)))
@@ -205,6 +210,7 @@ def main():
     tcp_parser.set_defaults(type_='tcp')
     tcp_parser.add_argument('--source-port', type=int)
     tcp_parser.add_argument('--dest-port', type=int)
+    tcp_parser.add_argument('--dest-ip', help="a.b.c.d or the special 'SELF' for automatic")
 
     args = parser.parse_args()
 
@@ -221,7 +227,7 @@ def main():
     if args.type_ == 'arp':
         frames = build_arp(dest_ip=args.dest_ip)
     if args.type_ == 'tcp':
-        frames = [ build_tcp(source_port=args.source_port, dest_port=args.dest_port) ]
+        frames = build_tcp(source_port=args.source_port, dest_port=args.dest_port, dest_ip=args.dest_ip)
 
     for frame in frames:
         pattern = str(frame)
