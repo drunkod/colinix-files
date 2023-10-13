@@ -46,7 +46,7 @@ irq_start="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xa
 rtcwake -m mem -s "$suspend_time" || exit 1
 
 irq_end="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
-time_spent="$(( $(date "+%s") - start ))"
+time_spent="$(( $(date "+%s") - time_start ))"
 
 echo "suspended for $time_spent seconds. wifi IRQ count: ${irq_start} -> ${irq_end}"
 
