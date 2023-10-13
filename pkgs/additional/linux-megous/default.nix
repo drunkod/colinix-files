@@ -154,19 +154,55 @@ let
     #     hash = "sha256-DnLDseL1Ar5gE31CQUTrGNxxNu88jGCzj8ko99Z8vUA=";
     #   };
     # }
+    # {
+    #   # experimental: set CONFIG_ARP_KEEP_ALIVE and CONFIG_GTK_OL if CONFIG_WOWLAN=y
+    #   # this patch just uncomments some commented-out #defines.
+    #   # they were commented out from the first time megi imported this driver, never touched.
+    #   # this may be problematic, occasionally requiring a driver re-probe. see other notes on wowlan/8723cs.
+    #   # if continued errors, try removing the CONFIG_GTK_OL and keeping just CONFIG_ARP_KEEP_ALIVE.
+    #   # seems to infrequently disrupt waking on ARP packets, as well.
+    #   name = "enable-wowlan-offloads";
+    #   patch = fetchpatch {
+    #     url = "https://git.uninsane.org/colin/linux/commit/c4d2d12e31ae70bb43c6190eccc49e42ad645090.patch";
+    #     hash = "sha256-B1rxeVu6y5hP/iMLSbl3ExwrEIXL7WShWsMFh6ko6yk=";
+    #   };
+    # }
     {
-      # experimental: set CONFIG_ARP_KEEP_ALIVE and CONFIG_GTK_OL if CONFIG_WOWLAN=y
-      # this patch just uncomments some commented-out #defines.
-      # they were commented out from the first time megi imported this driver, never touched.
-      # this may be problematic, occasionally requiring a driver re-probe. see other notes on wowlan/8723cs.
-      # if continued errors, try removing the CONFIG_GTK_OL and keeping just CONFIG_ARP_KEEP_ALIVE.
-      # seems to infrequently disrupt waking on ARP packets, as well.
-      name = "enable-wowlan-offloads";
+      name = "pinephone: wowlan: disable unicast";
       patch = fetchpatch {
-        url = "https://git.uninsane.org/colin/linux/commit/c4d2d12e31ae70bb43c6190eccc49e42ad645090.patch";
-        hash = "sha256-B1rxeVu6y5hP/iMLSbl3ExwrEIXL7WShWsMFh6ko6yk=";
+        url = "https://git.uninsane.org/colin/linux/commit/3b3328cfb35b6cea3480c6358faf4d4175146372.patch";
+        hash = "sha256-aBa63UHaU+KSWNzeXEamcMhJr2bRkJGZPTM7nBNu9wk=";
       };
     }
+    # {
+    #   name = "pinephone: wowlan: disable unicast/deauth/magic packet/arp";
+    #   patch = fetchpatch {
+    #     url = "https://git.uninsane.org/colin/linux/commit/624315afd2ebd44fc6d0056c206b502e50d92775.patch";
+    #     hash = "sha256-KlgIJigK7G89obT7qWGdHqQ+eavYrCkuwo2d0wdUrpE=";
+    #   };
+    # }
+    {
+      # enables /proc/net/rtl8723cs/wlan0/gpio_info and gpio_set_direction, gpio_set_output_value.
+      # `cat gpio_info` -> `get_gpio 0:0`
+      # writing to gpio_set_output_value does change the value of gpio_info, but not of
+      # /sys/kernel/debug/gpio
+      name = "pinephone: rtl8723cs: enable CONFIG_GPIO_API";
+      patch = fetchpatch {
+        url = "https://git.uninsane.org/colin/linux/commit/51dea574a4559bd30fda2b0f852e42cad6cb6757.patch";
+        hash = "sha256-pAmif5vMdZzgmyzkLmvdOltoXdeXeBeOhvGbpHWzIkc=";
+      };
+    }
+    # {
+    #   # this changes the IRQ definition in the devicetree, and at runtime the decompiled
+    #   # fdt shows this change, but /proc/interrupts still shows as an edge interrupt.
+    #   # no IRQs or GPIOs were changed at all, actually.
+    #   # likely something else is configuring the IRQ at runtime.
+    #   name = "pinephone: rtl8723cs: IRQ on LEVEL_LOW instead of EDGE_FALLING";
+    #   patch = fetchpatch {
+    #     url = "https://git.uninsane.org/colin/linux/commit/223046eac02c5b1ca6203f68df495d35ce191280.patch";
+    #     hash = "sha256-Quhvz7hiM3TbpZ2pKuHVXrO8OLn3r7WNYYIjQc1CWcQ=";
+    #   };
+    # }
   ] ++ lib.optionals (!withModemPower) [
     {
       # Drop modem-power from DT to allow eg25-manager to have full control.
