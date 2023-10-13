@@ -9,6 +9,7 @@
 
 import argparse
 import logging
+import os
 import subprocess
 
 logger = logging.getLogger(__name__)
@@ -19,7 +20,18 @@ def octet_to_hex(o: int) -> str:
 
 def get_ipaddrs() -> list['IpAddr']:
     ''' return the IP address of all known interfaces '''
-    addrs = subprocess.check_output(['hostname', '--all-ip-addresses']).decode('utf-8').strip().split(' ')
+    # N.B.: --all-ip-addresses is provided only by hostname-debian package, not default hostname.
+    # however `hostname --all-ip-addresses` could dispatch to either, since hostname is likely on the user's PATH.
+    # so we have to try all the `hostname`s we can find.
+    # TODO: maybe try nix-level @hostname@-type substitution?
+    paths = os.getenv('PATH').split(':')
+    addrs = []
+    for p in paths:
+        try:
+            addrs = subprocess.check_output([f'{p}/domainname', '--all-ip-addresses']).decode('utf-8').strip().split(' ')
+        except: continue
+        else:
+            break
     logger.debug(f'get_ipaddrs got: {addrs}')
     return [ IpAddr(a) for a in addrs ]
 
