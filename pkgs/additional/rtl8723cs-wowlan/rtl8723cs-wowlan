@@ -77,21 +77,31 @@ class IpAddr(Encodable):
     def octets(self) -> list[int]:
         return self._octets
 
+class MacAddr(Encodable):
+    def __init__(self, addr: str):
+        pieces = addr.lower().split(':')
+        self._octets = [int(p, 16) if p else 0 for p in pieces]
+
+    def octets(self) -> list[int]:
+        return self._octets
+
 class EtherType:
     # ethertype: <https://en.wikipedia.org/wiki/EtherType#Values>
     IPv4 = [ 0x08, 0x00 ]  # 0x0800
     ARP  = [ 0x08, 0x06 ]   # 0x0806
 
 class EthernetFrame(Encodable):
-    def __init__(self, ether_type: EtherType, payload: Encodable):
+    def __init__(self, ether_type: EtherType, payload: Encodable, dest_mac: MacAddr|None = None):
         self.ether_type = ether_type
         self.payload = payload
+        self.dest_mac = dest_mac
 
     def octets(self) -> list[int|None]:
+        dest_mac_ = Encodable.get_octets(self.dest_mac, 6)
         return [
             # ethernet frame: <https://en.wikipedia.org/wiki/Ethernet_frame#Structure>
             ## dest MAC address (this should be the device's MAC, but i think that's implied?)
-            None, None, None, None, None, None,
+            dest_mac_[0], dest_mac_[1], dest_mac_[2], dest_mac_[3], dest_mac_[4], dest_mac_[5],
             ## src MAC address
             None, None, None, None, None, None,
             ## ethertype: <https://en.wikipedia.org/wiki/EtherType#Values>
@@ -99,10 +109,13 @@ class EthernetFrame(Encodable):
         ] + self.payload.octets()
 
 class ArpFrame(Encodable):
-    def __init__(self, dest_ip: IpAddr|None):
+    def __init__(self, dest_ip: IpAddr|None, dest_mac: MacAddr|None):
         self.dest_ip = dest_ip
+        self.dest_mac = dest_mac
 
     def octets(self) -> list[int|None]:
+        dest_ip_ = Encodable.get_octets(self.dest_ip, 4)
+        dest_mac_ = Encodable.get_octets(self.dest_mac, 6)
         return [
             # ARP frame: <https://en.wikipedia.org/wiki/Address_Resolution_Protocol#Packet_structure>
             ## hardware type
@@ -120,15 +133,22 @@ class ArpFrame(Encodable):
             ## sender protocol address
             None, None, None, None,
             ## target hardware address
-            ## this is left as "Don't Care" because the packets we want to match
+            ## caller is fine to leave this as "Don't Care" (None) because the packets we want to match
             ## are those mapping protocol addr -> hw addr.
-            ## sometimes clients do include this field if they've seen the address before though
-            None, None, None, None, None, None,
+            ## sometimes clients do include this field if they've seen the address before.
+            ## otherwise clients use the broadcast mac, i.e. [ff::ff]
+            dest_mac_[0], dest_mac_[1], dest_mac_[2], dest_mac_[3], dest_mac_[4], dest_mac_[5],
             ## target protocol address
-        ] + Encodable.get_octets(self.dest_ip, 4)
+            dest_ip_[0], dest_ip_[1], dest_ip_[2], dest_ip_[3],
+        ]
 
 class TcpFrame(Encodable):
-    def __init__(self, source_port: Port|None=None, dest_port: Port|None=None, dest_ip: IpAddr|None = None):
+    def __init__(
+        self,
+        source_port: Port|None=None,
+        dest_port: Port|None=None,
+        dest_ip: IpAddr|None = None,
+    ):
         self.source_port = source_port
         self.dest_port = dest_port
         self.dest_ip = dest_ip
@@ -171,15 +191,17 @@ def ips_from_str(ip: str|None = None) -> list[IpAddr|None]:
     ips = IpAddr.parse_any(ip) if ip is not None else []
     return ips or [None]
 
-def build_arp(dest_ip: str|None = None) -> list[EthernetFrame]:
+def build_arp(dest_ip: str|None = None, dest_mac: str|None = None) -> list[EthernetFrame]:
     dest_ips = ips_from_str(dest_ip)
-    return [EthernetFrame(EtherType.ARP, ArpFrame(ip)) for ip in dest_ips]
+    dest_mac = MacAddr(dest_mac) if dest_mac is not None else None
+    return [EthernetFrame(EtherType.ARP, ArpFrame(dest_ip=ip, dest_mac=dest_mac)) for ip in dest_ips]
 
-def build_tcp(source_port: int|None = None, dest_port: int|None = None, dest_ip: str|None = None) -> list[EthernetFrame]:
+def build_tcp(source_port: int|None = None, dest_port: int|None = None, dest_ip: str|None = None, dest_mac: str|None = None) -> list[EthernetFrame]:
     source_port = Port(source_port) if source_port is not None else None
     dest_port = Port(dest_port) if dest_port is not None else None
     dest_ips = ips_from_str(dest_ip)
-    return [EthernetFrame(EtherType.IPv4, TcpFrame(source_port=source_port, dest_port=dest_port, dest_ip=ip)) for ip in dest_ips]
+    dest_mac = MacAddr(dest_mac) if dest_mac is not None else None
+    return [EthernetFrame(EtherType.IPv4, TcpFrame(source_port=source_port, dest_port=dest_port, dest_ip=ip), dest_mac=dest_mac) for ip in dest_ips]
 
 def exec_with(executor, args: list[str]):
     logger.debug("invoking: {}".format(' '.join(args)))
@@ -205,12 +227,14 @@ def main():
     arp_parser = subparsers.add_parser('arp', help="wake on ARP request")
     arp_parser.set_defaults(type_='arp')
     arp_parser.add_argument('--dest-ip', help="a.b.c.d or the special 'SELF' for automatic")
+    arp_parser.add_argument('--dest-mac', help="ab:cd:...")
 
     tcp_parser = subparsers.add_parser('tcp', help="wake on TCP packet")
     tcp_parser.set_defaults(type_='tcp')
     tcp_parser.add_argument('--source-port', type=int)
     tcp_parser.add_argument('--dest-port', type=int)
     tcp_parser.add_argument('--dest-ip', help="a.b.c.d or the special 'SELF' for automatic")
+    tcp_parser.add_argument('--dest-mac', help="ab:cd:...")
 
     args = parser.parse_args()
 
@@ -225,9 +249,9 @@ def main():
 
     frames = []
     if args.type_ == 'arp':
-        frames = build_arp(dest_ip=args.dest_ip)
+        frames = build_arp(dest_ip=args.dest_ip, dest_mac=args.dest_mac)
     if args.type_ == 'tcp':
-        frames = build_tcp(source_port=args.source_port, dest_port=args.dest_port, dest_ip=args.dest_ip)
+        frames = build_tcp(source_port=args.source_port, dest_port=args.dest_port, dest_ip=args.dest_ip, dest_mac=args.dest_mac)
 
     for frame in frames:
         pattern = str(frame)
