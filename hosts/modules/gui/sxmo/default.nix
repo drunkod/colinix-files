@@ -95,7 +95,7 @@ let
     };
     suspend = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_suspend.sh";
-      pkgs = [ "coreutils" "rtl8723cs-wowlan" "time" "util-linux" ];
+      pkgs = [ "coreutils" "findutils" "gnugrep" "rtl8723cs-wowlan" "time" "util-linux" ];
       src = ./hooks;
     };
   };

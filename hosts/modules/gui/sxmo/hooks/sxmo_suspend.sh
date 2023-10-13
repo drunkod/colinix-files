@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i bash -p coreutils -p rtl8723cs-wowlan -p time -p util-linux
+#!nix-shell -i bash -p coreutils -p findutils -p gnugrep -p rtl8723cs-wowlan -p time -p util-linux
 
 # yeah, this isn't technically a hook, but the hook infrastructure isn't actually
 # restricted to stuff that starts with sxmo_hook_ ...
@@ -40,11 +40,15 @@ doas rtl8723cs-wowlan arp --dest-ip SELF
 
 echo "calling suspend for duration: $suspend_time"
 
-start="$(date "+%s")"
+time_start="$(date "+%s")"
+irq_start="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
+
 rtcwake -m mem -s "$suspend_time" || exit 1
-#We woke up again
+
+irq_end="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
 time_spent="$(( $(date "+%s") - start ))"
-echo "suspended for $time_spent seconds"
+
+echo "suspended for $time_spent seconds. wifi IRQ count: ${irq_start} -> ${irq_end}"
 
 sxmo_hook_postwake.sh
 
