@@ -32,9 +32,9 @@ suspend_time=300
 # - calculating IP addr from link, and then caching on the args we call our helper with may well suffice
 doas rtl8723cs-wowlan enable-clean
 # wake on ssh
-doas rtl8723cs-wowlan tcp --dest-port 22
+doas rtl8723cs-wowlan tcp --dest-port 22 --dest-ip SELF
 # wake on notification (ntfy/Universal Push)
-doas rtl8723cs-wowlan tcp --source-port 2587
+doas rtl8723cs-wowlan tcp --source-port 2587 --dest-ip SELF
 # wake if someone doesn't know how to route to us, because that could obstruct the above
 doas rtl8723cs-wowlan arp --dest-ip SELF
 
