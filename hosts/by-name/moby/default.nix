@@ -131,7 +131,12 @@
   # see pkgs/patched/alsa-ucm-conf for more info.
   environment.variables.ALSA_CONFIG_UCM2 = "/run/current-system/sw/share/alsa/ucm2";
   environment.pathsToLink = [ "/share/alsa/ucm2" ];
-  environment.systemPackages = [ pkgs.alsa-ucm-conf-sane ];
+  environment.systemPackages = [
+    (pkgs.alsa-ucm-conf-sane.override {
+      # internal speaker has a tendency to break :(
+      preferEarpiece = true;
+    })
+  ];
   systemd = let
     ucm-env = config.environment.variables.ALSA_CONFIG_UCM2;
   in {
