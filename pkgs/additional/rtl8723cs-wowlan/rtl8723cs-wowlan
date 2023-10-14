@@ -90,6 +90,11 @@ class EtherType:
     IPv4 = [ 0x08, 0x00 ]  # 0x0800
     ARP  = [ 0x08, 0x06 ]   # 0x0806
 
+class IpProtocol:
+    # https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
+    TCP = 0x06
+    UDP = 0x11
+
 class EthernetFrame(Encodable):
     def __init__(self, ether_type: EtherType, payload: Encodable, dest_mac: MacAddr|None = None):
         self.ether_type = ether_type
@@ -142,25 +147,18 @@ class ArpFrame(Encodable):
             dest_ip_[0], dest_ip_[1], dest_ip_[2], dest_ip_[3],
         ]
 
-class TcpFrame(Encodable):
-    def __init__(
-        self,
-        source_port: Port|None=None,
-        dest_port: Port|None=None,
-        dest_ip: IpAddr|None = None,
-    ):
-        self.source_port = source_port
-        self.dest_port = dest_port
+class IpFrame(Encodable):
+    def __init__(self, proto: IpProtocol, payload: Encodable, dest_ip: IpAddr|None = None):
+        self.proto = proto
+        self.payload = payload
         self.dest_ip = dest_ip
 
     def octets(self) -> list[int|None]:
-        source_port_ = Encodable.get_octets(self.source_port, 2)
-        dest_port_ = Encodable.get_octets(self.dest_port, 2)
         dest_ip_ = Encodable.get_octets(self.dest_ip, 4)
         return [
             # IP frame: <https://en.wikipedia.org/wiki/Internet_Protocol_version_4#Header>
-            ## Version, Internet Header Length. 0x45 = 69 decimal
-            None,  # should be 69 (0x45), but fails to wake if i include this
+            ## Version, Internet Header Length
+            0x45,  # should be 0x45, but fails to wake if i include this
             ## Differentiated Services Code Point (DSCP), Explicit Congestion Notification (ECN)
             None,
             ## total length
@@ -172,14 +170,28 @@ class TcpFrame(Encodable):
             ## Time-to-live
             None,
             ## protocol: <https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers>
-            0x06,  # 6 = TCP
+            self.proto,
             ## header checksum
             None, None,
             ## source IP addr
             None, None, None, None,
             ## dest IP addr
             dest_ip_[0], dest_ip_[1], dest_ip_[2], dest_ip_[3],
+    ] + self.payload.octets()
 
+class TcpFrame(Encodable):
+    def __init__(
+        self,
+        source_port: Port|None=None,
+        dest_port: Port|None=None,
+    ):
+        self.source_port = source_port
+        self.dest_port = dest_port
+
+    def octets(self) -> list[int|None]:
+        source_port_ = Encodable.get_octets(self.source_port, 2)
+        dest_port_ = Encodable.get_octets(self.dest_port, 2)
+        return [
             # TCP frame: <https://en.wikipedia.org/wiki/Transmission_Control_Protocol#TCP_segment_structure>
             source_port_[0], source_port_[1],
             dest_port_[0], dest_port_[1],
@@ -201,7 +213,13 @@ def build_tcp(source_port: int|None = None, dest_port: int|None = None, dest_ip:
     dest_port = Port(dest_port) if dest_port is not None else None
     dest_ips = ips_from_str(dest_ip)
     dest_mac = MacAddr(dest_mac) if dest_mac is not None else None
-    return [EthernetFrame(EtherType.IPv4, TcpFrame(source_port=source_port, dest_port=dest_port, dest_ip=ip), dest_mac=dest_mac) for ip in dest_ips]
+    return [
+        EthernetFrame(EtherType.IPv4, dest_mac=dest_mac,
+            payload=IpFrame(IpProtocol.TCP, dest_ip=ip,
+                payload=TcpFrame(source_port=source_port, dest_port=dest_port)
+            )
+        ) for ip in dest_ips
+    ]
 
 def exec_with(executor, args: list[str]):
     logger.debug("invoking: {}".format(' '.join(args)))
