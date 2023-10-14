@@ -5,7 +5,7 @@
 # - the LED frequency is adjusted from its default of "blink every 2s"
 # - dwm-specific bits are removed
 
-BLINK_FREQ=5
+BLINK_FREQ=8
 
 swaymsg mode default
 sxmo_wm.sh dpms on
