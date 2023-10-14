@@ -40,7 +40,7 @@ wowlan_text="$(cat /proc/net/rtl8723cs/wlan0/wowlan_last_wake_reason)"
 wowlan_bits="${wowlan_text/last wake reason: /}"
 wowlan_reason="${wowlan_reason[$wowlan_bits]}"
 echo "exited suspend: $wowlan_text ($wowlan_reason)"
-if [ "$wowlan_bits" != "0x00" ]; then
+if [ "$wowlan_bits" != "0x0" ]; then
         # give time for userspace to respond to the wake event.
         # IM clients might have to re-establish TCP connections, perform sync, etc
         # until finally receiving the event which the system woke for,
