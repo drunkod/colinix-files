@@ -113,7 +113,14 @@
   #   ov5640_af.bin   (camera module)
   # hardware.firmware = [ config.mobile.device.firmware ];
   # hardware.firmware = [ pkgs.rtl8723cs-firmware ];
-  hardware.firmware = [ pkgs.linux-firmware-megous ];
+  hardware.firmware = [
+    (pkgs.linux-firmware-megous.override {
+      # rtl_bt = false probably means no bluetooth connectivity.
+      # N.B.: DON'T RE-ENABLE without first confirming that wake-on-lan works during suspend (rtcwake).
+      # it seems the rtl_bt stuff ("bluetooth coexist") might make wake-on-LAN radically more flaky.
+      rtl_bt = false;
+    })
+  ];
 
   system.stateVersion = "21.11";
 
