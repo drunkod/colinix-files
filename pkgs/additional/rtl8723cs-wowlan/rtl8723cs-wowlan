@@ -198,6 +198,10 @@ class TcpFrame(Encodable):
             ## rest is Don't Care
         ]
 
+# UDP header is a subset of the TCP header
+# <https://en.wikipedia.org/wiki/User_Datagram_Protocol#UDP_datagram_structure>
+UdpFrame = TcpFrame
+
 def ips_from_str(ip: str|None = None) -> list[IpAddr|None]:
     ''' return all known IPs, or [ None ] if IP addr isn't known '''
     ips = IpAddr.parse_any(ip) if ip is not None else []
@@ -217,6 +221,19 @@ def build_tcp(source_port: int|None = None, dest_port: int|None = None, dest_ip:
         EthernetFrame(EtherType.IPv4, dest_mac=dest_mac,
             payload=IpFrame(IpProtocol.TCP, dest_ip=ip,
                 payload=TcpFrame(source_port=source_port, dest_port=dest_port)
+            )
+        ) for ip in dest_ips
+    ]
+
+def build_udp(source_port: int|None = None, dest_port: int|None = None, dest_ip: str|None = None, dest_mac: str|None = None) -> list[EthernetFrame]:
+    source_port = Port(source_port) if source_port is not None else None
+    dest_port = Port(dest_port) if dest_port is not None else None
+    dest_ips = ips_from_str(dest_ip)
+    dest_mac = MacAddr(dest_mac) if dest_mac is not None else None
+    return [
+        EthernetFrame(EtherType.IPv4, dest_mac=dest_mac,
+            payload=IpFrame(IpProtocol.UDP, dest_ip=ip,
+                payload=UdpFrame(source_port=source_port, dest_port=dest_port)
             )
         ) for ip in dest_ips
     ]
@@ -254,6 +271,13 @@ def main():
     tcp_parser.add_argument('--dest-ip', help="a.b.c.d or the special 'SELF' for automatic")
     tcp_parser.add_argument('--dest-mac', help="ab:cd:...")
 
+    udp_parser = subparsers.add_parser('udp', help="wake on UDP packet")
+    udp_parser.set_defaults(type_='udp')
+    udp_parser.add_argument('--source-port', type=int)
+    udp_parser.add_argument('--dest-port', type=int)
+    udp_parser.add_argument('--dest-ip', help="a.b.c.d or the special 'SELF' for automatic")
+    udp_parser.add_argument('--dest-mac', help="ab:cd:...")
+
     args = parser.parse_args()
 
     if args.dry_run:
@@ -270,6 +294,8 @@ def main():
         frames = build_arp(dest_ip=args.dest_ip, dest_mac=args.dest_mac)
     if args.type_ == 'tcp':
         frames = build_tcp(source_port=args.source_port, dest_port=args.dest_port, dest_ip=args.dest_ip, dest_mac=args.dest_mac)
+    if args.type_ == 'udp':
+        frames = build_udp(source_port=args.source_port, dest_port=args.dest_port, dest_ip=args.dest_ip, dest_mac=args.dest_mac)
 
     for frame in frames:
         pattern = str(frame)
