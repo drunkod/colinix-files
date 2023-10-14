@@ -132,19 +132,17 @@ let
     # see: <https://xnux.eu/log/031.html>
     # see: <https://irclog.whitequark.org/linux-sunxi/2021-02-19>
     # most of the relevant bits here (e.g. CONFIG_WOWLAN=y) have been merged
-    {
-      # the pinephone device tree to `keep-power-in-suspend` for the WiFi peripherals
-      # unclear if this is truly needed: a *different* piece of the device tree was set for keep-power-in-suspend
-      # when megi merged Peetz0r's patch.
-      # there appears to be support for WOWLAN even with this patch dropped.
-      # it seems to be flaky without this patch though.
-      # but i have so few samples, and it's flaky to begin with, so... ?
-      name = "pinephone-dt-keep-power-in-suspend";
-      patch = fetchpatch {
-        url = "https://git.uninsane.org/colin/linux/commit/afd6514fd3098047000b3f1f198c2256478dce46.patch";
-        hash = "sha256-8OtGXpCPJbk3c3Z4DcurS0F+Ogqx+xahEv+256+4dcY=";
-      };
-    }
+    # {
+    #   # the pinephone device tree to `keep-power-in-suspend` for the WiFi peripherals
+    #   # unclear if this is truly needed: a *different* piece of the device tree was set for keep-power-in-suspend
+    #   # when megi merged Peetz0r's patch.
+    #   # there appears to be support for WOWLAN even with this patch dropped.
+    #   name = "pinephone-dt-keep-power-in-suspend";
+    #   patch = fetchpatch {
+    #     url = "https://git.uninsane.org/colin/linux/commit/afd6514fd3098047000b3f1f198c2256478dce46.patch";
+    #     hash = "sha256-8OtGXpCPJbk3c3Z4DcurS0F+Ogqx+xahEv+256+4dcY=";
+    #   };
+    # }
     # {
     #   # experimental: set CONFIG_LPS_MODE = 0
     #   # uncertain what this does, LPS = "Leisure Power Savings"
