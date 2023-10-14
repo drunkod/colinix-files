@@ -41,6 +41,8 @@ doas rtl8723cs-wowlan arp --dest-ip SELF
 # should in theory by covered by the above (TODO: remove this!), but for now hopefully helps wake-on-lan be more reliable?
 doas rtl8723cs-wowlan arp --dest-ip SELF --dest-mac ff:ff:ff:ff:ff:ff
 
+# TODO: wake for Dino (call) traffic
+
 echo "calling suspend for duration: $suspend_time"
 
 time_start="$(date "+%s")"
