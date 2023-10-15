@@ -36,7 +36,7 @@ doas rtl8723cs-wowlan tcp --dest-port 22 --dest-ip SELF
 # wake on notification (ntfy/Universal Push)
 doas rtl8723cs-wowlan tcp --source-port 2587 --dest-ip SELF
 # wake if someone doesn't know how to route to us, because that could obstruct the above
-doas rtl8723cs-wowlan arp --dest-ip SELF
+# doas rtl8723cs-wowlan arp --dest-ip SELF
 # specifically wake upon ARP request via the broadcast address.
 # should in theory by covered by the above (TODO: remove this!), but for now hopefully helps wake-on-lan be more reliable?
 doas rtl8723cs-wowlan arp --dest-ip SELF --dest-mac ff:ff:ff:ff:ff:ff
