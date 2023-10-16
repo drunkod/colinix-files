@@ -40,6 +40,9 @@ let
   turnPortHigh = 49167;
   turnPortRange = lib.range turnPortLow turnPortHigh;
 in
+# XXX(2023/10/15): disabled in favor of Prosody.
+# everything configured below was fine: used ejabberd for several months.
+lib.mkIf false
 {
   sane.persist.sys.plaintext = [
     { user = "ejabberd"; group = "ejabberd"; path = "/var/lib/ejabberd"; }
