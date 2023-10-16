@@ -34,7 +34,9 @@
 , xdg-desktop-portal
 , optimize ? true
 }:
+let mkConfigured = { optimize }:
 let
+  # `optimize` option applies only to the top-level build; not fractal's dependencies.
   # opt-level=0: builds in 1min, 105M binary
   # opt-level=1: builds in 2.25hr, 75M binary
   # opt-level=2: builds in 2.25hr
@@ -273,4 +275,11 @@ let
     };
   };
 in
-  cargoNix.workspaceMembers.fractal.build
+  cargoNix.workspaceMembers.fractal.build.overrideAttrs (super: {
+    passthru = (super.passthru or {}) // {
+      optimized = mkConfigured { optimize = true; };
+      unoptimized = mkConfigured { optimize = false; };
+    };
+  });
+in
+  mkConfigured { inherit optimize; }
