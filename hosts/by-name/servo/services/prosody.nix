@@ -140,14 +140,7 @@
       );
     };
     admins = [ "colin@uninsane.org" ];
-    # allowRegistration = false;
-    # extraConfig = ''
-    #   s2s_require_encryption = true
-    #   c2s_require_encryption = true
-    # '';
-
-    ssl.cert = "/var/lib/acme/uninsane.org/fullchain.pem";
-    ssl.key = "/var/lib/acme/uninsane.org/key.pem";
+    # allowRegistration = false;  # defaults to false
 
     muc = [
       {
@@ -166,8 +159,6 @@
       "xmpp.uninsane.org" = {
         domain = "uninsane.org";
         enabled = true;
-        ssl.cert = "/var/lib/acme/uninsane.org/fullchain.pem";
-        ssl.key = "/var/lib/acme/uninsane.org/key.pem";
       };
     };
 
@@ -202,17 +193,9 @@
     # - vcard_legacy
     # - version
     extraModules = [
-      "adhoc"  # TODO: disable (should be auto-loaded by admin_adhoc)
-      # "admin_adhoc"
-      # "blocklist"
-      # "component"  # not supposed to be manually enabled
-      # "compression"  # moved to community modules; questionable safety
-      "lastactivity"  # XEP-0012: allow users to query how long another user has been idle for
-      # "muc"  # TODO: muc should be enabled as a component
-      # "pep"
-      # "privacy"  # replaced by mod_blocklist
-      # "private"
-      # "vcard"  # replaced by vcard_legacy
+      # lastactivity: XEP-0012: allow users to query how long another user has been idle for
+      # - not sure why i enabled this; think it was in someone's config i referenced
+      "lastactivity"
     ];
 
     extraConfig = ''
@@ -223,6 +206,9 @@
 
       c2s_direct_tls_ports = { 5223 }
       s2s_direct_tls_ports = { 5270 }
+
+      -- s2s_require_encryption = true
+      -- c2s_require_encryption = true
     '';
   };
 }
