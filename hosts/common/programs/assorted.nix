@@ -248,18 +248,9 @@ in
     # printer/filament settings
     slic3r.persist.plaintext = [ ".Slic3r" ];
 
-    # creds, widevine .so download. TODO: could easily manage these statically.
-    spotify.persist.plaintext = [ ".config/spotify" ];
-
     tdesktop.persist.private = [ ".local/share/TelegramDesktop" ];
 
     tokodon.persist.private = [ ".cache/KDE/tokodon" ];
-
-    # hardenedMalloc solves an "unable to connect to Tor" error when pressing the "connect" button
-    # - still required as of 2023/07/14
-    tor-browser-bundle-bin.package = pkgs.tor-browser-bundle-bin.override {
-      useHardenedMalloc = false;
-    };
 
     whalebird.persist.private = [ ".config/Whalebird" ];
 
