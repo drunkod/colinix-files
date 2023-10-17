@@ -13,6 +13,8 @@
 # sanity checks:
 # - `sudo -u prosody -g prosody prosodyctl check connectivity`
 # - `sudo -u prosody -g prosody prosodyctl check turn`
+# - `sudo -u prosody -g prosody prosodyctl check turn -v --ping=stun.conversations.im`
+#   - checks that my stun/turn server is usable by clients of conversations.im (?)
 # - `sudo -u prosody -g prosody prosodyctl check`  (dns, config, certs)
 #
 # federation/support matrix:
@@ -196,9 +198,19 @@
       # lastactivity: XEP-0012: allow users to query how long another user has been idle for
       # - not sure why i enabled this; think it was in someone's config i referenced
       "lastactivity"
+      # allows prosody to share TURN/STUN secrets with XMPP clients to provide them access to the coturn server.
+      # see: <https://prosody.im/doc/coturn>
+      "turn_external"
     ];
 
     extraConfig = ''
+      local function readAll(file)
+        local f = assert(io.open(file, "rb"))
+        local content = f:read("*all")
+        f:close()
+        return content
+      end
+
       -- see: <https://prosody.im/doc/certificates#automatic_location>
       -- try to solve: "certmanager: Error indexing certificate directory /etc/prosody/certs: cannot open /etc/prosody/certs: No such file or directory"
       -- only, this doesn't work because prosody doesn't like acme's naming scheme
@@ -206,6 +218,9 @@
 
       c2s_direct_tls_ports = { 5223 }
       s2s_direct_tls_ports = { 5270 }
+
+      turn_external_host = "turn.uninsane.org"
+      turn_external_secret = readAll("/var/lib/coturn/shared_secret.bin")
 
       -- s2s_require_encryption = true
       -- c2s_require_encryption = true

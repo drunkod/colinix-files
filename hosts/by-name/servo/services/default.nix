@@ -2,6 +2,7 @@
 {
   imports = [
     ./calibre.nix
+    ./coturn.nix
     ./ddns-afraid.nix
     ./ddns-he.nix
     ./email

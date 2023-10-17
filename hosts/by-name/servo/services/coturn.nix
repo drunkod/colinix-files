@@ -1,5 +1,8 @@
 # TURN/STUN NAT traversal service
 # commonly used to establish realtime calls with prosody, or possibly matrix/synapse
+#
+# TODO: fix tel -> xmpp:
+# - "ERROR: check_stun_auth: Cannot find credentials of user <XXXMMMNNNN>"
 { lib, ... }:
 let
   # TODO: this range could be larger, but right now that's costly because each element is its own UPnP forward
@@ -46,6 +49,9 @@ in
     # allow ACME to procure a cert via nginx for this domain
     enableACME = true;
   };
+  sane.dns.zones."uninsane.org".inet = {
+    CNAME."turn" = "native";
+  };
 
   sane.derived-secrets."/var/lib/coturn/shared_secret.bin" = {
     encoding = "base64";
@@ -53,10 +59,14 @@ in
     acl.mode = "0644";
   };
 
+  # provide access to certs
+  users.users.turnserver.extraGroups = [ "nginx" ];
+
   services.coturn.enable = true;
   services.coturn.realm = "turn.uninsane.org";
   services.coturn.cert = "/var/lib/acme/turn.uninsane.org/fullchain.pem";
   services.coturn.pkey = "/var/lib/acme/turn.uninsane.org/key.pem";
+  services.coturn.use-auth-secret = true;
   services.coturn.static-auth-secret-file = "/var/lib/coturn/shared_secret.bin";
   services.coturn.min-port = turnPortLow;
   services.coturn.max-port = turnPortHigh;
