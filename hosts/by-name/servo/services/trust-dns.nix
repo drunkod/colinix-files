@@ -17,6 +17,7 @@ in lib.mkMerge [
     protocol = [ "udp" "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
+    visibleTo.ovpn = true;
     description = "colin-dns-hosting";
   };
 

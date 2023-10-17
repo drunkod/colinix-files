@@ -30,17 +30,18 @@ in
 
   sane.ports.ports."25" = {
     protocol = [ "tcp" ];
-    visibleTo.ovpn = true;
+    # XXX visibleTo.lan effectively means "open firewall, but don't configure any NAT/forwarding"
+    visibleTo.lan = true;
     description = "colin-smtp-mx.uninsane.org";
   };
   sane.ports.ports."465" = {
     protocol = [ "tcp" ];
-    visibleTo.ovpn = true;
+    visibleTo.lan = true;
     description = "colin-smtps-mx.uninsane.org";
   };
   sane.ports.ports."587" = {
     protocol = [ "tcp" ];
-    visibleTo.ovpn = true;
+    visibleTo.lan = true;
     description = "colin-smtps-submission-mx.uninsane.org";
   };
 
