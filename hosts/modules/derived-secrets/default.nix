@@ -22,7 +22,7 @@ let
         type = types.enum [ "base64" ];
       };
       acl.mode = mkOption {
-        type = types.string;
+        type = types.str;
         default = "0600";
       };
     };
