@@ -3,6 +3,14 @@
 #
 # TODO: fix tel -> xmpp:
 # - "ERROR: check_stun_auth: Cannot find credentials of user <XXXMMMNNNN>"
+#
+# N.B. during operation it's NORMAL to see "error 401".
+# during session creation:
+# - client sends Allocate request
+# - server replies error 401, providing a realm and nonce
+# - client uses realm + nonce + shared secret to construct an auth key & call Allocate again
+# - server replies Allocate Success Response
+# - source: <https://stackoverflow.com/a/66643135>
 { lib, ... }:
 let
   # TODO: this range could be larger, but right now that's costly because each element is its own UPnP forward
@@ -39,6 +47,7 @@ in
         protocol = [ "tcp" "udp" ];
         visibleTo.lan = true;
         visibleTo.wan = true;
+        visibleTo.ovpn = true;
         description = "colin-turn-${builtins.toString count}-of-${builtins.toString numPorts}";
       };
     })
@@ -50,7 +59,18 @@ in
     enableACME = true;
   };
   sane.dns.zones."uninsane.org".inet = {
-    CNAME."turn" = "native";
+    # CNAME."turn" = "servo.wan";
+    # CNAME."turn" = "ovpns";
+    # CNAME."turn" = "native";
+    # XXX: SRV records have to point to something with a A/AAAA record; no CNAMEs
+    A."turn" = "%AOVPNS%";
+
+    SRV."_stun._udp" =                        "5 50 3478 turn";
+    SRV."_stun._tcp" =                        "5 50 3478 turn";
+    SRV."_stuns._tcp" =                       "5 50 5349 turn";
+    SRV."_turn._udp" =                        "5 50 3478 turn";
+    SRV."_turn._tcp" =                        "5 50 3478 turn";
+    SRV."_turns._tcp" =                       "5 50 5349 turn";
   };
 
   sane.derived-secrets."/var/lib/coturn/shared_secret.bin" = {
@@ -58,6 +78,7 @@ in
     # TODO: make this not globally readable
     acl.mode = "0644";
   };
+  sane.fs."/var/lib/coturn/shared_secret.bin".wantedBeforeBy = [ "coturn.service" ];
 
   # provide access to certs
   users.users.turnserver.extraGroups = [ "nginx" ];
@@ -68,9 +89,12 @@ in
   services.coturn.pkey = "/var/lib/acme/turn.uninsane.org/key.pem";
   services.coturn.use-auth-secret = true;
   services.coturn.static-auth-secret-file = "/var/lib/coturn/shared_secret.bin";
+  services.coturn.lt-cred-mech = true;
   services.coturn.min-port = turnPortLow;
   services.coturn.max-port = turnPortHigh;
+  # services.coturn.secure-stun = true;
   services.coturn.extraConfig = ''
+    verbose
     no-multicast-peers
   '';
 }

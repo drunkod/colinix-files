@@ -146,6 +146,7 @@ in lib.mkMerge [
             -e s/%CNAMENATIVE%/servo.${flavor}/ \
             -e s/%ANATIVE%/${anative}/ \
             -e s/%AWAN%/$wan/ \
+            -e s/%AOVPNS%/185.157.162.178/ \
             ${zoneTemplate} > ${zoneFor flavor}
         '';
         serviceConfig = config.systemd.services.trust-dns.serviceConfig // {

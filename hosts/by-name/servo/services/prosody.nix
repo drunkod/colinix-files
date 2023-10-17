@@ -28,7 +28,10 @@
 #
 # TODO:
 # - fix cheogram -> uninsane.org calls
-#   - enable mod_turn_external?
+#   - prosody: s2sin195bfb0: Received[s2sin]: <iq from='+1xxxxxxxxxx@cheogram.com/sip:+1xxxxxxxxxx ...>
+#   - prosody: s2sout1a2ee30: Sending[s2sout]: <iq ... type='error'>
+#   - need to enable some SIP module, maybe?
+
 # - ensure muc is working
 # - enable file uploads
 #   - "upload.xmpp.uninsane.org:http_upload: URL: <https://upload.xmpp.uninsane.org:5281/upload> - Ensure this can be reached by users"
@@ -125,10 +128,14 @@
   # pointing it to /var/lib/acme doesn't quite work because it expects the private key
   # to be named `privkey.pem` instead of acme's `key.pem`
   # <https://prosody.im/doc/certificates#automatic_location>
-  sane.fs."/etc/prosody/certs/uninsane.org/fullchain.pem".symlink.target =
-    "/var/lib/acme/uninsane.org/fullchain.pem";
-  sane.fs."/etc/prosody/certs/uninsane.org/privkey.pem".symlink.target =
-    "/var/lib/acme/uninsane.org/key.pem";
+  sane.fs."/etc/prosody/certs/uninsane.org/fullchain.pem" = {
+    symlink.target = "/var/lib/acme/uninsane.org/fullchain.pem";
+    wantedBeforeBy = [ "prosody.service" ];
+  };
+  sane.fs."/etc/prosody/certs/uninsane.org/privkey.pem" = {
+    symlink.target = "/var/lib/acme/uninsane.org/key.pem";
+    wantedBeforeBy = [ "prosody.service" ];
+  };
 
   services.prosody = {
     enable = true;
@@ -140,6 +147,7 @@
       lua.withPackages = selector: pkgs.lua.withPackages (p:
         selector (p // { luaunbound = null; })
       );
+      # withCommunityModules = [ "turncredentials" ];
     };
     admins = [ "colin@uninsane.org" ];
     # allowRegistration = false;  # defaults to false
@@ -201,6 +209,9 @@
       # allows prosody to share TURN/STUN secrets with XMPP clients to provide them access to the coturn server.
       # see: <https://prosody.im/doc/coturn>
       "turn_external"
+      # legacy coturn integration
+      # see: <https://modules.prosody.im/mod_turncredentials.html>
+      # "turncredentials"
     ];
 
     extraConfig = ''
@@ -208,7 +219,8 @@
         local f = assert(io.open(file, "rb"))
         local content = f:read("*all")
         f:close()
-        return content
+        -- remove trailing newline
+        return string.gsub(content, "%s+", "")
       end
 
       -- see: <https://prosody.im/doc/certificates#automatic_location>
@@ -221,6 +233,12 @@
 
       turn_external_host = "turn.uninsane.org"
       turn_external_secret = readAll("/var/lib/coturn/shared_secret.bin")
+      -- turn_external_user = "prosody"
+
+      -- legacy mod_turncredentials integration
+      -- turncredentials_host = "turn.uninsane.org"
+      -- turncredentials_secret = readAll("/var/lib/coturn/shared_secret.bin")
+
 
       -- s2s_require_encryption = true
       -- c2s_require_encryption = true
