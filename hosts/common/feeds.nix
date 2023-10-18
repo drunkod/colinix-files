@@ -73,6 +73,7 @@ let
     (fromDb "feeds.megaphone.fm/behindthebastards" // pol)  # also Maggie Killjoy
     (fromDb "feeds.megaphone.fm/hubermanlab" // uncat)  # Daniel Huberman on sleep
     (fromDb "feeds.megaphone.fm/recodedecode" // tech)  # The Verge - Decoder
+    (fromDb "feeds.simplecast.com/54nAGcIl" // pol)  # The Daily
     (fromDb "feeds.simplecast.com/82FI35Px" // pol)  # Ezra Klein Show
     (fromDb "feeds.simplecast.com/wgl4xEgL" // rat)  # Econ Talk
     (fromDb "feeds.simplecast.com/xKJ93w_w" // uncat)  # Atlas Obscura
@@ -98,7 +99,6 @@ let
     (fromDb "trashfuturepodcast.podbean.com" // pol)  # rec by Cory Doctorow
     (fromDb "wakingup.libsyn.com" // pol)  # Sam Harris
     (fromDb "werenotwrong.fireside.fm" // pol)
-    (mkPod "https://feeds.simplecast.com/54nAGcIl" // pol // daily)  # The Daily
 
     # (fromDb "rss.art19.com/your-welcome" // pol)  # Michael Malice - Your Welcome -- also available here: <https://origin.podcastone.com/podcast?categoryID2=2232>
     # (fromDb "rss.prod.firstlook.media/deconstructed/podcast.rss" // pol)  #< possible URL rot
