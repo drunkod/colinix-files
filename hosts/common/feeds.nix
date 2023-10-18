@@ -160,6 +160,7 @@ let
     (mkText "https://anish.lakhwara.com/home.html" // tech // weekly)
     (fromDb "jefftk.com" // tech)
     (fromDb "pomeroyb.com" // tech)
+    (fromDb "harihareswara.net" // tech // pol)  # rec by Cory Doctorow
     # (mkText "https://til.simonwillison.net/tils/feed.atom" // tech // weekly)
 
     # TECH PROJECTS
