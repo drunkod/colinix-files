@@ -419,7 +419,7 @@
             type = "app";
             program = let
               checkHost = host: ''
-                nix build '.#nixosConfigurations.${host}.config.system.build.toplevel' --out-link ./result-${host} -j2 $@
+                nix build -v '.#nixosConfigurations.${host}.config.system.build.toplevel' --out-link ./result-${host} -j2 $@
                 RC_${host}=$?
               '';
             in builtins.toString (pkgs.writeShellScript
