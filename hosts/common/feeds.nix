@@ -57,53 +57,54 @@ let
     };
 
   podcasts = [
+    (fromDb "acquiredlpbonussecretsecret.libsyn.com" // tech)  # ACQ2 - more "Acquired" episodes
+    (fromDb "allinchamathjason.libsyn.com" // pol)
+    (fromDb "anchor.fm/s/34c7232c/podcast/rss" // tech)  # Civboot -- https://anchor.fm/civboot
+    (fromDb "cast.postmarketos.org" // tech)
+    (fromDb "congressionaldish.libsyn.com" // pol)  # Jennifer Briney
     (fromDb "craphound.com" // pol)  # Cory Doctorow -- both podcast & text entries
+    (fromDb "darknetdiaries.com" // tech)
+    (fromDb "feed.podbean.com/matrixlive/feed.xml" // tech)  # Matrix (chat) Live
+    (fromDb "feeds.99percentinvisible.org/99percentinvisible" // pol)  # 99% Invisible -- also available here: <https://feeds.simplecast.com/BqbsxVfO>
+    (fromDb "feeds.feedburner.com/80000HoursPodcast" // rat)
+    (fromDb "feeds.feedburner.com/dancarlin/history" // rat)
+    (fromDb "feeds.feedburner.com/radiolab" // pol)  # Radiolab -- also available here, but ONLY OVER HTTP: <http://feeds.wnyc.org/radiolab>
     (fromDb "feeds.libsyn.com/421877" // rat)  # Less Wrong Curated
     (fromDb "feeds.megaphone.fm/behindthebastards" // pol)  # also Maggie Killjoy
-    (fromDb "feeds.simplecast.com/wgl4xEgL" // rat)  # Econ Talk
-    (fromDb "lexfridman.com/podcast" // rat)
-    (fromDb "sscpodcast.libsyn.com" // rat)  # Astral Codex Ten
-    (fromDb "omny.fm/shows/cool-people-who-did-cool-stuff" // pol)  # Maggie Killjoy -- referenced by Cory Doctorow
-    (fromDb "congressionaldish.libsyn.com" // pol)  # Jennifer Briney
-    (fromDb "werenotwrong.fireside.fm" // pol)
-    (fromDb "politicalorphanage.libsyn.com" // pol)
-    # (mkPod "https://podcasts.la.utexas.edu/this-is-democracy/feed/podcast/" // pol // weekly)
-    (fromDb "anchor.fm/s/34c7232c/podcast/rss" // tech)  # Civboot -- https://anchor.fm/civboot
-    (mkPod "https://anchor.fm/s/21bc734/podcast/rss" // pol // infrequent)  # Emerge: making sense of what's next -- <https://www.whatisemerging.com/emergepodcast>
-    (fromDb "feeds.feedburner.com/80000HoursPodcast" // rat)
     (fromDb "feeds.megaphone.fm/hubermanlab" // uncat)  # Daniel Huberman on sleep
-    (fromDb "mapspodcast.libsyn.com" // uncat)  # Multidisciplinary Association for Psychedelic Studies
-    (fromDb "allinchamathjason.libsyn.com" // pol)
-    (fromDb "feeds.transistor.fm/acquired" // tech)
-    (fromDb "acquiredlpbonussecretsecret.libsyn.com" // tech)  # ACQ2 - more "Acquired" episodes
-    (fromDb "rss.acast.com/deconstructed")  # The Intercept - Deconstructed
-    # (fromDb "rss.prod.firstlook.media/deconstructed/podcast.rss" // pol)  #< possible URL rot
-    (mkPod "https://feeds.simplecast.com/54nAGcIl" // pol // daily)  # The Daily
-    (fromDb "rss.acast.com/intercepted-with-jeremy-scahill")  # The Intercept - Intercepted
-    # (fromDb "rss.prod.firstlook.media/intercepted/podcast.rss" // pol)  #< possible URL rot
-    (fromDb "podcast.posttv.com/itunes/post-reports.xml" // pol)
-    (fromDb "rss.art19.com/the-portal" // rat)  # Eric Weinstein
-    (fromDb "darknetdiaries.com" // tech)
-    (fromDb "feeds.feedburner.com/radiolab" // pol)  # Radiolab -- also available here, but ONLY OVER HTTP: <http://feeds.wnyc.org/radiolab>
-    (fromDb "wakingup.libsyn.com" // pol)  # Sam Harris
-    (fromDb "feeds.99percentinvisible.org/99percentinvisible" // pol)  # 99% Invisible -- also available here: <https://feeds.simplecast.com/BqbsxVfO>
-    (fromDb "rss.acast.com/ft-tech-tonic" // tech)
-    (fromDb "feeds.feedburner.com/dancarlin/history" // rat)
-    (fromDb "rss.art19.com/60-minutes" // pol)
     (fromDb "feeds.megaphone.fm/recodedecode" // tech)  # The Verge - Decoder
-    (fromDb "feed.podbean.com/matrixlive/feed.xml" // tech)  # Matrix (chat) Live
-    (fromDb "cast.postmarketos.org" // tech)
-    (fromDb "podcast.thelinuxexp.com" // tech)
-    # (fromDb "rss.art19.com/your-welcome" // pol)  # Michael Malice - Your Welcome -- also available here: <https://origin.podcastone.com/podcast?categoryID2=2232>
-    (fromDb "seattlenice.buzzsprout.com" // pol)
-    (fromDb "talesfromthebridge.buzzsprout.com" // tech)  # Sci-Fi? has Peter Watts; author of No Moods, Ads or Cutesy Fucking Icons (rifters.com)
-    (fromDb "reverseengineering.libsyn.com/rss" // tech)  # UnNamed Reverse Engineering Podcast
-    (mkPod "https://feeds.megaphone.fm/RUNMED9919162779" // pol // infrequent)  # The Witch Trials of J.K. Rowling: <https://www.thefp.com/witchtrials>
-    (fromDb "feeds.simplecast.com/xKJ93w_w" // uncat)  # Atlas Obscura
     (fromDb "feeds.simplecast.com/82FI35Px" // pol)  # Ezra Klein Show
-    (fromDb "sharkbytes.transistor.fm" // tech)  # Wireshark Podcast o_0
+    (fromDb "feeds.simplecast.com/wgl4xEgL" // rat)  # Econ Talk
+    (fromDb "feeds.simplecast.com/xKJ93w_w" // uncat)  # Atlas Obscura
+    (fromDb "feeds.transistor.fm/acquired" // tech)
+    (fromDb "lexfridman.com/podcast" // rat)
+    (fromDb "mapspodcast.libsyn.com" // uncat)  # Multidisciplinary Association for Psychedelic Studies
     (fromDb "omegataupodcast.net" // tech)  # 3/4 German; 1/4 eps are English
+    (fromDb "omny.fm/shows/cool-people-who-did-cool-stuff" // pol)  # Maggie Killjoy -- referenced by Cory Doctorow
+    (fromDb "podcast.posttv.com/itunes/post-reports.xml" // pol)
+    (fromDb "podcast.thelinuxexp.com" // tech)
+    (fromDb "politicalorphanage.libsyn.com" // pol)
+    (fromDb "reverseengineering.libsyn.com/rss" // tech)  # UnNamed Reverse Engineering Podcast
+    (fromDb "rss.acast.com/deconstructed")  # The Intercept - Deconstructed
+    (fromDb "rss.acast.com/ft-tech-tonic" // tech)
+    (fromDb "rss.acast.com/intercepted-with-jeremy-scahill")  # The Intercept - Intercepted
+    (fromDb "rss.art19.com/60-minutes" // pol)
+    (fromDb "rss.art19.com/the-portal" // rat)  # Eric Weinstein
+    (fromDb "seattlenice.buzzsprout.com" // pol)
+    (fromDb "sharkbytes.transistor.fm" // tech)  # Wireshark Podcast o_0
+    (fromDb "sscpodcast.libsyn.com" // rat)  # Astral Codex Ten
+    (fromDb "talesfromthebridge.buzzsprout.com" // tech)  # Sci-Fi? has Peter Watts; author of No Moods, Ads or Cutesy Fucking Icons (rifters.com)
+    (fromDb "wakingup.libsyn.com" // pol)  # Sam Harris
+    (fromDb "werenotwrong.fireside.fm" // pol)
+    (mkPod "https://anchor.fm/s/21bc734/podcast/rss" // pol // infrequent)  # Emerge: making sense of what's next -- <https://www.whatisemerging.com/emergepodcast>
     (mkPod "https://audioboom.com/channels/5097784.rss" // tech)  # Lateral with Tom Scott
+    (mkPod "https://feeds.megaphone.fm/RUNMED9919162779" // pol // infrequent)  # The Witch Trials of J.K. Rowling: <https://www.thefp.com/witchtrials>
+    (mkPod "https://feeds.simplecast.com/54nAGcIl" // pol // daily)  # The Daily
+
+    # (fromDb "rss.art19.com/your-welcome" // pol)  # Michael Malice - Your Welcome -- also available here: <https://origin.podcastone.com/podcast?categoryID2=2232>
+    # (fromDb "rss.prod.firstlook.media/deconstructed/podcast.rss" // pol)  #< possible URL rot
+    # (fromDb "rss.prod.firstlook.media/intercepted/podcast.rss" // pol)  #< possible URL rot
+    # (mkPod "https://podcasts.la.utexas.edu/this-is-democracy/feed/podcast/" // pol // weekly)
   ];
 
   texts = [
