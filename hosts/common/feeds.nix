@@ -94,6 +94,8 @@ let
     (fromDb "sharkbytes.transistor.fm" // tech)  # Wireshark Podcast o_0
     (fromDb "sscpodcast.libsyn.com" // rat)  # Astral Codex Ten
     (fromDb "talesfromthebridge.buzzsprout.com" // tech)  # Sci-Fi? has Peter Watts; author of No Moods, Ads or Cutesy Fucking Icons (rifters.com)
+    (fromDb "techwontsave.us" // pol)  # rec by Cory Doctorow
+    (fromDb "trashfuturepodcast.podbean.com" // pol)  # rec by Cory Doctorow
     (fromDb "wakingup.libsyn.com" // pol)  # Sam Harris
     (fromDb "werenotwrong.fireside.fm" // pol)
     (mkPod "https://feeds.simplecast.com/54nAGcIl" // pol // daily)  # The Daily
