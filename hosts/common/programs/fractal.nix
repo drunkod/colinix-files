@@ -1,3 +1,15 @@
+# Fractal: GTK4 instant messenger client for the Matrix protocol
+#
+# very susceptible to state corruption during hard power-cycles.
+# if it stalls while launching, especially with a brief message at bottom
+# "unable to open store"
+# then:
+# - remove ~/.local/share/stable
+#   - this might give I/O error, in which case remove the corresponding path under
+#     /nix/persist/home/colin/private (which can be found by correlating timestamps/sizes with that in ~/private/.local/share/stable).
+# - reboot (maybe necessary).
+# - TODO: unsure if necessary to delete the keyring entry and re-login, re-verify with other session, or not.
+#   - process above may leave you unable to send/receive encrypted messages.
 { config, lib, pkgs, ... }:
 let
   cfg = config.sane.programs.fractal;
