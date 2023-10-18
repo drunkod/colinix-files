@@ -161,6 +161,7 @@ let
     (fromDb "jefftk.com" // tech)
     (fromDb "pomeroyb.com" // tech)
     (fromDb "harihareswara.net" // tech // pol)  # rec by Cory Doctorow
+    (fromDb "mako.cc/copyrighteous" // tech // pol)  # rec by Cory Doctorow
     # (mkText "https://til.simonwillison.net/tils/feed.atom" // tech // weekly)
 
     # TECH PROJECTS
