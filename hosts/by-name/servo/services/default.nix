@@ -25,7 +25,7 @@
     ./pict-rs.nix
     ./pleroma.nix
     ./postgres.nix
-    ./prosody.nix
+    ./prosody
     ./transmission.nix
     ./trust-dns.nix
     ./wikipedia.nix
