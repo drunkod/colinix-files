@@ -239,7 +239,7 @@ in
       # legacy coturn integration
       # see: <https://modules.prosody.im/mod_turncredentials.html>
       # "turncredentials"
-      "sane_hello"
+      "sane_ntfy"
     ] ++ lib.optionals enableDebug [
       "stanza_debug"  #< logs EVERY stanza as debug: <https://prosody.im/doc/modules/mod_stanza_debug>
     ];
