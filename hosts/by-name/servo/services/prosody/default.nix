@@ -14,6 +14,7 @@
 #   - enable `log.debug = "*syslog"` in extraConfig
 # - interactive:
 #   - `telnet localhost 5582` (this is equal to `prosodyctl shell` -- but doesn't hang)
+#     - `watch:stanzas(target_spec, filter)` -> to log stanzas, for version > 0.12
 #   - console docs: <https://prosody.im/doc/console>
 #   - can modify/inspect arbitrary internals (lua) by prefixing line with `> `
 #     - e.g. `> _G` to print all globals
