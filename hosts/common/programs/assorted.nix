@@ -201,6 +201,7 @@ in
     devPkgs = declPackageSet [
       "cargo"
       "clang"
+      "lua"
       "nodejs"
       "rustc"
       "tree-sitter"
