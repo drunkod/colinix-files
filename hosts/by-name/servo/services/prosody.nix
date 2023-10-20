@@ -8,14 +8,27 @@
 # - main: <https://prosody.im/doc/modules>
 # - community: <https://modules.prosody.im/index.html>
 #
-# create users with:
-# - `sudo -u prosody prosodyctl adduser colin@uninsane.org`
+# debugging:
+# - logging:
+#   - enable `stanza_debug` module
+#   - enable `log.debug = "*syslog"` in extraConfig
+# - interactive:
+#   - `telnet localhost 5582` (this is equal to `prosodyctl shell` -- but doesn't hang)
+#   - console docs: <https://prosody.im/doc/console>
+#   - can modify/inspect arbitrary internals (lua) by prefixing line with `> `
+#     - e.g. `> _G` to print all globals
+#
 # sanity checks:
 # - `sudo -u prosody -g prosody prosodyctl check connectivity`
 # - `sudo -u prosody -g prosody prosodyctl check turn`
 # - `sudo -u prosody -g prosody prosodyctl check turn -v --ping=stun.conversations.im`
 #   - checks that my stun/turn server is usable by clients of conversations.im (?)
 # - `sudo -u prosody -g prosody prosodyctl check`  (dns, config, certs)
+#
+#
+# create users with:
+# - `sudo -u prosody prosodyctl adduser colin@uninsane.org`
+#
 #
 # federation/support matrix:
 # - nixnet.services (runs ejabberd):
@@ -27,11 +40,8 @@
 #     - maybe i need to setup stun/turn
 #
 # TODO:
-# - fix cheogram -> uninsane.org calls
-#   - prosody: s2sin195bfb0: Received[s2sin]: <iq from='+1xxxxxxxxxx@cheogram.com/sip:+1xxxxxxxxxx ...>
-#   - prosody: s2sout1a2ee30: Sending[s2sout]: <iq ... type='error'>
-#   - need to enable some SIP module, maybe?
-
+# - enable push notifications (mod_cloud_notify)
+# - optimize coturn (e.g. move off of the VPN!)
 # - ensure muc is working
 # - enable file uploads
 #   - "upload.xmpp.uninsane.org:http_upload: URL: <https://upload.xmpp.uninsane.org:5281/upload> - Ensure this can be reached by users"
@@ -43,6 +53,10 @@
 
 { lib, pkgs, ... }:
 
+let
+  # enables very verbose logging
+  enableDebug = false;
+in
 {
   sane.persist.sys.plaintext = [
     { user = "prosody"; group = "prosody"; path = "/var/lib/prosody"; }
@@ -202,7 +216,14 @@
     # - uptime
     # - vcard_legacy
     # - version
+
+    modules.proxy65 = false;  # TODO: free its port 5000 and then re-enable
     extraModules = [
+      # admin_shell: allows `prosodyctl shell` to work
+      # see: <https://prosody.im/doc/modules/mod_admin_shell>
+      # see: <https://prosody.im/doc/console>
+      "admin_shell"
+      "admin_telnet"  #< needed by admin_shell
       # lastactivity: XEP-0012: allow users to query how long another user has been idle for
       # - not sure why i enabled this; think it was in someone's config i referenced
       "lastactivity"
@@ -212,6 +233,8 @@
       # legacy coturn integration
       # see: <https://modules.prosody.im/mod_turncredentials.html>
       # "turncredentials"
+    ] ++ lib.optionals enableDebug [
+      "stanza_debug"  #< logs EVERY stanza as debug: <https://prosody.im/doc/modules/mod_stanza_debug>
     ];
 
     extraConfig = ''
@@ -222,6 +245,14 @@
         -- remove trailing newline
         return string.gsub(content, "%s+", "")
       end
+
+      -- logging docs:
+      -- - <https://prosody.im/doc/logging>
+      -- - <https://prosody.im/doc/advanced_logging>
+      -- levels: debug, info, warn, error
+      log = {
+        ${if enableDebug then "debug" else "info"} = "*syslog";
+      }
 
       -- see: <https://prosody.im/doc/certificates#automatic_location>
       -- try to solve: "certmanager: Error indexing certificate directory /etc/prosody/certs: cannot open /etc/prosody/certs: No such file or directory"

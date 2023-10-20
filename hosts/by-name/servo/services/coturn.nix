@@ -1,6 +1,10 @@
 # TURN/STUN NAT traversal service
 # commonly used to establish realtime calls with prosody, or possibly matrix/synapse
 #
+# - <https://github.com/coturn/coturn/>
+# - `man turnserver`
+# - config docs: <https://github.com/coturn/coturn/blob/master/examples/etc/turnserver.conf>
+#
 # TODO: fix tel -> xmpp:
 # - "ERROR: check_stun_auth: Cannot find credentials of user <XXXMMMNNNN>"
 #
@@ -26,15 +30,17 @@ in
         # this is the "control" port.
         # i.e. no client data is forwarded through it, but it's where clients request tunnels.
         protocol = [ "tcp" "udp" ];
-        visibleTo.lan = true;
-        visibleTo.wan = true;
+        # visibleTo.lan = true;
+        # visibleTo.wan = true;
+        visibleTo.ovpn = true;
         description = "colin-stun-turn";
       };
       "5349" = {
         # the other port 3478 also supports TLS/DTLS, but presumably clients wanting TLS will default 5349
         protocol = [ "tcp" ];
-        visibleTo.lan = true;
-        visibleTo.wan = true;
+        # visibleTo.lan = true;
+        # visibleTo.wan = true;
+        visibleTo.ovpn = true;
         description = "colin-stun-turn-over-tls";
       };
     }
@@ -45,8 +51,8 @@ in
         numPorts = turnPortHigh - turnPortLow + 1;
       in {
         protocol = [ "tcp" "udp" ];
-        visibleTo.lan = true;
-        visibleTo.wan = true;
+        # visibleTo.lan = true;
+        # visibleTo.wan = true;
         visibleTo.ovpn = true;
         description = "colin-turn-${builtins.toString count}-of-${builtins.toString numPorts}";
       };
@@ -64,6 +70,7 @@ in
     # CNAME."turn" = "native";
     # XXX: SRV records have to point to something with a A/AAAA record; no CNAMEs
     A."turn" = "%AOVPNS%";
+    # A."turn" = "%AWAN%";
 
     SRV."_stun._udp" =                        "5 50 3478 turn";
     SRV."_stun._tcp" =                        "5 50 3478 turn";
@@ -93,8 +100,16 @@ in
   services.coturn.min-port = turnPortLow;
   services.coturn.max-port = turnPortHigh;
   # services.coturn.secure-stun = true;
-  services.coturn.extraConfig = ''
-    verbose
-    no-multicast-peers
-  '';
+  services.coturn.extraConfig = lib.concatStringsSep "\n" [
+    "verbose"
+    # "Verbose"  #< even MORE verbosity than "verbose"
+    # "no-multicast-peers"  # disables sending to IPv4 broadcast addresses (e.g. 224.0.0.0/3)
+    "listening-ip=10.0.1.5"
+    # "external-ip=185.157.162.178/10.0.1.5"
+    "external-ip=185.157.162.178"
+    # "listening-ip=10.78.79.51"  # can be specified multiple times; omit for *
+    # "external-ip=97.113.128.229/10.78.79.51"
+    # "external-ip=97.113.128.229"
+    # "mobility"  # "mobility with ICE (MICE) specs support" (?)
+  ];
 }
