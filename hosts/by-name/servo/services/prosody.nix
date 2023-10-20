@@ -45,9 +45,6 @@
 # - ensure muc is working
 # - enable file uploads
 #   - "upload.xmpp.uninsane.org:http_upload: URL: <https://upload.xmpp.uninsane.org:5281/upload> - Ensure this can be reached by users"
-# - move proxy65 to own port
-#   - "portmanager: Failed to open server port 5000 on *, this port is in use by another application"
-#   - port 5000 is in use by nix-serve (`sudo lsof -P -i4`)
 # - disable or fix bosh (jabber over http):
 #   - "certmanager: No certificate/key found for client_https port 0"
 
@@ -61,6 +58,12 @@ in
   sane.persist.sys.plaintext = [
     { user = "prosody"; group = "prosody"; path = "/var/lib/prosody"; }
   ];
+  sane.ports.ports."5000" = {
+    protocol = [ "tcp" ];
+    visibleTo.lan = true;
+    visibleTo.wan = true;
+    description = "colin-xmpp-prosody-fileshare-proxy65";
+  };
   sane.ports.ports."5222" = {
     protocol = [ "tcp" ];
     visibleTo.lan = true;
@@ -207,6 +210,7 @@ in
     # - private
     #   - XEP-0049: let clients store arbitrary (private) data on the server
     # - proxy65
+    #   - XEP-0065: allow server to proxy file transfers between two clients who are behind NAT
     # - register
     # - roster
     # - saslauth
@@ -217,7 +221,6 @@ in
     # - vcard_legacy
     # - version
 
-    modules.proxy65 = false;  # TODO: free its port 5000 and then re-enable
     extraModules = [
       # admin_shell: allows `prosodyctl shell` to work
       # see: <https://prosody.im/doc/modules/mod_admin_shell>
