@@ -6,6 +6,9 @@
 
 local jid = require"util.jid";
 
+local ntfy = module:get_option_string("ntfy_binary", "ntfy");
+local ntfy_topic = module:get_option_string("ntfy_topic", "xmpp");
+
 module:log("info", "initialized");
 
 local function is_urgent(stanza)
@@ -13,6 +16,17 @@ local function is_urgent(stanza)
     if stanza:get_child("propose", "urn:xmpp:jingle-message:0") then
       return true, "jingle call";
     end
+  end
+end
+
+local function publish_ntfy(message)
+  -- message should be the message to publish
+  local ntfy_url = string.format("https://ntfy.uninsane.org/%s", ntfy_topic)
+  local cmd = string.format("%s pub %q %q", ntfy, ntfy_url, message)
+  module.log("debug", "invoking ntfy: %s", cmd)
+  local success, reason, code = os.execute(cmd)
+  if not success then
+    module:log("warn", "ntfy failed: %s => %s %d", cmd, reason, code)
   end
 end
 
@@ -28,7 +42,8 @@ local function archive_message_added(event)
     local is_urgent_stanza, urgent_reason = is_urgent(event.stanza);
 
     if is_urgent_stanza then
-      module:log("info", "Urgent push for %s (%s) (TODO: bridge to ntfy)", to, urgent_reason);
+      module:log("info", "urgent push for %s (%s)", to, urgent_reason);
+      publish_ntfy(urgent_reason)
     end
   end
 end

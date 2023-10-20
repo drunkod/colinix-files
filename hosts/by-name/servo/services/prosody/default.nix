@@ -100,8 +100,10 @@ in
     description = "colin-xmpp-prosody-https";  # necessary?
   };
 
-  # provide access to certs
-  users.users.prosody.extraGroups = [ "nginx" ];
+  users.users.prosody.extraGroups = [
+    "nginx"  # provide access to certs
+    "ntfy-sh"  # access to secret ntfy topic
+  ];
 
   security.acme.certs."uninsane.org".extraDomainNames = [
     "xmpp.uninsane.org"
@@ -277,6 +279,8 @@ in
       -- turncredentials_host = "turn.uninsane.org"
       -- turncredentials_secret = readAll("/var/lib/coturn/shared_secret.bin")
 
+      ntfy_binary = "${pkgs.ntfy-sh}/bin/ntfy"
+      ntfy_topic = readAll("/run/secrets/ntfy-sh-topic")
 
       -- s2s_require_encryption = true
       -- c2s_require_encryption = true
