@@ -5,9 +5,6 @@
 # - `man turnserver`
 # - config docs: <https://github.com/coturn/coturn/blob/master/examples/etc/turnserver.conf>
 #
-# TODO: fix tel -> xmpp:
-# - "ERROR: check_stun_auth: Cannot find credentials of user <XXXMMMNNNN>"
-#
 # N.B. during operation it's NORMAL to see "error 401".
 # during session creation:
 # - client sends Allocate request
@@ -15,6 +12,18 @@
 # - client uses realm + nonce + shared secret to construct an auth key & call Allocate again
 # - server replies Allocate Success Response
 # - source: <https://stackoverflow.com/a/66643135>
+#
+# N.B. this safest implementation routes all traffic THROUGH A VPN
+# - that adds a lot of latency, but in practice turns out to be inconsequential.
+#   i guess ICE allows clients to prefer the other party's lower-latency server, in practice?
+# - still, this is the "safe" implementation because STUN works with IP addresses instead of domain names:
+#   1. client A queries the STUN server to determine its own IP address/port.
+#   2. client A tells client B which IP address/port client A is visible on.
+#   3. client B contacts that IP address/port
+#   this only works so long as the IP address/port which STUN server sees client A on is publicly routable.
+#   that is NOT the case when the STUN server and client A are on the same LAN
+#   even if client A contacts the STUN server via its WAN address with port reflection enabled.
+#   hence, there's no obvious way to put the STUN server on the same LAN as either client and expect the rest to work.
 { lib, ... }:
 let
   # TODO: this range could be larger, but right now that's costly because each element is its own UPnP forward
