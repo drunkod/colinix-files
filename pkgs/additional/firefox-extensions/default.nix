@@ -112,8 +112,8 @@ in (lib.makeScope newScope (self: with self; {
       extid = "webextension@metamask.io";
       pname = "ether-metamask";
       url = "https://github.com/MetaMask/metamask-extension/releases/download/v${version}/metamask-firefox-${version}.zip";
-      version = "11.2.0";
-      hash = "sha256-0TQYYDe8iUBzydcGxbs8ppaLWVwjxPnjqoaUsv77cW4=";
+      version = "11.3.0";
+      hash = "sha256-8uCdaQEvHKYYH1xJFe88fwyjOx34GVHsGdVnx68lWlQ=";
     };
     i2p-in-private-browsing = fetchVersionedAddon rec {
       extid = "i2ppb@eyedeekay.github.io";
@@ -150,8 +150,8 @@ in (lib.makeScope newScope (self: with self; {
       # N.B.: a handful of versions are released unsigned
       # url = "https://github.com/gorhill/uBlock/releases/download/${version}/uBlock0_${version}.signed.xpi";
       url = "https://github.com/gorhill/uBlock/releases/download/${version}/uBlock0_${version}.firefox.signed.xpi";
-      version = "1.52.3b16";
-      hash = "sha256-svzXqOvwIBYx1Mi0+abOvqXFkZ7PAQijGsekEFPUwtM=";
+      version = "1.52.3b17";
+      hash = "sha256-2/IKn1/lZoD1OVST6yPrlDrARNxHRgKkQJyb8qvHXjY=";
     };
   };
 })).overrideScope (self: super:
