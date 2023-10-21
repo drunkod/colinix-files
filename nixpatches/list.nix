@@ -19,6 +19,16 @@ let
       // (if title != null then { name = title; } else {})
     );
 in [
+  # (fetchpatch' {
+  #   title = "trust-dns: 0.23.0 -> 0.24.0";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/262466";
+  #   hash = "sha256-s8ra/tbD/xAfU3HI3wv+aQ0dip1kKQcVrJvLG6DNctY=";
+  # })
+  # (fetchpatch' {
+  #   title = "trust-dns: rebrand as hickory-dns";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/262268";
+  #   hash = "sha256-TxQiR+OS4YriLNViTg4H78Z3f3IjBVodiFAkOUCeNic=";
+  # })
   (fetchpatch' {
     # merged *into staging* 2023/10/05
     title = "mesa: don't depend on build python";
