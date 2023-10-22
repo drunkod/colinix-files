@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 NTFY_HOST = 'uninsane.org'
 NTFY_PORT_BASE = 5550
 SUSPEND_TIME=300
-WOWLAN_DELAY=5
+# take care that WOWLAN_DELAY might include more than you think (e.g. time spent configuring wowlan pattern rules)
+WOWLAN_DELAY=6
 
 class Executor:
     def __init__(self, dry_run: bool = False):
@@ -75,11 +76,17 @@ class Suspender:
         self.wowlan_delay = wowlan_delay
         self.ntfy_socket = None
 
-    def ntfy_port(self) -> int:
-        return NTFY_PORT_BASE + self.wowlan_delay
+    def ntfy_port(self) -> (int, int|None):
+        ''' returns (remote port, local port) '''
+        remote_port = NTFY_PORT_BASE + self.wowlan_delay
+        try:
+            local_port = self.ntfy_socket.get_peername()[1]
+        except:
+            local_port = None  # it errors if e.g. socket disconnects
+        return remote_port, local_port
 
     def open_ntfy_stream(self):
-        self.ntfy_socket = self.executor.try_connect((NTFY_HOST, self.ntfy_port()), 0.5*self.wowlan_delay)
+        self.ntfy_socket = self.executor.try_connect((NTFY_HOST, self.ntfy_port()[0]), 0.5*self.wowlan_delay)
 
     def close_ntfy_stream(self):
         ''' call before exit to ensure socket is cleanly shut down and not leaked '''
@@ -103,7 +110,9 @@ class Suspender:
         # wake on ssh
         self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--dest-port', '22', '--dest-ip', 'SELF'], sudo=True, check=False)
         # wake on notification (ntfy/Universal Push)
-        self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--source-port', str(self.ntfy_port()), '--dest-ip', 'SELF'], sudo=True, check=False)
+        remote_port, local_port = self.ntfy_port()
+        dest_port_args = ['--dest-port', str(local_port)] if local_port is not None else []
+        self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--source-port', str(remote_port), '--dest-ip', 'SELF'] + dest_port_args, sudo=True, check=False)
 
         # wake if someone doesn't know how to route to us, because that could obstruct the above
         # self.executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF'], sudo=True, check=False)
@@ -145,8 +154,8 @@ def main():
     executor = Executor(dry_run=args.dry_run)
     suspender = Suspender(executor, wowlan_delay=wowlan_delay)
 
-    suspender.configure_wowlan()
     suspender.open_ntfy_stream()
+    suspender.configure_wowlan()
 
     time_start = time.time()
     # irq_start="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
