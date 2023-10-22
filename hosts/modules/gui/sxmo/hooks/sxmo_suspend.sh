@@ -79,10 +79,7 @@ class Suspender:
     def ntfy_port(self) -> (int, int|None):
         ''' returns (remote port, local port) '''
         remote_port = NTFY_PORT_BASE + self.wowlan_delay
-        try:
-            local_port = self.ntfy_socket.getpeername()[1]
-        except:
-            local_port = None  # it errors if e.g. socket disconnects
+        local_port = self.ntfy_socket.getsockname()[1] if self.ntfy_socket is not None else None
         return remote_port, local_port
 
     def open_ntfy_stream(self):
