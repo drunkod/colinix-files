@@ -45,7 +45,13 @@ class Executor:
         if self.dry_run:
             return
 
-        res = subprocess.run(cmd, capture_output=True)
+        try:
+            res = subprocess.run(cmd, capture_output=True)
+        except Exception as e:
+            if check: raise
+            logger.warning(f"error invoking subprocess: {e}")
+            return
+
         logger.debug(res.stdout)
         if res.stderr:
             logger.warning(res.stderr)
@@ -89,24 +95,29 @@ class Suspender:
         # - calculating IP addr from link, and then caching on the args we call our helper with may well suffice
         # and no need to invoke a subprocess here, when it's just python code calling other python code!
 
-        self.executor.exec(['rtl8723cs-wowlan', 'enable-clean'], sudo=True)
+        self.executor.exec(['rtl8723cs-wowlan', 'enable-clean'], sudo=True, check=False)
 
         # wake on ssh
-        self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--dest-port', '22', '--dest-ip', 'SELF'], sudo=True)
+        self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--dest-port', '22', '--dest-ip', 'SELF'], sudo=True, check=False)
         # wake on notification (ntfy/Universal Push)
-        self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--source-port', str(self.ntfy_port()), '--dest-ip', 'SELF'], sudo=True)
+        self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--source-port', str(self.ntfy_port()), '--dest-ip', 'SELF'], sudo=True, check=False)
 
         # wake if someone doesn't know how to route to us, because that could obstruct the above
-        # self.executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF'], sudo=True)
+        # self.executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF'], sudo=True, check=False)
         # specifically wake upon ARP request via the broadcast address.
         # peers don't usually go straight for broadcast, but rather try ARPing the mac they knew us on.
         # hence, waking on broadcast makes this a bit less racy (less likely to see broadcast ARP immediately upon suspend enter).
         # N.B.: wowlan also offloads arp, so this rule shouldn't be exercised except when things glitch.
-        self.executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF', '--dest-mac', 'ff:ff:ff:ff:ff:ff'], sudo=True)
+        self.executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF', '--dest-mac', 'ff:ff:ff:ff:ff:ff'], sudo=True, check=False)
 
-    def suspend(self, duration: int):
+    def suspend(self, duration: int, mode: str):
         logger.info(f"calling suspend for duration: {duration}")
-        self.executor.exec(['rtcwake', '-m', 'mem', '-s', str(duration)], check=False)
+        if mode == 'rtcwake':
+            self.executor.exec(['rtcwake', '-m', 'mem', '-s', str(duration)], check=False)
+        elif mode == 'sleep':
+            time.sleep(duration)
+        else:
+            assert False, f"unknown suspend mode: {mode}"
 
 
 def main():
@@ -118,6 +129,7 @@ def main():
     parser.add_argument("--verbose", action='store_true', help="log each command before executing")
     parser.add_argument("--duration", type=int, default=SUSPEND_TIME, help="maximum duration to sleep for, in seconds")
     parser.add_argument("--wowlan-delay", type=int, default=WOWLAN_DELAY, help="minimum number of seconds after entering sleep during which wowlan is racy")
+    parser.add_argument("--suspend-mode", choices=['rtcwake', 'sleep'], default='rtcwake', help="how to sleep")
 
     args = parser.parse_args()
 
@@ -126,6 +138,7 @@ def main():
 
     suspend_time = args.duration
     wowlan_delay = args.wowlan_delay
+    suspend_mode = args.suspend_mode
     executor = Executor(dry_run=args.dry_run)
     suspender = Suspender(executor, wowlan_delay=wowlan_delay)
 
@@ -134,7 +147,7 @@ def main():
 
     time_start = time.time()
     # irq_start="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
-    suspender.suspend(suspend_time)
+    suspender.suspend(suspend_time, mode=suspend_mode)
     # irq_end="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
     time_spent = time.time() - time_start
 
