@@ -83,8 +83,11 @@ class Suspender:
 
     def close_ntfy_stream(self):
         ''' call before exit to ensure socket is cleanly shut down and not leaked '''
-        if self.ntfy_socket is not None:
+        try:
+            self.ntfy_socket.shutdown(socket.SHUT_RDWR)
             self.ntfy_socket.close()
+        except:
+            pass  # shutdown can error if the socket was already terminated (by the remote)
 
     def configure_wowlan(self):
         # TODO: don't do this wowlan stuff every single time.
