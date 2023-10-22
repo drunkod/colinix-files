@@ -21,7 +21,7 @@
     ./navidrome.nix
     ./nginx.nix
     ./nixserve.nix
-    ./ntfy.nix
+    ./ntfy
     ./pict-rs.nix
     ./pleroma.nix
     ./postgres.nix
