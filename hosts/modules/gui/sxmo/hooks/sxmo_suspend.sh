@@ -55,14 +55,16 @@ def main():
     parser = argparse.ArgumentParser(description="suspend the pinephone to RAM, and configure wake triggers to make that appear more transparent")
     parser.add_argument("--dry-run", action='store_true', help="print commands instead of executing them")
     parser.add_argument("--verbose", action='store_true', help="log each command before executing")
+    parser.add_argument("--duration", type=int, default=SUSPEND_TIME, help="maximum duration to sleep for, in seconds")
 
     args = parser.parse_args()
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-
+    suspend_time = args.duration
     executor = Executor(dry_run=args.dry_run)
+
     # TODO: don't do this wowlan stuff every single time.
     # - it's costly (can take like 1sec)
     # alternative is to introduce some layer of cache:
@@ -81,12 +83,12 @@ def main():
     # should in theory by covered by the above (TODO: remove this!), but for now hopefully helps wake-on-lan be more reliable?
     executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF', '--dest-mac', 'ff:ff:ff:ff:ff:ff'], sudo=True)
 
-    logger.info(f"calling suspend for duration: {SUSPEND_TIME}")
+    logger.info(f"calling suspend for duration: {suspend_time}")
 
     time_start = time.time()
     # irq_start="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
     #
-    executor.exec(['rtcwake', '-m', 'mem', '-s', str(SUSPEND_TIME)], check=False)
+    executor.exec(['rtcwake', '-m', 'mem', '-s', str(suspend_time)], check=False)
 
     # irq_end="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
     time_spent = time.time() - time_start
