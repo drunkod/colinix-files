@@ -22,12 +22,16 @@
 
 import argparse
 import logging
+import socket
 import subprocess
 import time
 
 logger = logging.getLogger(__name__)
 
+NTFY_HOST = 'uninsane.org'
+NTFY_PORT_BASE = 5550
 SUSPEND_TIME=300
+WOWLAN_DELAY=5
 
 class Executor:
     def __init__(self, dry_run: bool = False):
@@ -48,9 +52,33 @@ class Executor:
         if check:
             res.check_returncode()
 
+    def try_connect(self, dest, delay):
+        logger.debug(f"opening socket to {dest} with timeout {delay}")
+        if self.dry_run:
+            return None
+
+        try:
+            return socket.create_connection(dest, delay)
+        except Exception as e:
+            logger.warning(f"failed to connect: {e}")
+
+
 class Suspender:
-    def __init__(self, executor: Executor):
+    def __init__(self, executor: Executor, wowlan_delay: float):
         self.executor = executor
+        self.wowlan_delay = wowlan_delay
+        self.ntfy_socket = None
+
+    def ntfy_port(self) -> int:
+        return NTFY_PORT_BASE + self.wowlan_delay
+
+    def open_ntfy_stream(self):
+        self.ntfy_socket = self.executor.try_connect((NTFY_HOST, self.ntfy_port()), 0.5*self.wowlan_delay)
+
+    def close_ntfy_stream(self):
+        ''' call before exit to ensure socket is cleanly shut down and not leaked '''
+        if self.ntfy_socket is not None:
+            self.ntfy_socket.close()
 
     def configure_wowlan(self):
         # TODO: don't do this wowlan stuff every single time.
@@ -60,15 +88,20 @@ class Suspender:
         #   - because wowlan enable w/o connection may well behave differently than w/ connection
         # - calculating IP addr from link, and then caching on the args we call our helper with may well suffice
         # and no need to invoke a subprocess here, when it's just python code calling other python code!
+
         self.executor.exec(['rtl8723cs-wowlan', 'enable-clean'], sudo=True)
+
         # wake on ssh
         self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--dest-port', '22', '--dest-ip', 'SELF'], sudo=True)
         # wake on notification (ntfy/Universal Push)
-        # executor.exec(['rtl8723cs-wowlan', 'tcp', '--source-port', '2587', '--dest-ip', 'SELF'], sudo=True)
+        self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--source-port', str(self.ntfy_port()), '--dest-ip', 'SELF'], sudo=True)
+
         # wake if someone doesn't know how to route to us, because that could obstruct the above
-        # executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF'], sudo=True)
+        # self.executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF'], sudo=True)
         # specifically wake upon ARP request via the broadcast address.
-        # should in theory by covered by the above (TODO: remove this!), but for now hopefully helps wake-on-lan be more reliable?
+        # peers don't usually go straight for broadcast, but rather try ARPing the mac they knew us on.
+        # hence, waking on broadcast makes this a bit less racy (less likely to see broadcast ARP immediately upon suspend enter).
+        # N.B.: wowlan also offloads arp, so this rule shouldn't be exercised except when things glitch.
         self.executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF', '--dest-mac', 'ff:ff:ff:ff:ff:ff'], sudo=True)
 
     def suspend(self, duration: int):
@@ -84,6 +117,7 @@ def main():
     parser.add_argument("--dry-run", action='store_true', help="print commands instead of executing them")
     parser.add_argument("--verbose", action='store_true', help="log each command before executing")
     parser.add_argument("--duration", type=int, default=SUSPEND_TIME, help="maximum duration to sleep for, in seconds")
+    parser.add_argument("--wowlan-delay", type=int, default=WOWLAN_DELAY, help="minimum number of seconds after entering sleep during which wowlan is racy")
 
     args = parser.parse_args()
 
@@ -91,10 +125,12 @@ def main():
         logging.getLogger().setLevel(logging.DEBUG)
 
     suspend_time = args.duration
+    wowlan_delay = args.wowlan_delay
     executor = Executor(dry_run=args.dry_run)
-    suspender = Suspender(executor)
+    suspender = Suspender(executor, wowlan_delay=wowlan_delay)
 
     suspender.configure_wowlan()
+    suspender.open_ntfy_stream()
 
     time_start = time.time()
     # irq_start="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
@@ -104,6 +140,7 @@ def main():
 
     logger.info(f"suspended for {time_spent:.0f} seconds")
 
+    suspender.close_ntfy_stream()
     executor.exec(['sxmo_hook_postwake.sh'], check=False)
 
 if __name__ == '__main__':
