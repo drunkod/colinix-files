@@ -29,6 +29,8 @@
 
 ## IMPROVEMENTS:
 ### security/resilience
+- matrix/ntfy: automatically add the ntfy.uninsane.org push URL as part of synapse launch
+- ntfy: use a more secure topic
 - validate duplicity backups!
 - encrypt more ~ dirs (~/archives, ~/records, ..?)
   - best to do this after i know for sure i have good backups
