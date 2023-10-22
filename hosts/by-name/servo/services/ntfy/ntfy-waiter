@@ -20,7 +20,6 @@ class Client:
         self.live_after = live_after
         self.sock = sock
         self.addr_info = addr_info
-        logger.info(f"accepted conn from {addr_info}")
 
     def __cmp__(self, other: 'Client'):
         return cmp(self.addr_info, other.addr_info)
@@ -55,6 +54,18 @@ class Adapter:
         clients_str = '\n'.join(f'  {c.addr_info}' for c in self.clients)
         logger.debug(f"clients alive ({len(self.clients)}):\n{clients_str}")
 
+    def add_client(self, client: Client):
+        # it's a little bit risky to keep more than one client at the same IP address,
+        # because it's possible a notification comes in and we ring the old connection,
+        # even when the new connection says "don't ring yet".
+        for c in set(self.clients):
+            if c.addr_info[0] == client.addr_info[0]:
+                logger.info(f"purging old client before adding new one at same address: {c.addr_info} -> {client.addr_info}")
+                self.clients.remove(c)
+
+        logger.info(f"accepted client at {client.addr_info}")
+        self.clients.add(client)
+
     def listener_loop(self):
         logger.info(f"listening for connections on {self.host}:{self.port}")
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -62,7 +73,7 @@ class Adapter:
         s.listen(LISTEN_QUEUE)
         while True:
             conn, addr_info = s.accept()
-            self.clients.add(Client(conn, addr_info, live_after = time.time() + self.silence))
+            self.add_client(Client(conn, addr_info, live_after = time.time() + self.silence))
 
     def notify_clients(self, message: bytes = WAKE_MESSAGE):
         # notify every client, and drop any which have disconnected
