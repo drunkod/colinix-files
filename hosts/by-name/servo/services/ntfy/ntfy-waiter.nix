@@ -22,7 +22,7 @@ let
         ExecStart = "${cfg.package}/bin/ntfy-waiter --port ${builtins.toString port} --silence ${builtins.toString silence}";
       };
       after = [ "network.target" ];
-      wantedBy = [ "network.target" ];
+      wantedBy = [ "default.target" ];
     };
   };
 in
