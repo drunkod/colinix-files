@@ -93,9 +93,9 @@ let
       pkgs = [ "systemd" "xdg-user-dirs" ];
       src = ./hooks;
     };
-    suspend = pkgs.static-nix-shell.mkBash {
+    suspend = pkgs.static-nix-shell.mkPython3Bin {
       pname = "sxmo_suspend.sh";
-      pkgs = [ "coreutils" "findutils" "gnugrep" "rtl8723cs-wowlan" "time" "util-linux" ];
+      pkgs = [ "rtl8723cs-wowlan" "util-linux" ];
       src = ./hooks;
     };
   };
