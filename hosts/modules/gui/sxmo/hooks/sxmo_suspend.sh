@@ -48,6 +48,34 @@ class Executor:
         if check:
             res.check_returncode()
 
+class Suspender:
+    def __init__(self, executor: Executor):
+        self.executor = executor
+
+    def configure_wowlan(self):
+        # TODO: don't do this wowlan stuff every single time.
+        # - it's costly (can take like 1sec)
+        # alternative is to introduce some layer of cache:
+        # - do so in a way such that WiFi connection state changes invalidate the cache
+        #   - because wowlan enable w/o connection may well behave differently than w/ connection
+        # - calculating IP addr from link, and then caching on the args we call our helper with may well suffice
+        # and no need to invoke a subprocess here, when it's just python code calling other python code!
+        self.executor.exec(['rtl8723cs-wowlan', 'enable-clean'], sudo=True)
+        # wake on ssh
+        self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--dest-port', '22', '--dest-ip', 'SELF'], sudo=True)
+        # wake on notification (ntfy/Universal Push)
+        # executor.exec(['rtl8723cs-wowlan', 'tcp', '--source-port', '2587', '--dest-ip', 'SELF'], sudo=True)
+        # wake if someone doesn't know how to route to us, because that could obstruct the above
+        # executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF'], sudo=True)
+        # specifically wake upon ARP request via the broadcast address.
+        # should in theory by covered by the above (TODO: remove this!), but for now hopefully helps wake-on-lan be more reliable?
+        self.executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF', '--dest-mac', 'ff:ff:ff:ff:ff:ff'], sudo=True)
+
+    def suspend(self, duration: int):
+        logger.info(f"calling suspend for duration: {duration}")
+        self.executor.exec(['rtcwake', '-m', 'mem', '-s', str(duration)], check=False)
+
+
 def main():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
@@ -64,32 +92,13 @@ def main():
 
     suspend_time = args.duration
     executor = Executor(dry_run=args.dry_run)
+    suspender = Suspender(executor)
 
-    # TODO: don't do this wowlan stuff every single time.
-    # - it's costly (can take like 1sec)
-    # alternative is to introduce some layer of cache:
-    # - do so in a way such that WiFi connection state changes invalidate the cache
-    #   - because wowlan enable w/o connection may well behave differently than w/ connection
-    # - calculating IP addr from link, and then caching on the args we call our helper with may well suffice
-    # and no need to invoke a subprocess here, when it's just python code calling other python code!
-    executor.exec(['rtl8723cs-wowlan', 'enable-clean'], sudo=True)
-    # wake on ssh
-    executor.exec(['rtl8723cs-wowlan', 'tcp', '--dest-port', '22', '--dest-ip', 'SELF'], sudo=True)
-    # wake on notification (ntfy/Universal Push)
-    # executor.exec(['rtl8723cs-wowlan', 'tcp', '--source-port', '2587', '--dest-ip', 'SELF'], sudo=True)
-    # wake if someone doesn't know how to route to us, because that could obstruct the above
-    # executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF'], sudo=True)
-    # specifically wake upon ARP request via the broadcast address.
-    # should in theory by covered by the above (TODO: remove this!), but for now hopefully helps wake-on-lan be more reliable?
-    executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF', '--dest-mac', 'ff:ff:ff:ff:ff:ff'], sudo=True)
-
-    logger.info(f"calling suspend for duration: {suspend_time}")
+    suspender.configure_wowlan()
 
     time_start = time.time()
     # irq_start="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
-    #
-    executor.exec(['rtcwake', '-m', 'mem', '-s', str(suspend_time)], check=False)
-
+    suspender.suspend(suspend_time)
     # irq_end="$(cat /proc/interrupts | grep 'rtw_wifi_gpio_wakeup' | tr -s ' ' | xargs echo | cut -d' ' -f 2)"
     time_spent = time.time() - time_start
 
