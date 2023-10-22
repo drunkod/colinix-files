@@ -76,14 +76,14 @@ class Suspender:
         self.wowlan_delay = wowlan_delay
         self.ntfy_socket = None
 
-    def ntfy_port(self) -> (int, int|None):
-        ''' returns (remote port, local port) '''
+    def ntfy_addr(self) -> (int, int|None, str|None):
+        ''' returns (remote port, local port, local ip) '''
         remote_port = NTFY_PORT_BASE + self.wowlan_delay
-        local_port = self.ntfy_socket.getsockname()[1] if self.ntfy_socket is not None else None
-        return remote_port, local_port
+        local_ip, local_port = self.ntfy_socket.getsockname() if self.ntfy_socket is not None else (None, None)
+        return remote_port, local_port, local_ip
 
     def open_ntfy_stream(self):
-        self.ntfy_socket = self.executor.try_connect((NTFY_HOST, self.ntfy_port()[0]), 0.5*self.wowlan_delay)
+        self.ntfy_socket = self.executor.try_connect((NTFY_HOST, self.ntfy_addr()[0]), 0.5*self.wowlan_delay)
 
     def close_ntfy_stream(self):
         ''' call before exit to ensure socket is cleanly shut down and not leaked '''
@@ -106,10 +106,12 @@ class Suspender:
 
         # wake on ssh
         self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--dest-port', '22', '--dest-ip', 'SELF'], sudo=True, check=False)
+
         # wake on notification (ntfy/Universal Push)
-        remote_port, local_port = self.ntfy_port()
+        remote_port, local_port, local_ip = self.ntfy_addr()
         dest_port_args = ['--dest-port', str(local_port)] if local_port is not None else []
-        self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--source-port', str(remote_port), '--dest-ip', 'SELF'] + dest_port_args, sudo=True, check=False)
+        dest_ip_args = ['--dest-ip', local_ip] if local_ip is not None else ['--dest-ip', 'SELF']
+        self.executor.exec(['rtl8723cs-wowlan', 'tcp', '--source-port', str(remote_port)] + dest_port_args + dest_ip_args, sudo=True, check=False)
 
         # wake if someone doesn't know how to route to us, because that could obstruct the above
         # self.executor.exec(['rtl8723cs-wowlan', 'arp', '--dest-ip', 'SELF'], sudo=True, check=False)
