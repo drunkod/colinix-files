@@ -30,6 +30,7 @@ class Client:
         true otherwise.
         """
         if time.time() < self.live_after:
+            # TODO: we want to still notify, just with a delay!
             logger.debug(f"not notifying client because it's not ready: {self.addr_info}")
             return True
 
