@@ -80,7 +80,7 @@ class Suspender:
         ''' returns (remote port, local port) '''
         remote_port = NTFY_PORT_BASE + self.wowlan_delay
         try:
-            local_port = self.ntfy_socket.get_peername()[1]
+            local_port = self.ntfy_socket.getpeername()[1]
         except:
             local_port = None  # it errors if e.g. socket disconnects
         return remote_port, local_port
