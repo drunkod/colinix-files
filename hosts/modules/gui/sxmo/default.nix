@@ -97,6 +97,7 @@ let
       pname = "sxmo_suspend.sh";
       pkgs = [ "rtl8723cs-wowlan" "util-linux" ];
       src = ./hooks;
+      extraMakeWrapperArgs = [ "--add-flags" "--verbose" ];
     };
   };
 in
