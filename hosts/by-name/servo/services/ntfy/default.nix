@@ -3,6 +3,7 @@
 { config, ... }:
 {
   imports = [
+    ./ntfy-waiter.nix
     ./ntfy-sh.nix
   ];
   sops.secrets."ntfy-sh-topic" = {
@@ -10,5 +11,4 @@
     owner = config.users.users.ntfy-sh.name;
     group = config.users.users.ntfy-sh.name;
   };
-
 }
