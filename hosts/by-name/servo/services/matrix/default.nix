@@ -1,6 +1,16 @@
 # docs: <https://nixos.wiki/wiki/Matrix>
 # docs: <https://nixos.org/manual/nixos/stable/index.html#module-services-matrix-synapse>
 # example config: <https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml>
+#
+# ENABLING PUSH NOTIFICATIONS (with UnifiedPush/ntfy):
+# - Matrix "pushers" API spec: <https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3pushersset>
+# - first, view notification settings:
+#   - obtain your client's auth token. e.g. Element -> profile -> help/about -> access token.
+#   - `curl --header 'Authorization: Bearer <your_access_token>' localhost:8008/_matrix/client/v3/pushers | jq .`
+# - enable a new notification destination:
+#   - `curl --header "Authorization: Bearer <your_access_token>" --data '{ "app_display_name": "<topic>", "app_id": "ntfy.uninsane.org", "data": { "url": "https://ntfy.uninsane.org/_matrix/push/v1/notify", "format": "event_id_only" }, "device_display_name": "<topic>", "kind": "http", "lang": "en-US", "profile_tag": "", "pushkey": "<topic>" }' localhost:8008/_matrix/client/v3/pushers/set`
+# - delete a notification destination by setting `kind` to `null` (otherwise, request is identical to above)
+#
 { config, lib, pkgs, ... }:
 
 {
