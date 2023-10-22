@@ -3,6 +3,7 @@
 
 import argparse
 import logging
+import os
 import socket
 import subprocess
 import sys
@@ -50,6 +51,10 @@ class Adapter:
         self.topic = topic
         self.clients = set()
 
+    def log_clients(self):
+        clients_str = '\n'.join(f'  {c.addr_info}' for c in self.clients)
+        logger.debug(f"clients alive ({len(self.clients)}):\n{clients_str}")
+
     def listener_loop(self):
         logger.info(f"listening for connections on {self.host}:{self.port}")
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -70,6 +75,8 @@ class Adapter:
         for c in dead_clients:
             self.clients.remove(c)
 
+        self.log_clients()
+
     def notify_loop(self):
         logger.info("waiting for notification events")
         ntfy_proc = subprocess.Popen(
@@ -88,9 +95,14 @@ def get_topic() -> str:
     return open('/run/secrets/ntfy-sh-topic', 'rt').read().strip()
 
 def run_forever(callable):
-    callable()
-    logger.error(f"{callable} unexpectedly returned")
-    sys.exit(1)
+    try:
+        callable()
+    except Exception as e:
+        logger.error(f"{callable} failed: {e}")
+    else:
+        logger.error(f"{callable} unexpectedly returned")
+    # sys.exit(1)
+    os._exit(1)  # sometimes `sys.exit()` doesn't actually exit...
 
 def main():
     logging.basicConfig()
@@ -114,7 +126,7 @@ def main():
     listener_loop = threading.Thread(target=run_forever, name="listener_loop", args=(adapter.listener_loop,))
     notify_loop = threading.Thread(target=run_forever, name="notify_loop", args=(adapter.notify_loop,))
 
-    # TODO: this method of exiting seems to leave the listener behind,
+    # TODO: this method of exiting seems to sometimes leave the listener behind (?)
     # preventing anyone else from re-binding the port.
     listener_loop.start()
     notify_loop.start()
