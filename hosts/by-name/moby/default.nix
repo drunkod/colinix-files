@@ -49,6 +49,7 @@
   # sane.programs.ntfy-sh.config.autostart = true;
   sane.programs.dino.config.autostart = true;
   # sane.programs.calls.config.autostart = true;
+  sane.programs.mpv.config.vo = "wlshm";  #< see hosts/common/programs/mpv.nix for details
 
   sane.programs.firefox.mime.priority = 300;  # prefer other browsers when possible
   # HACK/TODO: make `programs.P.env.VAR` behave according to `mime.priority`
@@ -82,8 +83,6 @@
       default.clock.max-quantum = 8192
     }
   '';
-
-  # sane.programs.mpv.enableFor.user.colin = true;
 
   boot.loader.efi.canTouchEfiVariables = false;
   # /boot space is at a premium. default was 20.
