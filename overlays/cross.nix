@@ -864,17 +864,18 @@ in {
   #   # remove logic which was removing introspection/vala on cross compilation
   #   mesonFlags = [];
   # });
-  gspell = prev.gspell.overrideAttrs (upstream: {
-    depsBuildBuild = (upstream.depsBuildBuild or []) ++ [
-      # without this, vapi files ($dev/share/vapi/vala/gspell-1.vapi) aren't generated.
-      # that breaks consumers like `gnome.geary`
-      final.pkg-config
-    ];
-    configureFlags = upstream.configureFlags ++ [
-      # not necessary, but enforces that we really do produce vapi files
-      "--enable-vala"
-    ];
-  });
+  # 2023/10/23: out for review: <https://github.com/NixOS/nixpkgs/pull/263135>
+  # gspell = prev.gspell.overrideAttrs (upstream: {
+  #   depsBuildBuild = (upstream.depsBuildBuild or []) ++ [
+  #     # without this, vapi files ($dev/share/vapi/vala/gspell-1.vapi) aren't generated.
+  #     # that breaks consumers like `gnome.geary`
+  #     final.pkg-config
+  #   ];
+  #   configureFlags = upstream.configureFlags ++ [
+  #     # not necessary, but enforces that we really do produce vapi files
+  #     "--enable-vala"
+  #   ];
+  # });
 
   # 2023/07/27: upstreaming is blocked on p11-kit, libavif cross compilation
   gvfs = prev.gvfs.overrideAttrs (upstream: {

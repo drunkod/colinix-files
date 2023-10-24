@@ -27,6 +27,13 @@ in [
     hash = "sha256-W9IS3JNPk5LkJeuZ+EL8NIv8+v7wEZo8Gt+ofq3RrrY=";
   })
   (fetchpatch' {
+    title = "gspell: enable vala for cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/263135";
+    saneCommit = "293bfdc031a1eaa5cc571000977df14b6d8237c8";
+    # hash = "sha256-n6xatVeqMweuy/bm68cxWUkgUoS+H1xNRjT0JDFXeEs=";
+    hash = "sha256-PXatkvLjEgQJ4rRIjEOadKscM0WYWTozIFt2vzWOMKY=";
+  })
+  (fetchpatch' {
     title = "trust-dns: 0.23.0 -> 0.24.0";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263054";
     saneCommit = "cb13904421c1870df1059bfe5988a24107983a5f";
