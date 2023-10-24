@@ -48,6 +48,11 @@ in [
     hash = "sha256-XTVMC2Q3RAXz7o4/5UT2hCBsNy/m/+XK2bKhBwYG918=";
   })
   (fetchpatch' {
+    title = "hspell: remove build perl from runtime closure";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/263182";
+    hash = "sha256-Wau+PB+EUQDvWX8Kycw1sNrM3GkPVjKSS4niIDI0sjM=";
+  })
+  (fetchpatch' {
     title = "trust-dns: 0.23.0 -> 0.24.0";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263054";
     saneCommit = "cb13904421c1870df1059bfe5988a24107983a5f";

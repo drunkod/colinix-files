@@ -894,14 +894,15 @@ in {
   #   inherit (emulated) stdenv;
   # };
 
-  hspell = prev.hspell.overrideAttrs (upstream: {
-    # build perl is needed by the Makefile,
-    # but $out/bin/multispell (which is simply copied from src) should use host perl
-    buildInputs = (upstream.buildInputs or []) ++ [ final.perl ];
-    postInstall = ''
-      patchShebangs --update $out/bin/multispell
-    '';
-  });
+  # out for PR: <https://github.com/NixOS/nixpkgs/pull/263182>
+  # hspell = prev.hspell.overrideAttrs (upstream: {
+  #   # build perl is needed by the Makefile,
+  #   # but $out/bin/multispell (which is simply copied from src) should use host perl
+  #   buildInputs = (upstream.buildInputs or []) ++ [ final.perl ];
+  #   postInstall = ''
+  #     patchShebangs --update $out/bin/multispell
+  #   '';
+  # });
 
   # "setup: line 1595: ant: command not found"
   # i2p = mvToNativeInputs [ final.ant final.gettext ] prev.i2p;
