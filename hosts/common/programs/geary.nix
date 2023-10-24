@@ -9,8 +9,9 @@
     persist.private = [
       # attachments, and email -- contained in a sqlite db
       ".local/share/geary"
+      # also `.cache/geary/web-resources`, which tends to stay << 1 MiB
     ];
-    fs.".local/geary/account_01/geary.ini".symlink.text = ''
+    fs.".config/geary/account_01/geary.ini".symlink.text = ''
       [Metadata]
       version=1
       status=enabled
