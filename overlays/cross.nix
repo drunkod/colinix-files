@@ -714,6 +714,14 @@ in {
     # fixes: "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
     file-roller = mvToNativeInputs [ final.glib ] super.file-roller;
 
+    geary = super.geary.overrideAttrs (upstream: {
+      buildInputs = upstream.buildInputs ++ [
+        # final.glib
+        final.appstream-glib
+        final.libxml2
+      ];
+    });
+
     # 2023/08/01: upstreaming is unblocked
     # fixes: "meson.build:75:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
     gnome-clocks = wrapGAppsHook4Fix super.gnome-clocks;
@@ -857,6 +865,22 @@ in {
     ];
     buildInputs = lib.remove final.gobject-introspection upstream.buildInputs;
     strictDeps = true;
+  });
+
+  gsound = prev.gsound.overrideAttrs (upstream: {
+    # remove logic which was removing introspection/vala on cross compilation
+    mesonFlags = [];
+  });
+  gspell = prev.gspell.overrideAttrs (upstream: {
+    depsBuildBuild = (upstream.depsBuildBuild or []) ++ [
+      # without this, vapi files ($dev/share/vapi/vala/gspell-1.vapi) aren't generated.
+      # that breaks consumers like `gnome.geary`
+      final.pkg-config
+    ];
+    configureFlags = upstream.configureFlags ++ [
+      # not necessary, but enforces that we really do produce vapi files
+      "--enable-vala"
+    ];
   });
 
   # 2023/07/27: upstreaming is blocked on p11-kit, libavif cross compilation
