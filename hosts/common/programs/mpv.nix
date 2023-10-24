@@ -14,7 +14,7 @@ in
       default = {};
       type = types.submodule {
         options.vo = mkOption {
-          type = types.nullOr types.string;
+          type = types.nullOr types.str;
           default = null;
           description = "--vo=FOO flag to pass to mpv";
         };
