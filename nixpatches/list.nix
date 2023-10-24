@@ -19,6 +19,12 @@ let
       // (if title != null then { name = title; } else {})
     );
 in [
+  (fetchpatch' {
+    title = "trust-dns: 0.23.0 -> 0.24.0";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/263054";
+    saneCommit = "cb13904421c1870df1059bfe5988a24107983a5f";
+    hash = "sha256-iZ8ox5GdY6s+fyyUFPboIalYadAnsjxk6jNOdkQcZjI=";
+  })
   # (fetchpatch' {
   #   title = "trust-dns: 0.23.0 -> 0.24.0";
   #   prUrl = "https://github.com/NixOS/nixpkgs/pull/262466";

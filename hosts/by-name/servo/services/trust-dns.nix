@@ -151,7 +151,7 @@ in lib.mkMerge [
         '';
         serviceConfig = config.systemd.services.trust-dns.serviceConfig // {
           ExecStart = ''
-            ${pkgs.trust-dns}/bin/trust-dns \
+            ${pkgs.trust-dns}/bin/${pkgs.trust-dns.meta.mainProgram} \
             --port ${builtins.toString port} \
             --zonedir ${zoneDirFor flavor}/ \
             --config ${configFile} ${flagsStr}
