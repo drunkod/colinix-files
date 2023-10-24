@@ -30,8 +30,7 @@ let
   });
 in {
   # 2023/07/27
-  # 4 tests fail when building `host-pkgs.moby.emulated.elfutils`
-  # it might be enough to only disable checks when targeting aarch64, which could reduce rebuilds?
+  # 4 tests fail when building `hostPkgs.moby.emulated.elfutils`
   elfutils = dontCheckAarch64 prev.elfutils;
 
   # 2023/07/31
