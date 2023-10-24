@@ -400,14 +400,6 @@ in {
   #   inherit (emulated) stdenv hare;
   # };
 
-  # 2023/08/27: out for review: <https://github.com/NixOS/nixpkgs/pull/251947>
-  # brightnessctl = prev.brightnessctl.overrideAttrs (upstream: {
-  #   postPatch = (upstream.postPatch or "") + ''
-  #     substituteInPlace Makefile \
-  #       --replace 'pkg-config' "$PKG_CONFIG"
-  #   '';
-  # });
-
   # brltty = prev.brltty.override {
   #   # configure: error: no acceptable C compiler found in $PATH
   #   inherit (emulated) stdenv;
@@ -1025,7 +1017,7 @@ in {
   #   buildInputs = upstream.buildInputs ++ [ final.vala ];
   # });
 
-  # 2023/08/27: out for PR: <https://github.com/NixOS/nixpkgs/compare/master...uninsane:nixpkgs:pr-cross-libgweather>
+  # 2023/08/27: out for PR: <https://github.com/NixOS/nixpkgs/pull/251956>
   # libgweather = (prev.libgweather.override {
   #   # we need introspection for bindings, used by e.g.
   #   # - gnome.gnome-weather (javascript)
@@ -1483,12 +1475,6 @@ in {
       #     py-final.setuptools
       #   ];
       # });
-
-      # 2023/08/03: fix is in staging:
-      # - <https://github.com/NixOS/nixpkgs/pull/244135>
-      # cryptography = py-prev.cryptography.override {
-      #   inherit (emulated) cargo rustc rustPlatform;  # "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
-      # };
 
       # defcon = py-prev.defcon.overridePythonAttrs (orig: {
       #   nativeBuildInputs = orig.nativeBuildInputs ++ orig.nativeCheckInputs;
@@ -1985,12 +1971,6 @@ in {
   #   # fixes "meson.build:183:0: ERROR: Can not run test applications in this cross environment."
   #   addNativeInputs [ final.mesonEmulatorHook ] prev.tracker-miners
   # );
-  # 2023/08/27: out for PR: <https://github.com/uninsane/nixpkgs/pull/new/pr-cross-tuba>
-  # tuba = (wrapGAppsHook4Fix prev.tuba).overrideAttrs (upstream: {
-  #   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
-  #   # error: Package `{libadwaita-1,gtksourceview-5,libsecret-1,gee-0.8}' not found in specified Vala API directories or GObject-Introspection GIR directories
-  #   buildInputs = upstream.buildInputs ++ [ final.vala ];
-  # });
   # twitter-color-emoji = prev.twitter-color-emoji.override {
   #   # fails to fix original error
   #   inherit (emulated) stdenv;
