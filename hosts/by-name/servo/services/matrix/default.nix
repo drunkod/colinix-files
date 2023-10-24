@@ -70,25 +70,23 @@
     config.sops.secrets."matrix_synapse_secrets.yaml".path
   ];
 
-  # services.matrix-synapse.extraConfigFiles = [builtins.toFile "matrix-synapse-extra-config" ''
-  #   admin_contact: "admin.matrix@uninsane.org"
-  #   registrations_require_3pid:
-  #     - email
-  #   email:
-  #     smtp_host: "mx.uninsane.org"
-  #     smtp_port: 587
-  #     smtp_user: "matrix-synapse"
-  #     smtp_pass: "${secrets.matrix-synapse.smtp_pass}"
-  #     require_transport_security: true
-  #     enable_tls: true
-  #     notif_from: "%(app)s <notify.matrix@uninsane.org>"
-  #     app_name: "Uninsane Matrix"
-  #     enable_notifs: true
-  #     validation_token_lifetime: 96h
-  #     invite_client_location: "https://web.matrix.uninsane.org"
-  #     subjects:
-  #       email_validation: "[%(server_name)s] Validate your email"
-  # ''];
+  systemd.services.matrix-synapse.postStart = ''
+    ACCESS_TOKEN=$(${pkgs.coreutils}/bin/cat ${config.sops.secrets.matrix_access_token.path})
+    TOPIC=$(${pkgs.coreutils}/bin/cat ${config.sops.secrets.ntfy-sh-topic.path})
+
+    echo "ensuring ntfy push gateway"
+    ${pkgs.curl}/bin/curl \
+      --header "Authorization: Bearer $ACCESS_TOKEN" \
+      --data "{ \"app_display_name\": \"ntfy-adapter\", \"app_id\": \"ntfy.uninsane.org\", \"data\": { \"url\": \"https://ntfy.uninsane.org/_matrix/push/v1/notify\", \"format\": \"event_id_only\" }, \"device_display_name\": \"ntfy-adapter\", \"kind\": \"http\", \"lang\": \"en-US\", \"profile_tag\": \"\", \"pushkey\": \"$TOPIC\" }" \
+      localhost:8008/_matrix/client/v3/pushers/set
+
+    echo "registered push gateways:"
+    ${pkgs.curl}/bin/curl \
+      --header "Authorization: Bearer $ACCESS_TOKEN" \
+      localhost:8008/_matrix/client/v3/pushers \
+      | ${pkgs.jq}/bin/jq .
+  '';
+
 
   # new users may be registered on the CLI:
   #   register_new_matrix_user -c /nix/store/8n6kcka37jhmi4qpd2r03aj71pkyh21s-homeserver.yaml http://localhost:8008
@@ -159,4 +157,9 @@
   sops.secrets."matrix_synapse_secrets.yaml" = {
     owner = config.users.users.matrix-synapse.name;
   };
+  sops.secrets."matrix_access_token" = {
+    owner = config.users.users.matrix-synapse.name;
+  };
+  # provide access to ntfy-sh-topic secret
+  users.users.matrix-synapse.extraGroups = [ "ntfy-sh" ];
 }
