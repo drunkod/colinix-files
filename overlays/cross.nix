@@ -405,6 +405,7 @@ in {
   #   inherit (emulated) stdenv;
   # };
 
+  # 2023/10/23: upstreaming blocked by gvfs, webkitgtk 4.1 (OOMs)
   # fixes: "error: Package <foo> not found in specified Vala API directories or GObject-Introspection GIR directories"
   calls = addNativeInputs [ final.gobject-introspection] prev.calls;
 
@@ -927,6 +928,7 @@ in {
   #   buildPackages.gtk-doc = final.gtk-doc;
   # });
 
+  # 2023/10/23: upstreaming blocked on argyllcms
   graphicsmagick = prev.graphicsmagick.overrideAttrs (upstream: {
     # by default the build holds onto a reference to build `mv`
     # N.B.: `imagemagick` package has this identical issue
@@ -1290,7 +1292,7 @@ in {
   # 2023/07/27: upstreaming is unblocked by deps; but turns out to not be this simple
   ncftp = addNativeInputs [ final.bintools ] prev.ncftp;
   # fixes "gdbus-codegen: command not found"
-  # 2023/07/31: upstreaming is blocked on p11-kit, openfortivpn cross compilation
+  # 2023/07/31: upstreaming is blocked on p11-kit, openfortivpn, qttranslations (qtbase) cross compilation
   networkmanager-fortisslvpn = mvToNativeInputs [ final.glib ] prev.networkmanager-fortisslvpn;
   # networkmanager-iodine = prev.networkmanager-iodine.overrideAttrs (orig: {
   #   # fails to fix "configure.ac:58: error: possibly undefined macro: AM_GLIB_GNU_GETTEXT"
@@ -1798,6 +1800,7 @@ in {
   #   inherit (emulated) stdenv;
   # };
 
+  # 2023/10/23: upstreaming is unblocked
   snapper = prev.snapper.overrideAttrs (upstream: {
     # replace references to build diff/rm to runtime diff/rm
     # also reduces closure 305628736 -> 262698112
@@ -1815,19 +1818,6 @@ in {
       "ac_cv_func_malloc_0_nonnull=yes"
       "ac_cv_func_realloc_0_nonnull=yes"
     ];
-  });
-
-  spdlog = prev.spdlog.overrideAttrs (upstream: {
-    # oops: <https://github.com/NixOS/nixpkgs/pull/250435/files#diff-ba4902b7396cd55a6e49ae0a0f5ad80f194e8b642e7016a825c90cef372df7f4R35>
-    # nativeCheckInputs = (upstream.nativeCheckInputs or []) ++ [ final.catch2_3 ];
-    # # checkInputs = (upstream.checkInputs or []) ++ [ final.systemd ];
-    # # pkgsBuildBuild = (upstream.pkgsBuildBuild or []) ++ [ final.pkg-config ];
-    # postPatch = (upstream.postPatch or "") + ''
-    #   substituteInPlace tests/CMakeLists.txt \
-    #     --replace 'Catch2 3 QUIET' 'Catch2 3'
-    # '';
-    doCheck = false;
-    cmakeFlags = lib.remove "-DSPDLOG_BUILD_TESTS=ON" upstream.cmakeFlags;
   });
 
   squeekboard = prev.squeekboard.overrideAttrs (upstream: {
