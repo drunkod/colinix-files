@@ -73,8 +73,10 @@ in
   boot.kernelParams = [
     # without this some GUI apps fail: `DRM_IOCTL_MODE_CREATE_DUMB failed: Cannot allocate memory`
     # this is because they can't allocate enough video ram.
+    # see related nixpkgs issue: <https://github.com/NixOS/nixpkgs/issues/260222>
+    #
     # the default CMA seems to be 32M.
-    # i was running fine with 256MB from 2022/07-ish through 2022/12-ish, but then the phone quit reliably coming back from sleep: maybe a memory leak?
+    # i was running fine with 256MB from 2022/07-ish through 2022/12-ish, but then the phone quit reliably coming back from sleep (phosh): maybe a memory leak?
     # `cat /proc/meminfo` to see CmaTotal/CmaFree if interested in tuning this.
     "cma=512M"
     # 2023/10/20: potential fix for the lima (GPU) timeout bugs:
