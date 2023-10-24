@@ -631,7 +631,7 @@ in {
     outputs = lib.remove "devdoc" upstream.outputs;
   });
 
-  # 2023/07/31: upstreaming is unblocked
+  # 2023/07/31: upstreaming is blocked on qttranslations (via pipewire)
   # N.B.: should be able to remove gnupg/ssh from {native}buildInputs when upstreaming
   gcr_4 = prev.gcr_4.overrideAttrs (upstream: {
     # fixes (meson): "ERROR: Program 'gpg2 gpg' not found or not executable"
@@ -639,11 +639,13 @@ in {
       "-Dgpg_path=${final.gnupg}/bin/gpg"
     ];
   });
-  gcr = prev.gcr.overrideAttrs (upstream: {
-    mesonFlags = (upstream.mesonFlags or []) ++ [
-      "-Dgpg_path=${final.gnupg}/bin/gpg"
-    ];
-  });
+  # 2023/10/23: upstreaming: <https://github.com/NixOS/nixpkgs/pull/263158>
+  # gcr = prev.gcr.overrideAttrs (upstream: {
+  #   # removes build platform's gnupg from runtime closure
+  #   mesonFlags = (upstream.mesonFlags or []) ++ [
+  #     "-Dgpg_path=${final.gnupg}/bin/gpg"
+  #   ];
+  # });
   # gnustep = prev.gnustep.overrideScope' (self: super: {
   #   # gnustep is going to need a *lot* of work/domain-specific knowledge to truly cross-compile,
   #   # base = emulated.gnustep.base;

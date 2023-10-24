@@ -34,6 +34,13 @@ in [
     hash = "sha256-PXatkvLjEgQJ4rRIjEOadKscM0WYWTozIFt2vzWOMKY=";
   })
   (fetchpatch' {
+    title = "gcr: remove build gnupg from runtime closure";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/263158";
+    saneCommit = "8c71ab22c6df4e5ce290e131a7769688b0c5a017";
+    # hash = "sha256-9PNKzNlJ62WAq6H+tqlt0spFZ1DPP1hHmpx0YPuieFE=";
+    hash = "sha256-6hUdsExHSMHy6FMY1+OLtVmKpRwysGIVkcDpYv7RRBk=";
+  })
+  (fetchpatch' {
     title = "trust-dns: 0.23.0 -> 0.24.0";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263054";
     saneCommit = "cb13904421c1870df1059bfe5988a24107983a5f";
