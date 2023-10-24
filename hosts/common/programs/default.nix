@@ -23,6 +23,7 @@
     ./fwupd.nix
     ./g4music.nix
     ./gajim.nix
+    ./geary.nix
     ./git.nix
     ./gnome-feeds.nix
     ./gnome-keyring.nix
