@@ -867,10 +867,11 @@ in {
     strictDeps = true;
   });
 
-  gsound = prev.gsound.overrideAttrs (upstream: {
-    # remove logic which was removing introspection/vala on cross compilation
-    mesonFlags = [];
-  });
+  # 2023/10/23: out for review: <https://github.com/NixOS/nixpkgs/pull/263107>
+  # gsound = prev.gsound.overrideAttrs (upstream: {
+  #   # remove logic which was removing introspection/vala on cross compilation
+  #   mesonFlags = [];
+  # });
   gspell = prev.gspell.overrideAttrs (upstream: {
     depsBuildBuild = (upstream.depsBuildBuild or []) ++ [
       # without this, vapi files ($dev/share/vapi/vala/gspell-1.vapi) aren't generated.

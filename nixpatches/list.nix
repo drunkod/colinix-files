@@ -20,6 +20,13 @@ let
     );
 in [
   (fetchpatch' {
+    title = "gsound: enable introspection/vala when cross compiled";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/263107";
+    saneCommit = "beb33584013f49d198152ad8ae8797bb6fa0266f";
+    # hash = "sha256-tKeumQ1R/UWTL2J9RaGs8p9QHxGxP2a1DevHnX/ElRU=";
+    hash = "sha256-W9IS3JNPk5LkJeuZ+EL8NIv8+v7wEZo8Gt+ofq3RrrY=";
+  })
+  (fetchpatch' {
     title = "trust-dns: 0.23.0 -> 0.24.0";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263054";
     saneCommit = "cb13904421c1870df1059bfe5988a24107983a5f";
