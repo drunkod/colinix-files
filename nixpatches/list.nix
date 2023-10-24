@@ -41,6 +41,13 @@ in [
     hash = "sha256-6hUdsExHSMHy6FMY1+OLtVmKpRwysGIVkcDpYv7RRBk=";
   })
   (fetchpatch' {
+    title = "gvfs: support cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/263175";
+    saneCommit = "0c6dd31f3394ac339d5351400350223af3fc1284";
+    # hash = "sha256-vageRWYIJrB5hEXEvLfPTVlOvJOT3BPpIx6NH98f7cM=";
+    hash = "sha256-XTVMC2Q3RAXz7o4/5UT2hCBsNy/m/+XK2bKhBwYG918=";
+  })
+  (fetchpatch' {
     title = "trust-dns: 0.23.0 -> 0.24.0";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263054";
     saneCommit = "cb13904421c1870df1059bfe5988a24107983a5f";

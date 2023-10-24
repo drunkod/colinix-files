@@ -879,15 +879,16 @@ in {
   #   ];
   # });
 
-  # 2023/07/27: upstreaming is blocked on p11-kit, libavif cross compilation
-  gvfs = prev.gvfs.overrideAttrs (upstream: {
-    nativeBuildInputs = upstream.nativeBuildInputs ++ [
-      final.openssh
-      final.glib  # fixes "gdbus-codegen: command not found"
-    ];
-    # fixes "meson.build:312:2: ERROR: Assert failed: http required but libxml-2.0 not found"
-    buildInputs = upstream.buildInputs ++ [ final.libxml2 ];
-  });
+  # 2023/10/23: out for review: <https://github.com/NixOS/nixpkgs/pull/263175>
+  # gvfs = prev.gvfs.overrideAttrs (upstream: {
+  #   nativeBuildInputs = upstream.nativeBuildInputs ++ [
+  #     # XXX: this ends up on the runtime closure
+  #     final.openssh
+  #     final.glib  # fixes "gdbus-codegen: command not found"
+  #   ];
+  #   # fixes "meson.build:312:2: ERROR: Assert failed: http required but libxml-2.0 not found"
+  #   buildInputs = upstream.buildInputs ++ [ final.libxml2 ];
+  # });
 
   # hdf5 = prev.hdf5.override {
   #   inherit (emulated) stdenv;
