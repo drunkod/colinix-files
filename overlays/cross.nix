@@ -1800,16 +1800,16 @@ in {
   #   inherit (emulated) stdenv;
   # };
 
-  # 2023/10/23: upstreaming is unblocked
-  snapper = prev.snapper.overrideAttrs (upstream: {
-    # replace references to build diff/rm to runtime diff/rm
-    # also reduces closure 305628736 -> 262698112
-    configureFlags = (upstream.configureFlags or []) ++ [
-      "DIFFBIN=${final.diffutils}/bin/diff"
-      "RMBIN=${final.coreutils}/bin/rm"
-    ];
-    # strictDeps = true;  #< doesn't actually prevent original symptom
-  });
+  # 2023/10/23: upstreaming: <https://github.com/NixOS/nixpkgs/pull/263187>
+  # snapper = prev.snapper.overrideAttrs (upstream: {
+  #   # replace references to build diff/rm to runtime diff/rm
+  #   # also reduces closure 305628736 -> 262698112
+  #   configureFlags = (upstream.configureFlags or []) ++ [
+  #     "DIFFBIN=${final.diffutils}/bin/diff"
+  #     "RMBIN=${final.coreutils}/bin/rm"
+  #   ];
+  #   # strictDeps = true;  #< doesn't actually prevent original symptom
+  # });
 
   spandsp = prev.spandsp.overrideAttrs (upstream: {
     configureFlags = upstream.configureFlags or [] ++ [

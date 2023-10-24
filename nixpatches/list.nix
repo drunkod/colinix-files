@@ -53,6 +53,11 @@ in [
     hash = "sha256-Wau+PB+EUQDvWX8Kycw1sNrM3GkPVjKSS4niIDI0sjM=";
   })
   (fetchpatch' {
+    title = "snapper: remove runtime references to build packages";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/263187";
+    hash = "sha256-+NJtox6BsoQwpO6DxehrA4l/eWf/vgGN7EopCt4ZIFk=";
+  })
+  (fetchpatch' {
     title = "trust-dns: 0.23.0 -> 0.24.0";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263054";
     saneCommit = "cb13904421c1870df1059bfe5988a24107983a5f";
