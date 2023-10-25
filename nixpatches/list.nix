@@ -44,8 +44,7 @@ in [
     title = "gvfs: support cross compilation";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263175";
     saneCommit = "0c6dd31f3394ac339d5351400350223af3fc1284";
-    # hash = "sha256-vageRWYIJrB5hEXEvLfPTVlOvJOT3BPpIx6NH98f7cM=";
-    hash = "sha256-XTVMC2Q3RAXz7o4/5UT2hCBsNy/m/+XK2bKhBwYG918=";
+    hash = "sha256-Ywxx2BkvVp3+Za3PPhVwa7sovjkVJrhFx3vj63IB6JQ=";
   })
   (fetchpatch' {
     title = "hspell: remove build perl from runtime closure";
