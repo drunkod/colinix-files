@@ -998,13 +998,13 @@ in {
       final.autoPatchelfHook
     ];
   });
-  koreader-from-src = prev.koreader-from-src.override {
-    # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
-    # inherit (emulated) luajit;
-    luajit = buildInQemu (final.luajit.override {
-      buildPackages.stdenv = emulated.stdenv;  # it uses buildPackages.stdenv for HOST_CC
-    });
-  };
+  # koreader-from-src = prev.koreader-from-src.override {
+  #   # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
+  #   # inherit (emulated) luajit;
+  #   luajit = buildInQemu (final.luajit.override {
+  #     buildPackages.stdenv = emulated.stdenv;  # it uses buildPackages.stdenv for HOST_CC
+  #   });
+  # };
   # libgweather = rmNativeInputs [ final.glib ] (prev.libgweather.override {
   #   # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
   #   #   but presumably that's just a different way to emulate it.
