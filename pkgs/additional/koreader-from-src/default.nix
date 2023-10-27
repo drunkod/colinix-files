@@ -88,6 +88,7 @@ stdenv.mkDerivation rec {
         sources.externalProjects
       )
     ))
+    ./rss-no-interrupt-on-image-failure.patch  # just a preference
   ];
 
   sourceRoot = "koreader";
