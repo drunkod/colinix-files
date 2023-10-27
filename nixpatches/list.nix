@@ -39,6 +39,12 @@ in [
   # })
 
   (fetchpatch' {
+    # merged 2023/10/26; fixes servo build
+    title = "iproute2: stateless configuration";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/262767";
+    hash = "sha256-JdWl+tYn9Dwa4d59a8TURJvZdf02tmsnqcZD1WkkgqQ=";
+  })
+  (fetchpatch' {
     # merged 2023/10/24
     title = "mkdocs-minify: disable tests to fix build";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263084";
