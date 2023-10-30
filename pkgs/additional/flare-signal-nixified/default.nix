@@ -3,7 +3,7 @@
 # - `sed -i 's/target."curve25519_dalek_backend"/target."curve25519_dalek_backend" or ""/g' Cargo.nix`
 #
 # the generated Cargo.nix points to an impure source (~/ref/...), but that's resolved by overriding `src` below
-{ stdenv
+{ lib
 , appstream-glib
 , blueprint-compiler
 , desktop-file-utils
@@ -11,6 +11,7 @@
 , flare-signal
 , gdk-pixbuf
 , glib
+, gobject-introspection
 , gst_all_1
 , gtk4
 , gtksourceview5
@@ -22,7 +23,10 @@
 , pkg-config
 , pkgs
 , protobuf
+, rust
+, stdenv
 , wrapGAppsHook4
+, writeText
 }:
 let
   cargoNix = import ./Cargo.nix {
@@ -87,6 +91,7 @@ let
           appstream-glib # for appstream-util
           blueprint-compiler
           desktop-file-utils # for update-desktop-database
+          gobject-introspection
           meson
           ninja
           pkg-config
@@ -106,6 +111,18 @@ let
           gst_all_1.gst-plugins-good
           gst_all_1.gst-plugins-bad
         ];
+
+        mesonFlags = let
+          # this gets meson to shutup about rustc not producing executables.
+          # kinda silly though, since we patch out the actual cargo (rustc) invocations.
+          crossFile = writeText "cross-file.conf" ''
+          [binaries]
+          rust = [ 'rustc', '--target', '${rust.toRustTargetSpec stdenv.hostPlatform}' ]
+        '';
+        in
+          lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+            "--cross-file=${crossFile}"
+          ];
 
         # patch so meson will invoke our `crate2nix_cmd.sh` instead of cargo
         postPatch = ''
