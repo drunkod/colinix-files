@@ -3,20 +3,32 @@
 # - `sed -i 's/target."curve25519_dalek_backend"/target."curve25519_dalek_backend" or ""/g' Cargo.nix`
 #
 # the generated Cargo.nix points to an impure source (~/ref/...), but that's resolved by overriding `src` below
-{ pkgs
+{ stdenv
+, appstream-glib
+, blueprint-compiler
+, desktop-file-utils
 , fetchFromGitLab
 , flare-signal
 , gdk-pixbuf
 , glib
+, gst_all_1
 , gtk4
 , gtksourceview5
 , libadwaita
+, libsecret
+, libspelling
+, meson
+, ninja
 , pkg-config
+, pkgs
+, protobuf
+, wrapGAppsHook4
 }:
 let
   cargoNix = import ./Cargo.nix {
     inherit pkgs;
 
+    rootFeatures = [ ];  #< avoids --cfg feature="default", simplifying the rustc CLI so that i can pass it around easier
     defaultCrateOverrides = pkgs.defaultCrateOverrides // {
       flare = attrs: attrs // {
         # inherit (flare-signal) src;
@@ -66,6 +78,104 @@ let
           # rev = "0.9.0";
           # hash = "sha256-6p9uuK71fJvJs0U14jJEVb2mfpZWrCZZFE3eoZe9eVo=";
         };
+
+        codegenUnits = 16;  # speeds up the build a bit
+        outputs = [ "out" ];  # default is "out" and "lib", but that somehow causes cycles
+        outputDev = [ "out" ];
+
+        nativeBuildInputs = [
+          appstream-glib # for appstream-util
+          blueprint-compiler
+          desktop-file-utils # for update-desktop-database
+          meson
+          ninja
+          pkg-config
+          wrapGAppsHook4
+        ];
+
+        buildInputs = [
+          gtksourceview5
+          libadwaita
+          libsecret
+          # libspelling  # optional feature. to enable, add it to `rootFeatures` above too.
+          protobuf
+
+          # To reproduce audio messages
+          gst_all_1.gstreamer
+          gst_all_1.gst-plugins-base
+          gst_all_1.gst-plugins-good
+          gst_all_1.gst-plugins-bad
+        ];
+
+        # patch so meson will invoke our `crate2nix_cmd.sh` instead of cargo
+        postPatch = ''
+          substituteInPlace src/meson.build \
+            --replace 'cargo_options,'  "" \
+            --replace "cargo, 'build',"  "'bash', 'crate2nix_cmd.sh'," \
+            --replace "'target' / rust_target" "'target/bin'"
+        '';
+        postConfigure = ''
+          # copied from <pkgs/development/tools/build-managers/meson/setup-hook.sh>
+          mesonFlags="--prefix=$prefix $mesonFlags"
+          mesonFlags="\
+              --libdir=''${!outputLib}/lib --libexecdir=''${!outputLib}/libexec \
+              --bindir=''${!outputBin}/bin --sbindir=''${!outputBin}/sbin \
+              --includedir=''${!outputInclude}/include \
+              --mandir=''${!outputMan}/share/man --infodir=''${!outputInfo}/share/info \
+              --localedir=''${!outputLib}/share/locale \
+              -Dauto_features=''${mesonAutoFeatures:-enabled} \
+              -Dwrap_mode=''${mesonWrapMode:-nodownload} \
+              $mesonFlags"
+
+          mesonFlags="''${crossMesonFlags+$crossMesonFlags }--buildtype=''${mesonBuildType:-plain} $mesonFlags"
+
+          echo "meson flags: $mesonFlags ''${mesonFlagsArray[@]}"
+
+          meson setup build $mesonFlags "''${mesonFlagsArray[@]}"
+          cd build
+        '';
+        preBuild = ''
+          build_bin() {
+            # build_bin is what buildRustCrate would use to invoke rustc, but we want to drive the build
+            # with meson instead. however, meson doesn't know how to plumb our rust dependencies into cargo,
+            # so we still need to use build_bin for just one portion of the build.
+            #
+            # so, this mocks out the original build_bin:
+            # - we patch upstream flare to call our `crate2nix_cmd.sh` when it wants to compile the rust.
+            # - we don't actually invoke meson (ninja) at all here, but rather in the `installPhase`.
+            #   if we invoked it here, the whole build would just get re-done in installPhase anyway.
+            #
+            # rustc invocation copied from <pkgs/build-support/rust/build-rust-crate/lib.sh>
+            crate_name_=flare
+            main_file=../src/main.rs
+            fix_link="-C linker=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc"
+            cat >> crate2nix_cmd.sh <<EOF
+              set -x
+              rmdir target/bin
+              rmdir target
+              ln -s ../target .
+              rustc \
+              $fix_link \
+              --crate-name $crate_name_ \
+              $main_file \
+              --crate-type bin \
+              $BIN_RUSTC_OPTS \
+              --out-dir target/bin \
+              -L dependency=target/deps \
+              $LINK \
+              $EXTRA_LINK_ARGS \
+              $EXTRA_LINK_ARGS_BINS \
+              $EXTRA_LIB \
+              --cap-lints allow \
+              $BUILD_OUT_DIR \
+              $EXTRA_BUILD \
+              $EXTRA_FEATURES \
+              $EXTRA_RUSTC_FLAGS \
+              --color ''${colors}
+        EOF
+          }
+        '';
+        installPhase = "ninjaInstallPhase";
       };
       gdk-pixbuf-sys = attrs: attrs // {
         nativeBuildInputs = [ pkg-config ];
@@ -95,6 +205,17 @@ let
       sourceview5-sys = attrs: attrs // {
         nativeBuildInputs = [ pkg-config ];
         buildInputs = [ gtksourceview5 ];
+      };
+
+      pqcrypto-kyber = attrs: attrs // {
+        # avoid "undefined reference to PQCLEAN_randombytes" when linking flare.
+        # rustpq/pqcrypt tries to do this but somehow it fails.
+        # see pqcrypto-internals/include/randombytes.h:
+        #   `#define randombytes PQCRYPTO_RUST_randombytes`
+        postPatch = ''
+          substituteInPlace pqclean/common/randombytes.h \
+            --replace 'PQCLEAN_randombytes' 'PQCRYPTO_RUST_randombytes'
+        '';
       };
     };
   };
