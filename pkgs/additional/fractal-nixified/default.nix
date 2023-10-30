@@ -96,6 +96,7 @@ let
             "--cross-file=${crossFile}"
           ];
 
+        # patch so meson will invoke our `crate2nix_cmd.sh` instead of cargo
         postPatch = ''
           substituteInPlace src/meson.build \
             --replace 'cargo_options,'  "" \
