@@ -168,6 +168,8 @@ let
         installPhase = "ninjaInstallPhase";
       };
 
+      # TODO: upstream these into `pkgs/build-support/rust/default-crate-overrides.nix`
+
       clang-sys = attrs: attrs // {
         LIBCLANG_PATH = "${buildPackages.llvmPackages.libclang.lib}/lib";
       };
