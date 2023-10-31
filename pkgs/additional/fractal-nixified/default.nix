@@ -37,10 +37,13 @@
 let mkConfigured = { optimize }:
 let
   # `optimize` option applies only to the top-level build; not fractal's dependencies.
-  # opt-level=0: builds in 1min, 105M binary
-  # opt-level=1: builds in 2.25hr, 75M binary
-  # opt-level=2: builds in 2.25hr
-  # opt-level=3: builds in 2.25hr, 68-70M binary
+  # as of 2023/10/29:
+  # - opt-level=0: builds in 1min, 105M binary
+  # - opt-level=1: builds in 2.25hr, 75M binary
+  # - opt-level=2: builds in 2.25hr
+  # - opt-level=3: builds in 2.25hr, 68-70M binary
+  # as of 2023/10/30:
+  # - opt-level=3: builds in 5min, 71M binary
   optFlags = if optimize then "-C opt-level=3" else "-C opt-level=0";
   cargoNix = import ./Cargo.nix {
     inherit pkgs;
