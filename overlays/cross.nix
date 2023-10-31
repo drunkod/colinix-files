@@ -562,6 +562,11 @@ in {
     };
   });
 
+  flare-signal = prev.flare-signal.override {
+    # fixes "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+    inherit (emulated) cargo meson rustc rustPlatform stdenv;
+  };
+
   flare-signal-nixified = prev.flare-signal-nixified.override {
     # N.B. blueprint-compiler is in nativeBuildInputs.
     # the trick here is to force the aarch64 versions to be used during build (via emulation).
