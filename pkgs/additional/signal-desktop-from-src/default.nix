@@ -17,23 +17,6 @@
 #
 # signal uses typescript, javascript, and electron
 # - no node, npm
-#
-# about build failure:
-#   > Fusing electron at /build/source/release/linux-unpacked/signal-desktop inspect-arguments=false
-#   >   ⨯ EACCES: permission denied, open '/build/source/release/linux-unpacked/signal-desktop'  failedTask=build stackTrace=Error: EACCES: permission denied, open '/build/source/release/linux-unpacked/signal-desktop'
-# - "Fusing electron" message comes from within signal-desktop repo: <ts/scripts/fuse-electron.ts>
-# - error exists for electron_25 and electron 27 (26 untested)
-# - probably happens because the file referenced is rx, not rwx
-# - call chain is (probably):
-#   - package.json["afterPack"]
-#     - ts/scripts/after-pack.ts:afterPack
-#       - pruneMacOSRelease (succeeds)
-#       - ts/scripts/fuse-electron.ts:afterPack
-#         - flipFuses (from within electron library)
-#           ^ EACCES
-#       - copyPacks (never runs)
-# - so we lose the "fusing" (electron environment configurations), and the language packs, and that's *probably* all.
-#   - but can't REALLY be sure, what steps would normally follow electron-builder?
 { lib
 , callPackage
 # , electron_26
@@ -155,20 +138,6 @@ stdenv.mkDerivation rec {
       -c.electronDist=${electron}/libexec/electron \
       -c.electronVersion=${electron.version} \
       --dir
-
-    # SIGNAL_ENV=production yarn --offline electron-builder -- \
-    #   ${if stdenv.isDarwin then "--macos" else "--linux"} ${if stdenv.hostPlatform.isAarch64 then "--arm64" else "--x64"} \
-    #   -c.electronDist=${electron}/libexec/electron \
-    #   -c.electronVersion=${electron.version} \
-    #   --dir \
-    #   --config.directories.output=release \
-    #   --config.extraMetadata.environment=production
-    # SIGNAL_ENV=production ./node_modules/.bin/electron-builder \
-    #   -c.electronDist=${electron}/libexec/electron \
-    #   -c.electronVersion=${electron.version} \
-    #   --dir \
-    #   --config.directories.output=release \
-    #   --config.extraMetadata.environment=production
 
     runHook postBuild
   '';
