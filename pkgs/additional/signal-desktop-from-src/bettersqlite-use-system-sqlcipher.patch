@@ -1,0 +1,45 @@
+--- a/binding.gyp
++++ b/binding.gyp
+@@ -7,7 +7,16 @@
+   'targets': [
+     {
+       'target_name': 'better_sqlite3',
+-      'dependencies': ['deps/sqlite3.gyp:sqlite3'],
++      'include_dirs': [
++        '@sqlcipher@/include/sqlcipher',
++        '@signal_fts5_extension@/include',
++      ],
++      'link_settings': {
++        'libraries': [
++          '-lsqlcipher',
++          '@signal_fts5_extension@/lib/libsignal_tokenizer.a',
++        ]
++      },
+       'sources': ['src/better_sqlite3.cpp'],
+       'cflags_cc': ['-std=c++17'],
+       'xcode_settings': {
+@@ -24,14 +33,22 @@
+         ['OS=="linux"', {
+           'ldflags': [
+             '-Wl,-Bsymbolic',
+-            '-Wl,--exclude-libs,ALL',
+           ],
+         }],
+       ],
+     },
+     {
+       'target_name': 'test_extension',
+-      'dependencies': ['deps/sqlite3.gyp:sqlite3'],
++      'include_dirs': [
++        '@sqlcipher@/include/sqlcipher',
++        '@signal_fts5_extension@/include',
++      ],
++      'link_settings': {
++        'libraries': [
++          '-lsqlcipher',
++          '@signal_fts5_extension@/lib/libsignal_tokenizer.a',
++        ]
++      },
+       'conditions': [['sqlite3 == ""', { 'sources': ['deps/test_extension.c'] }]],
+     },
+   ],
