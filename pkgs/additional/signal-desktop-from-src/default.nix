@@ -232,10 +232,11 @@
 , buildPackages
 , callPackage
 , cups
-# , electron_26
 , electron_25
 , electron_25-bin
+# , electron_26
 , electron
+, electron-bin
 , fetchFromGitHub
 # , fetchYarnDeps
 , flac
@@ -274,7 +275,8 @@ let
   # 26 simply segfaults.
   # electron = electron_26;
   # electron = electron_25;
-  electron = electron_25-bin;
+  # electron = electron_25-bin;
+  electron = electron-bin;
   # nodejs = nodejs_latest;
   nodeSources = srcOnly nodejs;
   bettersqlitePatch = substituteAll {
@@ -307,7 +309,7 @@ stdenv.mkDerivation rec {
     autoPatchelfHook
     fixup_yarn_lock
     makeWrapper
-    nodejs  # possibly i could instead use nodejs-slim
+    nodejs  # possibly i could instead use nodejs-slim (npm-less nodejs)
     python3
     removeReferencesTo
     wrapGAppsHook
@@ -393,28 +395,31 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     runHook preBuild
-    # allow building with different node version than what upstream package.json requests
-    # (i still use the same major version)
-    echo 'ignore-engines true' > .yarnrc
 
-    # `node-gyp rebuild` is invoked somewhere, and without this it tries to download node headers from electronjs.org
-    mkdir -p "$HOME/.node-gyp/${nodejs.version}"
-    echo 9 > "$HOME/.node-gyp/${nodejs.version}/installVersion"
-    ln -sfv "${nodejs}/include" "$HOME/.node-gyp/${nodejs.version}"
-
+    # see: <https://www.electronjs.org/docs/latest/tutorial/using-native-node-modules>
+    # N.B. nixpkgs `electron.headers` ships ordinary nodejs headers; but `electron-bin.headers` ships the electron nodejs headers proper.
+    # hence, this only works with the -bin variants of electron
+    # folder structure is:
+    # ./node_headers/include/node/*.h
     tar xzf ${electron.headers}
-    echo "node_headers:"
-    ls node_headers
     export npm_config_nodedir=$(pwd)/node_headers
     export npm_config_target=${electron.version}
     export npm_config_runtime=electron
     export npm_config_arch=x64
     export npm_config_target_arch=x64
 
+
+    # `node-gyp rebuild` is invoked somewhere, and without this it tries to download node headers from electronjs.org
+    # mkdir -p "$HOME/.node-gyp/${electron.version}"
+    # echo 9 > "$HOME/.node-gyp/${electron.version}/installVersion"
+    # ln -sfv "$(pwd)/node_headers/include" "$HOME/.node-gyp/${electron.version}"
+
+    # allow building with different node version than what upstream package.json requests
+    # (i still use the same major version)
+    echo 'ignore-engines true' > .yarnrc
+
     # build the sqlite bindings ELF
     pushd node_modules/@signalapp/better-sqlite3
-    mkdir tokenizer
-    cp ${signal-fts5-extension}/lib/libsignal_tokenizer.a tokenizer/
     patch -p1 < ${bettersqlitePatch}
 
     # npm run build-release --offline
