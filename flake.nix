@@ -332,6 +332,9 @@
                 - `nix run '.#deploy-{lappy,moby,moby-test,servo}' [nixos-rebuild args ...]`
                 - `nix run '.#check'`
                   - make sure all systems build; NUR evaluates
+
+                specific build targets of interest:
+                - `nix build '.#imgs.rescue'`
               '';
             in builtins.toString (pkgs.writeShellScript "nixos-config-help" ''
               cat ${helpMsg}
