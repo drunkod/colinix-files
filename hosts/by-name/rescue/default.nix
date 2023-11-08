@@ -8,7 +8,6 @@
   sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
   sane.persist.enable = false;
   sane.nixcache.enable = false;  # don't want to be calling out to dead machines that we're *trying* to rescue
-  sane.zsh.guiIntegrations = false;  # save on unused dependencies
 
   # auto-login at shell
   services.getty.autologinUser = "colin";

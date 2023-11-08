@@ -41,7 +41,7 @@ in
       };
       guiIntegrations = mkOption {
         type = types.bool;
-        default = true;
+        default = config.sane.programs.guiApps.enabled;
         description = ''
           integrate with things like VTE, so that windowing systems can show the PWD in the title.
           drags in gtk+3.
