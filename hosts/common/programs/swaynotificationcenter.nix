@@ -88,10 +88,25 @@ let
       pkgs.systemd
     ];
     text = ''
-      if systemctl is-active "$@"; then
+      echo "SWAYNC_TOGGLE_STATE: $SWAYNC_TOGGLE_STATE" | ${pkgs.systemd}/bin/systemd-cat --identifier=swaync
+      if systemctl is-active --quiet "$@"; then
         systemctl stop "$@"
       else
         systemctl start "$@"
+      fi
+    '';
+  };
+
+  systemctl-is-active = pkgs.writeShellApplication {
+    name = "systemctl-is-active";
+    runtimeInputs = [
+      pkgs.systemd
+    ];
+    text = ''
+      if systemctl is-active "$@"; then
+        echo true
+      else
+        echo false
       fi
     '';
   };
@@ -114,18 +129,36 @@ in
     };
     # prevent dbus from automatically activating swaync so i can manage it as a systemd service instead
     package = pkgs.rmDbusServices (pkgs.swaynotificationcenter.overrideAttrs (upstream: {
+      # use swaync with PR 304 applied.
+      # i can't just `fetchpatch` the PR, nor even a subset of its individual commits,
+      # because the author does a `merge master` in the middle of it.
+      # <https://github.com/ErikReider/SwayNotificationCenter/pull/304>
+      version = "unstable-2023-07-08";
+      src = pkgs.fetchFromGitHub {
+        # owner = "ErikReider";
+        owner = "JannisPetschenka";
+        repo = "SwayNotificationCenter";
+        # rev = "90688d0fe916b3e0f764883bce7f19ded82f1476";
+        # hash = "sha256-Ycc3ja6bcqbVPxwKCPivamQsNRwFrKwIWpHTFmJ5S5g=";
+        # rev = "f1821a59223010b9c0719d4125bc013b91267800";
+        # hash = "sha256-ea3owxvvz79uTD7pzBgAL/BYhkyECdN/6qr8wH44DL4=";
+        # rev = "90cde83bde93bf5d2c14d26345ffbb75963da70c";
+        # hash = "sha256-cpR0bNG0xlzdg9Jj5O4gTqa/wPyB5nu1SgEGlSQkK4I=";
+        rev = "6dafd54929ad5fc0078458541c0e4437e5b8a4a9";
+        hash = "sha256-1mfy7Yzg8Mpbu7R/np15qTz0x2oZvNCZ4Y/9ll+CXv0=";
+      };
       # allow toggle buttons:
-      patches = (upstream.patches or []) ++ [
-        (pkgs.fetchpatch {
-          url = "https://github.com/ErikReider/SwayNotificationCenter/pull/304.patch";
-          name = "Add toggle button";
-          hash = "sha256-bove2EXc5FZ5nN1X1FYOn3czCgHG03ibIAupJNoctiM=";
-        })
-        (pkgs.fetchpatch {
-          url = "https://git.uninsane.org/colin/SwayNotificationCenter/commit/f5d9405e040fc42ea98dc4d37202c85728d0d4fd.patch";
-          name = "toggleButton: change active field to be a command";
-          hash = "sha256-Y8fiZbAP9yGOVU3rOkZKO8TnPPlrGpINWYGaqeeNzF0=";
-        })
+      patches = [
+        # (pkgs.fetchpatch {
+        #   url = "https://github.com/ErikReider/SwayNotificationCenter/pull/304.patch";
+        #   name = "Add toggle button";
+        #   hash = "sha256-zD1EUnMMSIlLS8uFS0YcwmbrHuntsKw5Y9fF0N1beIU=";
+        # })
+        # (pkgs.fetchpatch {
+        #   url = "https://git.uninsane.org/colin/SwayNotificationCenter/commit/f5d9405e040fc42ea98dc4d37202c85728d0d4fd.patch";
+        #   name = "toggleButton: change active field to be a command";
+        #   hash = "sha256-Y8fiZbAP9yGOVU3rOkZKO8TnPPlrGpINWYGaqeeNzF0=";
+        # })
       ];
     }));
     suggestedPrograms = [ "feedbackd" ];
@@ -134,6 +167,8 @@ in
       /* noti-bg defaults `rgb(48, 48, 48)` and is the default button/slider/grid background */
       @define-color noti-bg rgb(36, 36, 36);
       @define-color noti-bg-darker rgb(24, 24, 24);
+      /* used for button.active background color, and also when dismissing notifs with keyboard? */
+      /* @define-color noti-bg-focus rgb(0, 110, 190); */
 
       /* avoid black-on-black text that the default style ships */
       window {
@@ -145,11 +180,11 @@ in
         background: rgba(0, 0, 0, 0.5);
       }
 
-      button {
-        /* text color for inactive buttons, and "Clear All" button.*/
+      .widget-buttons-grid>flowbox>flowboxchild>button {
+      /* text color for inactive buttons, and "Clear All" button.*/
         color: rgb(172, 172, 172);
       }
-      button.active {
+      .widget-buttons-grid>flowbox>flowboxchild>button.toggle:checked {
         color: rgb(255, 255, 255);
         background-color: rgb(0, 110, 190);
       }
@@ -313,14 +348,15 @@ in
             #   type = "toggle";
             #   label = "feedbackd";
             #   command = "${systemctl-toggle}/bin/systemctl-toggle --user feedbackd";
-            #   active = "${pkgs.systemd}/bin/systemctl is-active --user feedbackd.service";
+            #   update-command = "${pkgs.systemd}/bin/systemctl is-active --user feedbackd.service && echo true || echo false";
+            #   active = false;
             # }
           lib.optionals config.sane.programs.eg25-control.enabled [
             {
               type = "toggle";
               label = "gps";
               command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle eg25-control-gps";
-              active = "${pkgs.systemd}/bin/systemctl is-active eg25-control-gps.service";
+              update-command = "${systemctl-is-active}/bin/systemctl-is-active eg25-control-gps";
             }
             {
               type = "toggle";
@@ -328,35 +364,35 @@ in
               # modem and NetworkManager auto-establishes a connection when powered.
               # though some things like `wg-home` VPN tunnel will remain routed over the old interface.
               command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle eg25-control-powered";
-              active = "${pkgs.systemd}/bin/systemctl is-active eg25-control-powered.service";
+              update-command = "${systemctl-is-active}/bin/systemctl-is-active eg25-control-powered";
             }
           ] ++ [
             {
               type = "toggle";
               label = "vpn::hn";
               command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle wg-quick-vpn-servo";
-              active = "${pkgs.systemd}/bin/systemctl is-active wg-quick-vpn-servo.service";
+              update-command = "${systemctl-is-active}/bin/systemctl-is-active wg-quick-vpn-servo";
             }
           ] ++ lib.optionals config.sane.programs.calls.config.autostart [
             {
               type = "toggle";
               label = "SIP";
               command = "${systemctl-toggle}/bin/systemctl-toggle --user gnome-calls";
-              active = "${pkgs.systemd}/bin/systemctl is-active --user gnome-calls";
+              update-command = "${systemctl-is-active}/bin/systemctl-is-active --user gnome-calls";
             }
           ] ++ lib.optionals config.sane.programs.dino.enabled [
             {
               type = "toggle";
               label = "XMPP";  # XMPP calls (jingle)
               command = "${systemctl-toggle}/bin/systemctl-toggle --user dino";
-              active = "${pkgs.systemd}/bin/systemctl is-active --user dino";
+              update-command = "${systemctl-is-active}/bin/systemctl-is-active --user dino";
             }
           ] ++ lib.optionals config.sane.programs.fractal.enabled [
             {
               type = "toggle";
               label = "[m]";  # Matrix messages
               command = "${systemctl-toggle}/bin/systemctl-toggle --user fractal";
-              active = "${pkgs.systemd}/bin/systemctl is-active --user fractal";
+              update-command = "${systemctl-is-active}/bin/systemctl-is-active --user fractal";
             }
           ];
         };
