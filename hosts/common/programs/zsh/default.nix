@@ -53,7 +53,7 @@ in
   config = mkMerge [
     ({
       sane.programs.zsh = {
-        persist.private = [
+        persist.byStore.private = [
           # we don't need to full zsh dir -- just the history file --
           # but zsh will sometimes backup the history file and symlinking just the file messes things up
           ".local/share/zsh"
