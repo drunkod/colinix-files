@@ -78,6 +78,8 @@
 - phog: remove the gnome-shell runtime dependency to save hella closure size
 
 #### non-moby
+- RSS: integrate a paywall bypass
+  - e.g. self-hosted [ladder](https://github.com/everywall/ladder) (like 12ft.io)
 - neovim: set up language server (lsp; rnix-lsp; nvim-lspconfig)
 - Helix: make copy-to-system clipboard be the default
 - firefox/librewolf: persist history
