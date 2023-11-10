@@ -1865,6 +1865,26 @@ in {
     ];
   });
 
+  spot = prev.spot.overrideAttrs (upstream:
+    let
+      rustTargetPlatform = final.rust.toRustTarget final.stdenv.hostPlatform;
+    in {
+      postPatch = (upstream.postPatch or "") + ''
+        substituteInPlace build-aux/cargo.sh --replace \
+          'OUTPUT_BIN="$CARGO_TARGET_DIR"' \
+          'OUTPUT_BIN="$CARGO_TARGET_DIR/${rustTargetPlatform}"'
+      '';
+      # nixpkgs sets CARGO_BUILD_TARGET to the build platform target, so correct that.
+      buildPhase = ''
+        runHook preBuild
+
+        ${final.rust.envVars.setEnv} "CARGO_BUILD_TARGET=${rustTargetPlatform}" ninja -j$NIX_BUILD_CORES
+
+        runHook postBuild
+      '';
+    }
+  );
+
   squeekboard = prev.squeekboard.overrideAttrs (upstream: {
     # fixes: "meson.build:1:0: ERROR: 'rust' compiler binary not defined in cross or native file"
     # new error: "meson.build:1:0: ERROR: Rust compiler rustc --target aarch64-unknown-linux-gnu -C linker=aarch64-unknown-linux-gnu-gcc can not compile programs."
