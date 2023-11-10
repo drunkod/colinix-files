@@ -30,8 +30,6 @@
 
 ## IMPROVEMENTS:
 ### security/resilience
-- matrix/ntfy: automatically add the ntfy.uninsane.org push URL as part of synapse launch
-- ntfy: use a more secure topic
 - validate duplicity backups!
 - encrypt more ~ dirs (~/archives, ~/records, ..?)
   - best to do this after i know for sure i have good backups
@@ -61,7 +59,6 @@
     - this is a problem of playerctld, i guess
   - add option to change audio output
   - fix colors (red alert) to match overall theme
-  - extend width to 100% of portrait mode
 - moby: tune GPS
   - run only geoclue, and not gpsd, to save power?
   - tune QGPS setting in eg25-control, for less jitter?
