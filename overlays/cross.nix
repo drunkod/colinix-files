@@ -513,6 +513,15 @@ in {
     mesonFlags = lib.remove "-Dvapi=false" upstream.mesonFlags;
   });
 
+
+  dialect = prev.dialect.overrideAttrs (upstream: {
+    # dialect's meson build script sets host binaries to use build PYTHON
+    # disallowedReferences = [];
+    postFixup = (upstream.postFixup or "") + ''
+      patchShebangs --update --host $out/share/dialect/search_provider
+    '';
+  });
+
   dtrx = prev.dtrx.override {
     # `binutils` is the nix wrapper, which reads nix-related env vars
     # before passing on to e.g. `ld`.
@@ -2136,6 +2145,14 @@ in {
     postInstall = "";
   });
   # XXX: aarch64 webp-pixbuf-loader wanted by gdk-pixbuf-loaders.cache.drv, wanted by aarch64 gnome-control-center
+
+  wike = prev.wike.overrideAttrs (upstream: {
+    # wike's meson build script sets host binaries to use build PYTHON
+    # disallowedReferences = [];
+    postFixup = (upstream.postFixup or "") + ''
+      patchShebangs --update $out/share/wike/wike-sp
+    '';
+  });
 
   wrapFirefox = prev.wrapFirefox.override {
     buildPackages = let
