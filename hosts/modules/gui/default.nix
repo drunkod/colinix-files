@@ -37,6 +37,7 @@
       # "gnome-feeds"  # RSS reader (with claimed mobile support)
       # "gnome.file-roller"
       "gnome.geary"  # adaptive e-mail client
+      "gnome.gnome-calculator"
       "gnome.gnome-maps"
       # "gnome-podcasts"
       # "gnome.gnome-system-monitor"
