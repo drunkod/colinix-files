@@ -38,6 +38,7 @@
       # "gnome.file-roller"
       "gnome.geary"  # adaptive e-mail client
       "gnome.gnome-calculator"
+      "gnome.gnome-clocks"
       "gnome.gnome-maps"
       # "gnome-podcasts"
       # "gnome.gnome-system-monitor"
