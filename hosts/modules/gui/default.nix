@@ -63,6 +63,8 @@
       "soundconverter"
       "spot"  # Gnome Spotfy client
       # "sublime-music"
+      "superTux"  # game: SMB clone
+      "superTuxKart"  # game
       "tangram"  # web browser
       # "tdesktop"  # broken on phosh
       # "tokodon"
