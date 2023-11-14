@@ -325,7 +325,7 @@ in
           lib.optionals config.sane.programs.eg25-control.enabled [
             {
               type = "toggle";
-              label = "⌖";  # GPS services
+              label = "gps";  # GPS services; other icons: ⌖
               command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle eg25-control-gps";
               active = "${pkgs.systemd}/bin/systemctl is-active eg25-control-gps.service";
             }
@@ -354,7 +354,7 @@ in
           ] ++ lib.optionals config.sane.programs."gnome.geary".enabled [
             {
               type = "toggle";
-              label = "E";  # email (Geary); other icons: ✉, 📧
+              label = "[E]";  # email (Geary); other icons: ✉, 📧
               command = "${systemctl-toggle}/bin/systemctl-toggle --user geary";
               active = "${pkgs.systemd}/bin/systemctl is-active --user geary";
             }
