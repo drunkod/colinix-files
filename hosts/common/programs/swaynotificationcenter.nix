@@ -351,6 +351,13 @@ in
               command = "${systemctl-toggle}/bin/systemctl-toggle --user gnome-calls";
               active = "${pkgs.systemd}/bin/systemctl is-active --user gnome-calls";
             }
+          ] ++ lib.optionals config.sane.programs."gnome.geary".enabled [
+            {
+              type = "toggle";
+              label = "E";  # email (Geary); other icons: ✉, 📧
+              command = "${systemctl-toggle}/bin/systemctl-toggle --user geary";
+              active = "${pkgs.systemd}/bin/systemctl is-active --user geary";
+            }
           ] ++ lib.optionals config.sane.programs.dino.enabled [
             {
               type = "toggle";
