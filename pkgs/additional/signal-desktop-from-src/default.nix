@@ -190,7 +190,13 @@
 # - so, my node modules were built for node 18.x, but i'm trying to run them with electron.
 # - oh! this is why Alpine compiles with: --nodedir=/usr/include/electron/node_headers
 # - yup, running under electron 27 causes this number to go to 118 (as expected)
-#  - electron.headers is nodejs 18.15.0 and still specifies `#define NODE_MODULE_VERSION 108` (so, no good!)
+#   - electron.headers is nodejs 18.15.0 and still specifies `#define NODE_MODULE_VERSION 108` (so, no good!)
+# - this error message comes from the electron binary, itself
+#   - version encoded into electron binary with `"node_module_version": 116`
+#   - encoded into node_modules/@signalapp/better-sqlite3/build/config.gypi
+#     - when correct: built with `"nodedir": "/home/colin/.electron-gyp/26.3.0"`
+#     - when correct: doesn't have ldd dep against sqlcipher or libcrypto or libz or libdl
+#     - IT'S DEFINITELY THE FUCKING BETTER-SQLITE WHICH IS GIVING ME PROBLEMS
 #
 #
 # the dependencies which alpine builds live over here:
@@ -235,7 +241,7 @@
 , electron_25
 , electron_25-bin
 # , electron_26
-, electron
+# , electron
 , electron-bin
 , fetchFromGitHub
 # , fetchYarnDeps
@@ -266,6 +272,21 @@
 , yarn
 }:
 let
+  nodejs_18_15_0 = nodejs.overrideAttrs (upstream:
+    let
+      # 18.15.0 matches the version in package.json
+      version = "18.15.0";
+      sha256 = "sha256-jkTWUBj/lzKEGVwjGGRpoOpAgul+xCAOX1cG1VhNqjc=";
+    in {
+      inherit version;
+      src = builtins.fetchurl {
+        url = "https://nodejs.org/dist/v${version}/node-v${version}.tar.xz";
+        inherit sha256;
+      };
+    }
+  );
+  nodejs' = nodejs_18_15_0;
+  yarn' = yarn.override { nodejs = nodejs'; };
   # package.json locks electron to 25.8.4
   # element-desktop uses electron_26
   # nixpkgs has `electron` defaulted to electron_27
@@ -278,7 +299,7 @@ let
   # electron = electron_25-bin;
   electron = electron-bin;
   # nodejs = nodejs_latest;
-  nodeSources = srcOnly nodejs;
+  nodeSources = srcOnly nodejs';
   bettersqlitePatch = substituteAll {
     # this patch does more than just use the system sqlcipher.
     # it also tells bettersqlite to link against its needed runtime dependencies,
@@ -286,10 +307,18 @@ let
     # it also tells bettersqlite not to download sqlcipher when we `npm rebuild`
     src = ./bettersqlite-use-system-sqlcipher.patch;
     inherit sqlcipher;
-    inherit (nodejs) libv8;
+    inherit (nodejs') libv8;
     signal_fts5_extension = signal-fts5-extension;
   };
   signal-fts5-extension = callPackage ./fts5-extension { };
+  ringrtcPrebuild = builtins.fetchurl {
+    url = "https://build-artifacts.signal.org/libraries/ringrtc-desktop-build-v2.33.0.tar.gz";
+    sha256 = "sha256:0zmgjax0ycjkvhqz1hybfi799lzss52s1cd8hzbqnm4ka3b1lhsf";
+  };
+  sqlcipherTarball = builtins.fetchurl {
+    url = "https://build-artifacts.signal.org/desktop/sqlcipher-4.5.5-fts5-fix--3.0.7--0.2.1-ef53ea45ed92b928ecfd33c552d8d405263e86e63dec38e1ec63e1b0193b630b.tar.gz";
+    sha256 = "sha256:02v37ccv1qb3xkhkiv1xws33w9h5skc55i9kzpn2ifcjxm2yllzg";
+  };
 in
 stdenv.mkDerivation rec {
   pname = "signal-desktop-from-src";
@@ -309,34 +338,34 @@ stdenv.mkDerivation rec {
     autoPatchelfHook
     fixup_yarn_lock
     makeWrapper
-    nodejs  # possibly i could instead use nodejs-slim (npm-less nodejs)
+    nodejs'  # possibly i could instead use nodejs-slim (npm-less nodejs)
     python3
     removeReferencesTo
     wrapGAppsHook
-    yarn
+    yarn'
   ];
 
-  buildInputs = [
-    alsa-lib
-    at-spi2-atk
-    at-spi2-core
-    atk
-    cups
-    electron
-    flac
-    gdk-pixbuf
-    gtk3
-    libpulseaudio
-    libwebp
-    libxslt
-    mesa # for libgbm
-    nspr
-    nss
-    pango
-    # so that bettersqlite may link against sqlcipher (see patch)
-    # but i don't know if it actually needs to. just copied this from alpine.
-    sqlcipher
-  ];
+  # buildInputs = [
+  #   alsa-lib
+  #   at-spi2-atk
+  #   at-spi2-core
+  #   atk
+  #   cups
+  #   electron
+  #   flac
+  #   gdk-pixbuf
+  #   gtk3
+  #   libpulseaudio
+  #   libwebp
+  #   libxslt
+  #   mesa # for libgbm
+  #   nspr
+  #   nss
+  #   pango
+  #   # so that bettersqlite may link against sqlcipher (see patch)
+  #   # but i don't know if it actually needs to. just copied this from alpine.
+  #   sqlcipher
+  # ];
 
   # to update:
   # - `cp ~/ref/repos/signalapp/Signal-Desktop/{package.json,yarn.lock} .`
@@ -348,7 +377,7 @@ stdenv.mkDerivation rec {
   #   yarnLock = "${src}/yarn.lock";
   #   hash = "sha256-AXT6p5lgF0M9ckoxiAvT1HaJhUWVtwEOadY4otdeB0Q=";
   # };
-  env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
+  # env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
   postPatch = ''
     # fixes build failure:
@@ -367,10 +396,36 @@ stdenv.mkDerivation rec {
     export HOME=$NIX_BUILD_TOP
     yarn config --offline set yarn-offline-mirror $yarnOfflineCache
     fixup_yarn_lock yarn.lock
+
+    # prevent any attempt at downloading nodejs C headers
+    tar xzf ${electron.headers}
+    export npm_config_nodedir=$(pwd)/node_headers
+
     # optional flags:  --no-progress --non-interactive
     # yarn install creates the node_modules/ directory
-    yarn install --offline --frozen-lockfile --ignore-scripts --ignore-engines
+    # --ignore-scripts tells yarn to not run the "install" or "postinstall" commands mentioned in dependencies' package.json
+    #   since many of those require network access
+    yarn install --offline --frozen-lockfile --ignore-scripts
     patchShebangs node_modules/
+
+    # provide necessecities which were skipped as part of --ignore-scripts
+    cp ${ringrtcPrebuild} node_modules/@signalapp/ringrtc/scripts/prebuild.tar.gz
+    pushd node_modules/@signalapp/ringrtc/
+      tar -xzf ./scripts/prebuild.tar.gz
+    popd
+    cp ${sqlcipherTarball} node_modules/@signalapp/better-sqlite3/deps/sqlcipher.tar.gz
+    pushd node_modules/@signalapp/better-sqlite3
+      yarn --offline build-release
+    popd
+    pushd node_modules/@signalapp/libsignal-client
+      yarn node-gyp-build
+    popd
+    # there are more dependencies which had install/postinstall scripts, but it seems we can safely ignore them
+
+    # run signal's own `postinstall`:
+    yarn build:acknowledgments
+    yarn patch-package
+    # yarn electron:install-app-deps  # not necessary
 
     runHook postConfigure
   '';
@@ -401,12 +456,12 @@ stdenv.mkDerivation rec {
     # hence, this only works with the -bin variants of electron
     # folder structure is:
     # ./node_headers/include/node/*.h
-    tar xzf ${electron.headers}
-    export npm_config_nodedir=$(pwd)/node_headers
-    export npm_config_target=${electron.version}
-    export npm_config_runtime=electron
-    export npm_config_arch=x64
-    export npm_config_target_arch=x64
+    # tar xzf ${electron.headers}
+    # export npm_config_nodedir=$(pwd)/node_headers
+    # export npm_config_target=${electron.version}
+    # export npm_config_runtime=electron
+    # export npm_config_arch=x64
+    # export npm_config_target_arch=x64
 
 
     # `node-gyp rebuild` is invoked somewhere, and without this it tries to download node headers from electronjs.org
@@ -414,24 +469,29 @@ stdenv.mkDerivation rec {
     # echo 9 > "$HOME/.node-gyp/${electron.version}/installVersion"
     # ln -sfv "$(pwd)/node_headers/include" "$HOME/.node-gyp/${electron.version}"
 
+    # mkdir -p "$HOME/.node-gyp/${nodejs'.version}"
+    # echo 9 > "$HOME/.node-gyp/${nodejs'.version}/installVersion"
+    # ln -sfv "$(pwd)/include" "$HOME/.node-gyp/${nodejs'.version}"
+    # export npm_config_nodedir=${nodejs'}
+
     # allow building with different node version than what upstream package.json requests
     # (i still use the same major version)
-    echo 'ignore-engines true' > .yarnrc
+    # echo 'ignore-engines true' > .yarnrc
 
     # build the sqlite bindings ELF
-    pushd node_modules/@signalapp/better-sqlite3
-    patch -p1 < ${bettersqlitePatch}
+    # pushd node_modules/@signalapp/better-sqlite3
+    # patch -p1 < ${bettersqlitePatch}
 
-    # npm run build-release --offline
-    # npm run build-release --offline --nodedir="${nodeSources}"
+    # # npm run build-release --offline
+    # # npm run build-release --offline --nodedir="${nodeSources}"
 
-    # find build -type f -exec \
-    #   remove-references-to \
-    #   -t "${nodeSources}" {} \;
+    # # find build -type f -exec \
+    # #   remove-references-to \
+    # #   -t "${nodeSources}" {} \;
 
-    popd
+    # popd
 
-    npm rebuild @signalapp/better-sqlite3  --offline
+    # npm rebuild @signalapp/better-sqlite3  --offline
     # npm rebuild @signalapp/better-sqlite3  --offline --nodedir="${nodeSources}" --build-from-source
     # patchelf --add-needed ${icu}/lib/libicutu.so node_modules/@signalapp/better-sqlite3/build/Release/better_sqlite3.node
 
@@ -440,17 +500,17 @@ stdenv.mkDerivation rec {
     #   node_modules/@signalapp/better-sqlite3/
 
     # provide the ringrtc (webrtc) dependency. TODO: build this from source
-    cp -R ${signal-desktop}/lib/Signal/resources/app.asar.unpacked/node_modules/@signalapp/ringrtc/build \
-      node_modules/@signalapp/ringrtc/
+    # cp -R ${signal-desktop}/lib/Signal/resources/app.asar.unpacked/node_modules/@signalapp/ringrtc/build \
+    #   node_modules/@signalapp/ringrtc/
 
     # yarn generate:
-    yarn build-module-protobuf --offline --frozen-lockfile --ignore-scripts --ignore-engines
-    yarn build:esbuild --offline --frozen-lockfile --ignore-scripts --ignore-engines
+    yarn build-module-protobuf --offline --frozen-lockfile
+    yarn build:esbuild --offline --frozen-lockfile
     yarn sass
     yarn get-expire-time
     yarn copy-components
 
-    yarn build:esbuild:prod --offline --frozen-lockfile --ignore-scripts --ignore-engines
+    yarn build:esbuild:prod --offline --frozen-lockfile
 
     yarn build:release \
       ${if stdenv.isDarwin then "--macos" else "--linux"} ${if stdenv.hostPlatform.isAarch64 then "--arm64" else "--x64"} \
@@ -500,10 +560,10 @@ stdenv.mkDerivation rec {
 
   # icu provides a number of .so's: libicuuc.so, libicutu.so, libici18n.so.
   # unsure which one better_sqlite specifically requires, but libicutu seems to link in every icu lib.
-  preFixup = ''
-    patchelf --add-needed ${icu}/lib/libicutu.so "$out/lib/Signal/resources/app.asar.unpacked/node_modules/@signalapp/better-sqlite3/build/Release/better_sqlite3.node"
-    # patchelf --add-needed ${lib.getLib stdenv.cc.cc}/lib/libstdc++.so "$out/lib/Signal/resources/app.asar.unpacked/node_modules/@signalapp/better-sqlite3/build/Release/better_sqlite3.node"
-  '';
+  # preFixup = ''
+  #   patchelf --add-needed ${icu}/lib/libicutu.so "$out/lib/Signal/resources/app.asar.unpacked/node_modules/@signalapp/better-sqlite3/build/Release/better_sqlite3.node"
+  #   # patchelf --add-needed ${lib.getLib stdenv.cc.cc}/lib/libstdc++.so "$out/lib/Signal/resources/app.asar.unpacked/node_modules/@signalapp/better-sqlite3/build/Release/better_sqlite3.node"
+  # '';
 
   passthru = {
     inherit bettersqlitePatch signal-fts5-extension;
