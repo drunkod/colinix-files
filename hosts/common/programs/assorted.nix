@@ -238,6 +238,8 @@ in
     # TODO: we can populate gh's stuff statically; it even lets us use the same oauth across machines
     gh.persist.byStore.private = [ ".config/gh" ];
 
+    gnome-2048.persist.byStore.plaintext = [ ".local/share/gnome-2048/scores" ];
+
     "gnome.gnome-maps".persist.byStore.plaintext = [ ".cache/shumate" ];
     "gnome.gnome-maps".persist.byStore.private = [ ".local/share/maps-places.json" ];
 
