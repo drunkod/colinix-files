@@ -325,7 +325,7 @@ in
           lib.optionals config.sane.programs.eg25-control.enabled [
             {
               type = "toggle";
-              label = "gps";
+              label = "⌖";  # GPS services
               command = "/run/wrappers/bin/sudo ${systemctl-toggle}/bin/systemctl-toggle eg25-control-gps";
               active = "${pkgs.systemd}/bin/systemctl is-active eg25-control-gps.service";
             }
