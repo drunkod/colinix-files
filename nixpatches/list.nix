@@ -300,11 +300,11 @@ in [
   # related: <https://github.com/NixOS/nixpkgs/issues/236890#issuecomment-1585030861>
   # ./2023-06-10-lemmy-downgrade.patch
 
-  (fetchpatch' {
-    title = "koreader: 2023.04 -> 2023.05.1";
-    saneCommit = "a5c471bd263abe93e291239e0078ac4255a94262";
-    hash = "sha256-38sND/UNRj5WAYYKpzdrRBIOK4UAT14RzbIv49KmNNw=";
-  })
+  # (fetchpatch' {
+  #   title = "koreader: 2023.04 -> 2023.05.1";
+  #   saneCommit = "a5c471bd263abe93e291239e0078ac4255a94262";
+  #   hash = "sha256-38sND/UNRj5WAYYKpzdrRBIOK4UAT14RzbIv49KmNNw=";
+  # })
 
   # (fetchpatch' {
   #   title = "mepo: 1.1 -> 1.1.2";
@@ -333,14 +333,16 @@ in [
   })
   (fetchpatch' {
     title = "tracker-miners: support cross compilation";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/267609";
     saneCommit = "24b062309ea8baa2d8303c0610c9ec7b8c399e8b";
-    hash = "sha256-Jj+1z2DeCEY+DqI1J4vYjYJwDDMRcA93CqpZSXzG0wE=";
+    hash = "sha256-wsC9hYTD/QLiR8vH/3z2yCVWruTcL5S1VtRsDgA6mrE=";
   })
-  (fetchpatch' {
-    title = "clapper: support cross compilation";
-    saneCommit = "8a171b49aca406f8220f016e56964b3fae53a3df";
-    hash = "sha256-R11IYatGhSXxZnJxJid519Oc9Kh56D9NT2/cxf2CLuM=";
-  })
+  # (fetchpatch' {
+  #   # 2023/11/14: deps don't cross compile (e.g. pipewire; qtsvg)
+  #   title = "clapper: support cross compilation";
+  #   saneCommit = "8a171b49aca406f8220f016e56964b3fae53a3df";
+  #   hash = "sha256-R11IYatGhSXxZnJxJid519Oc9Kh56D9NT2/cxf2CLuM=";
+  # })
   # (fetchpatch' {
   #   # not correct: build time dependencies end up in runtime closure
   #   title = "gcr_4: support cross compilation";
@@ -364,6 +366,8 @@ in [
   #   hash = "sha256-FiPJhHGqZ8MFwLY+1t6HgbK6ndomFSYUKvApvrikRHE=";
   # })
   (fetchpatch' {
+    # TODO: send for review once hspell fix is merged <https://github.com/NixOS/nixpkgs/pull/263182>
+    # this patch works as-is, but hspell keeps a ref to build perl and thereby pollutes this closure as well.
     title = "gtkspell2: support cross compilation";
     saneCommit = "56348833b4411e9fe2016c24c7fc4af1e3c1d28a";
     hash = "sha256-0RMxouOBw7SUmQDLB2qGey714DaM0AOvZlZ5nB+Lkc4=";
