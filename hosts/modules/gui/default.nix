@@ -61,6 +61,7 @@
       "pavucontrol"
       # "picard"  # music tagging
       # "libsForQt5.plasmatube"  # Youtube player
+      "signal-desktop-from-src"
       "soundconverter"
       "spot"  # Gnome Spotfy client
       # "sublime-music"
@@ -134,7 +135,7 @@
       "losslesscut-bin"
       "makemkv"
       "monero-gui"
-      "signal-desktop"
+      # "signal-desktop"
       "spotify"
       "tor-browser-bundle-bin"
       "zecwallet-lite"
