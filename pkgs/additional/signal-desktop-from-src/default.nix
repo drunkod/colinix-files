@@ -242,6 +242,7 @@
 , electron_25
 , electron_25-bin
 # , electron_26
+, electron_27-bin
 # , electron
 , electron-bin
 , fetchFromGitHub
@@ -296,10 +297,12 @@ let
   # for this package, electron_25 seems more stable than 26/27.
   # 27 complains that better-sqlite was built against an incompatible nodejs.
   # 26 simply segfaults.
+  # as for the -bin versions though, both electron-bin (26) and electron_27-bin work; electron_25-bin is untested
   # electron = electron_26;
   # electron = electron_25;
   # electron = electron_25-bin;
-  electron = electron-bin;
+  # electron = electron-bin;
+  electron = electron_27-bin;
   # nodejs = nodejs_latest;
   nodeSources = srcOnly nodejs';
   bettersqlitePatch = substituteAll {
