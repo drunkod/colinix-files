@@ -235,6 +235,7 @@
 , at-spi2-core
 , atk
 , autoPatchelfHook
+, bash
 , buildPackages
 , callPackage
 , cups
@@ -248,6 +249,7 @@
 , flac
 , fixup_yarn_lock
 , gdk-pixbuf
+, gnused
 , gtk3
 , icu
 , libpulseaudio
@@ -262,7 +264,7 @@
 , pango
 , python3
 , removeReferencesTo
-, signal-desktop
+# , signal-desktop
 , sqlite
 , sqlcipher
 , srcOnly
@@ -319,6 +321,9 @@ let
     url = "https://build-artifacts.signal.org/desktop/sqlcipher-4.5.5-fts5-fix--3.0.7--0.2.1-ef53ea45ed92b928ecfd33c552d8d405263e86e63dec38e1ec63e1b0193b630b.tar.gz";
     sha256 = "sha256:02v37ccv1qb3xkhkiv1xws33w9h5skc55i9kzpn2ifcjxm2yllzg";
   };
+  buildNpmArch = if stdenv.buildPlatform.isAarch64 then "arm64" else "x64";
+  hostNpmArch = if stdenv.hostPlatform.isAarch64 then "arm64" else "x64";
+  crossNpmArchExt = if buildNpmArch == hostNpmArch then "" else "-${hostNpmArch}";
 in
 stdenv.mkDerivation rec {
   pname = "signal-desktop-from-src";
@@ -337,6 +342,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     autoPatchelfHook
     fixup_yarn_lock
+    gnused
     makeWrapper
     nodejs'  # possibly i could instead use nodejs-slim (npm-less nodejs)
     python3
@@ -345,27 +351,27 @@ stdenv.mkDerivation rec {
     yarn'
   ];
 
-  # buildInputs = [
-  #   alsa-lib
-  #   at-spi2-atk
-  #   at-spi2-core
-  #   atk
-  #   cups
-  #   electron
-  #   flac
-  #   gdk-pixbuf
-  #   gtk3
-  #   libpulseaudio
-  #   libwebp
-  #   libxslt
-  #   mesa # for libgbm
-  #   nspr
-  #   nss
-  #   pango
-  #   # so that bettersqlite may link against sqlcipher (see patch)
-  #   # but i don't know if it actually needs to. just copied this from alpine.
-  #   sqlcipher
-  # ];
+  buildInputs = [
+    alsa-lib
+    at-spi2-atk
+    at-spi2-core
+    atk
+    cups
+    electron
+    flac
+    gdk-pixbuf
+    gtk3
+    libpulseaudio
+    libwebp
+    libxslt
+    mesa # for libgbm
+    nspr
+    nss
+    pango
+    # so that bettersqlite may link against sqlcipher (see patch)
+    # but i don't know if it actually needs to. just copied this from alpine.
+    sqlcipher
+  ];
 
   # to update:
   # - `cp ~/ref/repos/signalapp/Signal-Desktop/{package.json,yarn.lock} .`
@@ -401,12 +407,25 @@ stdenv.mkDerivation rec {
     tar xzf ${electron.headers}
     export npm_config_nodedir=$(pwd)/node_headers
 
+    export npm_config_arch=${buildNpmArch}
+    export npm_config_target_arch=${hostNpmArch}
+
     # optional flags:  --no-progress --non-interactive
     # yarn install creates the node_modules/ directory
     # --ignore-scripts tells yarn to not run the "install" or "postinstall" commands mentioned in dependencies' package.json
     #   since many of those require network access
     yarn install --offline --frozen-lockfile --ignore-scripts
+    # substituteInPlace node_modules/@swc/helpers/scripts/gen.sh --replace '#!/bin/bash' '#!/bin/sh'
+    # substituteInPlace node_modules/@swc/helpers/scripts/generator.sh --replace '#!/bin/bash' '#!/bin/sh'
+    # substituteInPlace node_modules/dashdash/etc/dashdash.bash_completion.in --replace '#!/bin/bash' '#!/bin/sh'
     patchShebangs node_modules/
+    # patch these out to remove a runtime reference back to the build bash
+    # (better, perhaps, would be for these build scripts to not be included in the asar...)
+    # substituteInPlace node_modules/@swc/helpers/scripts/gen.sh --replace '#!${bash}/bin/bash' '#!/bin/sh'
+    # substituteInPlace node_modules/@swc/helpers/scripts/generator.sh --replace '#!${bash}/bin/bash' '#!/bin/sh'
+    sed -i 's:#!.*/bin/bash:#!/bin/sh:g' node_modules/@swc/helpers/scripts/gen.sh
+    sed -i 's:#!.*/bin/bash:#!/bin/sh:g' node_modules/@swc/helpers/scripts/generator.sh
+    substituteInPlace node_modules/dashdash/etc/dashdash.bash_completion.in --replace '#!/bin/bash' '#!/bin/sh'
 
     # provide necessecities which were skipped as part of --ignore-scripts
     cp ${ringrtcPrebuild} node_modules/@signalapp/ringrtc/scripts/prebuild.tar.gz
@@ -495,14 +514,6 @@ stdenv.mkDerivation rec {
     # npm rebuild @signalapp/better-sqlite3  --offline --nodedir="${nodeSources}" --build-from-source
     # patchelf --add-needed ${icu}/lib/libicutu.so node_modules/@signalapp/better-sqlite3/build/Release/better_sqlite3.node
 
-    # provide the sqlite bindings ELF. TODO: build this from source
-    # cp -R ${signal-desktop}/lib/Signal/resources/app.asar.unpacked/node_modules/@signalapp/better-sqlite3/build \
-    #   node_modules/@signalapp/better-sqlite3/
-
-    # provide the ringrtc (webrtc) dependency. TODO: build this from source
-    # cp -R ${signal-desktop}/lib/Signal/resources/app.asar.unpacked/node_modules/@signalapp/ringrtc/build \
-    #   node_modules/@signalapp/ringrtc/
-
     # yarn generate:
     yarn build-module-protobuf --offline --frozen-lockfile
     yarn build:esbuild --offline --frozen-lockfile
@@ -513,7 +524,7 @@ stdenv.mkDerivation rec {
     yarn build:esbuild:prod --offline --frozen-lockfile
 
     yarn build:release \
-      ${if stdenv.isDarwin then "--macos" else "--linux"} ${if stdenv.hostPlatform.isAarch64 then "--arm64" else "--x64"} \
+      --linux --${hostNpmArch} \
       -c.electronDist=${electron}/libexec/electron \
       -c.electronVersion=${electron.version} \
       --dir
@@ -536,8 +547,8 @@ stdenv.mkDerivation rec {
     runHook preInstall
 
     # directory structure follows the original `signal-desktop` nix package
-    mkdir -p $out/lib/Signal
-    cp -R release/linux-unpacked/* $out/lib/Signal
+    mkdir -p $out/lib
+    cp -R release/linux${crossNpmArchExt}-unpacked $out/lib/Signal
     # cp -R release/linux-unpacked/resources $out/lib/Signal/resources
     # cp -R release/linux-unpacked/locales $out/lib/Signal/locales
 
