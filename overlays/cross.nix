@@ -1066,8 +1066,7 @@ in {
   #   });
   # };
 
-  # 2023/11/13: this solution results in build python infecting host build (via glib-dev)
-  # otherwise, good to upstream
+  # merged 2023/11/14: <https://github.com/NixOS/nixpkgs/pull/267373>
   libgnome-games-support = addNativeInputs [ final.gobject-introspection ] prev.libgnome-games-support;
 
   # libgweather = rmNativeInputs [ final.glib ] (prev.libgweather.override {
