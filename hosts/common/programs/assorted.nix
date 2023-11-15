@@ -256,6 +256,8 @@ in
       requests
     ]);
 
+    shattered-pixel-dungeon.persist.byStore.plaintext = [ ".local/share/.shatteredpixel/shattered-pixel-dungeon" ];
+
     # creds, media
     signal-desktop.persist.byStore.private = [ ".config/Signal" ];
 
