@@ -24,20 +24,6 @@ let
     );
 in [
   (fetchpatch' {
-    title = "gsound: enable introspection/vala when cross compiled";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/263107";
-    saneCommit = "beb33584013f49d198152ad8ae8797bb6fa0266f";
-    # hash = "sha256-tKeumQ1R/UWTL2J9RaGs8p9QHxGxP2a1DevHnX/ElRU=";
-    hash = "sha256-W9IS3JNPk5LkJeuZ+EL8NIv8+v7wEZo8Gt+ofq3RrrY=";
-  })
-  (fetchpatch' {
-    title = "gspell: enable vala for cross compilation";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/263135";
-    saneCommit = "293bfdc031a1eaa5cc571000977df14b6d8237c8";
-    # hash = "sha256-n6xatVeqMweuy/bm68cxWUkgUoS+H1xNRjT0JDFXeEs=";
-    hash = "sha256-PXatkvLjEgQJ4rRIjEOadKscM0WYWTozIFt2vzWOMKY=";
-  })
-  (fetchpatch' {
     title = "gcr: remove build gnupg from runtime closure";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263158";
     saneCommit = "8c71ab22c6df4e5ce290e131a7769688b0c5a017";
@@ -45,21 +31,9 @@ in [
     hash = "sha256-6hUdsExHSMHy6FMY1+OLtVmKpRwysGIVkcDpYv7RRBk=";
   })
   (fetchpatch' {
-    title = "gvfs: support cross compilation";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/263175";
-    saneCommit = "0c6dd31f3394ac339d5351400350223af3fc1284";
-    hash = "sha256-Ywxx2BkvVp3+Za3PPhVwa7sovjkVJrhFx3vj63IB6JQ=";
-  })
-  (fetchpatch' {
     title = "hspell: remove build perl from runtime closure";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263182";
     hash = "sha256-Wau+PB+EUQDvWX8Kycw1sNrM3GkPVjKSS4niIDI0sjM=";
-  })
-  (fetchpatch' {
-    title = "trust-dns: 0.23.0 -> 0.24.0";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/263054";
-    saneCommit = "cb13904421c1870df1059bfe5988a24107983a5f";
-    hash = "sha256-tXU1XXEQbZ3IMPncZB42XQPvx3IZMr5ez5bCfGRGVsk=";
   })
   # (fetchpatch' {
   #   title = "trust-dns: 0.23.0 -> 0.24.0";
