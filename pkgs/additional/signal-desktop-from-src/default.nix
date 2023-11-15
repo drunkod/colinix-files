@@ -246,7 +246,7 @@
 # , electron
 , electron-bin
 , fetchFromGitHub
-# , fetchYarnDeps
+, fetchYarnDeps
 , flac
 , fixup_yarn_lock
 , gdk-pixbuf
@@ -376,16 +376,11 @@ stdenv.mkDerivation rec {
     sqlcipher
   ];
 
-  # to update:
-  # - `cp ~/ref/repos/signalapp/Signal-Desktop/{package.json,yarn.lock} .`
-  # - `nix run '.#yarn2nix' > yarn.nix`
-  env.yarnOfflineCache = (callPackage ./yarn.nix {}).offline_cache;
-  # alternative method, which bypasses yarn2nix
-  # env.yarnOfflineCache = fetchYarnDeps {
-  #   # this might be IFD: if `nix run '.#check.nur'` fails then inline the lock: `yarnLock = ./yarn.lock`
-  #   yarnLock = "${src}/yarn.lock";
-  #   hash = "sha256-AXT6p5lgF0M9ckoxiAvT1HaJhUWVtwEOadY4otdeB0Q=";
-  # };
+  env.yarnOfflineCache = fetchYarnDeps {
+    # this might be IFD: if `nix run '.#check.nur'` fails then inline the lock: `yarnLock = ./yarn.lock`
+    yarnLock = "${src}/yarn.lock";
+    hash = "sha256-AXT6p5lgF0M9ckoxiAvT1HaJhUWVtwEOadY4otdeB0Q=";
+  };
   # env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
   postPatch = ''
