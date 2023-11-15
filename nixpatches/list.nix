@@ -82,6 +82,11 @@ in [
     prUrl = "https://github.com/NixOS/nixpkgs/pull/260558";
     hash = "sha256-FDY/OLh7bNRixEuPlrIeyW/kJYNPnelLsplfKCsjHKQ=";
   })
+  (fetchpatch' {
+    title = "zcash: 5.4.2 -> 5.7.0";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/229810";
+    hash = "sha256-ProoPJ10rUtOZh2PzpegviG6Ip1zSuWC92BpP+ux9ZQ=";
+  })
   # (fetchpatch' {
   #   title = "graphicsmagick: 1.3.39 -> 1.3.42";
   #   prUrl = "https://github.com/NixOS/nixpkgs/pull/218163";
