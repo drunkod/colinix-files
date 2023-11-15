@@ -61,7 +61,7 @@
       "pavucontrol"
       # "picard"  # music tagging
       # "libsForQt5.plasmatube"  # Youtube player
-      "signal-desktop-from-src"
+      "signal-desktop"
       "soundconverter"
       "spot"  # Gnome Spotfy client
       # "sublime-music"
