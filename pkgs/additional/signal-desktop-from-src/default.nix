@@ -170,12 +170,12 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "signal-desktop-from-src";
-  version = "6.36.0";
+  version = "6.38.0";
   src = fetchFromGitHub {
     owner = "signalapp";
     repo = "Signal-Desktop";
     rev = "v${version}";
-    hash = "sha256-86x6OeQAMN5vhLaAphnAfSWeRgUh0wAeZFzxue8otDQ=";
+    hash = "sha256-wKBhiiZhSivw4NYJ7uQDX8tMKxvMUYnu8cfr0IfjMMk=";
   };
 
   # patches = [
@@ -218,7 +218,7 @@ stdenv.mkDerivation rec {
   env.yarnOfflineCache = fetchYarnDeps {
     # this might be IFD: if `nix run '.#check.nur'` fails then inline the lock: `yarnLock = ./yarn.lock`
     yarnLock = "${src}/yarn.lock";
-    hash = "sha256-AXT6p5lgF0M9ckoxiAvT1HaJhUWVtwEOadY4otdeB0Q=";
+    hash = "sha256-wSX09S+UOBPE3Ozh6+BieADMGG9MO8XnjaHWrxCqfao=";
   };
   # env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
