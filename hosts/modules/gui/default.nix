@@ -15,7 +15,7 @@
     suggestedPrograms = [
       "animatch"
       "gnome-2048"
-      "superTux"  # no way to control on touch
+      "superTux"  # keyboard-only controls
       "superTuxKart"  # poor FPS on pinephone
     ];
   };
@@ -23,6 +23,7 @@
     package = null;
     suggestedPrograms = [
       "shattered-pixel-dungeon"  # doesn't cross compile
+      "vvvvvv"  # keyboard-only controls
     ];
   };
 

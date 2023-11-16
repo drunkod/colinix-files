@@ -269,6 +269,8 @@ in
 
     tokodon.persist.byStore.private = [ ".cache/KDE/tokodon" ];
 
+    vvvvvv.persist.byStore.plaintext = [ ".local/share/VVVVVV" ];
+
     whalebird.persist.byStore.private = [ ".config/Whalebird" ];
 
     yarn.persist.byStore.plaintext = [ ".cache/yarn" ];
