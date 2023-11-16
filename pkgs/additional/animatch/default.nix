@@ -4,10 +4,16 @@
 , fetchFromGitLab
 , libGL
 , libwebp
-, SDL2
 , xorg
 }:
-stdenv.mkDerivation rec {
+let
+  allegro' = allegro5.overrideAttrs (base: {
+    # TODO: patch upstream nixpkgs' allegro5 to have this enabled
+    buildInputs = base.buildInputs ++ [
+      libwebp
+    ];
+  });
+in stdenv.mkDerivation rec {
   pname = "animatch";
   version = "1.0.3";
   src = fetchFromGitLab {
@@ -20,23 +26,16 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     cmake
-  ] ++ allegro5.nativeBuildInputs;
+  ];
 
   buildInputs = [
-    # allegro5
+    allegro'
     libGL
     xorg.libX11
-
-    # needed when building allegro.
-    # maybe if i add these missing deps to the nixpkgs allegro5 package i can link directly
-    SDL2
-    libwebp
-  ] ++ allegro5.buildInputs;
+  ];
 
   cmakeFlags = [
     "-DLIBSUPERDERPY_STATIC=ON"  # recommended by upstream for coexistence with other superderpy games
-    "-DLIBSUPERDERPY_EMBEDDED_ALLEGRO=ON"
-    "-DALLEGRO_SDL=ON"
   ];
 
   # debugging:
