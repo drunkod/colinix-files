@@ -24,6 +24,11 @@ let
     );
 in [
   (fetchpatch' {
+    title = "animatch: init at 1.0.3";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/267948";
+    hash = "sha256-zWu/n9eiMiwWcMOzly8AdqzGwYLVaFnsWu+XR4XYsD4=";
+  })
+  (fetchpatch' {
     title = "gcr: remove build gnupg from runtime closure";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263158";
     saneCommit = "8c71ab22c6df4e5ce290e131a7769688b0c5a017";
