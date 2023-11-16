@@ -299,11 +299,11 @@ in [
     hash = "sha256-GlYWpOVZvr0oFAs4RdSUf7LJD3FmGsCaTm32GPhbBfc=";
   })
 
-  (fetchpatch' {
-    title = "gnustep: remove `rec` to support `overrideScope`";
-    saneCommit = "69162cbf727264e50fc9d7222a03789d12644705";
-    hash = "sha256-rD0es4uUbaLMrI9ZB2HzPmRLyu/ixNBLAFyDJtFHNko=";
-  })
+  # (fetchpatch' {
+  #   title = "gnustep: remove `rec` to support `overrideScope`";
+  #   saneCommit = "69162cbf727264e50fc9d7222a03789d12644705";
+  #   hash = "sha256-rD0es4uUbaLMrI9ZB2HzPmRLyu/ixNBLAFyDJtFHNko=";
+  # })
 
   (fetchpatch' {
     title = "blueman: support cross compilation";
