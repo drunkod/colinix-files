@@ -87,6 +87,7 @@
 # , electron_25-bin
 , electron_27-bin
 # , electron-bin
+, fetchurl
 , fetchFromGitHub
 , fetchYarnDeps
 , flac
@@ -115,13 +116,13 @@
 , yarn
 }:
 let
-  ringrtcPrebuild = builtins.fetchurl {
+  ringrtcPrebuild = fetchurl {
     url = "https://build-artifacts.signal.org/libraries/ringrtc-desktop-build-v2.33.0.tar.gz";
-    sha256 = "sha256:0zmgjax0ycjkvhqz1hybfi799lzss52s1cd8hzbqnm4ka3b1lhsf";
+    hash = "sha256-TkMa1lCTVIvXh6ixoEXR+tOUTnTLw/Ax3FMyD7qSr34=";
   };
-  sqlcipherTarball = builtins.fetchurl {
+  sqlcipherTarball = fetchurl {
     url = "https://build-artifacts.signal.org/desktop/sqlcipher-4.5.5-fts5-fix--3.0.7--0.2.1-ef53ea45ed92b928ecfd33c552d8d405263e86e63dec38e1ec63e1b0193b630b.tar.gz";
-    sha256 = "sha256:02v37ccv1qb3xkhkiv1xws33w9h5skc55i9kzpn2ifcjxm2yllzg";
+    hash = "sha256-71PqRe2SuSjs/TPFUtjUBSY+huY97Djh7GPhsBk7Yws=";
   };
 
   # signal-fts5-extension = callPackage ./fts5-extension { };
@@ -140,12 +141,12 @@ let
     let
       # 18.15.0 matches the version in package.json
       version = "18.15.0";
-      sha256 = "sha256-jkTWUBj/lzKEGVwjGGRpoOpAgul+xCAOX1cG1VhNqjc=";
+      hash = "sha256-jkTWUBj/lzKEGVwjGGRpoOpAgul+xCAOX1cG1VhNqjc=";
     in {
       inherit version;
-      src = builtins.fetchurl {
+      src = fetchurl {
         url = "https://nodejs.org/dist/v${version}/node-v${version}.tar.xz";
-        inherit sha256;
+        inherit hash;
       };
     }
   );
