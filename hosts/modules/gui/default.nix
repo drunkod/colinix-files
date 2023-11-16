@@ -10,6 +10,22 @@
     ./theme
   ];
 
+  sane.programs.gameApps = {
+    package = null;
+    suggestedPrograms = [
+      "animatch"
+      "gnome-2048"
+      "superTux"  # no way to control on touch
+      "superTuxKart"  # poor FPS on pinephone
+    ];
+  };
+  sane.programs.desktopGameApps = {
+    package = null;
+    suggestedPrograms = [
+      "shattered-pixel-dungeon"  # doesn't cross compile
+    ];
+  };
+
   sane.programs.guiApps = {
     package = null;
     suggestedPrograms = lib.optionals (pkgs.system == "x86_64-linux") [
@@ -17,8 +33,8 @@
     ] ++ [
       # package sets
       "tuiApps"
+      "gameApps"
     ] ++ [
-      "animatch"
       "alacritty"  # terminal emulator
       "calls"  # gnome calls (dialer/handler)
       # "celluloid"  # mpv frontend
@@ -34,7 +50,6 @@
       # "foliate"  # e-book reader
       "fractal"  # matrix client
       "g4music"  # local music player
-      "gnome-2048"  # game
       # "gnome.cheese"
       # "gnome-feeds"  # RSS reader (with claimed mobile support)
       # "gnome.file-roller"
@@ -66,8 +81,6 @@
       "soundconverter"
       "spot"  # Gnome Spotfy client
       # "sublime-music"
-      "superTux"  # game: SMB clone
-      "superTuxKart"  # game
       "tangram"  # web browser
       # "tdesktop"  # broken on phosh
       # "tokodon"
@@ -82,6 +95,9 @@
   sane.programs.desktopGuiApps = {
     package = null;
     suggestedPrograms = [
+      # package sets
+      "desktopGameApps"
+    ] ++ [
       "audacity"
       "blanket"  # ambient noise generator
       "brave"  # for the integrated wallet -- as a backup
