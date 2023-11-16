@@ -18,6 +18,7 @@
       # package sets
       "tuiApps"
     ] ++ [
+      "animatch"
       "alacritty"  # terminal emulator
       "calls"  # gnome calls (dialer/handler)
       # "celluloid"  # mpv frontend

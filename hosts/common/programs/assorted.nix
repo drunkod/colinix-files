@@ -217,6 +217,8 @@ in
 
     # INDIVIDUAL PACKAGE DEFINITIONS
 
+    animatch.persist.byStore.plaintext = [ ".local/share/Holy Pangolin/Animatch" ];  # game progress
+
     cargo.persist.byStore.plaintext = [ ".cargo" ];
 
     # creds, but also 200 MB of node modules, etc
