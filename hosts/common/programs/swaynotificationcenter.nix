@@ -155,6 +155,9 @@ in
       .widget-buttons-grid>flowbox>flowboxchild>button.toggle {
         /* text color for inactive buttons, and "Clear All" button.*/
         color: rgb(172, 172, 172);
+        /* padding defaults to 16px; tighten, so i can squish it all onto one row */
+        padding-left: 0px;
+        padding-right: 0px;
       }
       .widget-buttons-grid>flowbox>flowboxchild>button.toggle.active {
         color: rgb(255, 255, 255);
