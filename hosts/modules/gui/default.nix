@@ -22,7 +22,25 @@
   sane.programs.desktopGameApps = {
     package = null;
     suggestedPrograms = [
+      # "andyetitmoves" # TODO: fix build!
+      # "armagetronad"  # tron/lightcycles; WAN and LAN multiplayer
+      # "cutemaze"      # meh: trivial maze game; qt6 and keyboard-only
+      # "cuyo"          # trivial puyo-puyo clone
+      "endless-sky"     # space merchantilism/exploration
+      # "factorio"
+      "frozen-bubble"   # WAN + LAN + 1P/2P bubble bobble
+      # "hedgewars"     # WAN + LAN worms game (5~10 people online at any moment; <https://hedgewars.org>)
+      # "libremines"    # meh: trivial minesweeper; qt6
+      # "mario0"        # SMB + portal
+      # "mindustry"
+      # "minesweep-rs"  # CLI minesweeper
+      # "nethack"
+      # "osu-lazer"
+      # "pinball"       # 3d pinball; kb/mouse. old sourceforge project
+      # "powermanga"    # STYLISH space invaders derivative (keyboard-only)
       "shattered-pixel-dungeon"  # doesn't cross compile
+      "space-cadet-pinball"  # LMB/RMB controls (bindable though. volume buttons?)
+      "tumiki-fighters" # keyboard-only
       "vvvvvv"  # keyboard-only controls
     ];
   };
