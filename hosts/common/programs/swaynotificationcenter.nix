@@ -358,6 +358,13 @@ in
               command = "${systemctl-toggle}/bin/systemctl-toggle --user geary";
               active = "${pkgs.systemd}/bin/systemctl is-active --user geary";
             }
+          ] ++ lib.optionals config.sane.programs.signal-desktop.enabled [
+            {
+              type = "toggle";
+              label = "💬";  # Signal messenger
+              command = "${systemctl-toggle}/bin/systemctl-toggle --user signal-desktop";
+              active = "${pkgs.systemd}/bin/systemctl is-active --user signal-desktop";
+            }
           ] ++ lib.optionals config.sane.programs.dino.enabled [
             {
               type = "toggle";
