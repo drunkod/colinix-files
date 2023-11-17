@@ -256,11 +256,6 @@ in
     "gnome.gnome-maps".persist.byStore.plaintext = [ ".cache/shumate" ];
     "gnome.gnome-maps".persist.byStore.private = [ ".local/share/maps-places.json" ];
 
-    gtkcord4.persist.byStore.private = [
-      ".cache/gtkcord4"
-      ".config/gtkcord4"  # empty?
-    ];
-
     # actual monero blockchain (not wallet/etc; safe to delete, just slow to regenerate)
     # XXX: is it really safe to persist this? it doesn't have info that could de-anonymize if captured?
     monero-gui.persist.byStore.plaintext = [ ".bitmonero" ];
