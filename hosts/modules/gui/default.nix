@@ -142,7 +142,7 @@
       "krita"
       "libreoffice"  # TODO: replace with an office suite that uses saner packaging?
       "mumble"
-      "nheko"
+      # "nheko"  # Matrix chat client
       # "obsidian"
       # "rhythmbox"  # local music player
       "slic3r"
