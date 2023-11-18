@@ -1,4 +1,10 @@
 { config, lib, pkgs, ... }:
+let
+  declPackageSet = pkgs: {
+    package = null;
+    suggestedPrograms = pkgs;
+  };
+in
 {
   imports = [
     ./gnome.nix
@@ -10,44 +16,37 @@
     ./theme
   ];
 
-  sane.programs.gameApps = {
-    package = null;
-    suggestedPrograms = [
-      "animatch"
-      "gnome-2048"
-      "superTux"  # keyboard-only controls
-      "superTuxKart"  # poor FPS on pinephone
-    ];
-  };
-  sane.programs.desktopGameApps = {
-    package = null;
-    suggestedPrograms = [
-      # "andyetitmoves" # TODO: fix build!
-      # "armagetronad"  # tron/lightcycles; WAN and LAN multiplayer
-      # "cutemaze"      # meh: trivial maze game; qt6 and keyboard-only
-      # "cuyo"          # trivial puyo-puyo clone
-      "endless-sky"     # space merchantilism/exploration
-      # "factorio"
-      "frozen-bubble"   # WAN + LAN + 1P/2P bubble bobble
-      # "hedgewars"     # WAN + LAN worms game (5~10 people online at any moment; <https://hedgewars.org>)
-      # "libremines"    # meh: trivial minesweeper; qt6
-      # "mario0"        # SMB + portal
-      # "mindustry"
-      # "minesweep-rs"  # CLI minesweeper
-      # "nethack"
-      # "osu-lazer"
-      # "pinball"       # 3d pinball; kb/mouse. old sourceforge project
-      # "powermanga"    # STYLISH space invaders derivative (keyboard-only)
-      "shattered-pixel-dungeon"  # doesn't cross compile
-      "space-cadet-pinball"  # LMB/RMB controls (bindable though. volume buttons?)
-      "tumiki-fighters" # keyboard-only
-      "vvvvvv"  # keyboard-only controls
-    ];
-  };
+  sane.programs.gameApps = declPackageSet [
+    "animatch"
+    "gnome-2048"
+    "superTux"  # keyboard-only controls
+    "superTuxKart"  # poor FPS on pinephone
+  ];
+  sane.programs.desktopGameApps = declPackageSet [
+    # "andyetitmoves" # TODO: fix build!
+    # "armagetronad"  # tron/lightcycles; WAN and LAN multiplayer
+    # "cutemaze"      # meh: trivial maze game; qt6 and keyboard-only
+    # "cuyo"          # trivial puyo-puyo clone
+    "endless-sky"     # space merchantilism/exploration
+    # "factorio"
+    "frozen-bubble"   # WAN + LAN + 1P/2P bubble bobble
+    # "hedgewars"     # WAN + LAN worms game (5~10 people online at any moment; <https://hedgewars.org>)
+    # "libremines"    # meh: trivial minesweeper; qt6
+    # "mario0"        # SMB + portal
+    # "mindustry"
+    # "minesweep-rs"  # CLI minesweeper
+    # "nethack"
+    # "osu-lazer"
+    # "pinball"       # 3d pinball; kb/mouse. old sourceforge project
+    # "powermanga"    # STYLISH space invaders derivative (keyboard-only)
+    "shattered-pixel-dungeon"  # doesn't cross compile
+    "space-cadet-pinball"  # LMB/RMB controls (bindable though. volume buttons?)
+    "tumiki-fighters" # keyboard-only
+    "vvvvvv"  # keyboard-only controls
+  ];
 
-  sane.programs.guiApps = {
-    package = null;
-    suggestedPrograms = lib.optionals (pkgs.system == "x86_64-linux") [
+  sane.programs.guiApps = declPackageSet (
+    lib.optionals (pkgs.system == "x86_64-linux") [
       "x86GuiApps"
     ] ++ [
       # package sets
@@ -109,12 +108,11 @@
       "wike"  # Wikipedia Reader
       "xdg-terminal-exec"
       "xterm"  # broken on phosh
-    ];
-  };
+    ]
+  );
 
-  sane.programs.desktopGuiApps = {
-    package = null;
-    suggestedPrograms = [
+  sane.programs.desktopGuiApps = declPackageSet (
+    [
       # package sets
       "desktopGameApps"
     ] ++ [
@@ -149,35 +147,30 @@
       "steam"
       "vlc"
       "wireshark"  # could maybe ship the cli as sysadmin pkg
-    ];
-  };
+    ]
+  );
 
-  sane.programs.handheldGuiApps = {
-    package = null;
-    suggestedPrograms = [
-      "megapixels"  # camera app
-      "portfolio-filemanager"
-      "xarchiver"
-    ];
-  };
+  sane.programs.handheldGuiApps = declPackageSet [
+    "megapixels"  # camera app
+    "portfolio-filemanager"
+    "xarchiver"
+  ];
 
-  sane.programs.x86GuiApps = {
-    package = null;
-    suggestedPrograms = [
-      "discord"
-      # "gnome.zenity" # for kaiteki (it will use qarma, kdialog, or zenity)
-      # "gpt2tc"  # XXX: unreliable mirror
-      # "kaiteki"  # Pleroma client
-      # "logseq"  # Personal Knowledge Management
-      "losslesscut-bin"
-      "makemkv"
-      "monero-gui"
-      # "signal-desktop"
-      "spotify"
-      "tor-browser-bundle-bin"
-      "zecwallet-lite"
-    ];
-  };
+  sane.programs.x86GuiApps = declPackageSet [
+    "discord"
+    # "gnome.zenity" # for kaiteki (it will use qarma, kdialog, or zenity)
+    # "gpt2tc"  # XXX: unreliable mirror
+    # "kaiteki"  # Pleroma client
+    # "logseq"  # Personal Knowledge Management
+    "losslesscut-bin"
+    "makemkv"
+    "monero-gui"
+    # "signal-desktop"
+    "spotify"
+    "tor-browser-bundle-bin"
+    "zecwallet-lite"
+  ];
+
 
   sane.persist.sys.byStore.plaintext = lib.mkIf config.sane.programs.guiApps.enabled [
     "/var/lib/alsa"                # preserve output levels, default devices
