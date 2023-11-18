@@ -198,6 +198,8 @@ in
           "x-scheme-handler/unknown" = desktop;
         };
 
+        slowToBuild = true;  # compared to e.g. epiphany or webkit-based browsers
+
         # env.BROWSER = "${package}/bin/${cfg.browser.libName}";
         env.BROWSER = cfg.browser.libName;  # used by misc tools like xdg-email, as fallback
 

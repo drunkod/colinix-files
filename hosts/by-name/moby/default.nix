@@ -59,7 +59,6 @@
   # HACK/TODO: make `programs.P.env.VAR` behave according to `mime.priority`
   sane.programs.firefox.env = lib.mkForce {};
   sane.programs.epiphany.env.BROWSER = "epiphany";
-  sane.programs.firefox.enableFor.user.colin = false;  # use epiphany instead
 
   # note the .conf.d approach: using ~/.config/pipewire/pipewire.conf directly breaks all audio,
   # presumably because that deletes the defaults entirely whereas the .conf.d approach selectively overrides defaults
