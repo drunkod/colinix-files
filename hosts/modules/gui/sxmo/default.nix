@@ -130,7 +130,7 @@ in
     };
     sane.gui.sxmo.package = mkOption {
       type = types.package;
-      default = pkgs.sxmo-utils-latest.override { preferSystemd = true; };
+      default = pkgs.sxmo-utils.override { preferSystemd = true; };
       description = ''
         sxmo base scripts and hooks collection.
         consider overriding the outputs under /share/sxmo/default_hooks
