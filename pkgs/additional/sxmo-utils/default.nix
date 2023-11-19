@@ -11,7 +11,7 @@
 , curl
 , dbus
 , dmenu
-, fetchgit
+, fetchFromSourcehut
 , fetchpatch
 , gitUpdater
 , gnugrep
@@ -102,8 +102,9 @@ stdenv.mkDerivation rec {
   pname = "sxmo-utils";
   version = "unstable-2023-10-10";
 
-  src = fetchgit {
-    url = "https://git.sr.ht/~mil/sxmo-utils";
+  src = fetchFromSourcehut {
+    owner = "~mil";
+    repo = "sxmo-utils";
     rev = "c33408abb560dac52de52d878840945c12a75a32";
     hash = "sha256-VYUYN5S6qmsNpxMq7xFfgsGcbjIjqvuj36AG+NeMHTM=";
   };
