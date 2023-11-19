@@ -357,7 +357,7 @@
             program = "${pkgs.feeds.init-feed}";
           };
 
-          deploy = mapAttrValues (host: {
+          deploy = pkgs.lib.mapAttrs (host: _: {
             type = "app";
             program  = ''${deployScript host host "switch"}'';
             test = {
