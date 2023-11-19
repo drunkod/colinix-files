@@ -13,7 +13,6 @@
 , dmenu
 , fetchFromSourcehut
 , fetchpatch
-, gitUpdater
 , gnugrep
 , gojq
 , grim
@@ -41,6 +40,7 @@
 , sway
 , swayidle
 , systemd
+, unstableGitUpdater
 , wob
 , wl-clipboard
 , wtype
@@ -100,13 +100,13 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "sxmo-utils";
-  version = "unstable-2023-10-10";
+  version = "unstable-2023-11-07";
 
   src = fetchFromSourcehut {
     owner = "~mil";
     repo = "sxmo-utils";
-    rev = "c33408abb560dac52de52d878840945c12a75a32";
-    hash = "sha256-VYUYN5S6qmsNpxMq7xFfgsGcbjIjqvuj36AG+NeMHTM=";
+    rev = "1654cde76dcebd5383b47dbd503565e604c63cca";
+    hash = "sha256-2Tdr1xAxyOJ+DxOQAZw+MVYCmqz6As5XmsnZzVv2M6A=";
   };
 
   patches = [
@@ -114,14 +114,6 @@ stdenv.mkDerivation rec {
       name = "sxmo_migrate: add option to disable configversion checks";
       url = "https://lists.sr.ht/~mil/sxmo-devel/patches/44155/mbox";
       hash = "sha256-ZcUD2UWPM8PxGM9TBnGe8JCJgMC72OZYzctDf2o7Ub0=";
-    })
-
-    ## not upstreamable
-    (fetchpatch {
-      # let NixOS manage the audio daemons (pulseaudio/pipewire)
-      name = "sxmo_hook_start: don't start audio daemons";
-      url = "https://git.uninsane.org/colin/sxmo-utils/commit/124f8fed85c3ff89ab45f1c21569bcc034d07693.patch";
-      hash = "sha256-GteXFZCuRpIXuYrEdEraIhzCm1b4vNJgh3Lmg+Qjeqk=";
     })
 
     # TODO: send these upstream
@@ -223,7 +215,7 @@ stdenv.mkDerivation rec {
   passthru = {
     inherit runtimeDeps;
     providedSessions = (lib.optional supportSway "swmo") ++ (lib.optional supportDwm "sxmo");
-    updateScript = gitUpdater { };
+    updateScript = unstableGitUpdater { };
   };
 
   meta = {

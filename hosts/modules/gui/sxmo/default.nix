@@ -234,6 +234,7 @@ in
             SXMO_DISABLE_CONFIGVERSION_CHECK = mkSettingsOpt "1" "allow omitting the configversion line from user-provided sxmo dotfiles";
             SXMO_UNLOCK_IDLE_TIME = mkSettingsOpt "300" "how many seconds of inactivity before locking the screen";  # lock -> screenoff happens 8s later, not configurable
             # SXMO_WM = mkSettingsOpt "sway" "sway or dwm. ordinarily initialized by sxmo_{x,w}init.sh";
+            SXMO_NO_AUDIO = mkSettingsOpt "1" "don't start pipewire/pulseaudio in sxmo_hook_start.sh";
           };
       };
       default = {};
