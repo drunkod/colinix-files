@@ -422,18 +422,27 @@
           check.host-configs = {
             type = "app";
             program = let
-              checkHost = host: ''
+              checkHost = host: let
+                shellHost = pkgs.lib.replaceStrings [ "-" ] [ "_" ] host;
+              in ''
                 nix build -v '.#nixosConfigurations.${host}.config.system.build.toplevel' --out-link ./result-${host} -j2 $@
-                RC_${host}=$?
+                RC_${shellHost}=$?
               '';
             in builtins.toString (pkgs.writeShellScript
               "check-host-configs"
               ''
+                # build minimally-usable hosts first, then their full image.
+                # this gives me a minimal image i can deploy or copy over, early.
+                ${checkHost "desko-light"}
+                ${checkHost "moby-light"}
+                ${checkHost "lappy-light"}
+
                 ${checkHost "desko"}
                 ${checkHost "lappy"}
                 ${checkHost "servo"}
                 ${checkHost "moby"}
                 ${checkHost "rescue"}
+
                 echo "desko: $RC_desko"
                 echo "lappy: $RC_lappy"
                 echo "servo: $RC_servo"
