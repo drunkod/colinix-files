@@ -61,7 +61,6 @@ let
     static-nix-shell = callPackage ./additional/static-nix-shell { };
     sublime-music-mobile = callPackage ./additional/sublime-music-mobile { };
     sxmo-utils' = lib.recurseIntoAttrs (callPackage ./additional/sxmo-utils { });
-    sxmo-utils = sxmo-utils'.stable;
     sxmo-utils-latest = sxmo-utils'.latest;
     tow-boot-pinephone = callPackage ./additional/tow-boot-pinephone { };
     tree-sitter-nix-shell = callPackage ./additional/tree-sitter-nix-shell { };
