@@ -251,6 +251,10 @@ in
     };
   };
 
+  imports = [
+    ./bonsai.nix
+  ];
+
   config = lib.mkMerge [
     {
       sane.programs.sxmoApps = {
@@ -535,9 +539,8 @@ in
           sxmo_wob = sxmoService "wob";
           sxmo-x11-status = sxmoService "status_xsetroot";
 
-          bonsaid = import ./bonsai.nix {
-            inherit sxmoPath sxmoEnvSetup pkgs;
-          };
+          bonsaid.path = sxmoPath;
+          bonsaid.script = lib.mkBefore sxmoEnvSetup;
         };
       }
 
