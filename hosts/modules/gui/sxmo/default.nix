@@ -432,45 +432,34 @@ in
             event_name = eventName;
             inherit transitions;
           };
-        in [
-          # define mappings for 1, 2, or 3 repeat presses of each primary button
-          (onEvent "power_pressed" [
-            (onIdle "powerbutton_three")
-            (onEvent "power_released" [
-              (onIdle "powerbutton_one")
-              (onEvent "power_released" [
-                (onIdle "powerbutton_two")
-                (onEvent "power_released" [
-                  (doExec "powerbutton_three")
-                ])
-              ])
-            ])
-          ])
-          (onEvent "voldown_pressed" [
-            (onIdle "voldown_three")
-            (onEvent "voldown_released" [
-              (onIdle "voldown_one")
-              (onEvent "voldown_released" [
-                (onIdle "voldown_two")
-                (onEvent "voldown_released" [
-                  (doExec "voldown_three")
-                ])
-              ])
-            ])
-          ])
-          (onEvent "volup_pressed" [
-            (onIdle "volup_three")
-            (onEvent "volup_released" [
-              (onIdle "volup_one")
-              (onEvent "volup_released" [
-                (onIdle "volup_two")
-                (onEvent "volup_released" [
-                  (doExec "volup_three")
-                ])
-              ])
-            ])
-          ])
-        ];
+          friendlyToBonsai = { timeout ? null, trigger ? null, power_pressed ? {}, power_released ? {}, voldown_pressed ? {}, voldown_released ? {}, volup_pressed ? {}, volup_released ? {} }: [
+            (lib.mkIf (timeout != null)        (onIdle timeout))
+            (lib.mkIf (trigger != null)        (doExec trigger))
+            (lib.mkIf (power_pressed != {})    (onEvent "power_pressed" (friendlyToBonsai power_pressed)))
+            (lib.mkIf (power_released != {})   (onEvent "power_released" (friendlyToBonsai power_released)))
+            (lib.mkIf (voldown_pressed != {})  (onEvent "voldown_pressed" (friendlyToBonsai voldown_pressed)))
+            (lib.mkIf (voldown_released != {}) (onEvent "voldown_released" (friendlyToBonsai voldown_released)))
+            (lib.mkIf (volup_pressed != {})    (onEvent "volup_pressed" (friendlyToBonsai volup_pressed)))
+            (lib.mkIf (volup_released != {})   (onEvent "volup_released" (friendlyToBonsai volup_released)))
+          ];
+        in friendlyToBonsai {
+          # map sequences of "events" to an argument to pass to sxmo_hook_inputhandler.sh
+
+          power_pressed.timeout = "powerbutton_three";  # hold/stuck state machine
+          power_pressed.power_released.timeout = "powerbutton_one";
+          power_pressed.power_released.power_released.timeout = "powerbutton_two";
+          power_pressed.power_released.power_released.power_released.trigger = "powerbutton_three";
+
+          voldown_pressed.timeout = "voldown_three";  # hold/stuck state machine
+          voldown_pressed.voldown_released.timeout = "voldown_one";
+          voldown_pressed.voldown_released.voldown_released.timeout = "voldown_two";
+          voldown_pressed.voldown_released.voldown_released.voldown_released.trigger = "voldown_three";
+
+          volup_pressed.timeout = "volup_three";  # hold/stuck state machine
+          volup_pressed.volup_released.timeout = "volup_one";
+          volup_pressed.volup_released.volup_released.timeout = "volup_two";
+          volup_pressed.volup_released.volup_released.volup_released.trigger = "volup_three";
+        };
 
         # sxmo puts in /share/sxmo:
         # - profile.d/sxmo_init.sh
