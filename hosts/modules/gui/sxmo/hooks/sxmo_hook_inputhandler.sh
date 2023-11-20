@@ -53,9 +53,9 @@ handle_with() {
 #   # probably not handling proximity* correctly here
 #   case "$STATE" in
 #     *lock)
-#       respond_with sxmo_state_switch.sh set screenoff
+#       respond_with sxmo_state.sh set screenoff
 #     *)
-#       respond_with sxmo_state_switch.sh set unlock
+#       respond_with sxmo_state.sh set unlock
 #   esac
 # }
 
@@ -104,7 +104,7 @@ if [ "$STATE" = "screenoff" ]; then
       ;;
     "powerbutton_three")
       # power once during deep sleep often gets misread as power three, so treat these same
-      handle_with sxmo_state_switch.sh set unlock
+      handle_with sxmo_state.sh set unlock
       ;;
   esac
 fi
@@ -113,11 +113,11 @@ fi
 case "$ACTION" in
   "powerbutton_one")
     # power once => unlock
-    handle_with sxmo_state_switch.sh set unlock
+    handle_with sxmo_state.sh set unlock
     ;;
   "powerbutton_two")
     # power twice => screenoff
-    handle_with sxmo_state_switch.sh set screenoff
+    handle_with sxmo_state.sh set screenoff
     ;;
   # powerbutton_three: intentional no-op because overloading the kill-window handler is risky
 
