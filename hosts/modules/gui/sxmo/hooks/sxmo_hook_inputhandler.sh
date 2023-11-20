@@ -12,26 +12,29 @@
 #
 # proposed future design:
 # - when unlocked:
-#   - volup1   -> app menu
-#   - voldown1 -> toggle keyboard
-#   - pow1:volup1 -> volume up
-#   - pow1:voldown1 -> volume down
-#   - pow2 -> screen off
-#   - pow3 -> kill app
-# - when locked:
-#   - volup1 -> volume up
-#   - voldown1 -> volume down
-#   - pow1 -> screen on
-#   - pow2 -> toggle player
-#   - pow1:volup1 -> seek +30s
-#   - pow1:voldown1 -> seek -10s
-# benefits
+#   - volup-release   -> app menu
+#     - volup-hold    -> WM menu
+#   - voldown-release -> toggle keyboard
+#     - voldown-hold  -> terminal
+#   - pow-volup xN    -> volume up
+#   - pow-voldown xN  -> volume down
+#   - pow-x2          -> screen off
+#   - pow-hold -> kill app
+# - when screenoff:
+#   - volup    -> volume up
+#   - voldown  -> volume down
+#   - pow-x1   -> screen on
+#   - pow-x2   -> toggle player
+#   - pow-volup -> seek +30s
+#   - pow-voldown -> seek -10s
+# benefits:
 # - volup and voldown are able to be far more responsive
 #   - which means faster vkbd, menus, volume adjustment (when locked)
-# limitations
-# - terminal is unmapped. that could be mapped to pow1?
-# - wm menu is unmapped. but i never used that much anyway.
-#   - or, i could add that to the primary menu.
+# - less mental load than the chording-based approach (where i hold power to adjust volume)
+# - less risk due to not chording the power button
+# drawbacks:
+# - volup/down actions are triggered by the release instead of the press; slight additional latency for pulling open the keyboard
+#   - moving the WM menu into the top-level menu could allow keeping voldown free of complication
 
 # increments to use for volume adjustment
 VOL_INCR_1=5
