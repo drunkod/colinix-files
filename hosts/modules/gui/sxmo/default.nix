@@ -28,10 +28,10 @@
 # - startup
 #   - daemon based (lisgsd, idle_locker, statusbar_periodics)
 #   - auto-started at login
-#   - managable by `sxmo_daemons.sh`
-#     - list available daemons: `sxmo_daemons.sh list`
-#     - query if a daemon is active: `sxmo_daemons.sh running <my-daemon>`
-#     - start daemon: `sxmo_daemons.sh start <my-daemon>`
+#   - managable by `sxmo_jobs.sh`
+#     - list available daemons: `sxmo_jobs.sh list`
+#     - query if a daemon is active: `sxmo_jobs.sh running <my-daemon>`
+#     - start daemon: `sxmo_jobs.sh start <my-daemon>`
 #   - managable by `superctl`
 #     - `superctl status`
 # - user hooks:
@@ -348,7 +348,7 @@ in
 
                   # kill anything leftover from the previous sxmo run. this way we can (try to) be reentrant
                   echo "sxmo_init: killing stale daemons (if active)"
-                  sxmo_daemons.sh stop all
+                  sxmo_jobs.sh stop all
                   pkill bemenu
                   pkill wvkbd
                   pkill superd
