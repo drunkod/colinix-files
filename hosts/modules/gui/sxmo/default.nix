@@ -445,7 +445,7 @@ in
         in friendlyToBonsai {
           # map sequences of "events" to an argument to pass to sxmo_hook_inputhandler.sh
 
-          power_pressed.timeout = "powerbutton_three";  # hold/stuck state machine
+          power_pressed.timeout = "powerbutton_one";  # hold/stuck state machine
           power_pressed.power_released.timeout = "powerbutton_one";
           power_pressed.power_released.power_released.timeout = "powerbutton_two";
           power_pressed.power_released.power_released.power_released.trigger = "powerbutton_three";
