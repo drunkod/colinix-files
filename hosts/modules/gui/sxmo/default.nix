@@ -443,6 +443,20 @@ in
             (lib.mkIf (volup_pressed != {})    (onEvent "volup_pressed" (friendlyToBonsai volup_pressed)))
             (lib.mkIf (volup_released != {})   (onEvent "volup_released" (friendlyToBonsai volup_released)))
           ];
+          recurseVolUpDown = ttl: if ttl == 0 then {
+          } else {
+            voldown_pressed = {
+              trigger = "powerhold_voldown";
+              timeout.ms = 1000;
+              power_released = {};
+            } // recurseVolUpDown (ttl - 1);
+
+            volup_pressed = {
+              trigger = "powerhold_volup";
+              timeout.ms = 1000;
+              power_released = {};
+            } // recurseVolUpDown (ttl - 1);
+          };
         in friendlyToBonsai {
           # map sequences of "events" to an argument to pass to sxmo_hook_inputhandler.sh
 
@@ -458,26 +472,9 @@ in
           power_pressed.power_released.volup_pressed.trigger = "powertoggle_volup";
 
           # chording: hold power and then tap vol-up N times to adjust the volume by N increments.
-          power_pressed.voldown_pressed.trigger = "powerhold_voldown";
-          power_pressed.voldown_pressed.timeout.ms = 1000;
-          power_pressed.voldown_pressed.power_released = {};  # return to root
-          power_pressed.voldown_pressed.voldown_pressed.trigger = "powerhold_voldown";
-          power_pressed.voldown_pressed.voldown_pressed.timeout.ms = 1000;
-          power_pressed.voldown_pressed.voldown_pressed.power_released = {};  # return to root
-          power_pressed.voldown_pressed.voldown_pressed.voldown_pressed.trigger = "powerhold_voldown";
-          power_pressed.voldown_pressed.voldown_pressed.voldown_pressed.timeout.ms = 1000;
-          power_pressed.voldown_pressed.voldown_pressed.voldown_pressed.power_released = {};  # return to root
-
-          # chording: hold power and then tap vol-up N times to adjust the volume by N increments.
-          power_pressed.volup_pressed.trigger = "powerhold_volup";
-          power_pressed.volup_pressed.timeout.ms = 1000;
-          power_pressed.volup_pressed.power_released = {};  # return to root
-          power_pressed.volup_pressed.volup_pressed.trigger = "powerhold_volup";
-          power_pressed.volup_pressed.volup_pressed.timeout.ms = 1000;
-          power_pressed.volup_pressed.volup_pressed.power_released = {};  # return to root
-          power_pressed.volup_pressed.volup_pressed.volup_pressed.trigger = "powerhold_volup";
-          power_pressed.volup_pressed.volup_pressed.volup_pressed.timeout.ms = 1000;
-          power_pressed.volup_pressed.volup_pressed.volup_pressed.power_released = {};  # return to root
+          # XXX: HOLDING POWER LIKE THIS IS RISKY. but the default hard-power-off is like 10s, so... i guess this works until it becomes a problem...?
+          power_pressed.voldown_pressed = (recurseVolUpDown 5).voldown_pressed;
+          power_pressed.volup_pressed = (recurseVolUpDown 5).volup_pressed;
 
           # tap just one of the volume buttons.
           voldown_pressed.trigger = "voldown_one";
