@@ -408,6 +408,69 @@ in
           cfg.settings
         );
 
+
+        sane.gui.sxmo.bonsaid.transitions = let
+          doExec = inputName: {
+            type = "exec";
+            command = [
+              "setsid"
+              "-f"
+              "sxmo_hook_inputhandler.sh"
+              inputName
+            ];
+          };
+          onIdle = inputName: {
+            type = "delay";
+            delay_duration = 400000000;
+            transitions = [
+              (doExec inputName)
+            ];
+          };
+          onEvent = eventName: transitions: {
+            type = "event";
+            event_name = eventName;
+            inherit transitions;
+          };
+        in [
+          # define mappings for 1, 2, or 3 repeat presses of each primary button
+          (onEvent "power_pressed" [
+            (onIdle "powerbutton_three")
+            (onEvent "power_released" [
+              (onIdle "powerbutton_one")
+              (onEvent "power_released" [
+                (onIdle "powerbutton_two")
+                (onEvent "power_released" [
+                  (doExec "powerbutton_three")
+                ])
+              ])
+            ])
+          ])
+          (onEvent "voldown_pressed" [
+            (onIdle "voldown_three")
+            (onEvent "voldown_released" [
+              (onIdle "voldown_one")
+              (onEvent "voldown_released" [
+                (onIdle "voldown_two")
+                (onEvent "voldown_released" [
+                  (doExec "voldown_three")
+                ])
+              ])
+            ])
+          ])
+          (onEvent "volup_pressed" [
+            (onIdle "volup_three")
+            (onEvent "volup_released" [
+              (onIdle "volup_one")
+              (onEvent "volup_released" [
+                (onIdle "volup_two")
+                (onEvent "volup_released" [
+                  (doExec "volup_three")
+                ])
+              ])
+            ])
+          ])
+        ];
+
         # sxmo puts in /share/sxmo:
         # - profile.d/sxmo_init.sh
         # - appcfg/
