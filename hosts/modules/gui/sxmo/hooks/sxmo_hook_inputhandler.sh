@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i bash -p coreutils -p pulseaudio
+#!nix-shell -i bash -p coreutils -p playerctl -p pulseaudio
 
 # input map considerations
 # - using compound actions causes delays.
@@ -23,17 +23,20 @@
 #   - voldown1 -> volume down
 #   - pow1 -> screen on
 #   - pow2 -> toggle player
+#   - pow1:volup1 -> seek +30s
+#   - pow1:voldown1 -> seek -10s
 # benefits
 # - volup and voldown are able to be far more responsive
 #   - which means faster vkbd, menus, volume adjustment (when locked)
 # limitations
 # - terminal is unmapped. that could be mapped to pow1?
-# - wm menu is unmapped. but i never used that much anyway
+# - wm menu is unmapped. but i never used that much anyway.
+#   - or, i could add that to the primary menu.
+# pow1:volup1 and pow1:voldown1 are unmapped when unlocked => could fill those roles
 
 # increments to use for volume adjustment
 VOL_INCR_1=5
 VOL_INCR_2=10
-VOL_INCR_3=15
 
 # replicating the naming from upstream sxmo_hook_inputhandler.sh...
 ACTION="$1"
@@ -128,7 +131,7 @@ case "$ACTION" in
     handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR_2%"
     ;;
   "volup_three")
-    handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR_3%"
+    handle_with playerctl position 30+
     ;;
 
   "voldown_one")
@@ -138,7 +141,7 @@ case "$ACTION" in
     handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_2%"
     ;;
   "voldown_three")
-    handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_3%"
+    handle_with playerctl position 10-
     ;;
 esac
 
