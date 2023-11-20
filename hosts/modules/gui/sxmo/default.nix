@@ -461,11 +461,14 @@ in
           # map sequences of "events" to an argument to pass to sxmo_hook_inputhandler.sh
 
           # tap the power button N times to trigger N different actions
-          power_pressed.timeout.ms = 1000; # press w/o release. bump the timeout to make chording easier.
-          power_pressed.timeout.trigger = "powerbutton_one";  # hold/stuck state machine. known to happen when exiting sleep.
+          power_pressed.timeout.ms = 1200; # press w/o release. this is a long timeout because it's tied to the "kill window" action.
+          power_pressed.timeout.trigger = "powerhold";
           power_pressed.power_released.timeout.trigger = "powerbutton_one";
-          power_pressed.power_released.power_released.timeout.trigger = "powerbutton_two";
-          power_pressed.power_released.power_released.power_released.trigger = "powerbutton_three";
+          power_pressed.power_released.timeout.ms = 600;  # long timeout to make `powertoggle_*` easier
+          power_pressed.power_released.power_pressed.trigger = "powerbutton_two";
+
+          # power_pressed.power_released.power_released.timeout.trigger = "powerbutton_two";
+          # power_pressed.power_released.power_released.power_released.trigger = "powerbutton_three";
 
           # tap power, then tap up/down after releasing it
           power_pressed.power_released.voldown_pressed.trigger = "powertoggle_voldown";
