@@ -235,6 +235,7 @@ in
             SXMO_UNLOCK_IDLE_TIME = mkSettingsOpt "300" "how many seconds of inactivity before locking the screen";  # lock -> screenoff happens 8s later, not configurable
             # SXMO_WM = mkSettingsOpt "sway" "sway or dwm. ordinarily initialized by sxmo_{x,w}init.sh";
             SXMO_NO_AUDIO = mkSettingsOpt "1" "don't start pipewire/pulseaudio in sxmo_hook_start.sh";
+            SXMO_STATES = mkSettingsOpt "unlock screenoff" "list of states the device should support (unlock, lock, screenoff)";
           };
       };
       default = {};
