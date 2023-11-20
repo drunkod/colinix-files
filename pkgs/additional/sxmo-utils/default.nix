@@ -41,6 +41,7 @@
 , swayidle
 , systemd
 , unstableGitUpdater
+, upower
 , wob
 , wl-clipboard
 , wtype
@@ -78,6 +79,7 @@ let
     procps  # pgrep
     pulseaudio  # pactl
     sfeed
+    upower  # used by sxmo_battery_monitor.sh, sxmo_hook_battery.sh
     wob
     xdg-user-dirs  # used by sxmo_hook_start.sh
     xrdb  # for sxmo_xinit AND sxmo_winit
