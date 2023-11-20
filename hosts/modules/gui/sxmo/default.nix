@@ -70,7 +70,7 @@ let
   hookPkgs = {
     inputhandler = pkgs.static-nix-shell.mkBash {
       pname = "sxmo_hook_inputhandler.sh";
-      pkgs = [ "coreutils" ];
+      pkgs = [ "coreutils" "pulseaudio" ];
       src = ./hooks;
     };
     postwake = pkgs.static-nix-shell.mkBash {

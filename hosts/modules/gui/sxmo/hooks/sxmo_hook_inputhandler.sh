@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i bash -p coreutils
+#!nix-shell -i bash -p coreutils -p pulseaudio
 
 # input map considerations
 # - using compound actions causes delays.
@@ -122,23 +122,23 @@ case "$ACTION" in
   # powerbutton_three: intentional no-op because overloading the kill-window handler is risky
 
   "volup_one")
-    handle_with sxmo_audio.sh vol up "$VOL_INCR_1"
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR_1%"
     ;;
   "volup_two")
-    handle_with sxmo_audio.sh vol up "$VOL_INCR_2"
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR_2%"
     ;;
   "volup_three")
-    handle_with sxmo_audio.sh vol up "$VOL_INCR_3"
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR_3%"
     ;;
 
   "voldown_one")
-    handle_with sxmo_audio.sh vol down "$VOL_INCR_1"
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_1%"
     ;;
   "voldown_two")
-    handle_with sxmo_audio.sh vol down "$VOL_INCR_2"
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_2%"
     ;;
   "voldown_three")
-    handle_with sxmo_audio.sh vol down "$VOL_INCR_3"
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_3%"
     ;;
 esac
 
