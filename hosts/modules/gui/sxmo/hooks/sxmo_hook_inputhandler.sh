@@ -14,8 +14,8 @@
 # - when unlocked:
 #   - volup1   -> app menu
 #   - voldown1 -> toggle keyboard
-#   - pow1 -> volup1 -> volume up
-#   - pow1 -> voldown1 -> volume down
+#   - pow1:volup1 -> volume up
+#   - pow1:voldown1 -> volume down
 #   - pow2 -> screen off
 #   - pow3 -> kill app
 # - when locked:
@@ -32,7 +32,6 @@
 # - terminal is unmapped. that could be mapped to pow1?
 # - wm menu is unmapped. but i never used that much anyway.
 #   - or, i could add that to the primary menu.
-# pow1:volup1 and pow1:voldown1 are unmapped when unlocked => could fill those roles
 
 # increments to use for volume adjustment
 VOL_INCR_1=5
@@ -81,19 +80,18 @@ if [ "$STATE" = "unlock" ]; then
       # volume up once: app-specific menu w/ fallback to SXMO system menu
       handle_with sxmo_appmenu.sh
       ;;
-    # volup_two: intentionally defaulted for volume control
-    "volup_three")
-      # volume up thrice: DE menu
-      handle_with sxmo_wmmenu.sh
-      ;;
 
     "voldown_one")
       # volume down once: toggle keyboard
       handle_with sxmo_keyboard.sh toggle
       ;;
-    # voldown_two: intentionally defaulted for volume control
-    "voldown_three")
-      # volume down thrice: launch terminal
+
+    "powertoggle_volup")
+      # power -> volume up: DE menu
+      handle_with sxmo_wmmenu.sh
+      ;;
+    "powertoggle_voldown")
+      # power -> volume down: launch terminal
       handle_with sxmo_terminal.sh
       ;;
   esac
@@ -108,6 +106,14 @@ if [ "$STATE" = "screenoff" ]; then
     "powerbutton_three")
       # power once during deep sleep often gets misread as power three, so treat these same
       handle_with sxmo_state.sh set unlock
+      ;;
+    "powertoggle_volup")
+      # power -> volume up: seek forward
+      handle_with playerctl position 30+
+      ;;
+    "powertoggle_voldown")
+      # power -> volume down: seek backward
+      handle_with playerctl position 10-
       ;;
   esac
 fi
@@ -127,21 +133,16 @@ case "$ACTION" in
   "volup_one")
     handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR_1%"
     ;;
-  "volup_two")
-    handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR_2%"
-    ;;
-  "volup_three")
-    handle_with playerctl position 30+
-    ;;
-
   "voldown_one")
     handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_1%"
     ;;
-  "voldown_two")
-    handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_2%"
+
+  # HOLD power button and tap volup/down to adjust volume
+  "powerhold_volup")
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR_1%"
     ;;
-  "voldown_three")
-    handle_with playerctl position 10-
+  "powerhold_voldown")
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_1%"
     ;;
 esac
 

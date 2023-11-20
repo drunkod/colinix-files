@@ -1,3 +1,4 @@
+# bonsai docs: <https://sr.ht/~stacyharper/bonsai/>
 { config, lib, pkgs, ... }:
 let
   cfg = config.sane.gui.sxmo.bonsaid;
@@ -17,9 +18,9 @@ let
       };
       transitions = mkOption {
         type = types.listOf transitionType;
-        default = null;
+        default = [];
         description = ''
-          list of transitions out of this state.
+          list of transitions out of this state (i.e. after completing the delay).
         '';
       };
     };
@@ -38,6 +39,7 @@ let
       };
       transitions = mkOption {
         type = types.listOf transitionType;
+        default = [];
         description = ''
           list of transitions out of this state.
         '';
@@ -54,6 +56,13 @@ let
         type = types.listOf types.str;
         description = ''
           command to run when the event is triggered.
+        '';
+      };
+      transitions = mkOption {
+        type = types.listOf transitionType;
+        default = [];
+        description = ''
+          list of transitions out of this state (i.e. after successfully executing the command)
         '';
       };
     };

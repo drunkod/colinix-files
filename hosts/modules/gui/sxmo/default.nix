@@ -411,7 +411,7 @@ in
 
 
         sane.gui.sxmo.bonsaid.transitions = let
-          doExec = inputName: {
+          doExec = inputName: transitions: {
             type = "exec";
             command = [
               "setsid"
@@ -419,22 +419,23 @@ in
               "sxmo_hook_inputhandler.sh"
               inputName
             ];
+            inherit transitions;
           };
-          onIdle = inputName: {
+          onDelay = ms: transitions: {
             type = "delay";
-            delay_duration = 400000000;
-            transitions = [
-              (doExec inputName)
-            ];
+            delay_duration = ms * 1000000;
+            inherit transitions;
           };
           onEvent = eventName: transitions: {
             type = "event";
             event_name = eventName;
             inherit transitions;
           };
-          friendlyToBonsai = { timeout ? null, trigger ? null, power_pressed ? {}, power_released ? {}, voldown_pressed ? {}, voldown_released ? {}, volup_pressed ? {}, volup_released ? {} }: [
-            (lib.mkIf (timeout != null)        (onIdle timeout))
-            (lib.mkIf (trigger != null)        (doExec trigger))
+          friendlyToBonsai = { timeout ? null, trigger ? null, power_pressed ? {}, power_released ? {}, voldown_pressed ? {}, voldown_released ? {}, volup_pressed ? {}, volup_released ? {} }@args:
+          if trigger != null then [
+            (doExec trigger (friendlyToBonsai (builtins.removeAttrs args ["trigger"])))
+          ] else [
+            (lib.mkIf (timeout != null)        (onDelay (timeout.ms or 400) (friendlyToBonsai (builtins.removeAttrs timeout ["ms"]))))
             (lib.mkIf (power_pressed != {})    (onEvent "power_pressed" (friendlyToBonsai power_pressed)))
             (lib.mkIf (power_released != {})   (onEvent "power_released" (friendlyToBonsai power_released)))
             (lib.mkIf (voldown_pressed != {})  (onEvent "voldown_pressed" (friendlyToBonsai voldown_pressed)))
@@ -445,20 +446,42 @@ in
         in friendlyToBonsai {
           # map sequences of "events" to an argument to pass to sxmo_hook_inputhandler.sh
 
-          power_pressed.timeout = "powerbutton_one";  # hold/stuck state machine
-          power_pressed.power_released.timeout = "powerbutton_one";
-          power_pressed.power_released.power_released.timeout = "powerbutton_two";
+          # tap the power button N times to trigger N different actions
+          power_pressed.timeout.ms = 1000; # press w/o release. bump the timeout to make chording easier.
+          power_pressed.timeout.trigger = "powerbutton_one";  # hold/stuck state machine. known to happen when exiting sleep.
+          power_pressed.power_released.timeout.trigger = "powerbutton_one";
+          power_pressed.power_released.power_released.timeout.trigger = "powerbutton_two";
           power_pressed.power_released.power_released.power_released.trigger = "powerbutton_three";
 
-          voldown_pressed.timeout = "voldown_three";  # hold/stuck state machine
-          voldown_pressed.voldown_released.timeout = "voldown_one";
-          voldown_pressed.voldown_released.voldown_released.timeout = "voldown_two";
-          voldown_pressed.voldown_released.voldown_released.voldown_released.trigger = "voldown_three";
+          # tap power, then tap up/down after releasing it
+          power_pressed.power_released.voldown_pressed.trigger = "powertoggle_voldown";
+          power_pressed.power_released.volup_pressed.trigger = "powertoggle_volup";
 
-          volup_pressed.timeout = "volup_three";  # hold/stuck state machine
-          volup_pressed.volup_released.timeout = "volup_one";
-          volup_pressed.volup_released.volup_released.timeout = "volup_two";
-          volup_pressed.volup_released.volup_released.volup_released.trigger = "volup_three";
+          # chording: hold power and then tap vol-up N times to adjust the volume by N increments.
+          power_pressed.voldown_pressed.trigger = "powerhold_voldown";
+          power_pressed.voldown_pressed.timeout.ms = 1000;
+          power_pressed.voldown_pressed.power_released = {};  # return to root
+          power_pressed.voldown_pressed.voldown_pressed.trigger = "powerhold_voldown";
+          power_pressed.voldown_pressed.voldown_pressed.timeout.ms = 1000;
+          power_pressed.voldown_pressed.voldown_pressed.power_released = {};  # return to root
+          power_pressed.voldown_pressed.voldown_pressed.voldown_pressed.trigger = "powerhold_voldown";
+          power_pressed.voldown_pressed.voldown_pressed.voldown_pressed.timeout.ms = 1000;
+          power_pressed.voldown_pressed.voldown_pressed.voldown_pressed.power_released = {};  # return to root
+
+          # chording: hold power and then tap vol-up N times to adjust the volume by N increments.
+          power_pressed.volup_pressed.trigger = "powerhold_volup";
+          power_pressed.volup_pressed.timeout.ms = 1000;
+          power_pressed.volup_pressed.power_released = {};  # return to root
+          power_pressed.volup_pressed.volup_pressed.trigger = "powerhold_volup";
+          power_pressed.volup_pressed.volup_pressed.timeout.ms = 1000;
+          power_pressed.volup_pressed.volup_pressed.power_released = {};  # return to root
+          power_pressed.volup_pressed.volup_pressed.volup_pressed.trigger = "powerhold_volup";
+          power_pressed.volup_pressed.volup_pressed.volup_pressed.timeout.ms = 1000;
+          power_pressed.volup_pressed.volup_pressed.volup_pressed.power_released = {};  # return to root
+
+          # tap just one of the volume buttons.
+          voldown_pressed.trigger = "voldown_one";
+          volup_pressed.trigger = "volup_one";
         };
 
         # sxmo puts in /share/sxmo:
