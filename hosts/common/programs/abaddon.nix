@@ -2,6 +2,16 @@
 { lib, pkgs, ... }:
 {
   sane.programs.abaddon = {
+    package = pkgs.abaddon.overrideAttrs (upstream: {
+      patches = (upstream.patches or []) ++ [
+        (pkgs.fetchpatch {
+          url = "https://git.uninsane.org/colin/abaddon/commit/eb551f188d34679f75adcbc83cb8d5beb4d19fd6.patch";
+          name = ''"view members" default to false'';
+          hash = "sha256-9BX8iO86CU1lNrKS1G2BjDR+3IlV9bmhRNTsLrxChwQ=";
+        })
+      ];
+    });
+
     fs.".config/abaddon/abaddon.ini".symlink.text = ''
       # see abaddon README.md for options.
       # at time of writing:
