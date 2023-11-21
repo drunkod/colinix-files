@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i bash -p jq -p sway
+#!nix-shell -i bash -p jq -p sway -p util-linux
 
 help() {
   echo "queries the focused window and apply an appropriate display-wide scale."
@@ -7,15 +7,15 @@ help() {
   echo ""
   echo "args:"
   echo "  -v | --verbose"
-  echo "  --loop-sec N  re-compute the scale every N seconds. else, run once and exit."
+  echo "  --loop-sec N:  re-compute the scale every N seconds. else, run once and exit."
   echo ""
   echo "environment variables:"
-  echo "  SWAY_DEFAULT_SCALE=N  scale to apply when no known window is selected."
+  echo "  SWAY_DEFAULT_SCALE=N:  scale to apply when no known window is selected."
   # TODO: could use map-style environment variables to allow external per-app config
   # - SWAY_SCALE_org.gnome.Maps=1  ; ...
 }
 
-options=$(getopt -l verbose,loop-sec: -o v -- "" "${@}")
+options=$(getopt -l h,loop-sec:,verbose -o h,v -- "" "${@}")
 eval "set -- ${options}"
 
 verbose=false
@@ -23,15 +23,20 @@ loop=false
 loop_sec=
 while true; do
   case "$1" in
-    (-v|--verbose)
-      verbose=true
+    (-h|--help)
       shift
+      help
+      exit
     ;;
     (--loop-sec)
       shift
       loop=true
       loop_sec="$1"
       shift
+    ;;
+    (-v|--verbose)
+      shift
+      verbose=true
     ;;
     (--)
       shift
@@ -41,6 +46,8 @@ while true; do
     ;;
     (*)
       echo "invalid arguments: '$1'"
+      echo ""
+      help
       exit 1
     ;;
   esac

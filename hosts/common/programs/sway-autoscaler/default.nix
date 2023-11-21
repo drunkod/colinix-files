@@ -25,7 +25,7 @@ in
 
     package = pkgs.static-nix-shell.mkBash {
       pname = "sway-autoscaler";
-      pkgs = [ "jq" "sway" ];
+      pkgs = [ "jq" "sway" "util-linux" ];
       src = ./.;
     };
 
