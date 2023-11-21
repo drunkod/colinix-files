@@ -14,16 +14,8 @@
   # services.gitea.disableRegistration = true;
 
   services.gitea.database.createDatabase = false;  #< silence warning which wants db user and name to be equal
-  # TODO: upstream this into nixpkgs
+  # TODO: remove this after merge: <https://github.com/NixOS/nixpkgs/pull/268849>
   services.gitea.database.socket = "/run/postgresql";  #< would have been set if createDatabase = true
-  # taken from forgejo patch: <https://github.com/NixOS/nixpkgs/pull/262741/files>
-  # Work around 'pq: permission denied for schema public' with postgres v15, until a
-  # solution for `services.postgresql.ensureUsers` is found.
-  # See https://github.com/NixOS/nixpkgs/issues/216989
-  # systemd.services.postgresql.postStart = lib.mkAfter ''
-  #   $PSQL -tAc 'ALTER DATABASE "gitea" OWNER TO "git";'
-  # '';
-
 
   # gitea doesn't create the git user
   users.users.git = {
