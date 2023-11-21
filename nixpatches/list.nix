@@ -24,23 +24,6 @@ let
     );
 in [
   (fetchpatch' {
-    # needed for Gnome 44 -> 45 patch to apply
-    title = "telegram-desktop: build on Darwin";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/268592";
-    hash = "sha256-NqlXr739BbSouQ9ubo7s2rilWa3i/G0UlzH4JqXH3aw=";
-  })
-  (fetchpatch' {
-    title = "Gnome 44 -> 45";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/269032";
-    hash = "sha256-sxI5DXCzs6U8XDRTP0T4dOhEXCVxB5vUKyjNd46vmE8=";
-  })
-  (fetchpatch' {
-    # build fix: merged 2023/11/17
-    title = "python2/mk-python-derivation: disable catchConflictsHook";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/268027";
-    hash = "sha256-jw12uh6Tfyu2lp37YFMg8XLOoe5D1pez66whYwr6l3I=";
-  })
-  (fetchpatch' {
     title = "gcr: remove build gnupg from runtime closure";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263158";
     saneCommit = "8c71ab22c6df4e5ce290e131a7769688b0c5a017";
