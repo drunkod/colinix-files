@@ -43,20 +43,20 @@
   #   ffadoSupport = false;
   # };
 
-  pythonPackagesExtensions = super.pythonPackagesExtensions ++ [
-    (pySelf: pySuper: {
-      keyring = (pySuper.keyring.override {
-        # jaraco-classes doesn't cross compile, but it looks like `keyring`
-        # has some _temporary_ fallback logic for when jaraco-classes isn't
-        # installed (i.e. may break in future).
-        jaraco-classes = null;
-      }).overrideAttrs (upstream: {
-        postPatch = (upstream.postPatch or "") + ''
-          sed -i /jaraco.classes/d setup.cfg
-        '';
-      });
-    })
-  ];
+  # pythonPackagesExtensions = super.pythonPackagesExtensions ++ [
+  #   (pySelf: pySuper: {
+  #     keyring = (pySuper.keyring.override {
+  #       # jaraco-classes doesn't cross compile, but it looks like `keyring`
+  #       # has some _temporary_ fallback logic for when jaraco-classes isn't
+  #       # installed (i.e. may break in future).
+  #       jaraco-classes = null;
+  #     }).overrideAttrs (upstream: {
+  #       postPatch = (upstream.postPatch or "") + ''
+  #         sed -i /jaraco.classes/d setup.cfg
+  #       '';
+  #     });
+  #   })
+  # ];
 
   sway-unwrapped = super.sway-unwrapped.override {
     wlroots = wlroots.overrideAttrs (upstream: {
