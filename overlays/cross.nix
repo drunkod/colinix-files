@@ -1599,32 +1599,32 @@ in {
     })
   ];
 
-  qt5 = let
-    emulatedQt5 = prev.qt5.override {
-      # emulate qt5base and all qtModules.
-      # because qt5 doesn't place this `stdenv` argument into its scope, `libsForQt5` doesn't inherit
-      # this stdenv. so anything using `libsForQt5.callPackage` builds w/o emulation.
-      stdenv = final.stdenv // {
-        mkDerivation = args: buildInQemu {
-          override = { stdenv }: stdenv.mkDerivation args;
-        };
-      };
-    };
-  in prev.qt5.overrideScope (self: super: {
-    inherit (emulatedQt5)
-      qtbase
-      # without emulation these all fail with "Project ERROR: Cannot run compiler 'g++'."
-      qtdeclarative
-      qtgraphicaleffects
-      qtimageformats
-      qtmultimedia
-      qtquickcontrols
-      qtquickcontrols2
-      qtsvg
-      qttools
-      qtwayland
-    ;
-  });
+  # qt5 = let
+  #   emulatedQt5 = prev.qt5.override {
+  #     # emulate qt5base and all qtModules.
+  #     # because qt5 doesn't place this `stdenv` argument into its scope, `libsForQt5` doesn't inherit
+  #     # this stdenv. so anything using `libsForQt5.callPackage` builds w/o emulation.
+  #     stdenv = final.stdenv // {
+  #       mkDerivation = args: buildInQemu {
+  #         override = { stdenv }: stdenv.mkDerivation args;
+  #       };
+  #     };
+  #   };
+  # in prev.qt5.overrideScope (self: super: {
+  #   inherit (emulatedQt5)
+  #     qtbase
+  #     # without emulation these all fail with "Project ERROR: Cannot run compiler 'g++'."
+  #     qtdeclarative
+  #     qtgraphicaleffects
+  #     qtimageformats
+  #     qtmultimedia
+  #     qtquickcontrols
+  #     qtquickcontrols2
+  #     qtsvg
+  #     qttools
+  #     qtwayland
+  #   ;
+  # });
 
   # qt5 = prev.qt5.overrideScope (self: super: {
   #   # emulate all qt5 modules
