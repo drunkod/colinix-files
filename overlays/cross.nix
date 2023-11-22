@@ -2077,6 +2077,7 @@ in {
   #   buildInputs = upstream.buildInputs ++ [ final.bash ];
   # });
 
+  # 2023/11/21: upstreaming is blocked on ostree
   xdg-desktop-portal = prev.xdg-desktop-portal.overrideAttrs (upstream: {
     nativeBuildInputs = upstream.nativeBuildInputs ++ [
       # fixes "meson.build:117:8: ERROR: Program 'bwrap' not found or not executable"
