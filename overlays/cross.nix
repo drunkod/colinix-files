@@ -1065,6 +1065,7 @@ in {
   #   '';
   # });
 
+  # 2023/11/21: upstreaming is unblocked
   # libpanel = mvToNativeInputs [ final.glib ] prev.libpanel;
   libpanel = prev.libpanel.overrideAttrs (upstream: {
     doCheck = false;
