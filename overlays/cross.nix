@@ -704,6 +704,7 @@ in {
   gthumb = mvInputs { nativeBuildInputs = [ final.glib ]; } prev.gthumb;
 
   # 2023/11/21: upstreaming is unblocked
+  #             but obsoleted by vala patch: <https://github.com/NixOS/nixpkgs/pull/269171>
   gnome-2048 = addNativeInputs [
     # fix: "error: Package `libgnome-games-support-1' not found in specified Vala API directories or GObject-Introspection GIR directories"
     final.libgnome-games-support
@@ -1066,7 +1067,7 @@ in {
   #   '';
   # });
 
-  # 2023/11/21: upstreaming is unblocked
+  # 2023/11/21: upstreaming is blocked by qtsvg (via pipewire/ffado)
   # libpanel = mvToNativeInputs [ final.glib ] prev.libpanel;
   libpanel = prev.libpanel.overrideAttrs (upstream: {
     doCheck = false;
@@ -1104,6 +1105,7 @@ in {
   # });
 
   # 2023/11/21: upstreaming is unblocked
+  #   but i don't think either the pkg-config fix (which breaks binfmt cross) nor disabling docs is the right fix.
   libshumate = prev.libshumate.overrideAttrs (upstream: {
     # fixes "Build-time dependency gi-docgen found: NO (tried pkgconfig and cmake)"
     mesonFlags = (upstream.mesonFlags or []) ++ [ "-Dgtk_doc=false" ];
@@ -1306,7 +1308,7 @@ in {
   # });
 
   mpv-unwrapped = prev.mpv-unwrapped.overrideAttrs (upstream: {
-    # 2023/11/21: upstreaming is unblocked
+    # 2023/11/21: upstreaming is in PR: <https://github.com/NixOS/nixpkgs/pull/269165>
     # nativeBuildInputs = lib.remove final.python3 upstream.nativeBuildInputs;
     # umpv gets the build python, somehow -- even with python3 removed from nativeBuildInputs.
     # and mpv_identify.sh gets the build bash.
@@ -1450,6 +1452,7 @@ in {
   # };
 
   # 2023/09/02: upstreaming is implemented on servo `wip-ostree` branch
+  # 2023/11/21: upstreaming is in PR: <https://github.com/NixOS/nixpkgs/pull/269169>
   ostree = prev.ostree.overrideAttrs (upstream: {
     # fixes: "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
     # new failure mode: "./src/libotutil/ot-gpg-utils.h:22:10: fatal error: gpgme.h: No such file or directory"
