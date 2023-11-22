@@ -438,11 +438,6 @@ in {
   # fixes: "error: Package <foo> not found in specified Vala API directories or GObject-Introspection GIR directories"
   calls = addNativeInputs [ final.gobject-introspection] prev.calls;
 
-  # cantarell-fonts = prev.cantarell-fonts.override {
-  #   # close this after upstreaming: <https://github.com/NixOS/nixpkgs/issues/50855>
-  #   # fixes error where python3.10-skia-pathops dependency isn't available for the build platform
-  #   inherit (emulated) stdenv;
-  # };
   # fixes "FileNotFoundError: [Errno 2] No such file or directory: 'gtk4-update-icon-cache'"
   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
   # celluloid = wrapGAppsHook4Fix prev.celluloid;
@@ -923,35 +918,6 @@ in {
     strictDeps = true;
   });
 
-  # 2023/10/23: out for review: <https://github.com/NixOS/nixpkgs/pull/263107>
-  # gsound = prev.gsound.overrideAttrs (upstream: {
-  #   # remove logic which was removing introspection/vala on cross compilation
-  #   mesonFlags = [];
-  # });
-  # 2023/10/23: out for review: <https://github.com/NixOS/nixpkgs/pull/263135>
-  # gspell = prev.gspell.overrideAttrs (upstream: {
-  #   depsBuildBuild = (upstream.depsBuildBuild or []) ++ [
-  #     # without this, vapi files ($dev/share/vapi/vala/gspell-1.vapi) aren't generated.
-  #     # that breaks consumers like `gnome.geary`
-  #     final.pkg-config
-  #   ];
-  #   configureFlags = upstream.configureFlags ++ [
-  #     # not necessary, but enforces that we really do produce vapi files
-  #     "--enable-vala"
-  #   ];
-  # });
-
-  # 2023/10/23: out for review: <https://github.com/NixOS/nixpkgs/pull/263175>
-  # gvfs = prev.gvfs.overrideAttrs (upstream: {
-  #   nativeBuildInputs = upstream.nativeBuildInputs ++ [
-  #     # XXX: this ends up on the runtime closure
-  #     final.openssh
-  #     final.glib  # fixes "gdbus-codegen: command not found"
-  #   ];
-  #   # fixes "meson.build:312:2: ERROR: Assert failed: http required but libxml-2.0 not found"
-  #   buildInputs = upstream.buildInputs ++ [ final.libxml2 ];
-  # });
-
   # hdf5 = prev.hdf5.override {
   #   inherit (emulated) stdenv;
   # };
@@ -1066,9 +1032,6 @@ in {
   #     buildPackages.stdenv = emulated.stdenv;  # it uses buildPackages.stdenv for HOST_CC
   #   });
   # };
-
-  # merged 2023/11/14: <https://github.com/NixOS/nixpkgs/pull/267373>
-  libgnome-games-support = addNativeInputs [ final.gobject-introspection ] prev.libgnome-games-support;
 
   # libgweather = rmNativeInputs [ final.glib ] (prev.libgweather.override {
   #   # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
@@ -1333,9 +1296,6 @@ in {
   # });
 
   mpv-unwrapped = prev.mpv-unwrapped.overrideAttrs (upstream: {
-    # 2023/10/10: upstreaming is easiest to do after the next staging -> master merge
-    #   otherwise the result will still have a transient dep on python.
-    #   - <https://github.com/NixOS/nixpkgs/pull/259109>
     # nativeBuildInputs = lib.remove final.python3 upstream.nativeBuildInputs;
     # umpv gets the build python, somehow -- even with python3 removed from nativeBuildInputs.
     # and mpv_identify.sh gets the build bash.
@@ -1864,17 +1824,6 @@ in {
   #   # fails to fix original error
   #   inherit (emulated) stdenv;
   # };
-
-  # 2023/10/23: upstreaming: <https://github.com/NixOS/nixpkgs/pull/263187>
-  # snapper = prev.snapper.overrideAttrs (upstream: {
-  #   # replace references to build diff/rm to runtime diff/rm
-  #   # also reduces closure 305628736 -> 262698112
-  #   configureFlags = (upstream.configureFlags or []) ++ [
-  #     "DIFFBIN=${final.diffutils}/bin/diff"
-  #     "RMBIN=${final.coreutils}/bin/rm"
-  #   ];
-  #   # strictDeps = true;  #< doesn't actually prevent original symptom
-  # });
 
   spandsp = prev.spandsp.overrideAttrs (upstream: {
     configureFlags = upstream.configureFlags or [] ++ [
