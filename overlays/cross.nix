@@ -1437,10 +1437,6 @@ in {
   #   # buildInputs = lib.remove final.gnupg upstream.buildInputs;
   # });
 
-  # fixes "/nix/store/0wk6nr1mryvylf5g5frckjam7g7p9gpi-bash-5.2-p15/bin/bash: line 2: --prefix=ods_manager: command not found"
-  # - dbus-glib should maybe be removed from buildInputs, too? but doing so breaks upstream configure
-  obex_data_server = addNativeInputs [ final.dbus-glib ] prev.obex_data_server;
-
   # openfortivpn = prev.openfortivpn.override {
   #   # fixes "checking for /proc/net/route... configure: error: cannot check for file existence when cross compiling"
   #   inherit (emulated) stdenv;
