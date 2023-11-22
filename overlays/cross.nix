@@ -1075,6 +1075,23 @@ in {
   #   '';
   # });
 
+  # libpanel = mvToNativeInputs [ final.glib ] prev.libpanel;
+  libpanel = prev.libpanel.overrideAttrs (upstream: {
+    doCheck = false;
+    # depsBuildBuild = (upstream.depsBuildBuild or []) ++ [
+    #   # fixes "Build-time dependency gi-docgen found: NO (tried pkgconfig and cmake)"
+    #   final.pkg-config
+    # ];
+    nativeBuildInputs = upstream.nativeBuildInputs ++ [
+      (lib.getBin final.gtk4)  # fixes "ERROR: Program 'gtk-update-icon-cache' not found or not executable"
+    ];
+    # it can't figure out where gi-docgen lives
+    mesonFlags = (upstream.mesonFlags or []) ++ [
+      "-Ddocs=disabled"
+    ];
+    outputs = lib.remove "devdoc" upstream.outputs;
+  });
+
   # libsForQt5 = prev.libsForQt5.overrideScope' (self: super: {
   #   qgpgme = super.qgpgme.overrideAttrs (orig: {
   #     # fix so it can find the MOC compiler
