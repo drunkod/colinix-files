@@ -1329,7 +1329,7 @@ in {
   ncftp = addNativeInputs [ final.bintools ] prev.ncftp;
   # fixes "gdbus-codegen: command not found"
   # 2023/07/31: upstreaming is blocked on p11-kit, openfortivpn, qttranslations (qtbase) cross compilation
-  networkmanager-fortisslvpn = mvToNativeInputs [ final.glib ] prev.networkmanager-fortisslvpn;
+  # networkmanager-fortisslvpn = mvToNativeInputs [ final.glib ] prev.networkmanager-fortisslvpn;
   # networkmanager-iodine = prev.networkmanager-iodine.overrideAttrs (orig: {
   #   # fails to fix "configure.ac:58: error: possibly undefined macro: AM_GLIB_GNU_GETTEXT"
   #   nativeBuildInputs = orig.nativeBuildInputs ++ [ final.gettext ];
