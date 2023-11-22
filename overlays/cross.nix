@@ -764,7 +764,7 @@ in {
       ];
     });
 
-    # 2023/08/01: upstreaming is unblocked
+    # 2023/11/21: upstreaming is blocked by qtsvg (via pipewire/ffado)
     # fixes: "meson.build:75:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
     # gnome-clocks = wrapGAppsHook4Fix super.gnome-clocks;
 
@@ -2081,7 +2081,7 @@ in {
     ];
   });
   # fixes "No package 'xdg-desktop-portal' found"
-  # 2023/07/27: upstreaming is blocked on p11-kit,argyllcms cross compilation
+  # 2023/11/21: upstreaming is blocked on ostree, webp-pixbuf-loader, qtsvg (via pipewire/ffado)
   xdg-desktop-portal-gtk = mvToBuildInputs [ final.xdg-desktop-portal ] prev.xdg-desktop-portal-gtk;
   # fixes: "data/meson.build:33:5: ERROR: Program 'msgfmt' not found or not executable"
   # fixes: "src/meson.build:25:0: ERROR: Program 'gdbus-codegen' not found or not executable"
