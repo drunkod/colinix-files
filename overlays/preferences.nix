@@ -37,11 +37,11 @@
     };
   };
 
-  pipewire = super.pipewire.override {
-    # avoid a dep on python3.10-PyQt5, which has mixed qt5 versions.
-    # this means we lose firewire support (oh well..?)
-    ffadoSupport = false;
-  };
+  # pipewire = super.pipewire.override {
+  #   # avoid a dep on python3.10-PyQt5, which has mixed qt5 versions.
+  #   # this means we lose firewire support (oh well..?)
+  #   ffadoSupport = false;
+  # };
 
   pythonPackagesExtensions = super.pythonPackagesExtensions ++ [
     (pySelf: pySuper: {
