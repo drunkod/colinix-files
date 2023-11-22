@@ -39,7 +39,7 @@ in {
 
   # 2023/07/31
   # tests fail (not timeout), but only when cross compiling, and not on servo (so, due to binfmt?)
-  gupnp = dontCheckAarch64 prev.gupnp;
+  # gupnp = dontCheckAarch64 prev.gupnp;
 
   # hangs during checkPhase (or maybe it just takes 20-30 minutes)
   # libqmi = dontCheckEmulated prev.libqmi;
