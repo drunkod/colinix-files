@@ -52,14 +52,6 @@ in {
     mesonFlags = [ "-Dtests=disabled" ];
   }) prev.libwacom;
 
-  pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-    (py-next: py-prev: {
-      # 2023/10/26: tests are i think not at all compatible with python3.11
-      prawcore = dontCheck py-prev.prawcore;
-      praw = dontCheck py-prev.praw;
-    })
-  ];
-
   # 2023/02/22; 2023/10/30
   # "27/38 tracker:core / service                          TIMEOUT         60.37s   killed by signal 15 SIGTERM"
   tracker = dontCheckEmulated prev.tracker;
@@ -68,6 +60,4 @@ in {
   # fails a test (didn't see which one)
   # only for binfmt-emulated aarch64 -> aarch64 build
   umockdev = dontCheckEmulated prev.umockdev;
-  # 2023/10/26: should be removable when praw* dontChecks are removed?
-  visidata = dontCheck prev.visidata;
 })
