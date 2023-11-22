@@ -91,14 +91,8 @@ let
       pkg
     );
 
-  wrapGAppsHook4Fix = p: rmNativeInputs [ final.wrapGAppsHook4 ] (addNativeInputs [ final.wrapGAppsNoGuiHook final.gtk4 ] p);
+  # wrapGAppsHook4Fix = p: rmNativeInputs [ final.wrapGAppsHook4 ] (addNativeInputs [ final.wrapGAppsNoGuiHook final.gtk4 ] p);
 
-  dontCheck = p: p.overrideAttrs (_: {
-    doCheck = false;
-  });
-  useEmulatedStdenv = p: p.override {
-    inherit (emulated) stdenv;
-  };
   emulated = mkEmulated final prev;
 
   linuxMinimal = final.linux.override {
@@ -331,10 +325,6 @@ in {
   #   # }));
   # });
 
-  # packages which don't cross compile
-  inherit (emulated)
-  ;
-
 
   # adwaita-qt6 = prev.adwaita-qt6.override {
   #   # adwaita-qt6 still uses the qt5 version of these libs by default?
@@ -566,10 +556,10 @@ in {
     };
   });
 
-  flare-signal = prev.flare-signal.override {
-    # fixes "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
-    inherit (emulated) cargo meson rustc rustPlatform stdenv;
-  };
+  # flare-signal = prev.flare-signal.override {
+  #   # fixes "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+  #   inherit (emulated) cargo meson rustc rustPlatform stdenv;
+  # };
 
   flare-signal-nixified = prev.flare-signal-nixified.override {
     # N.B. blueprint-compiler is in nativeBuildInputs.
@@ -604,13 +594,13 @@ in {
   #   # seems to hang when compiling fractal
   #   inherit (emulated) cargo meson rustc rustPlatform stdenv;
   # };
-  fractal-latest = prev.fractal-latest.override {
-    # fixes "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
-    # seems to hang when compiling fractal
-    fractal-next = final.fractal-next.override {
-      inherit (emulated) cargo meson rustc rustPlatform stdenv;
-    };
-  };
+  # fractal-latest = prev.fractal-latest.override {
+  #   # fixes "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+  #   # seems to hang when compiling fractal
+  #   fractal-next = final.fractal-next.override {
+  #     inherit (emulated) cargo meson rustc rustPlatform stdenv;
+  #   };
+  # };
   # fractal-next = prev.fractal-next.overrideAttrs (upstream: {
   #   env = let
   #     inherit (final) buildPackages stdenv rust;
@@ -775,7 +765,7 @@ in {
 
     # 2023/08/01: upstreaming is unblocked
     # fixes: "meson.build:75:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
-    gnome-clocks = wrapGAppsHook4Fix super.gnome-clocks;
+    # gnome-clocks = wrapGAppsHook4Fix super.gnome-clocks;
 
     # 2023/07/31: upstreaming is blocked on argyllcms, libavif
     # fixes: "src/meson.build:3:0: ERROR: Program 'glib-compile-resources' not found or not executable"
@@ -861,17 +851,17 @@ in {
       mesonFlags = lib.remove "-Ddocs=true" orig.mesonFlags;
       outputs = lib.remove "devdoc" orig.outputs;
     }));
-    nautilus = (
-      # 2023/07/31: upstreaming is blocked on apache-httpd, webp-pixbuf-loader
-      addInputs {
-        # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
-        buildInputs = [ final.libxml2 ];
-        # fixes: "meson.build:226:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
-        nativeBuildInputs = [ final.gtk4 ];
-      }
-      # fixes -msse2, -mfpmath=sse flags
-      (wrapGAppsHook4Fix super.nautilus)
-    );
+    # nautilus = (
+    #   # 2023/07/31: upstreaming is blocked on apache-httpd, webp-pixbuf-loader
+    #   addInputs {
+    #     # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
+    #     buildInputs = [ final.libxml2 ];
+    #     # fixes: "meson.build:226:6: ERROR: Program 'gtk-update-icon-cache' not found or not executable"
+    #     nativeBuildInputs = [ final.gtk4 ];
+    #   }
+    #   # fixes -msse2, -mfpmath=sse flags
+    #   (wrapGAppsHook4Fix super.nautilus)
+    # );
   });
 
   # gnome2 = prev.gnome2.overrideScope' (self: super: {
@@ -992,39 +982,39 @@ in {
   #   };
   # };
 
-  jellyfin-media-player = mvToBuildInputs
-    [ final.libsForQt5.wrapQtAppsHook ]  # this shouldn't be: but otherwise we get mixed qtbase deps
-    (prev.jellyfin-media-player.overrideAttrs (upstream: {
-      meta = upstream.meta // {
-        platforms = upstream.meta.platforms ++ [
-          "aarch64-linux"
-        ];
-      };
-    }));
-  jellyfin-media-player-qt6 = prev.jellyfin-media-player-qt6.overrideAttrs (upstream: {
-    # nativeBuildInputs => result targets x86.
-    # buildInputs => result targets correct platform, but doesn't wrap the runtime deps
-    # TODO: fix the hook in qt6 itself?
-    depsHostHost = upstream.depsHostHost or [] ++ [ final.qt6.wrapQtAppsHook ];
-    nativeBuildInputs = lib.remove [ final.qt6.wrapQtAppsHook ] upstream.nativeBuildInputs;
-  });
+  # jellyfin-media-player = mvToBuildInputs
+  #   [ final.libsForQt5.wrapQtAppsHook ]  # this shouldn't be: but otherwise we get mixed qtbase deps
+  #   (prev.jellyfin-media-player.overrideAttrs (upstream: {
+  #     meta = upstream.meta // {
+  #       platforms = upstream.meta.platforms ++ [
+  #         "aarch64-linux"
+  #       ];
+  #     };
+  #   }));
+  # jellyfin-media-player-qt6 = prev.jellyfin-media-player-qt6.overrideAttrs (upstream: {
+  #   # nativeBuildInputs => result targets x86.
+  #   # buildInputs => result targets correct platform, but doesn't wrap the runtime deps
+  #   # TODO: fix the hook in qt6 itself?
+  #   depsHostHost = upstream.depsHostHost or [] ++ [ final.qt6.wrapQtAppsHook ];
+  #   nativeBuildInputs = lib.remove [ final.qt6.wrapQtAppsHook ] upstream.nativeBuildInputs;
+  # });
   # jellyfin-web = prev.jellyfin-web.override {
   #   # in node-dependencies-jellyfin-web: "node: command not found"
   #   inherit (emulated) stdenv;
   # };
 
-  komikku = wrapGAppsHook4Fix prev.komikku;
-  koreader = (prev.koreader.override {
-    # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
-    # inherit (emulated) luajit;
-    luajit = buildInQemu (final.luajit.override {
-      buildPackages.stdenv = emulated.stdenv;  # it uses buildPackages.stdenv for HOST_CC
-    });
-  }).overrideAttrs (upstream: {
-    nativeBuildInputs = upstream.nativeBuildInputs ++ [
-      final.autoPatchelfHook
-    ];
-  });
+  # komikku = wrapGAppsHook4Fix prev.komikku;
+  # koreader = (prev.koreader.override {
+  #   # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
+  #   # inherit (emulated) luajit;
+  #   luajit = buildInQemu (final.luajit.override {
+  #     buildPackages.stdenv = emulated.stdenv;  # it uses buildPackages.stdenv for HOST_CC
+  #   });
+  # }).overrideAttrs (upstream: {
+  #   nativeBuildInputs = upstream.nativeBuildInputs ++ [
+  #     final.autoPatchelfHook
+  #   ];
+  # });
   # koreader-from-src = prev.koreader-from-src.override {
   #   # fixes runtime error: luajit: ./ffi/util.lua:757: attempt to call field 'pack' (a nil value)
   #   # inherit (emulated) luajit;
