@@ -24,6 +24,18 @@ let
     );
 in [
   (fetchpatch' {
+    title = "vala: look for files in targetOffset";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/267550";
+    hash = "sha256-Dl9ZQazjXjIbw38Q78otQvgVCB/QZAC1IYoFX0Tuyw0=";
+  })
+  # (fetchpatch' {
+  #   # N.B.: obsoleted by 267550 PR above
+  #   title = "vala: search for vapi files in targetOffset, not hostOffset";
+  #   prUrl = "https://github.com/NixOS/nixpkgs/pull/269171";
+  #   saneCommit = "6990fa8f3e1cfcd1224d70d110bc1ccc18763585";
+  #   hash = "sha256-QiguGtP5HrB753/V/UaoAKH3+9TINxR83I68rggbkr0=";
+  # })
+  (fetchpatch' {
     title = "gcr: remove build gnupg from runtime closure";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/263158";
     saneCommit = "8c71ab22c6df4e5ce290e131a7769688b0c5a017";
