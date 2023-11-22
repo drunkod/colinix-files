@@ -703,6 +703,7 @@ in {
   # 2023/07/27: upstreaming is blocked on p11-kit, libavif cross compilation
   gthumb = mvInputs { nativeBuildInputs = [ final.glib ]; } prev.gthumb;
 
+  # 2023/11/21: upstreaming is unblocked
   gnome-2048 = addNativeInputs [
     # fix: "error: Package `libgnome-games-support-1' not found in specified Vala API directories or GObject-Introspection GIR directories"
     final.libgnome-games-support
@@ -722,7 +723,7 @@ in {
     #   it's cross-platform; should be possible to ship dconf only in buildInputs & point dconf-editor to the right place
     # dconf-editor = addNativeInputs [ final.dconf ] super.dconf-editor;
     evince = super.evince.overrideAttrs (orig: {
-      # 2023/07/31: upstreaming is blocked on libavif
+      # 2023/11/21: upstreaming is blocked on jbig2dec
       # fixes (meson) "Run-time dependency gi-docgen found: NO (tried pkgconfig and cmake)"
       # inspired by gupnp
       outputs = [ "out" "dev" ]
@@ -779,6 +780,7 @@ in {
       nativeBuildInputs = orig.nativeBuildInputs ++ [ final.libgcrypt final.openssh final.glib ];
     });
     gnome-maps = super.gnome-maps.overrideAttrs (upstream: {
+      # 2023/11/21: upstreaming is blocked by libshumate, qtsvg (via pipewire/ffado)
       postPatch = (upstream.postPatch or "") + ''
         # fixes: "ERROR: Program 'gjs' not found or not executable"
         substituteInPlace meson.build \
@@ -852,7 +854,7 @@ in {
       outputs = lib.remove "devdoc" orig.outputs;
     }));
     # nautilus = (
-    #   # 2023/07/31: upstreaming is blocked on apache-httpd, webp-pixbuf-loader
+    #   # 2023/11/21: upstreaming is blocked on apache-httpd, webp-pixbuf-loader, qtsvg
     #   addInputs {
     #     # fixes: "meson.build:123:0: ERROR: Dependency "libxml-2.0" not found, tried pkgconfig"
     #     buildInputs = [ final.libxml2 ];
@@ -897,8 +899,7 @@ in {
   #   };
   # });
 
-  # 2023/07/27: upstreaming is blocked on xdg-utils cross compilation
-  # - fails in different way than here: tries to run host python during build
+  # 2023/11/21: upstreaming is blocked on python3Packages.eyeD3
   gpodder = prev.gpodder.overridePythonAttrs (upstream: {
     # fix gobject-introspection overrides import that otherwise fails on launch
     nativeBuildInputs = upstream.nativeBuildInputs ++ [
@@ -1102,6 +1103,7 @@ in {
   #   callPackage = self.newScope { inherit (self) qtCompatVersion qtModule srcs; inherit (final) stdenv; };
   # });
 
+  # 2023/11/21: upstreaming is unblocked
   libshumate = prev.libshumate.overrideAttrs (upstream: {
     # fixes "Build-time dependency gi-docgen found: NO (tried pkgconfig and cmake)"
     mesonFlags = (upstream.mesonFlags or []) ++ [ "-Dgtk_doc=false" ];
@@ -1304,6 +1306,7 @@ in {
   # });
 
   mpv-unwrapped = prev.mpv-unwrapped.overrideAttrs (upstream: {
+    # 2023/11/21: upstreaming is unblocked
     # nativeBuildInputs = lib.remove final.python3 upstream.nativeBuildInputs;
     # umpv gets the build python, somehow -- even with python3 removed from nativeBuildInputs.
     # and mpv_identify.sh gets the build bash.
@@ -1523,6 +1526,7 @@ in {
       #   ];
       # });
 
+      # 2023/11/21: upstreaming is unblocked  (eyeD3 is a dep of gpodder)
       eyeD3 = py-prev.eyeD3.overrideAttrs (orig: {
         # weird double-wrapping of the output executable, but somehow with the build python ends up on PYTHONPATH
         postInstall = "";
@@ -2032,8 +2036,8 @@ in {
   #   # setting this to null means visidata will work as normal but not be able to load hdf files.
   #   h5py = null;
   # };
-  # 2023/07/27: upstreaming is blocked on p11-kit, qtbase cross compilation
   vlc = prev.vlc.overrideAttrs (orig: {
+    # 2023/11/21: upstreaming is blocked on qtsvg, qtx11extras
     # fixes: "configure: error: could not find the LUA byte compiler"
     # fixes: "configure: error: protoc compiler needed for chromecast was not found"
     nativeBuildInputs = orig.nativeBuildInputs ++ [ final.lua5 final.protobuf ];
@@ -2088,7 +2092,7 @@ in {
     )
   );
 
-  # 2023/07/31: upstreaming is blocked on playerctl
+  # 2023/11/21: upstreaming is blocked on wlroots
   waybar = (prev.waybar.override {
     runTests = false;
     cavaSupport = false;  # doesn't cross compile
