@@ -2076,6 +2076,18 @@ in {
   #   # - shebangs get re-written on native build, but not cross build
   #   buildInputs = upstream.buildInputs ++ [ final.bash ];
   # });
+
+  xdg-desktop-portal = prev.xdg-desktop-portal.overrideAttrs (upstream: {
+    nativeBuildInputs = upstream.nativeBuildInputs ++ [
+      # fixes "meson.build:117:8: ERROR: Program 'bwrap' not found or not executable"
+      final.bubblewrap
+    ]; # ++ upstream.nativeCheckInputs;
+    mesonFlags = (upstream.mesonFlags or []) ++ [
+      # fixes "tests/meson.build:268:9: ERROR: Program 'pytest-3 pytest' not found or not executable"
+      # nixpkgs should add this whenever doCheck == false, i think
+      "-Dpytest=disabled"
+    ];
+  });
   # fixes "No package 'xdg-desktop-portal' found"
   # 2023/07/27: upstreaming is blocked on p11-kit,argyllcms cross compilation
   xdg-desktop-portal-gtk = mvToBuildInputs [ final.xdg-desktop-portal ] prev.xdg-desktop-portal-gtk;
