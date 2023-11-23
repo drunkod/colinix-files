@@ -1,6 +1,9 @@
-# docs: https://nixos.wiki/wiki/Binary_Cache
+# docs: <https://nixos.wiki/wiki/Binary_Cache>
 # to copy something to this machine's nix cache, do:
 #   nix copy --to ssh://nixcache.uninsane.org PACKAGE
+#
+# docs: <https://nixos.wiki/wiki/Distributed_build>
+# to use this machine as a remote builder, just build anything with `-j0`.
 { config, lib, ... }:
 
 with lib;
@@ -24,15 +27,44 @@ in
   };
 
   config = mkIf cfg.enable {
-    nix.settings.trusted-users = [ "nixremote" ];
-    services.nix-serve = {
-      enable = true;
-      inherit (cfg) port secretKeyFile;
-    };
+    # act as a substituter
     sane.ports.ports."${builtins.toString cfg.port}" = {
       visibleTo.lan = true;  # not needed for servo; only desko
       protocol = [ "tcp" ];
       description = "colin-nix-serve-cache";
+    };
+    services.nix-serve = {
+      enable = true;
+      inherit (cfg) port secretKeyFile;
+    };
+
+    # act as a remote builder
+    nix.settings.trusted-users = [ "nixremote" ];
+    users.users.nixremote = {
+      isNormalUser = true;
+      home = "/home/nixremote";
+      # remove write permissions everywhere in the home dir.
+      # combined with an ownership of root:nixremote, that means not even nixremote can write anything below this directory
+      # (in which case, i'm not actually sure why nixremote needs a home)
+      homeMode = "550";
+      group = "nixremote";
+      subUidRanges = [
+        { startUid=300000; count=1; }
+      ];
+      initialPassword = "";
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4KI7I2w5SvXRgUrXYiuBXPuTL+ZZsPoru5a2YkIuCf root@nixremote"
+      ];
+    };
+
+    users.groups.nixremote = {};
+
+    sane.users.nixremote = {
+      fs."/".dir.acl = {
+        # don't allow the user to write anywhere
+        user = "root";
+        group = "nixremote";
+      };
     };
   };
 }

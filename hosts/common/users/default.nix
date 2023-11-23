@@ -4,7 +4,6 @@
   imports = [
     ./colin.nix
     ./guest.nix
-    ./nixremote.nix
     ./root.nix
   ];
 
