@@ -68,7 +68,8 @@ in
       speedFactor = 8;
       supportedFeatures = [ "big-parallel" ];
       mandatoryFeatures = [ ];
-      # TODO: define sshUser and sshKey here instead of in hosts/common/users/root.nix
+      sshUser = "nixremote";
+      sshKey = config.sops.secrets."nixremote_ssh_key".path;
     }];
     nix.distributedBuilds = lib.mkIf cfg.remote-builders.desko true;
     # optional, useful when the builder has a faster internet connection than yours
