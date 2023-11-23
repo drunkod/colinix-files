@@ -8,6 +8,10 @@
   users.users.nixremote = {
     isNormalUser = true;
     home = "/home/nixremote";
+    # remove write permissions everywhere in the home dir.
+    # combined with an ownership of root:nixremote, that means not even nixremote can write anything below this directory
+    # (in which case, i'm not actually sure why nixremote needs a home)
+    homeMode = "550";
     group = "nixremote";
     subUidRanges = [
       { startUid=300000; count=1; }
@@ -24,7 +28,7 @@
     fs."/".dir.acl = {
       # don't allow the user to write anywhere
       user = "root";
-      group = "root";
+      group = "nixremote";
     };
   };
 }
