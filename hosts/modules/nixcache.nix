@@ -36,6 +36,10 @@ in
       nixos = subOpt;
       cachix = subOpt;
     };
+    sane.nixcache.remote-builders.desko = mkOption {
+      default = true;
+      type = types.bool;
+    };
   };
 
   config = {
@@ -55,5 +59,21 @@ in
       "desko:Q7mjjqoBMgNQ5P0e63sLur65A+D4f3Sv4QiycDIKxiI="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
+
+    nix.buildMachines = lib.mkIf cfg.remote-builders.desko [{
+      hostName = "desko";
+      system = "x86_64-linux";
+      protocol = "ssh-ng";
+      maxJobs = 4; # constrained by ram, for things like webkitgtk, etc.
+      speedFactor = 8;
+      supportedFeatures = [ "big-parallel" ];
+      mandatoryFeatures = [ ];
+      # TODO: define sshUser and sshKey here instead of in hosts/common/users/root.nix
+    }];
+    nix.distributedBuilds = lib.mkIf cfg.remote-builders.desko true;
+    # optional, useful when the builder has a faster internet connection than yours
+    nix.extraOptions = lib.mkIf cfg.remote-builders.desko ''
+      builders-use-substitutes = true
+    '';
   };
 }

@@ -24,6 +24,7 @@ in
   };
 
   config = mkIf cfg.enable {
+    nix.settings.trusted-users = [ "nixremote" ];
     services.nix-serve = {
       enable = true;
       inherit (cfg) port secretKeyFile;
