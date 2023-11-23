@@ -24,6 +24,9 @@ in
       type = types.path;
       description = "path to file that contains the nix_serve_privkey secret (should not be in the store)";
     };
+    sane.services.nixserve.remoteBuilderPubkey = mkOption {
+      type = types.str;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -53,7 +56,7 @@ in
       ];
       initialPassword = "";
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4KI7I2w5SvXRgUrXYiuBXPuTL+ZZsPoru5a2YkIuCf root@nixremote"
+        cfg.remoteBuilderPubkey
       ];
     };
 
