@@ -2,6 +2,10 @@
 # if one of these hosts is offline, instead manually specify just cachix:
 # - `nixos-rebuild --option substituters https://cache.nixos.org/`
 #
+# additionally, sends build jobs to supercap/servo/desko (splits the jobs across all that are enabled).
+# to verify one particular remote builder:
+# - `nix store ping --store ssh://servo`
+#
 # future improvements:
 # - apply for community arm build box:
 #   - <https://github.com/nix-community/aarch64-build-box>
@@ -41,6 +45,10 @@ in
       type = types.bool;
     };
     sane.nixcache.remote-builders.servo = mkOption {
+      default = true;
+      type = types.bool;
+    };
+    sane.nixcache.remote-builders.supercap = mkOption {
       default = true;
       type = types.bool;
     };
@@ -85,6 +93,17 @@ in
         supportedFeatures = [ "big-parallel" ];
         mandatoryFeatures = [ ];
         sshUser = "nixremote";
+        sshKey = config.sops.secrets."nixremote_ssh_key".path;
+      })
+      (lib.mkIf cfg.remote-builders.supercap {
+        hostName = "supercap";
+        system = "x86_64-linux";
+        protocol = "ssh-ng";
+        maxJobs = 32;
+        speedFactor = 16;
+        supportedFeatures = [ "big-parallel" ];
+        mandatoryFeatures = [ ];
+        sshUser = "root";
         sshKey = config.sops.secrets."nixremote_ssh_key".path;
       })
     ];
