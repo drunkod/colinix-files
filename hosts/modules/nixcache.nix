@@ -107,6 +107,6 @@ in
         sshKey = config.sops.secrets."nixremote_ssh_key".path;
       })
     ];
-    nix.distributedBuilds = lib.mkIf (cfg.remote-builders.desko || cfg.remote-builders.servo) true;
+    nix.distributedBuilds = lib.mkIf (cfg.remote-builders.desko || cfg.remote-builders.servo || cfg.remote-builders.supercap) true;
   };
 }
