@@ -107,12 +107,12 @@ in
           # common typos
           "cd.." = "cd ..";
           "cd../" = "cd ../";
-          # overcome poor defaults
-          "lsof" = "lsof -P";  #< lsof: use port *numbers*, not names
-          "tcpdump" = "tcpdump -n";  #< tcpdump: use port *numbers*, not names
           # ls helpers (eza is a nicer `ls`
           "l" = "eza --oneline";  # show one entry per line
           "ll" = "eza --long --time-style=long-iso";
+          # overcome poor defaults
+          "lsof" = "lsof -P";  #< lsof: use port *numbers*, not names
+          "tcpdump" = "tcpdump -n";  #< tcpdump: use port *numbers*, not names
         };
         setOptions = [
           # docs: `man zshoptions`
