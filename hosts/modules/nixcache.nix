@@ -108,11 +108,5 @@ in
       })
     ];
     nix.distributedBuilds = lib.mkIf (cfg.remote-builders.desko || cfg.remote-builders.servo) true;
-
-    # optional, useful when the builder has a faster internet connection than yours
-    # TODO: move this to hosts/common/default.nix where the other extraOptions are
-    nix.extraOptions = lib.mkIf (cfg.remote-builders.desko || cfg.remote-builders.servo) ''
-      builders-use-substitutes = true
-    '';
   };
 }
