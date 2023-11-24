@@ -151,6 +151,11 @@ in
             pushd "$1";
           }
 
+          function repo() {
+            # navigate to a local checkout of the source code for repo (i.e. package) $1
+            eval $(sane-clone "$1")
+          };
+
           function switch() {
             sudo nixos-rebuild --flake . switch --keep-going;
           }
