@@ -733,6 +733,9 @@ in {
     # final.gobject-introspection  # this *should* work, if libgnome-games-support were to ship GIR bindings?
   ] prev.gnome-2048;
 
+  # needs binfmt: "scangobj.py:execute_command:1293:WARNING:Running scanner failed: [Errno 8] Exec format error: './goa-scan', command: ./goa-scan"
+  gnome-online-accounts = needsBinfmt prev.gnome-online-accounts;
+
   gnome = prev.gnome.overrideScope' (self: super: {
     # dconf-editor = super.dconf-editor.override {
     #   # fails to fix original error
@@ -2014,7 +2017,8 @@ in {
   #     doCheck = false;  # tests time out
   #   };
   # };
-  tangram = (prev.tangram.override {
+  # needs binfmt: "/build/source/src/../troll/gjspack/bin/gjspack: line 3: import: not found"
+  tangram = needsBinfmt ((prev.tangram.override {
     # N.B. blueprint-compiler is in nativeBuildInputs.
     # the trick here is to force the aarch64 versions to be used during build (via emulation).
     # blueprint-compiler override shared with flare-signal-nixified.
@@ -2039,7 +2043,7 @@ in {
     '';
     # buildInputs = upstream.buildInputs ++ [ final.gobject-introspection ];
     # nativeBuildInputs = lib.remove final.gobject-introspection upstream.nativeBuildInputs;
-  });
+  }));
   # tangram = (mvToBuildInputs [ final.blueprint-compiler final.gobject-introspection ] prev.tangram).overrideAttrs (upstream: {
   #   postPatch = (upstream.postPatch or "") + ''
   #     substituteInPlace src/meson.build \
