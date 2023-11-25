@@ -658,6 +658,9 @@ in {
   #   # patching gst-plugin-gtk4 to not build cdylib fixes the issue in the `fractal-nixified` variant of this package
   # });
 
+  # needs binfmt: "error[E0463]: can't find crate for `gettextrs`"
+  fractal-nixified = needsBinfmt prev.fractal-nixified;
+
   # 2023/07/31: upstreaming is unblocked -- if i can rework to not use emulation
   # fwupd-efi = prev.fwupd-efi.override {
   #   # fwupd-efi queries meson host_machine to decide what arch to build for.
