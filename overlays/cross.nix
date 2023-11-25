@@ -438,7 +438,8 @@ in {
 
   # 2023/10/23: upstreaming blocked by gvfs, webkitgtk 4.1 (OOMs)
   # fixes: "error: Package <foo> not found in specified Vala API directories or GObject-Introspection GIR directories"
-  calls = addNativeInputs [ final.gobject-introspection] prev.calls;
+  # needs binfmt for docs: "scangobj.py:execute_command:1293:WARNING:Running scanner failed: [Errno 8] Exec format error: './calls-scan', command: ./calls-scan"
+  calls = needsBinfmt (addNativeInputs [ final.gobject-introspection] prev.calls);
 
   # fixes "FileNotFoundError: [Errno 2] No such file or directory: 'gtk4-update-icon-cache'"
   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
