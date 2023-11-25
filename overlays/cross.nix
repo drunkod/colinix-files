@@ -397,6 +397,9 @@ in {
   #     });
   #   };
 
+  # error: "imdi/imdi_make: line 1: ^?ELF^B^A^A^B�^A�@�^W^A@8: not found"
+  argyllcms = needsBinfmt prev.argyllcms;
+
   # binutils = prev.binutils.override {
   #   # fix that resulting binary files would specify build #!sh as their interpreter.
   #   # dtrx is the primary beneficiary of this.
@@ -987,6 +990,9 @@ in {
   #     openjdk19 = emulated.javaPackages.compiler.openjdk19;
   #   };
   # };
+
+  # error: "configure: error: cannot run C compiled programs."
+  jbig2dec = needsBinfmt prev.jbig2dec;
 
   # jellyfin-media-player = mvToBuildInputs
   #   [ final.libsForQt5.wrapQtAppsHook ]  # this shouldn't be: but otherwise we get mixed qtbase deps
