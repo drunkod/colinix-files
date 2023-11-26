@@ -14,15 +14,16 @@ let
       echo "launching sway-session (sway.desktop)..." | ${systemd-cat} --identifier=sway-session
       sway 2>&1 | ${systemd-cat} --identifier=sway-session
     '';
-    origSway = (pkgs.sway.override {
+    origSway = (pkgs.wrapSway.override {
       # this override is what `programs.nixos` would do internally if we left `package` unset.
+      # NOTE(2023/11/26): this wrapper is in flux, see: <https://github.com/NixOS/nixpkgs/pull/270013>
       extraSessionCommands = scfg.extraSessionCommands;
       extraOptions = scfg.extraOptions;
       withBaseWrapper = scfg.wrapperFeatures.base;
       withGtkWrapper = scfg.wrapperFeatures.gtk;
       isNixOS = true;
       # TODO: `enableXWayland = ...`?
-    });
+    }) pkgs.sway-unwrapped;
     desktop-file = pkgs.runCommand "sway-desktop-wrapper" {} ''
       mkdir -p $out/share/wayland-sessions
       substitute ${origSway}/share/wayland-sessions/sway.desktop $out/share/wayland-sessions/sway.desktop \
