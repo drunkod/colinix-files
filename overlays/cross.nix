@@ -1840,6 +1840,10 @@ in {
     };
   });
 
+  # waf-setup-hook: python3-aarch64-unknown-linux-gnu-3.11.6/bin/python: cannot execute binary file: Exec format error
+  # NOTE: not enough to fix build. better to just ensure we don't need samba
+  # samba = needsBinfmt prev.samba;
+
   # samba = prev.samba.overrideAttrs (_upstream: {
   #   # we get "cannot find C preprocessor: aarch64-unknown-linux-gnu-cpp", but ONLY when building with the ccache stdenv.
   #   # this solves that, but `CPP` must be a *single* path -- not an expression.
