@@ -32,6 +32,9 @@ stdenv.mkDerivation rec {
       "-a x86_64"
     else
       "";
+  # TODO: hare setup-hook is supposed to do this for us.
+  # It does it correctly for native compilation, but not cross compilation: wrong offset?
+  env.HAREPATH = "${hare-json}/src/hare/third-party:${hare-ev}/src/hare/third-party";
 
   nativeBuildInputs = [
     hare
