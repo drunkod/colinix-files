@@ -1814,6 +1814,16 @@ in {
   #   });
   # });
 
+  ripgrep = prev.ripgrep.overrideAttrs (upstream: {
+    # ripgrep generates its own manpage.
+    # this is only problematic on a non-binfmt machine
+    preFixup = lib.replaceStrings
+      [ "$out/bin/rg" ]
+      [ "${final.stdenv.hostPlatform.emulator final.buildPackages} $out/bin/rg" ]
+      upstream.preFixup
+    ;
+  });
+
   # rmlint = prev.rmlint.override {
   #   # fixes "Checking whether the C compiler works... no"
   #   # rmlint is scons; it reads the CC environment variable, though, so *may* be cross compilable
