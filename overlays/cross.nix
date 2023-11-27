@@ -1815,6 +1815,7 @@ in {
   # });
 
   ripgrep = prev.ripgrep.overrideAttrs (upstream: {
+    # 2023/11/27: upstreaming is out for PR: <https://github.com/NixOS/nixpkgs/pull/270521>
     # ripgrep generates its own manpage.
     # this is only problematic on a non-binfmt machine
     preFixup = lib.replaceStrings
