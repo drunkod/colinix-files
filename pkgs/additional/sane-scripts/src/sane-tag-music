@@ -77,6 +77,11 @@ class Tags:
             self.artist = self.albumartist
             self.albumartist = []
 
+    def rewrite_singles(self) -> None:
+        """ idiom is for singles to belong to self-titled album. else each artist's singles get merged into one massive album """
+        if self.album == ["Singles"]:
+            self.album = self.artist
+
     @staticmethod
     def from_path(p: str) -> 'Tags':
         """
@@ -162,6 +167,7 @@ class Tagger:
         path_tags = Tags.from_path(path_)
         new_tags = old_tags.union(path_tags)
         new_tags.promote_albumartist()
+        new_tags.rewrite_singles()
 
         if new_tags == old_tags:
             return self.skip_unchanged(path_, old_tags)
