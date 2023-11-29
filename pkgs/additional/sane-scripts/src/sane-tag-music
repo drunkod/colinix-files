@@ -122,6 +122,7 @@ class AudioFile:
         # elif ext == '.mp3':
         #     self.muta = mutagen.mp3.Open(path_)
         else:
+            logger.debug(f"no metadata handler for {path_}")
             self.muta = None
 
     @staticmethod
@@ -140,7 +141,9 @@ class AudioFile:
         )
 
     def write_tags(self, tags: Tags) -> bool:
-        if not self.muta: return False
+        if self.muta is None:
+            logger.debug(f"not writing tags: no metadata handler: {self.path_}")
+            return False
 
         self.muta['artist'] = tags.artist
         self.muta['album'] = tags.album
