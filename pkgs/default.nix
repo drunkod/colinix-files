@@ -48,6 +48,7 @@ let
     # linux-manjaro = callPackage ./additional/linux-manjaro { };
     linux-megous = callPackage ./additional/linux-megous { };
     mcg = callPackage ./additional/mcg { };
+    mootube = callPackage ./additional/mootube { };
     mpv-uosc-latest = callPackage ./additional/mpv-uosc-latest { };
     mx-sanebot = callPackage ./additional/mx-sanebot { };
     phog = callPackage ./additional/phog { };
