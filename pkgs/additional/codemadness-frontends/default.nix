@@ -25,6 +25,10 @@ stdenv.mkDerivation rec {
     libressl
   ];
 
+  makeFlags = [
+    "RANLIB:=$(RANLIB)"
+  ];
+
   installPhase = ''
     runHook preInstall
 
