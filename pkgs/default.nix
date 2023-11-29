@@ -51,6 +51,7 @@ let
     mpv-uosc-latest = callPackage ./additional/mpv-uosc-latest { };
     mx-sanebot = callPackage ./additional/mx-sanebot { };
     phog = callPackage ./additional/phog { };
+    pipeline = callPackage ./additional/pipeline { };
     rtl8723cs-firmware = callPackage ./additional/rtl8723cs-firmware { };
     rtl8723cs-wowlan = callPackage ./additional/rtl8723cs-wowlan { };
     sane-scripts = lib.recurseIntoAttrs (callPackage ./additional/sane-scripts { });
