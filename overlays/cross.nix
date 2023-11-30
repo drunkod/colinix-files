@@ -630,7 +630,38 @@ in {
   # });
 
   # needs binfmt: "error[E0463]: can't find crate for `gettextrs`"
-  fractal-nixified = needsBinfmt prev.fractal-nixified;
+  fractal-nixified = needsBinfmt (prev.fractal-nixified.override {
+    # TODO: lift this to the toplevel?
+    defaultCrateOverrides = let
+      crateNeedsBinfmt = cname: {
+        "${cname}" = attrs: let
+          baseAttrs = (final.defaultCrateOverrides."${cname}" or (a: a)) attrs;
+        in baseAttrs // {
+          requiredSystemFeatures = (baseAttrs.requiredSystemFeatures or []) ++ [ "kvm" ];
+        };
+      };
+    in final.defaultCrateOverrides
+      // (crateNeedsBinfmt "gdk4")
+      // (crateNeedsBinfmt "gsk4")
+      // (crateNeedsBinfmt "gst-plugin-gtk4")
+      // (crateNeedsBinfmt "gstreamer")
+      // (crateNeedsBinfmt "gstreamer-audio")
+      // (crateNeedsBinfmt "gstreamer-audio-sys")
+      // (crateNeedsBinfmt "gstreamer-base")
+      // (crateNeedsBinfmt "gstreamer-base-sys")
+      // (crateNeedsBinfmt "gstreamer-pbutils")
+      // (crateNeedsBinfmt "gstreamer-pbutils-sys")
+      // (crateNeedsBinfmt "gstreamer-play")
+      // (crateNeedsBinfmt "gstreamer-play-sys")
+      // (crateNeedsBinfmt "gstreamer-sys")
+      // (crateNeedsBinfmt "gstreamer-video")
+      // (crateNeedsBinfmt "gstreamer-video-sys")
+      // (crateNeedsBinfmt "gtk4")
+      // (crateNeedsBinfmt "libadwaita")
+      // (crateNeedsBinfmt "libshumate")
+      // (crateNeedsBinfmt "sourceview5")
+    ;
+  });
 
   # 2023/07/31: upstreaming is unblocked -- if i can rework to not use emulation
   # fwupd-efi = prev.fwupd-efi.override {
