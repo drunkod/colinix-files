@@ -43,7 +43,7 @@ in
     # so it works even without the "statusbar periodics" sxmo service running.
     interval = 2;
     format = "{}";
-    exec = "${waybar-sxmo-status}/bin/waybar-sxmo-status modem-state modem-tech modem-signal wifi-status";
+    exec = "${waybar-sxmo-status}/bin/waybar-sxmo-status modem-state modem-tech modem-signal wifi-status volume";
   };
 
   "custom/sxmo" = {

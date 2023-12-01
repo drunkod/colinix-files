@@ -9,6 +9,7 @@
 # - modem-tech
 # - modem-signal
 # - wifi-status
+# - volume
 
 # sxmo_hook_statusbar.sh assumes:
 # - mmcli, jq on PATH
@@ -68,6 +69,9 @@ setitem() {
     wifi-status)
       wifi_status="$value"
       ;;
+    volume)
+      volume="$value"
+      ;;
   esac
 }
 
@@ -101,6 +105,12 @@ while [ -n "$*" ]; do
         eval "$(sxmo_hook_statusbar.sh network wifi wlan0)"
       fi
       echo -n "$wifi_status"
+      ;;
+    "volume")
+      if [ -z "$volume" ]; then
+        eval "$(sxmo_hook_statusbar.sh volume)"
+      fi
+      echo -n "$volume"
       ;;
     *)
       echo -n "UNK: $variable"
