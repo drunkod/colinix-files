@@ -97,6 +97,11 @@
       ${pkgs.nvd}/bin/nvd --nix-bin-dir=${pkgs.nix}/bin diff /run/current-system "$systemConfig"
     '';
   };
+  system.activationScripts.notifyActive = {
+    text = ''
+      SWAYSOCK="$(ls /run/user/1000/sway-ipc.1000*.sock)" ${pkgs.sway}/bin/swaymsg -- exec "${pkgs.libnotify}/bin/notify-send 'nixos activated' 'version: $(cat $systemConfig/nixos-version)'"
+    '';
+  };
 
   # disable non-required packages like nano, perl, rsync, strace
   environment.defaultPackages = [];
