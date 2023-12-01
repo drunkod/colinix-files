@@ -23,6 +23,9 @@ export HOME="${HOME:-/home/colin}"
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export PATH="$XDG_CONFIG_HOME/sxmo/hooks:$PATH"
 
+# ensure that sxmo_audio.sh tells us the volume instead of early-returning
+export SXMO_NO_AUDIO=
+
 # clunky interaction between us and sxmo_hook_statusbar.sh:
 # - we export `sxmobar` to it, but within that function cannot modify the environment
 #   of *this* script, because it gets run in a different process.
