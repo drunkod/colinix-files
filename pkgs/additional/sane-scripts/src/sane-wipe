@@ -5,8 +5,9 @@ help() {
   echo "usage: sane-wipe <resource>"
   echo "resource:"
   echo "  browser: kill and remove cache for firefox, chromium, brave, etc"
-  echo "  flare:   remove account settings/secrets and data for flare-signal messenger"
-  echo "  fractal: remove account settings/secrets and data for fractal matrix messenger"
+  echo "  dino:    remove auth and data for Dino XMPP messenger"
+  echo "  flare:   remove auth and data for flare-signal messenger"
+  echo "  fractal: remove auth and data for fractal matrix messenger"
   exit 1
 }
 
@@ -28,6 +29,12 @@ wipe_browser() {
   sudo pkill brave || true
   sudo pkill firefox || true
   sudo pkill librewolf || true
+}
+
+wipe_dino() {
+  rm -rf ~/.local/share/dino/*
+  echo "now re-launch Dino and join some notable channels like:"
+  echo "- discuss@conference.soprani.ca"
 }
 
 wipe_flare() {
@@ -59,6 +66,9 @@ wipe_fractal() {
 case "$1" in
   browser)
     wipe_browser
+    ;;
+  dino)
+    wipe_dino
     ;;
   flare)
     wipe_flare
