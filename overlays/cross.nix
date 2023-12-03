@@ -507,6 +507,7 @@ in {
     // (crateNeedsBinfmt "gstreamer-video-sys")
     // (crateNeedsBinfmt "gtk4")
     // (crateNeedsBinfmt "libadwaita")
+    // (crateNeedsBinfmt "libadwaita-sys")
     // (crateNeedsBinfmt "libshumate")
     // (crateNeedsBinfmt "sourceview5")
   ;
