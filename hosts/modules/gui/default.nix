@@ -96,6 +96,7 @@ in
     # "tdesktop"  # broken on phosh
     # "tokodon"
     "tuba"  # mastodon/pleroma client (stores pw in keyring)
+    "vulkan-tools"  # vulkaninfo
     # "whalebird"  # pleroma client (Electron). input is broken on phosh.
     "xdg-terminal-exec"
     "xterm"  # broken on phosh
