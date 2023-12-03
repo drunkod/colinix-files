@@ -55,7 +55,7 @@ in
 
   # web blog/personal site
   # alternative way to link stuff into the share:
-  # sane.fs."/var/lib/uninsane/root/share/Ubunchu".mount.bind = "/var/lib/uninsane/media/Books/Visual/HiroshiSeo/Ubunchu";
+  # sane.fs."/var/lib/uninsane/share/Ubunchu".mount.bind = "/var/lib/uninsane/media/Books/Visual/HiroshiSeo/Ubunchu";
   # sane.fs."/var/lib/uninsane/media/Books/Visual/HiroshiSeo/Ubunchu".dir = {};
   services.nginx.virtualHosts."uninsane.org" = publog {
     root = "${pkgs.uninsane-dot-org}/share/uninsane-dot-org";
@@ -68,10 +68,10 @@ in
     # for OCSP stapling
     sslTrustedCertificate = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
 
-    # uninsane.org/share/foo => /var/lib/uninsane/root/share/foo.
+    # uninsane.org/share/foo => /var/lib/uninsane/share/foo.
     # yes, nginx does not strip the prefix when evaluating against the root.
     locations."/share" = {
-      root = "/var/lib/uninsane/root";
+      root = "/var/lib/uninsane";
       extraConfig = ''
         # autoindex => render directory listings
         autoindex on;
