@@ -120,6 +120,7 @@
 , stdenv
 # , substituteAll
 , wrapGAppsHook
+, xdg-utils
 , yarn
 }:
 let
@@ -364,9 +365,15 @@ stdenv.mkDerivation rec {
   '';
 
   preFixup = ''
+    # XXX: add --ozone-platform-hint=auto to make it so that NIXOS_OZONE_WL isn't *needed*.
+    # electron should auto-detect x11 v.s. wayland: launching with `NIXOS_OZONE_WL=1` is an optional way to force it when debugging.
+    # xdg-utils: needed for ozone-platform-hint=auto to work
+    # else `LaunchProcess: failed to execvp: xdg-settings`
     makeShellWrapper ${electron'}/bin/electron $out/bin/signal-desktop \
       "''${gappsWrapperArgs[@]}" \
       --add-flags $out/lib/Signal/resources/app.asar \
+      --suffix PATH : ${lib.makeBinPath [ xdg-utils ]} \
+      --add-flags --ozone-platform-hint=auto \
       --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform=wayland --enable-features=WaylandWindowDecorations}}" \
       --inherit-argv0
   '';
