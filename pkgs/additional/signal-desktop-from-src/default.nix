@@ -106,7 +106,7 @@
 , libpulseaudio
 , libwebp
 , libxslt
-, makeWrapper
+, makeShellWrapper
 , mesa
 , nodejs  # version 18
 # , nodejs_latest
@@ -187,16 +187,21 @@ stdenv.mkDerivation rec {
     hash = "sha256-gtbsb78VFZvESOGu6duB8vKsrtWM7UxGf9che0ijK/M=";
   };
 
-  # patches = [
-  #   ./debug.patch
-  # ];
+  patches = [
+    # ./debug.patch
+    # fix bug that signal launches in the background on wayland
+    # - <https://github.com/signalapp/Signal-Desktop/issues/6368>
+    # - without this, signal can be started with `signal-desktop & ; sleep 5; signal-desktop`
+    #   - the second instance wakes the first one, and then exits
+    ./show-on-launch.patch
+  ];
 
   nativeBuildInputs = [
     autoPatchelfHook
     fixup_yarn_lock
     git  # to calculate build date
     gnused
-    makeWrapper
+    makeShellWrapper
     nodejs'  # possibly i could instead use nodejs-slim (npm-less nodejs)
     python3
     wrapGAppsHook
@@ -232,6 +237,8 @@ stdenv.mkDerivation rec {
   # env.SIGNAL_ENV = "production";
   # env.NODE_ENV = "production";
   # env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
+
+  dontWrapGApps = true;
 
   postPatch = ''
     # fixes build failure:
@@ -352,12 +359,16 @@ stdenv.mkDerivation rec {
     # cp -R release/linux-unpacked/locales $out/lib/Signal/locales
 
     mkdir $out/bin
-    makeWrapper ${electron'}/bin/electron $out/bin/signal-desktop \
-      --add-flags $out/lib/Signal/resources/app.asar \
-      --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}" \
-      --inherit-argv0
 
     runHook postInstall
+  '';
+
+  preFixup = ''
+    makeShellWrapper ${electron'}/bin/electron $out/bin/signal-desktop \
+      "''${gappsWrapperArgs[@]}" \
+      --add-flags $out/lib/Signal/resources/app.asar \
+      --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform=wayland --enable-features=WaylandWindowDecorations}}" \
+      --inherit-argv0
   '';
 
   passthru = {
