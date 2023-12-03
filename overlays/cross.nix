@@ -728,11 +728,11 @@ in {
 
   # 2023/11/21: upstreaming is unblocked
   #             but obsoleted by vala patch: <https://github.com/NixOS/nixpkgs/pull/269171>
-  gnome-2048 = addNativeInputs [
-    # fix: "error: Package `libgnome-games-support-1' not found in specified Vala API directories or GObject-Introspection GIR directories"
-    final.libgnome-games-support
-    # final.gobject-introspection  # this *should* work, if libgnome-games-support were to ship GIR bindings?
-  ] prev.gnome-2048;
+  # gnome-2048 = addNativeInputs [
+  #   # fix: "error: Package `libgnome-games-support-1' not found in specified Vala API directories or GObject-Introspection GIR directories"
+  #   final.libgnome-games-support
+  #   # final.gobject-introspection  # this *should* work, if libgnome-games-support were to ship GIR bindings?
+  # ] prev.gnome-2048;
 
   # needs binfmt: "scangobj.py:execute_command:1293:WARNING:Running scanner failed: [Errno 8] Exec format error: './goa-scan', command: ./goa-scan"
   gnome-online-accounts = needsBinfmt prev.gnome-online-accounts;
