@@ -919,6 +919,7 @@ in with final; {
         sed -i "s/disabled_plugins = \[\]/disabled_plugins = ['power']/" plugins/meson.build
       '';
     });
+
     # 2023/08/01: upstreaming is blocked on argyllcms, gnome-keyring, gnome-clocks, ibus, libavif, webp-pixbuf-loader (gnome-shell)
     # fixes: "gdbus-codegen not found or executable"
     # gnome-session = mvToNativeInputs [ glib ] super.gnome-session;
@@ -930,7 +931,8 @@ in with final; {
     # 2023/07/31: upstreaming is blocked on apache-httpd
     # fixes: meson.build:111:6: ERROR: Program 'glib-compile-schemas' not found or not executable
     # gnome-user-share = addNativeInputs [ glib ] super.gnome-user-share;
-    mutter = needsBinfmt (super.mutter.overrideAttrs (orig: {
+
+    mutter = super.mutter.overrideAttrs (orig: {
       # 2023/07/31: upstreaming is blocked on argyllcms, libavif
       # N.B.: not all of this suitable to upstreaming, as-is.
       # mesa and xorgserver are removed here because they *themselves* don't build for `buildPackages` (temporarily: 2023/10/26)
@@ -942,7 +944,8 @@ in with final; {
       # Run-time dependency gi-docgen found: NO (tried pkgconfig and cmake)
       mesonFlags = lib.remove "-Ddocs=true" orig.mesonFlags;
       outputs = lib.remove "devdoc" orig.outputs;
-    }));
+      postInstall = lib.replaceStrings [ "${glib.dev}" ] [ "${buildPackages.glib.dev}" ] orig.postInstall;
+    });
     # nautilus = (
     #   # 2023/11/21: upstreaming is blocked on apache-httpd, webp-pixbuf-loader, qtsvg
     #   addInputs {
