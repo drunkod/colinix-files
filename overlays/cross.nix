@@ -821,13 +821,25 @@ in with final; {
         "-Dgtk_doc=${lib.boolToString (prev.stdenv.buildPlatform == prev.stdenv.hostPlatform)}"
       ];
     });
-    evolution-data-server = needsBinfmt (super.evolution-data-server.overrideAttrs (upstream: {
+    evolution-data-server = super.evolution-data-server.overrideAttrs (upstream: {
       # 2023/08/01: upstreaming is blocked on libavif
-      # needs binfmt: tries to run the host glib-compile-schemas
-      # fixes aborts in "Performing Test _correct_iconv"
       cmakeFlags = upstream.cmakeFlags ++ [
         "-DCMAKE_CROSSCOMPILING_EMULATOR=${stdenv.hostPlatform.emulator buildPackages}"
+        "-DENABLE_TESTS=no"
+        "-DGETTEXT_MSGFMT_EXECUTABLE=${lib.getBin buildPackages.gettext}/bin/msgfmt"
+        "-DGETTEXT_MSGMERGE_EXECUTABLE=${lib.getBin buildPackages.gettext}/bin/msgmerge"
+        "-DGETTEXT_XGETTEXT_EXECUTABLE=${lib.getBin buildPackages.gettext}/bin/xgettext"
+        "-DGLIB_COMPILE_RESOURCES=${lib.getDev buildPackages.glib}/bin/glib-compile-resources"
+        "-DGLIB_COMPILE_SCHEMAS=${lib.getDev buildPackages.glib}/bin/glib-compile-schemas"
       ];
+      postPatch = (upstream.postPatch or "") + ''
+        substituteInPlace src/addressbook/libebook-contacts/CMakeLists.txt --replace \
+          'COMMAND ''${CMAKE_CURRENT_BINARY_DIR}/gen-western-table' \
+          'COMMAND ${stdenv.hostPlatform.emulator buildPackages} ''${CMAKE_CURRENT_BINARY_DIR}/gen-western-table' 
+        substituteInPlace src/camel/CMakeLists.txt --replace \
+          'COMMAND ''${CMAKE_CURRENT_BINARY_DIR}/camel-gen-tables' \
+          'COMMAND ${stdenv.hostPlatform.emulator buildPackages} ''${CMAKE_CURRENT_BINARY_DIR}/camel-gen-tables'
+      '';
       # N.B.: the deps are funky even without cross compiling.
       # upstream probably wants to replace pcre with pcre2, and maybe provide perl
       # nativeBuildInputs = upstream.nativeBuildInputs ++ [
@@ -840,7 +852,7 @@ in with final; {
       #   pcre2  # fixes: "Package 'libpcre2-8', required by 'glib-2.0', not found"
       #   mount  # fails to fix: "Package 'mount', required by 'gio-2.0', not found"
       # ];
-    }));
+    });
 
     # 2023/08/01: upstreaming is blocked on nautilus, gnome-user-share (apache-httpd, webp-pixbuf-loader)
     # fixes: "src/meson.build:106:0: ERROR: Program 'glib-compile-resources' not found or not executable"
