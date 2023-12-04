@@ -2291,7 +2291,15 @@ in with final; {
     };
   };
 
-  wrapNeovimUnstable = neovim: config: needsBinfmt (prev.wrapNeovimUnstable neovim config);
+  wrapNeovimUnstable = neovim: config: (prev.wrapNeovimUnstable neovim config).overrideAttrs (upstream: {
+    # nvim wrapper has a sanity check that the plugins will load correctly.
+    # this is effectively a check phase and should be rewritten as such
+    postBuild = lib.replaceStrings
+      [ "! $out/bin/nvim-wrapper" ]
+      # [ "${stdenv.hostPlatform.emulator buildPackages} $out/bin/nvim-wrapper" ]
+      [ "false && $out/bin/nvim-wrapper" ]
+      upstream.postBuild;
+  });
 
   # 2023/07/30: upstreaming is blocked on unar (gnustep), unless i also make that optional
   xarchiver = mvToNativeInputs [ libxslt ] prev.xarchiver;
