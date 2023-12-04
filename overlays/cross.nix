@@ -2215,17 +2215,28 @@ in with final; {
 
   # 2023/11/21: upstreaming is blocked on wlroots
   # needs binfmt: "meson.build:420:8: ERROR: Dependency lookup for scdoc with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found. Giving up."
-  waybar = needsBinfmt ((prev.waybar.override {
+  waybar = (prev.waybar.override {
     runTests = false;
     cavaSupport = false;  # doesn't cross compile
     hyprlandSupport = false;  # doesn't cross compile
-    # hopefully fixes: "/nix/store/sc1pz0zaqwpai24zh7xx0brjinflmc6v-aarch64-unknown-linux-gnu-binutils-2.40/bin/aarch64-unknown-linux-gnu-ld: /nix/store/ghxl1zrfnvh69dmv7xa1swcbyx06va4y-wayland-1.22.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
+    # fixes: "/nix/store/sc1pz0zaqwpai24zh7xx0brjinflmc6v-aarch64-unknown-linux-gnu-binutils-2.40/bin/aarch64-unknown-linux-gnu-ld: /nix/store/ghxl1zrfnvh69dmv7xa1swcbyx06va4y-wayland-1.22.0/lib/libwayland-client.so: error adding symbols: file in wrong format"
     wrapGAppsHook = wrapGAppsHook.override {
       isGraphical = false;
+      # tries to invoke the pkgsHostHost compiler :s
+      makeWrapper = null;
     };
   }).overrideAttrs (upstream: {
-    depsBuildBuild = upstream.depsBuildBuild or [] ++ [ pkg-config ];
-  }));
+    nativeBuildInputs = upstream.nativeBuildInputs ++ [
+      buildPackages.wayland-scanner
+      (makeShellWrapper.overrideAttrs (_: {
+        shell = runtimeShell;
+      }))
+    ];
+    mesonFlags = upstream.mesonFlags ++ [
+      # fixes "Dependency lookup for scdoc with method 'pkgconfig' failed: Pkg-config binary for machine 0 not found. Giving up."
+      "-Dman-pages=disabled"
+    ];
+  });
 
   webkitgtk = prev.webkitgtk.overrideAttrs (upstream: {
     # fixes "wayland-scanner: line 5: syntax error: unterminated quoted string"
