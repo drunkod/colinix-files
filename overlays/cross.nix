@@ -69,6 +69,10 @@ let
     requiredSystemFeatures = (upstream.requiredSystemFeatures or []) ++ [ "kvm" ];
   });
 
+  # such packages could build with `needsBinfmt` *or* `buildInQemu`.
+  # - the former is [an order of magnitude] faster, but the latter gets me closer to a pure installation.
+  needsBinfmtOrQemu = buildInQemu;
+
   # wrapGAppsHook4Fix = p: rmNativeInputs [ final.wrapGAppsHook4 ] (addNativeInputs [ final.wrapGAppsNoGuiHook final.gtk4 ] p);
 
   emulated = mkEmulated final prev;
@@ -372,7 +376,7 @@ in {
   #   };
 
   # error: "imdi/imdi_make: line 1: ^?ELF^B^A^A^B�^A�@�^W^A@8: not found"
-  argyllcms = needsBinfmt prev.argyllcms;
+  argyllcms = needsBinfmtOrQemu prev.argyllcms;
 
   # binutils = prev.binutils.override {
   #   # fix that resulting binary files would specify build #!sh as their interpreter.
@@ -408,7 +412,7 @@ in {
   # 2023/10/23: upstreaming blocked by gvfs, webkitgtk 4.1 (OOMs)
   # fixes: "error: Package <foo> not found in specified Vala API directories or GObject-Introspection GIR directories"
   # needs binfmt for docs: "scangobj.py:execute_command:1293:WARNING:Running scanner failed: [Errno 8] Exec format error: './calls-scan', command: ./calls-scan"
-  calls = needsBinfmt (addNativeInputs [ final.gobject-introspection] prev.calls);
+  calls = needsBinfmtOrQemu (addNativeInputs [ final.gobject-introspection] prev.calls);
 
   # fixes "FileNotFoundError: [Errno 2] No such file or directory: 'gtk4-update-icon-cache'"
   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
@@ -524,7 +528,7 @@ in {
   # CMake Error at cmake/SoupVersion.cmake:3 (file):
   # file Failed to run ldconfig
 
-  dino = needsBinfmt prev.dino;
+  dino = needsBinfmtOrQemu prev.dino;
 
   dtrx = prev.dtrx.override {
     # `binutils` is the nix wrapper, which reads nix-related env vars
@@ -546,8 +550,7 @@ in {
   firefox-extensions = prev.firefox-extensions.overrideScope' (self: super: {
     unwrapped = super.unwrapped // {
       browserpass-extension = super.unwrapped.browserpass-extension.override {
-        # this overlay is optional for binfmt machines, but non-binfmt can't cross-compile the modules (for use at runtime)
-        mkYarnModules = args: buildInQemu {
+        mkYarnModules = args: needsBinfmtOrQemu {
           override = { stdenv }: (
             (final.yarn2nix-moretea.override {
               pkgs = final.pkgs.__splicedPackages // { inherit stdenv; };
@@ -1048,6 +1051,7 @@ in {
   # };
 
   # komikku = wrapGAppsHook4Fix prev.komikku;
+  # needs binfmt: "/nix/store/j3zw1jyl0zlv7dc2x4kipizv0n888vls-blueprint-compiler-0.10.0/bin/blueprint-compiler: line 22: import: not found"
   komikku = needsBinfmt (prev.komikku.override {
     blueprint-compiler = buildInQemu (final.blueprint-compiler.overrideAttrs (_: {
       # default is to propagate gobject-introspection *as a buildInput*, when it's supposed to be native.
@@ -1890,6 +1894,7 @@ in {
   # };
 
   # needs binfmt: "bin/yarn: line 8: syntax error near unexpected token `(': `var majorVer = parseInt(ver.split('.')[0], 10);'"
+  # - hangs in Qemu for over 8 hours
   signal-desktop-from-src = needsBinfmt prev.signal-desktop-from-src;
 
   spandsp = prev.spandsp.overrideAttrs (upstream: {
@@ -2030,7 +2035,7 @@ in {
   #   };
   # };
   # needs binfmt: "/build/source/src/../troll/gjspack/bin/gjspack: line 3: import: not found"
-  tangram = needsBinfmt ((prev.tangram.override {
+  tangram = needsBinfmtOrQemu ((prev.tangram.override {
     # N.B. blueprint-compiler is in nativeBuildInputs.
     # the trick here is to force the aarch64 versions to be used during build (via emulation).
     # blueprint-compiler override shared with flare-signal-nixified.
