@@ -1083,8 +1083,13 @@ in with final; {
   #   };
   # };
 
-  # error: "configure: error: cannot run C compiled programs."
-  jbig2dec = needsBinfmt prev.jbig2dec;
+  jbig2dec = prev.jbig2dec.overrideAttrs (_: {
+    # adding configureFlags here fixes: "configure: error: cannot run C compiled programs."
+    #   autogen needs the --host flag, i guess
+    preConfigure = ''
+      ./autogen.sh $configureFlags
+    '';
+  });
 
   # jellyfin-media-player = mvToBuildInputs
   #   [ libsForQt5.wrapQtAppsHook ]  # this shouldn't be: but otherwise we get mixed qtbase deps
