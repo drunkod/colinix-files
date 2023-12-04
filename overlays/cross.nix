@@ -1038,7 +1038,7 @@ in {
   #   buildPackages.gtk-doc = final.gtk-doc;
   # });
   # needs binfmt: "configure: error: no suitable Python interpreter found"
-  ibus = needsBinfmt prev.ibus;
+  # ibus = needsBinfmt prev.ibus;
 
   iotas = prev.iotas.overrideAttrs (_: {
     # error: "<iotas> is not allowed to refer to the following paths: <build python>"
