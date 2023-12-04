@@ -412,7 +412,15 @@ in {
   # 2023/10/23: upstreaming blocked by gvfs, webkitgtk 4.1 (OOMs)
   # fixes: "error: Package <foo> not found in specified Vala API directories or GObject-Introspection GIR directories"
   # needs binfmt for docs: "scangobj.py:execute_command:1293:WARNING:Running scanner failed: [Errno 8] Exec format error: './calls-scan', command: ./calls-scan"
-  calls = needsBinfmtOrQemu (addNativeInputs [ final.gobject-introspection] prev.calls);
+  # calls = needsBinfmtOrQemu (addNativeInputs [ final.gobject-introspection] prev.calls);
+  calls = prev.calls.overrideAttrs (upstream: {
+    # TODO: try building with mesonEmulatorHook when i upstream this
+    # nativeBuildInputs = upstream.nativeBuildInputs ++ lib.optionals (!prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) [
+    #   final.mesonEmulatorHook
+    # ];
+    outputs = lib.remove "devdoc" upstream.outputs;
+    mesonFlags = lib.remove "-Dgtk_doc=true" upstream.mesonFlags;
+  });
 
   # fixes "FileNotFoundError: [Errno 2] No such file or directory: 'gtk4-update-icon-cache'"
   # 2023/07/27: upstreaming is blocked on p11-kit cross compilation
