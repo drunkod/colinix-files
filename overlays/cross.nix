@@ -644,14 +644,28 @@ in {
 
   # 2023/07/31: upstreaming is blocked on ostree dep
   # needs binfmt: "./configure: line 17437: /nix/store/j2afjl8psjlk5cz23n45w5x8wkks2rkl-bubblewrap-aarch64-unknown-linux-gnu-0.8.0/bin/bwrap: cannot execute binary file: Exec format error"
-  flatpak = needsBinfmt (prev.flatpak.overrideAttrs (upstream: {
+  flatpak = prev.flatpak.overrideAttrs (upstream: {
     # fixes "No package 'libxml-2.0' found"
     buildInputs = upstream.buildInputs ++ [ final.libxml2 ];
     configureFlags = upstream.configureFlags ++ [
       "--enable-selinux-module=no"  # fixes "checking for /usr/share/selinux/devel/Makefile... configure: error: cannot check for file existence when cross compiling"
       "--disable-gtk-doc"  # fixes "You must have gtk-doc >= 1.20 installed to build documentation for Flatpak"
     ];
-  }));
+
+    postPatch = let
+      # copied from nixpkgs flatpak and modified to use buildPackages python
+      vsc-py = final.buildPackages.python3.withPackages (pp: [
+        pp.pyparsing
+      ]);
+    in ''
+      patchShebangs buildutil
+      patchShebangs tests
+      PATH=${lib.makeBinPath [vsc-py]}:$PATH patchShebangs --build subprojects/variant-schema-compiler/variant-schema-compiler
+    '' + ''
+      sed -i s:'\$BWRAP --version:${final.stdenv.hostPlatform.emulator final.buildPackages} \$BWRAP --version:' configure.ac
+      sed -i s:'\$DBUS_PROXY --version:${final.stdenv.hostPlatform.emulator final.buildPackages} \$DBUS_PROXY --version:' configure.ac
+    '';
+  });
 
   # future: use `buildRustPackage`?
   # - find another rust package that uses a `-sys` crate (with a build script)?
