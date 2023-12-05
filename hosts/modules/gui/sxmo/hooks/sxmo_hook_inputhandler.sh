@@ -37,8 +37,7 @@
 #   - moving the WM menu into the top-level menu could allow keeping voldown free of complication
 
 # increments to use for volume adjustment
-VOL_INCR_1=5
-VOL_INCR_2=10
+VOL_INCR=5
 
 # replicating the naming from upstream sxmo_hook_inputhandler.sh...
 ACTION="$1"
@@ -122,18 +121,18 @@ case "$ACTION" in
   # powerbutton_three: intentional no-op because overloading the kill-window handler is risky
 
   "volup_one")
-    handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR_1%"
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR%"
     ;;
   "voldown_one")
-    handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_1%"
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR%"
     ;;
 
   # HOLD power button and tap volup/down to adjust volume
   "powerhold_volup")
-    handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR_1%"
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ +"$VOL_INCR%"
     ;;
   "powerhold_voldown")
-    handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_1%"
+    handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR%"
     ;;
 
   "powertoggle_volup"|"powerhold_volup")
