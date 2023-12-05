@@ -88,13 +88,9 @@ if [ "$STATE" = "unlock" ]; then
       # volume down once: toggle keyboard
       handle_with sxmo_keyboard.sh toggle
       ;;
-
-    "powertoggle_volup")
-      # power -> volume up: DE menu
-      handle_with sxmo_wmmenu.sh
-      ;;
-    "powertoggle_voldown")
-      # power -> volume down: launch terminal
+    "voldown_hold")
+      # hold voldown to launch terminal
+      # note we already triggered the keyboard; that's fine: usually keyboard + terminal go together :)
       handle_with sxmo_terminal.sh
       ;;
   esac

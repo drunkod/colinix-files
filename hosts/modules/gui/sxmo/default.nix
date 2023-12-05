@@ -496,8 +496,11 @@ in
           power_pressed.volup_pressed = (recurseVolUpDown 5).volup_pressed;
 
           # tap just one of the volume buttons.
-          voldown_pressed.trigger = "voldown_one";
           volup_pressed.trigger = "volup_one";
+          voldown_pressed.trigger = "voldown_one";
+          voldown_pressed.voldown_released = {}; # return to root state
+          voldown_pressed.timeout.trigger = "voldown_hold";
+          voldown_pressed.timeout.ms = 500;
         };
 
         # sxmo puts in /share/sxmo:
