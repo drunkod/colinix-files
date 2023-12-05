@@ -190,5 +190,7 @@ output "Unknown 0x0637 0x00000000" {
 # - XDG_CURRENT_DESKTOP
 # for more, see: <repo:nixos/nixpkgs:nixos/modules/programs/wayland/sway.nix>
 include /etc/sway/config.d/*
+# XXX(2023/12/04): this shouldn't be necessary, but without this (and the other code which actually sets the variable) Komikku on moby fails to launch because XDG_SESSION_TYPE is unset
+exec dbus-update-activation-environment --systemd XDG_SESSION_TYPE
 
 @extra_lines@
