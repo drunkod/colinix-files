@@ -288,11 +288,6 @@ in
         # this sets XDG_CURRENT_DESKTOP=sway
         # and makes sure that sway is launched dbus-run-session.
         wrapperFeatures.base = true;
-        extraSessionCommands = ''
-          # XXX(2023/12/04): fixes a bug where sxmo somehow doesn't set XDG_SESSION_TYPE, preventing apps like Komikku from launching.
-          # wlroots should set this: idk where/why it's failing
-          export XDG_SESSION_TYPE=wayland
-        '';
       };
       programs.xwayland.enable = cfg.config.xwayland;
       # provide portals for:
