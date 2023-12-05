@@ -1124,15 +1124,13 @@ in with final; {
   #   inherit (emulated) stdenv;
   # };
 
-  # komikku = wrapGAppsHook4Fix prev.komikku;
-  # needs binfmt: "/nix/store/j3zw1jyl0zlv7dc2x4kipizv0n888vls-blueprint-compiler-0.10.0/bin/blueprint-compiler: line 22: import: not found"
-  komikku = needsBinfmt (prev.komikku.override {
-    blueprint-compiler = buildInQemu (blueprint-compiler.overrideAttrs (_: {
-      # default is to propagate gobject-introspection *as a buildInput*, when it's supposed to be native.
-      propagatedBuildInputs = [];
-      # "Namespace Gtk not available"
-      doCheck = false;
-    }));
+  komikku = prev.komikku.overrideAttrs (upstream: {
+    # blueprint-compiler runs on the build machine, but tries to load gobject-introspection types meant for the host.
+    postPatch = (upstream.postPatch or "") + ''
+      substituteInPlace data/meson.build --replace \
+        "find_program('blueprint-compiler')" \
+        "'env', 'GI_TYPELIB_PATH=${buildPackages.gdk-pixbuf.out}/lib/girepository-1.0:${buildPackages.harfbuzz.out}/lib/girepository-1.0:${buildPackages.gtk4.out}/lib/girepository-1.0:${buildPackages.graphene}/lib/girepository-1.0:${buildPackages.libadwaita}/lib/girepository-1.0:${buildPackages.pango.out}/lib/girepository-1.0', find_program('blueprint-compiler')"
+    '';
   });
 
   # koreader = (prev.koreader.override {
