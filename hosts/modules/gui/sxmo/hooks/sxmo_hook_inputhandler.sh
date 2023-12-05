@@ -106,14 +106,6 @@ if [ "$STATE" = "screenoff" ]; then
       # power toggle during deep sleep often gets misread as power hold, so treat same
       handle_with sxmo_state.sh set unlock
       ;;
-    "powertoggle_volup"|"powerhold_volup")
-      # power -> volume up: seek forward
-      handle_with playerctl position 30+
-      ;;
-    "powertoggle_voldown"|"powerhold_voldown")
-      # power -> volume down: seek backward
-      handle_with playerctl position 10-
-      ;;
   esac
 fi
 
@@ -142,6 +134,15 @@ case "$ACTION" in
     ;;
   "powerhold_voldown")
     handle_with pactl set-sink-volume @DEFAULT_SINK@ -"$VOL_INCR_1%"
+    ;;
+
+  "powertoggle_volup"|"powerhold_volup")
+    # power -> volume up: seek forward
+    handle_with playerctl position 30+
+    ;;
+  "powertoggle_voldown"|"powerhold_voldown")
+    # power -> volume down: seek backward
+    handle_with playerctl position 10-
     ;;
 esac
 
