@@ -18,7 +18,7 @@
 let
   cfg = config.sane.programs.swaynotificationcenter;
 
-  mprisIconSize = 64;
+  mprisIconSize = 48;
 
   fbcli-wrapper = pkgs.writeShellApplication {
     name = "swaync-fbcli";
