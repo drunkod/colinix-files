@@ -477,7 +477,7 @@ in
           # map sequences of "events" to an argument to pass to sxmo_hook_inputhandler.sh
 
           # tap the power button N times to trigger N different actions
-          power_pressed.timeout.ms = 1200; # press w/o release. this is a long timeout because it's tied to the "kill window" action.
+          power_pressed.timeout.ms = 1100; # press w/o release. this is a long timeout because it's tied to the "kill window" action, and interacts with the volume adjustments.
           power_pressed.timeout.trigger = "powerhold";
           power_pressed.power_released.timeout.trigger = "powerbutton_one";
           power_pressed.power_released.timeout.ms = 600;  # long timeout to make `powertoggle_*` easier
