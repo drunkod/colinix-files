@@ -236,6 +236,7 @@ let
     (fromDb "youtube.com/@ContraPoints" // pol)
     (fromDb "youtube.com/@hbomberguy")
     (fromDb "youtube.com/@Channel5YouTube" // pol)
+    (fromDb "youtube.com/@Vsauce")
   ];
 
   images = [
