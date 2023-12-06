@@ -50,6 +50,8 @@ let
         else
           "infrequent"
       ));
+    } // lib.optionalAttrs (lib.hasPrefix "https://www.youtube.com/" raw.url) {
+      format = "video";
     } // lib.optionalAttrs (raw.is_podcast or false) {
       format = "podcast";
     } // lib.optionalAttrs (raw.title or "" != "") {
