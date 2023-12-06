@@ -524,12 +524,20 @@ in with final; {
   ;
 
   dialect = prev.dialect.overrideAttrs (upstream: {
+    # blueprint-compiler runs on the build machine, but tries to load gobject-introspection types meant for the host.
+    postPatch = (upstream.postPatch or "") + ''
+      substituteInPlace data/resources/meson.build --replace \
+        "find_program('blueprint-compiler')" \
+        "'env', 'GI_TYPELIB_PATH=${buildPackages.gdk-pixbuf.out}/lib/girepository-1.0:${buildPackages.harfbuzz.out}/lib/girepository-1.0:${buildPackages.gtk4.out}/lib/girepository-1.0:${buildPackages.graphene}/lib/girepository-1.0:${buildPackages.libadwaita}/lib/girepository-1.0:${buildPackages.pango.out}/lib/girepository-1.0', find_program('blueprint-compiler')"
+    '';
     # error: "<dialect> is not allowed to refer to the following paths: <build python>"
     # dialect's meson build script sets host binaries to use build PYTHON
     # disallowedReferences = [];
     postFixup = (upstream.postFixup or "") + ''
       patchShebangs --update --host $out/share/dialect/search_provider
     '';
+    # upstream sets strictDeps=false which makes gAppsWrapperHook wrap with the build dependencies
+    strictDeps = true;
   });
 
   # CMake Error at cmake/SoupVersion.cmake:3 (file):
