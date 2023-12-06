@@ -240,6 +240,8 @@ let
     (fromDb "youtube.com/@PolyMatter")
     (fromDb "youtube.com/@Vihart")
     (fromDb "youtube.com/@Vox")
+    (fromDb "youtube.com/@ColdFusion")
+    (fromDb "youtube.com/@Exurb1a")
   ];
 
   images = [
