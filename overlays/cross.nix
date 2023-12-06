@@ -690,17 +690,16 @@ in with final; {
      };
   });
 
-  flare-signal-nixified = prev.flare-signal-nixified.override {
-    # N.B. blueprint-compiler is in nativeBuildInputs.
-    # the trick here is to force the aarch64 versions to be used during build (via emulation).
-    # blueprint-compiler override shared with tangram.
-    blueprint-compiler = buildInQemu {} (blueprint-compiler.overrideAttrs (_: {
-      # default is to propagate gobject-introspection *as a buildInput*, when it's supposed to be native.
-      propagatedBuildInputs = [];
-      # "Namespace Gtk not available"
-      doCheck = false;
-    }));
-  };
+  flare-signal-nixified = cantBinfmt ((prev.flare-signal-nixified.override {
+    crateOverrideFn = cantBinfmt;
+  }).overrideAttrs (upstream: {
+    # blueprint-compiler runs on the build machine, but tries to load gobject-introspection types meant for the host.
+    postPatch = (upstream.postPatch or "") + ''
+      substituteInPlace data/resources/meson.build --replace \
+        "find_program('blueprint-compiler')" \
+        "'env', 'GI_TYPELIB_PATH=${buildPackages.gdk-pixbuf.out}/lib/girepository-1.0:${buildPackages.harfbuzz.out}/lib/girepository-1.0:${buildPackages.gtk4.out}/lib/girepository-1.0:${buildPackages.graphene}/lib/girepository-1.0:${buildPackages.libadwaita}/lib/girepository-1.0:${buildPackages.pango.out}/lib/girepository-1.0', find_program('blueprint-compiler')"
+    '';
+  }));
 
   # 2023/07/31: upstreaming is blocked on ostree dep
   # needs binfmt: "./configure: line 17437: /nix/store/j2afjl8psjlk5cz23n45w5x8wkks2rkl-bubblewrap-aarch64-unknown-linux-gnu-0.8.0/bin/bwrap: cannot execute binary file: Exec format error"
