@@ -502,36 +502,54 @@ in with final; {
   });
 
   # used for cargo2nix rust projects (e.g. fractal, flare)
-  defaultCrateOverrides = let
-    crateNeedsBinfmt = cname: {
-      "${cname}" = attrs: let
-        baseAttrs = (prev.defaultCrateOverrides."${cname}" or (a: a)) attrs;
-      in baseAttrs // {
-        requiredSystemFeatures = (baseAttrs.requiredSystemFeatures or []) ++ [ "kvm" ];
-      };
-    };
-  in prev.defaultCrateOverrides
-    // (crateNeedsBinfmt "gdk4")
-    // (crateNeedsBinfmt "gsk4")
-    // (crateNeedsBinfmt "gst-plugin-gtk4")
-    // (crateNeedsBinfmt "gstreamer")
-    // (crateNeedsBinfmt "gstreamer-audio")
-    // (crateNeedsBinfmt "gstreamer-audio-sys")
-    // (crateNeedsBinfmt "gstreamer-base")
-    // (crateNeedsBinfmt "gstreamer-base-sys")
-    // (crateNeedsBinfmt "gstreamer-pbutils")
-    // (crateNeedsBinfmt "gstreamer-pbutils-sys")
-    // (crateNeedsBinfmt "gstreamer-play")
-    // (crateNeedsBinfmt "gstreamer-play-sys")
-    // (crateNeedsBinfmt "gstreamer-sys")
-    // (crateNeedsBinfmt "gstreamer-video")
-    // (crateNeedsBinfmt "gstreamer-video-sys")
-    // (crateNeedsBinfmt "gtk4")
-    // (crateNeedsBinfmt "libadwaita")
-    // (crateNeedsBinfmt "libadwaita-sys")
-    // (crateNeedsBinfmt "libshumate")
-    // (crateNeedsBinfmt "sourceview5")
-  ;
+  # defaultCrateOverrides = let
+  #   crateNeedsBinfmt = cname: {
+  #     "${cname}" = attrs: let
+  #       baseAttrs = (prev.defaultCrateOverrides."${cname}" or (a: a)) attrs;
+  #     in needsBinfmt baseAttrs;
+  #   };
+  #   crateCantBinfmt = cname: {
+  #     "${cname}" = attrs: let
+  #       baseAttrs = (prev.defaultCrateOverrides."${cname}" or (a: a)) attrs;
+  #     in cantBinfmt baseAttrs;
+  #   };
+  # in prev.defaultCrateOverrides
+  #   # // (crateCantBinfmt "gdk-pixbuf-sys")
+  #   # // (crateCantBinfmt "gdk4-sys")
+  #   # // (crateCantBinfmt "glib-sys")
+  #   # // (crateCantBinfmt "gstreamer-audio-sys")
+  #   # // (crateCantBinfmt "gstreamer-base-sys")
+  #   # // (crateCantBinfmt "gstreamer-pbutils-sys")
+  #   # // (crateCantBinfmt "gstreamer-play-sys")
+  #   # // (crateCantBinfmt "gstreamer-video-sys")
+  #   # // (crateCantBinfmt "libadwaita-sys")
+
+  #   # // (crateNeedsBinfmt "gdk-pixbuf-sys")
+  #   # // (crateNeedsBinfmt "gdk-pixbuf")
+  #   # // (crateNeedsBinfmt "gdk4-sys")
+  #   # // (crateNeedsBinfmt "gdk4")
+  #   # // (crateNeedsBinfmt "glib-sys")
+  #   # // (crateNeedsBinfmt "glib")
+  #   # // (crateNeedsBinfmt "gsk4")
+  #   # // (crateNeedsBinfmt "gst-plugin-gtk4")
+  #   # // (crateNeedsBinfmt "gstreamer")
+  #   # // (crateNeedsBinfmt "gstreamer-audio")
+  #   # // (crateNeedsBinfmt "gstreamer-audio-sys")
+  #   # // (crateNeedsBinfmt "gstreamer-base")
+  #   # // (crateNeedsBinfmt "gstreamer-base-sys")
+  #   # // (crateNeedsBinfmt "gstreamer-pbutils")
+  #   # // (crateNeedsBinfmt "gstreamer-pbutils-sys")
+  #   # // (crateNeedsBinfmt "gstreamer-play")
+  #   # // (crateNeedsBinfmt "gstreamer-play-sys")
+  #   # // (crateNeedsBinfmt "gstreamer-sys")
+  #   # // (crateNeedsBinfmt "gstreamer-video")
+  #   # // (crateNeedsBinfmt "gstreamer-video-sys")
+  #   # // (crateNeedsBinfmt "gtk4")
+  #   # // (crateNeedsBinfmt "libadwaita")
+  #   # // (crateNeedsBinfmt "libadwaita-sys")
+  #   # // (crateNeedsBinfmt "libshumate")
+  #   # // (crateNeedsBinfmt "sourceview5")
+  # ;
 
   dialect = prev.dialect.overrideAttrs (upstream: {
     # blueprint-compiler runs on the build machine, but tries to load gobject-introspection types meant for the host.
@@ -768,8 +786,12 @@ in with final; {
   # });
 
   # needs binfmt: "error[E0463]: can't find crate for `gtk4`" (and others)
-  # maybe this needs binfmt only because its deps need binfmt?
-  fractal-nixified = needsBinfmt prev.fractal-nixified;
+  # either one can build fractal and all its deps with binfmt,
+  # or build *none* of them with binfmt.
+  # but mixing non-binfmt deps with a binfmt top-level fractal fails
+  fractal-nixified = cantBinfmt (prev.fractal-nixified.override {
+    crateOverrideFn = cantBinfmt;
+  });
 
   # 2023/07/31: upstreaming is unblocked -- if i can rework to not use emulation
   # fwupd-efi = prev.fwupd-efi.override {
