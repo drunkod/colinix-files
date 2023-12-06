@@ -60,13 +60,17 @@ let
       pkg
     );
 
-  needsBinfmt = pkg: pkg.overrideAttrs (upstream: {
+  needsBinfmt = pkg: (pkg.overrideAttrs or (updater: pkg // (updater pkg))) (upstream: {
+    # weird signature to support passing *either* a package, or an ordinary attrset
     # "kvm" isn't precisely the right feature here.
     # but the effect is that if you build a `needsBinfmt` package with `-j0`,
     # then nix will try to find a builder that's been marked with `kvm` feature,
     # and i don't mark my non-binfmt builders with `kvm`, hence it's guaranteed to
     # be built on a binfmt-enabled builder (or not built, if no binfmt builders).
     requiredSystemFeatures = (upstream.requiredSystemFeatures or []) ++ [ "kvm" ];
+  });
+  cantBinfmt = pkg: (pkg.overrideAttrs or (updater: pkg // (updater pkg))) (upstream: {
+    requiredSystemFeatures = (upstream.requiredSystemFeatures or []) ++ [ "no-binfmt" ];
   });
 
   # such packages could build with `needsBinfmt` *or* `buildInQemu`.
