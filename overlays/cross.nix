@@ -446,6 +446,19 @@ in with final; {
   #   ];
   # });
 
+  # cinny = buildInQemu { overrides = {
+  #   buildNpmPackage = buildNpmPackage.override {
+  #     inherit (emulated) stdenv;
+  #     buildPackages = final.pkgsHostHost;
+  #   };
+  # }; } (prev.cinny.overrideAttrs (upstream: {
+  #   postPatch = ''
+  #     mkdir $TMP
+  #   '';
+  #   NIX_DEBUG = "6";
+  # }));
+  # cinny-desktop = needsBinfmt prev.cinny-desktop;
+
   # 2023/07/31: upstreaming is unblocked, implemented on servo
   # clapper = prev.clapper.overrideAttrs (upstream: {
   #   # use the host gjs (meson's find_program expects it to be executable)
