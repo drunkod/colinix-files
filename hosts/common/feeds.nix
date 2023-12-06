@@ -234,6 +234,7 @@ let
   videos = [
     (fromDb "youtube.com/@TechnologyConnections" // tech)
     (fromDb "youtube.com/@ContraPoints" // pol)
+    (fromDb "youtube.com/@hbomberguy")
   ];
 
   images = [
