@@ -233,6 +233,7 @@ let
 
   videos = [
     (fromDb "youtube.com/@TechnologyConnections" // tech)
+    (fromDb "youtube.com/@ContraPoints" // pol)
   ];
 
   images = [
