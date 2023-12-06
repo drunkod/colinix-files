@@ -229,6 +229,10 @@ let
     # (mkText "https://github.com/Kaiteki-Fedi/Kaiteki/commits/master.atom" // tech // infrequent)
   ];
 
+  videos = [
+    (fromDb "youtube.com/@TechnologyConnections" // tech)
+  ];
+
   images = [
     (fromDb "smbc-comics.com" // img // humor)
     (fromDb "xkcd.com" // img // humor)
@@ -242,7 +246,7 @@ let
   ];
 in
 {
-  sane.feeds = texts ++ images ++ podcasts;
+  sane.feeds = texts ++ images ++ podcasts ++ videos;
 
   assertions = builtins.map
     (p: {
