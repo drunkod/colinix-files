@@ -179,6 +179,7 @@ class Tags:
             if new_title and new_title[-1] == '-':
                 new_title = new_title[:-1]
             if len(title) - len(new_title) < 5:
+                # we stripped too little, probably not an identifier. undo it.
                 new_title = title
             tags.title = [ new_title ]
 
@@ -188,7 +189,10 @@ class Tags:
             if len(track_parts) == 1:
                 parse_title(track)
             elif len(track_parts) == 2:
-                if tags.albumartist and track_parts[0].lower() == tags.albumartist[0].lower():
+                if tags.albumartist and loose_compare_str(track_parts[0], tags.albumartist[0]):
+                    parse_title(track_parts[1])
+                elif tags.album and loose_compare_str(track_parts[0], tags.album[0]):
+                    # less common, but sometimes `album - track`
                     parse_title(track_parts[1])
                 elif all(l in '0123456789-' for l in track_parts[0]):
                     parse_trackno(track_parts[0])
