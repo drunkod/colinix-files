@@ -641,36 +641,36 @@ in with final; {
   #   # <https://www.gnu.org/software/autoconf/manual/autoconf-2.63/html_node/Runtime.html>
   # };
 
-  firefox-extensions = prev.firefox-extensions.overrideScope' (self: super: {
-    unwrapped = super.unwrapped // {
-      browserpass-extension = super.unwrapped.browserpass-extension.override {
-        mkYarnModules = args: needsBinfmtOrQemu {
-          override = { stdenv }: (
-            (yarn2nix-moretea.override {
-              pkgs = pkgs.__splicedPackages // { inherit stdenv; };
-            }).mkYarnModules args
-          ).overrideAttrs (upstream: {
-            # i guess the VM creates the output directory for the derivation? not sure.
-            # and `mv` across the VM boundary breaks, too?
-            # original errors:
-            # - "mv: cannot create directory <$out>: File exists"
-            # - "mv: failed to preserve ownership for"
-            buildPhase = lib.replaceStrings
-              [
-                "mkdir $out"
-                "mv "
-              ]
-              [
-                "mkdir $out || true ; chmod +w deps/browserpass-extension-modules/package.json"
-                "cp -Rv "
-              ]
-              upstream.buildPhase
-            ;
-          });
-        };
-      };
-    };
-  });
+  # firefox-extensions = prev.firefox-extensions.overrideScope' (self: super: {
+  #   unwrapped = super.unwrapped // {
+  #     browserpass-extension = super.unwrapped.browserpass-extension.override {
+  #       mkYarnModules = args: needsBinfmtOrQemu {
+  #         override = { stdenv }: (
+  #           (yarn2nix-moretea.override {
+  #             pkgs = pkgs.__splicedPackages // { inherit stdenv; };
+  #           }).mkYarnModules args
+  #         ).overrideAttrs (upstream: {
+  #           # i guess the VM creates the output directory for the derivation? not sure.
+  #           # and `mv` across the VM boundary breaks, too?
+  #           # original errors:
+  #           # - "mv: cannot create directory <$out>: File exists"
+  #           # - "mv: failed to preserve ownership for"
+  #           buildPhase = lib.replaceStrings
+  #             [
+  #               "mkdir $out"
+  #               "mv "
+  #             ]
+  #             [
+  #               "mkdir $out || true ; chmod +w deps/browserpass-extension-modules/package.json"
+  #               "cp -Rv "
+  #             ]
+  #             upstream.buildPhase
+  #           ;
+  #         });
+  #       };
+  #     };
+  #   };
+  # });
 
   # flare-signal = prev.flare-signal.override {
   #   # fixes "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
@@ -2314,17 +2314,17 @@ in with final; {
 
   wob = mvToBuildInputs [ cmocka ] prev.wob;
 
-  wrapFirefox = prev.wrapFirefox.override {
-    buildPackages = buildPackages // {
-      # fixes "extract-binary-wrapper-cmd: line 2: strings: command not found"
-      # ^- in the `nix log` output of cross-compiled `firefox` (it's non-fatal)
-      makeBinaryWrapper = bpkgs.makeBinaryWrapper.overrideAttrs (upstream: {
-        passthru.extractCmd = bpkgs.writeShellScript "extract-binary-wrapper-cmd" ''
-          ${stdenv.cc.targetPrefix}strings -dw "$1" | sed -n '/^makeCWrapper/,/^$/ p'
-        '';
-      });
-    };
-  };
+  # wrapFirefox = prev.wrapFirefox.override {
+  #   buildPackages = buildPackages // {
+  #     # fixes "extract-binary-wrapper-cmd: line 2: strings: command not found"
+  #     # ^- in the `nix log` output of cross-compiled `firefox` (it's non-fatal)
+  #     makeBinaryWrapper = bpkgs.makeBinaryWrapper.overrideAttrs (upstream: {
+  #       passthru.extractCmd = bpkgs.writeShellScript "extract-binary-wrapper-cmd" ''
+  #         ${stdenv.cc.targetPrefix}strings -dw "$1" | sed -n '/^makeCWrapper/,/^$/ p'
+  #       '';
+  #     });
+  #   };
+  # };
 
   wrapNeovimUnstable = neovim: config: (prev.wrapNeovimUnstable neovim config).overrideAttrs (upstream: {
     # nvim wrapper has a sanity check that the plugins will load correctly.
