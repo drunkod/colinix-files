@@ -214,11 +214,17 @@ class AudioFile:
             logger.debug(f"not writing tags: no metadata handler: {self.path_}")
             return False
 
-        self.muta['artist'] = tags.artist
-        self.muta['album'] = tags.album
-        self.muta['title'] = tags.title
-        self.muta['albumartist'] = tags.albumartist
-        self.muta['tracknumber'] = tags.tracknumber
+        def set_tag(name: str, val: list):
+            if val:
+                self.muta[name] = val
+            elif name in self.muta:
+                del self.muta[name]
+
+        set_tag('artist', tags.artist)
+        set_tag('album', tags.album)
+        set_tag('title', tags.title)
+        set_tag('albumartist', tags.albumartist)
+        set_tag('tracknumber', tags.tracknumber)
 
         logger.debug(f"writing full tags: {self.muta}")
 
