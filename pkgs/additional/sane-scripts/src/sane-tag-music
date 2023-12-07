@@ -11,6 +11,7 @@ import logging
 import os.path
 import mutagen.easyid3
 import mutagen.flac
+import mutagen.oggopus
 import mutagen.oggvorbis
 
 logger = logging.getLogger(__name__)
@@ -230,12 +231,19 @@ class AudioFile:
 
         _base, ext = os.path.splitext(path_)
         try:
+            # TODO: handle:
+            # - .m4a
+            # - .wav
+            # - .wma
             if ext == '.flac':
                 self.muta = mutagen.flac.Open(path_)
-            elif ext == '.mp3':
+            elif ext in ['.aac', '.mp3']:
+                # TODO: this seems to only read tags, and not create them?
                 self.muta = mutagen.easyid3.EasyID3(path_)
             elif ext == '.ogg':
                 self.muta = mutagen.oggvorbis.OggVorbis(path_)
+            elif ext == '.opus':
+                self.muta = mutagen.oggopus.OggOpus(path_)
             else:
                 logger.debug(f"no metadata handler for {path_}")
         except Exception as e:
