@@ -10,7 +10,7 @@ import argparse
 import logging
 import os.path
 import mutagen.flac
-import mutagen.mp3
+import mutagen.easyid3
 
 logger = logging.getLogger(__name__)
 
@@ -188,8 +188,8 @@ class AudioFile:
         _base, ext = os.path.splitext(path_)
         if ext == '.flac':
             self.muta = mutagen.flac.Open(path_)
-        # elif ext == '.mp3':
-        #     self.muta = mutagen.mp3.Open(path_)
+        elif ext == '.mp3':
+            self.muta = mutagen.easyid3.EasyID3(path_)
         else:
             logger.debug(f"no metadata handler for {path_}")
             self.muta = None
