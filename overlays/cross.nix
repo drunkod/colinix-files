@@ -1239,7 +1239,7 @@ in with final; {
   # bin/.luarocks-wrapped: bin/luarocks: line 3: syntax error near unexpected token `]]'
   # bin/.luarocks-wrapped: bin/luarocks: line 3: `package.path=[[/nix/store/b7wa76cvxki14k9cmdi0vzd954nx6nww-luarocks-aarch64-unknown-linux-gnu-3.9.1/share/lua/5.1/?.lua;]] .. package.path'
   # ```
-  koreader-from-src = needsBinfmt prev.koreader-from-src;
+  # koreader-from-src = needsBinfmt prev.koreader-from-src;
 
   # libgweather = rmNativeInputs [ glib ] (prev.libgweather.override {
   #   # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
