@@ -164,7 +164,6 @@ let
   buildNodejs = mkNodeJs buildPackages.nodejs;
 
   # nodejs' = nodejs_latest;
-  yarn' = yarn.override { nodejs = nodejs'; };
   buildYarn = buildPackages.yarn.override { nodejs = buildNodejs; };
 
   # package.json locks electron to 25.y.z
@@ -181,8 +180,6 @@ let
   buildNpmArch = if stdenv.buildPlatform.isAarch64 then "arm64" else "x64";
   hostNpmArch = if stdenv.hostPlatform.isAarch64 then "arm64" else "x64";
   crossNpmArchExt = if buildNpmArch == hostNpmArch then "" else "-${hostNpmArch}";
-
-  invokeYarn = "${buildYarn}/bin/yarn";
 in
 stdenv.mkDerivation rec {
   pname = "signal-desktop-from-src";
@@ -214,7 +211,6 @@ stdenv.mkDerivation rec {
     python3
     wrapGAppsHook
     buildYarn
-    # yarn'
   ];
 
   buildInputs = [
@@ -273,7 +269,7 @@ stdenv.mkDerivation rec {
     export SOURCE_DATE_EPOCH=
 
     export HOME=$NIX_BUILD_TOP
-    ${invokeYarn} config --offline set yarn-offline-mirror $yarnOfflineCache
+    yarn config --offline set yarn-offline-mirror $yarnOfflineCache
     fixup_yarn_lock yarn.lock
 
     # prevent any attempt at downloading nodejs C headers
@@ -288,12 +284,9 @@ stdenv.mkDerivation rec {
     # yarn install creates the node_modules/ directory
     # --ignore-scripts tells yarn to not run the "install" or "postinstall" commands mentioned in dependencies' package.json
     #   since many of those require network access
-    ${invokeYarn} install --offline --frozen-lockfile --ignore-scripts
+    yarn install --offline --frozen-lockfile --ignore-scripts
     patchShebangs node_modules/
-    # patchShebangs --build node_modules/{bufferutil/node_modules/node-gyp-build/,node-gyp-build,utf-8-validate/node_modules/node-gyp-build}
-    patchShebangs --build --update node_modules/bufferutil/node_modules/node-gyp-build/
-    patchShebangs --build --update node_modules/node-gyp-build/
-    patchShebangs --build --update node_modules/utf-8-validate/node_modules/node-gyp-build/
+    patchShebangs --build --update node_modules/{bufferutil/node_modules/node-gyp-build/,node-gyp-build,utf-8-validate/node_modules/node-gyp-build}
     # patch these out to remove a runtime reference back to the build bash
     # (better, perhaps, would be for these build scripts to not be included in the asar...)
     sed -i 's:#!.*/bin/bash:#!/bin/sh:g' node_modules/@swc/helpers/scripts/gen.sh
@@ -307,16 +300,16 @@ stdenv.mkDerivation rec {
     popd
     cp ${sqlcipherTarball} node_modules/@signalapp/better-sqlite3/deps/sqlcipher.tar.gz
     pushd node_modules/@signalapp/better-sqlite3
-      ${invokeYarn} --offline build-release
+      yarn --offline build-release
     popd
     pushd node_modules/@signalapp/libsignal-client
-      ${invokeYarn} node-gyp-build
+      yarn node-gyp-build
     popd
     # there are more dependencies which had install/postinstall scripts, but it seems we can safely ignore them
 
     # run signal's own `postinstall`:
-    ${invokeYarn} build:acknowledgments
-    ${invokeYarn} patch-package
+    yarn build:acknowledgments
+    yarn patch-package
     # yarn electron:install-app-deps  # not necessary
 
     runHook postConfigure
@@ -348,15 +341,15 @@ stdenv.mkDerivation rec {
     # echo 'ignore-engines true' > .yarnrc
 
     # yarn generate:
-    ${invokeYarn} build-module-protobuf --offline --frozen-lockfile
-    ${invokeYarn} build:esbuild --offline --frozen-lockfile
-    ${invokeYarn} sass
-    ${invokeYarn} get-expire-time
-    ${invokeYarn} copy-components
+    yarn build-module-protobuf --offline --frozen-lockfile
+    yarn build:esbuild --offline --frozen-lockfile
+    yarn sass
+    yarn get-expire-time
+    yarn copy-components
 
-    ${invokeYarn} build:esbuild:prod --offline --frozen-lockfile
+    yarn build:esbuild:prod --offline --frozen-lockfile
 
-    ${invokeYarn} build:release \
+    yarn build:release \
       --linux --${hostNpmArch} \
       -c.electronDist=${electron'}/libexec/electron \
       -c.electronVersion=${electron'.version} \
@@ -405,7 +398,6 @@ stdenv.mkDerivation rec {
       # TODO: prevent update to betas
       rev-prefix = "v";
     };
-    yarn = yarn';
     nodejs = nodejs';
     buildYarn = buildYarn;
     buildNodejs = buildNodejs;
