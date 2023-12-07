@@ -290,8 +290,9 @@ class AudioFile:
         self.muta.save()
 
 class Tagger:
-    def __init__(self, dry_run: bool):
+    def __init__(self, dry_run: bool, force: bool):
         self.dry_run = dry_run
+        self.force = force
 
     def tag_file(self, path_: str) -> None:
         file_ = AudioFile.new(path_)
@@ -300,10 +301,11 @@ class Tagger:
             return
 
         old_tags = file_.tags_on_disk()
-
         path_tags = Tags.from_path(path_)
-        # logger.debug(f"extracted tags from {path_}: {path_tags}")
-        new_tags = old_tags.union(path_tags)
+        if self.force:
+            new_tags = path_tags
+        else:
+            new_tags = old_tags.union(path_tags)
         new_tags.trim_fields()
         new_tags.expand_shorthands()
         new_tags.promote_albumartist()
@@ -357,6 +359,7 @@ def main():
     parser = argparse.ArgumentParser(description="augment music tags based on library path")
     parser.add_argument("path", nargs="+", help="relative path to a file to tag")
     parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--force', action='store_true', help="update tags even if the old metadata disagrees with the path-based tag extraction")
     parser.add_argument('--verbose', action='store_true')
 
     args = parser.parse_args()
@@ -364,7 +367,7 @@ def main():
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    tagger = Tagger(dry_run=args.dry_run)
+    tagger = Tagger(dry_run=args.dry_run, force=args.force)
     for p in args.path:
         tagger.tag_file_or_tree(p)
 
