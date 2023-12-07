@@ -137,7 +137,7 @@ class Tags:
                 new_title = new_title[:-1]
             if len(title) - len(new_title) < 5:
                 new_title = title
-            tags.title = new_title
+            tags.title = [ new_title ]
 
         def parse_track(track: str) -> None:
             track = os.path.splitext(track)[0]
