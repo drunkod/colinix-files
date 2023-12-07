@@ -297,9 +297,10 @@ class AudioFile:
         self.muta.save()
 
 class Tagger:
-    def __init__(self, dry_run: bool, force: bool):
+    def __init__(self, dry_run: bool, prefer_path: bool, manual_tags: Tags):
         self.dry_run = dry_run
-        self.force = force
+        self.prefer_path = prefer_path
+        self.manual_tags = manual_tags
 
     def tag_file(self, path_: str) -> None:
         file_ = AudioFile.new(path_)
@@ -309,10 +310,11 @@ class Tagger:
 
         old_tags = file_.tags_on_disk()
         path_tags = Tags.from_path(path_)
-        if self.force:
+        if self.prefer_path:
             new_tags = path_tags
         else:
             new_tags = old_tags.union(path_tags)
+        new_tags = new_tags.union(self.manual_tags)
         new_tags.trim_fields()
         new_tags.expand_shorthands()
         new_tags.promote_albumartist()
@@ -366,15 +368,31 @@ def main():
     parser = argparse.ArgumentParser(description="augment music tags based on library path")
     parser.add_argument("path", nargs="+", help="relative path to a file to tag")
     parser.add_argument('--dry-run', action='store_true')
-    parser.add_argument('--force', action='store_true', help="update tags even if the old metadata disagrees with the path-based tag extraction")
+    parser.add_argument('--prefer-path', action='store_true', help="give higher credence to path-based tags than any existing tags")
     parser.add_argument('--verbose', action='store_true')
+    parser.add_argument('--album', help="manually specify the tag")
+    parser.add_argument('--album-artist', help="manually specify the tag")
+    parser.add_argument('--artist', help="manually specify the tag")
+    parser.add_argument('--title', help="manually specify the tag")
 
     args = parser.parse_args()
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    tagger = Tagger(dry_run=args.dry_run, force=args.force)
+    manual_tags = Tags(
+        album=[args.album] if args.album else [],
+        albumartist=[args.album_artist] if args.album_artist else [],
+        artist=[args.artist] if args.artist else [],
+        title=[args.title] if args.title else [],
+    )
+
+    tagger = Tagger(
+        dry_run=args.dry_run,
+        prefer_path=args.prefer_path,
+        manual_tags=manual_tags
+    )
+
     for p in args.path:
         tagger.tag_file_or_tree(p)
 
