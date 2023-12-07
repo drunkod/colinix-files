@@ -184,15 +184,18 @@ class Tags:
 class AudioFile:
     def __init__(self, path_: str):
         self.path_ = path_
+        self.muta = None
 
         _base, ext = os.path.splitext(path_)
-        if ext == '.flac':
-            self.muta = mutagen.flac.Open(path_)
-        elif ext == '.mp3':
-            self.muta = mutagen.easyid3.EasyID3(path_)
-        else:
-            logger.debug(f"no metadata handler for {path_}")
-            self.muta = None
+        try:
+            if ext == '.flac':
+                self.muta = mutagen.flac.Open(path_)
+            elif ext == '.mp3':
+                self.muta = mutagen.easyid3.EasyID3(path_)
+            else:
+                logger.debug(f"no metadata handler for {path_}")
+        except Exception as e:
+            logger.warning(f"failed to open {path_}: {e}")
 
     @staticmethod
     def new(path_: str) -> 'AudioFile':
