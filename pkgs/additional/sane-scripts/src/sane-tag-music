@@ -108,10 +108,15 @@ class Tags:
             self.album = [ self.album[0].strip() ]
 
     def expand_shorthands(self) -> None:
-        if self.artist == ["V.A."]:
-            self.artist = ["Various Artists"]
-        if self.albumartist == ["V.A."]:
-            self.albumartist = ["Various Artists"]
+        va = ["V.A.", "Various"]
+
+        for i, a in enumerate(self.artist):
+            if a in va:
+                self.artist[i] = "Various Artists"
+
+        for i, a in enumerate(self.albumartist):
+            if a in va:
+                self.albumartist[i] = "Various Artists"
 
     def promote_albumartist(self) -> None:
         """
