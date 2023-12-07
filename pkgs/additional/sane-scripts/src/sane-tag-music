@@ -158,8 +158,10 @@ class Tags:
         - could have many fields. the title will always be last. trackno could be embedded or not.
         - title (handled)
         - artist - track (handled)
+        - album - track (handled)
         - trackno - track (handled)
         - trackno - artist - track (handled)
+        - album - artist - title (for Various Artists/compilation albums) (handled)
         - artist - album - trackno title (not handled)
         track numbering:
         - 01, 02, ...
@@ -202,7 +204,9 @@ class Tags:
                     parse_trackno(track_parts[0])
                     tags.artist = [track_parts[1]]  # explicitly not album artist, but track artist
                     parse_title(track_parts[2])
-
+                elif tags.album == [ track_parts[0] ]:
+                    tags.artist = [track_parts[1]]
+                    parse_title(track_parts[2])
 
         def parse_album(album: str) -> None:
             album_parts = [p.strip() for p in album.split(' - ')]
