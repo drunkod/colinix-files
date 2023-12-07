@@ -2312,6 +2312,8 @@ in with final; {
     '';
   });
 
+  wob = mvToBuildInputs [ cmocka ] prev.wob;
+
   wrapFirefox = prev.wrapFirefox.override {
     buildPackages = buildPackages // {
       # fixes "extract-binary-wrapper-cmd: line 2: strings: command not found"
