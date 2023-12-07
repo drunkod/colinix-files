@@ -105,6 +105,7 @@ class Encoder:
         self.check_output([
             'ffmpeg',
             '-i', str(source),
+            '-y', # overwrite output
             '-codec:v', 'copy',
             '-codec:a', 'libmp3lame',
             '-qscale:a', '0'
@@ -124,10 +125,11 @@ def clean_name(path: str) -> Path:
     return out_path
 
 class Sync:
-    def __init__(self, encoder: Encoder, in_dir: str, out_dir: str):
+    def __init__(self, encoder: Encoder, in_dir: str, out_dir: str, force_copy: bool = False):
         self.encoder = encoder
         self.in_dir = in_dir
         self.out_dir = out_dir
+        self.force_copy = force_copy
 
     def target_name(self, source_name: str) -> Path:
         n = clean_name(source_name)
@@ -149,8 +151,7 @@ class Sync:
 
         to_del = { f for f in existing_out_files if f not in expected_out_files }
         logger.info(f'found {len(to_del)} files to delete')
-        # FIXME: files which exist but have changed (e.g fixed metadata) are incorrectly skipped
-        to_copy = { f for f in in_files if self.target_name(f) not in existing_out_files and f.suffix not in IGNORE }
+        to_copy = { f for f in in_files if (self.force_copy or self.target_name(f) not in existing_out_files) and f.suffix not in IGNORE }
         logger.info(f'found {len(to_copy)} files to copy')
 
         return to_del, to_copy
@@ -183,9 +184,9 @@ class Sync:
                 executor.submit(self.copy_one, n)
 
 
-def sync_all(in_dir: str, out_dir: str, jobs: int = None, dry_run: bool = False) -> None:
+def sync_all(in_dir: str, out_dir: str, jobs: int = None, dry_run: bool = False, force_copy: bool = False) -> None:
     encoder = Encoder(dry_run=dry_run)
-    sync = Sync(encoder, in_dir, out_dir)
+    sync = Sync(encoder, in_dir, out_dir, force_copy=force_copy)
     to_del, to_copy = sync.calculate_delta()
 
     sync.rm_dest_files(to_del)
@@ -202,6 +203,7 @@ def main() -> None:
     parser.add_argument("--dry-run", action='store_true', help="don't actually run any commands")
     parser.add_argument("--verbose", action='store_true', help="more logging")
     parser.add_argument("--quiet", action='store_true', help="less logging")
+    parser.add_argument("--force-copy", action='store_true', help="copy over files that already exist (in case metadata needs updating)")
 
     args = parser.parse_args()
 
@@ -210,7 +212,7 @@ def main() -> None:
     if args.quiet:
         logger.setLevel(logging.WARN)
 
-    sync_all(args.src, args.dest, args.jobs, args.dry_run)
+    sync_all(args.src, args.dest, args.jobs, args.dry_run, args.force_copy)
 
 if __name__ == '__main__':
     main()
