@@ -2043,10 +2043,6 @@ in with final; {
   #   inherit (emulated) stdenv;
   # };
 
-  # needs binfmt: "bin/yarn: line 8: syntax error near unexpected token `(': `var majorVer = parseInt(ver.split('.')[0], 10);'"
-  # - hangs in Qemu for over 8 hours
-  signal-desktop-from-src = needsBinfmt prev.signal-desktop-from-src;
-
   spandsp = prev.spandsp.overrideAttrs (upstream: {
     configureFlags = upstream.configureFlags or [] ++ [
       # fixes runtime error: "undefined symbol: rpl_realloc"

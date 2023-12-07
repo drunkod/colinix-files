@@ -84,6 +84,7 @@
 , atk
 , autoPatchelfHook
 , bash
+, buildPackages
 # , callPackage
 , cups
 # , electron_25
@@ -145,7 +146,7 @@ let
   #   signal_fts5_extension = signal-fts5-extension;
   # };
 
-  nodejs_18_15_0 = nodejs.overrideAttrs (upstream:
+  mkNodeJs = nodejs: nodejs.overrideAttrs (upstream:
     let
       # 18.15.0 matches the version in package.json
       version = "18.15.0";
@@ -158,9 +159,13 @@ let
       };
     }
   );
-  nodejs' = nodejs_18_15_0;
+  nodejs' = mkNodeJs nodejs;
+  # TODO: possibly i could instead use nodejs-slim (npm-less nodejs)
+  buildNodejs = mkNodeJs buildPackages.nodejs;
+
   # nodejs' = nodejs_latest;
   yarn' = yarn.override { nodejs = nodejs'; };
+  buildYarn = buildPackages.yarn.override { nodejs = buildNodejs; };
 
   # package.json locks electron to 25.y.z
   # element-desktop uses electron_26
@@ -176,6 +181,8 @@ let
   buildNpmArch = if stdenv.buildPlatform.isAarch64 then "arm64" else "x64";
   hostNpmArch = if stdenv.hostPlatform.isAarch64 then "arm64" else "x64";
   crossNpmArchExt = if buildNpmArch == hostNpmArch then "" else "-${hostNpmArch}";
+
+  invokeYarn = "${buildYarn}/bin/yarn";
 in
 stdenv.mkDerivation rec {
   pname = "signal-desktop-from-src";
@@ -203,10 +210,11 @@ stdenv.mkDerivation rec {
     git  # to calculate build date
     gnused
     makeShellWrapper
-    nodejs'  # possibly i could instead use nodejs-slim (npm-less nodejs)
+    buildNodejs
     python3
     wrapGAppsHook
-    yarn'
+    buildYarn
+    # yarn'
   ];
 
   buildInputs = [
@@ -223,6 +231,7 @@ stdenv.mkDerivation rec {
     libwebp
     libxslt
     mesa # for libgbm
+    nodejs'  # to patch in the runtime
     nspr
     nss
     pango
@@ -240,6 +249,8 @@ stdenv.mkDerivation rec {
   # env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
   dontWrapGApps = true;
+
+  # NIX_DEBUG = 6;
 
   postPatch = ''
     # fixes build failure:
@@ -262,7 +273,7 @@ stdenv.mkDerivation rec {
     export SOURCE_DATE_EPOCH=
 
     export HOME=$NIX_BUILD_TOP
-    yarn config --offline set yarn-offline-mirror $yarnOfflineCache
+    ${invokeYarn} config --offline set yarn-offline-mirror $yarnOfflineCache
     fixup_yarn_lock yarn.lock
 
     # prevent any attempt at downloading nodejs C headers
@@ -277,8 +288,12 @@ stdenv.mkDerivation rec {
     # yarn install creates the node_modules/ directory
     # --ignore-scripts tells yarn to not run the "install" or "postinstall" commands mentioned in dependencies' package.json
     #   since many of those require network access
-    yarn install --offline --frozen-lockfile --ignore-scripts
+    ${invokeYarn} install --offline --frozen-lockfile --ignore-scripts
     patchShebangs node_modules/
+    # patchShebangs --build node_modules/{bufferutil/node_modules/node-gyp-build/,node-gyp-build,utf-8-validate/node_modules/node-gyp-build}
+    patchShebangs --build --update node_modules/bufferutil/node_modules/node-gyp-build/
+    patchShebangs --build --update node_modules/node-gyp-build/
+    patchShebangs --build --update node_modules/utf-8-validate/node_modules/node-gyp-build/
     # patch these out to remove a runtime reference back to the build bash
     # (better, perhaps, would be for these build scripts to not be included in the asar...)
     sed -i 's:#!.*/bin/bash:#!/bin/sh:g' node_modules/@swc/helpers/scripts/gen.sh
@@ -292,16 +307,16 @@ stdenv.mkDerivation rec {
     popd
     cp ${sqlcipherTarball} node_modules/@signalapp/better-sqlite3/deps/sqlcipher.tar.gz
     pushd node_modules/@signalapp/better-sqlite3
-      yarn --offline build-release
+      ${invokeYarn} --offline build-release
     popd
     pushd node_modules/@signalapp/libsignal-client
-      yarn node-gyp-build
+      ${invokeYarn} node-gyp-build
     popd
     # there are more dependencies which had install/postinstall scripts, but it seems we can safely ignore them
 
     # run signal's own `postinstall`:
-    yarn build:acknowledgments
-    yarn patch-package
+    ${invokeYarn} build:acknowledgments
+    ${invokeYarn} patch-package
     # yarn electron:install-app-deps  # not necessary
 
     runHook postConfigure
@@ -333,15 +348,15 @@ stdenv.mkDerivation rec {
     # echo 'ignore-engines true' > .yarnrc
 
     # yarn generate:
-    yarn build-module-protobuf --offline --frozen-lockfile
-    yarn build:esbuild --offline --frozen-lockfile
-    yarn sass
-    yarn get-expire-time
-    yarn copy-components
+    ${invokeYarn} build-module-protobuf --offline --frozen-lockfile
+    ${invokeYarn} build:esbuild --offline --frozen-lockfile
+    ${invokeYarn} sass
+    ${invokeYarn} get-expire-time
+    ${invokeYarn} copy-components
 
-    yarn build:esbuild:prod --offline --frozen-lockfile
+    ${invokeYarn} build:esbuild:prod --offline --frozen-lockfile
 
-    yarn build:release \
+    ${invokeYarn} build:release \
       --linux --${hostNpmArch} \
       -c.electronDist=${electron'}/libexec/electron \
       -c.electronVersion=${electron'.version} \
@@ -365,6 +380,12 @@ stdenv.mkDerivation rec {
   '';
 
   preFixup = ''
+    # fixup the app.asar to use host nodejs
+    ${buildPackages.asar}/bin/asar extract $out/lib/Signal/resources/app.asar unpacked
+    rm $out/lib/Signal/resources/app.asar
+    patchShebangs --host --update unpacked
+    ${buildPackages.asar}/bin/asar pack unpacked $out/lib/Signal/resources/app.asar
+
     # XXX: add --ozone-platform-hint=auto to make it so that NIXOS_OZONE_WL isn't *needed*.
     # electron should auto-detect x11 v.s. wayland: launching with `NIXOS_OZONE_WL=1` is an optional way to force it when debugging.
     # xdg-utils: needed for ozone-platform-hint=auto to work
@@ -384,6 +405,10 @@ stdenv.mkDerivation rec {
       # TODO: prevent update to betas
       rev-prefix = "v";
     };
+    yarn = yarn';
+    nodejs = nodejs';
+    buildYarn = buildYarn;
+    buildNodejs = buildNodejs;
   };
 
   meta = {
