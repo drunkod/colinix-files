@@ -714,7 +714,7 @@ in with final; {
     '';
   }));
 
-  # 2023/07/31: upstreaming is blocked on ostree dep
+  # 2023/12/08: upstreaming is unblocked
   # needs binfmt: "./configure: line 17437: /nix/store/j2afjl8psjlk5cz23n45w5x8wkks2rkl-bubblewrap-aarch64-unknown-linux-gnu-0.8.0/bin/bwrap: cannot execute binary file: Exec format error"
   flatpak = prev.flatpak.overrideAttrs (upstream: {
     # fixes "No package 'libxml-2.0' found"
@@ -1649,28 +1649,6 @@ in with final; {
   #   # fixes "checking for /proc/net/route... configure: error: cannot check for file existence when cross compiling"
   #   inherit (emulated) stdenv;
   # };
-  # ostree = prev.ostree.override {
-  #   # fixes "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
-  #   inherit (emulated) stdenv;
-  # };
-
-  # 2023/09/02: upstreaming is implemented on servo `wip-ostree` branch
-  # 2023/11/21: upstreaming is in PR: <https://github.com/NixOS/nixpkgs/pull/269169>
-  ostree = prev.ostree.overrideAttrs (upstream: {
-    # fixes: "configure: error: Need GPGME_PTHREAD version 1.1.8 or later"
-    # new failure mode: "./src/libotutil/ot-gpg-utils.h:22:10: fatal error: gpgme.h: No such file or directory"
-    # buildInputs = lib.remove gpgme upstream.buildInputs;
-    # nativeBuildInputs = upstream.nativeBuildInputs ++ [ gpgme ];
-    # buildInputs = lib.remove gjs upstream.buildInputs;
-    # configureFlags = lib.remove "--enable-installed-tests" upstream.configureFlags;
-    # postPatch = (upstream.postPatch or "") + ''
-    #   substituteInPlace Makefile-libostree.am \
-    #     --replace "CC=gcc" "CC=${stdenv.cc.targetPrefix}cc"
-    # '';
-    makeFlags = upstream.makeFlags ++ [
-      "INTROSPECTION_SCANNER_ENV="
-    ];
-  });
 
   # fixes (meson) "Program 'glib-mkenums mkenums' not found or not executable"
   # 2023/07/27: upstreaming is blocked on p11-kit, argyllcms, libavif cross compilation
@@ -2226,7 +2204,7 @@ in with final; {
   #   buildInputs = upstream.buildInputs ++ [ bash ];
   # });
 
-  # 2023/11/21: upstreaming is blocked on ostree
+  # 2023/11/21: upstreaming is blocked on flatpak
   xdg-desktop-portal = prev.xdg-desktop-portal.overrideAttrs (upstream: {
     nativeBuildInputs = upstream.nativeBuildInputs ++ [
       # fixes "meson.build:117:8: ERROR: Program 'bwrap' not found or not executable"
@@ -2239,7 +2217,7 @@ in with final; {
     ];
   });
   # fixes "No package 'xdg-desktop-portal' found"
-  # 2023/11/21: upstreaming is blocked on ostree, webp-pixbuf-loader, qtsvg (via pipewire/ffado)
+  # 2023/12/08: upstreaming is blocked on argyllcms, flatpak, qtsvg (via pipewire/ffado)
   xdg-desktop-portal-gtk = mvToBuildInputs [ xdg-desktop-portal ] prev.xdg-desktop-portal-gtk;
   # fixes: "data/meson.build:33:5: ERROR: Program 'msgfmt' not found or not executable"
   # fixes: "src/meson.build:25:0: ERROR: Program 'gdbus-codegen' not found or not executable"
