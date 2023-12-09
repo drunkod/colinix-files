@@ -586,7 +586,7 @@ in with final; {
 
   # CMake Error at cmake/SoupVersion.cmake:3 (file):
   # file Failed to run ldconfig
-  # 2023/12/08: upstreaming is unblocked
+  # 2023/12/08: upstreaming is our for PR: <https://github.com/NixOS/nixpkgs/pull/273189>
   dino = prev.dino.overrideAttrs (upstream: {
     cmakeFlags = upstream.cmakeFlags ++ [
       "-DXGETTEXT_EXECUTABLE=${lib.getBin buildPackages.gettext}/bin/xgettext"
