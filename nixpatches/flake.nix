@@ -3,15 +3,16 @@
     # user is expected to define this from their flake via `inputs.nixpkgs.follows = ...`
     nixpkgs = {};
   };
-  outputs = { self, nixpkgs }@inputs:
+  outputs = { self, nixpkgs, variant ? "master" }@inputs:
     let
       patchedPkgsFor = system: nixpkgs.legacyPackages.${system}.applyPatches {
         name = "nixpkgs-patched-uninsane";
         version = self.lastModifiedDate;
         src = nixpkgs;
-        patches = import ./list.nix {
+        patches = builtins.filter (p: p != null) (import ./list.nix {
           inherit (nixpkgs.legacyPackages.${system}) fetchpatch2 fetchurl;
-        };
+          inherit variant;
+        });
       };
       patchedFlakeFor = system: import "${patchedPkgsFor system}/flake.nix";
       patchedFlakeOutputsFor = system:

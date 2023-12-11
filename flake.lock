@@ -51,6 +51,38 @@
         "type": "github"
       }
     },
+    "nixpkgs-staging-next-unpatched": {
+      "locked": {
+        "lastModified": 1702317658,
+        "narHash": "sha256-jYzBIMW18oQG+uQ9TVZwiYFHVafYIqllW+zFLROtwcE=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "f81605387c494a302c16901ac6459e877c45f913",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "staging-next",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-staging-unpatched": {
+      "locked": {
+        "lastModified": 1702311933,
+        "narHash": "sha256-bARcUNREf0wVSYzWhcK+mKCUgzeHbiKKDbpHBH92Mdk=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "14b1b887952e70c12c6b8fc4ee9c1e22ec32faa6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "staging",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-unpatched": {
       "locked": {
         "lastModified": 1702272962,
@@ -70,6 +102,8 @@
     "root": {
       "inputs": {
         "mobile-nixos": "mobile-nixos",
+        "nixpkgs-staging-next-unpatched": "nixpkgs-staging-next-unpatched",
+        "nixpkgs-staging-unpatched": "nixpkgs-staging-unpatched",
         "nixpkgs-unpatched": "nixpkgs-unpatched",
         "sops-nix": "sops-nix",
         "uninsane-dot-org": "uninsane-dot-org"

@@ -44,8 +44,8 @@
     # <https://github.com/nixos/nixpkgs/tree/nixos-unstable>
     # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=master";
-    # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=staging-next";
-    # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=staging";
+    nixpkgs-staging-next-unpatched.url = "github:nixos/nixpkgs?ref=staging-next";
+    nixpkgs-staging-unpatched.url = "github:nixos/nixpkgs?ref=staging";
 
     mobile-nixos = {
       # <https://github.com/nixos/mobile-nixos>
@@ -74,6 +74,8 @@
   outputs = {
     self,
     nixpkgs-unpatched,
+    nixpkgs-staging-unpatched ? null,
+    nixpkgs-staging-next-unpatched ? null,
     mobile-nixos,
     sops-nix,
     uninsane-dot-org,
@@ -83,6 +85,8 @@
       inherit (builtins) attrNames elem listToAttrs map mapAttrs;
       # redefine some nixpkgs `lib` functions to avoid the infinite recursion
       # of if we tried to use patched `nixpkgs.lib` as part of the patching process.
+      mapAttrs' = f: set:
+        listToAttrs (map (attr: f attr set.${attr}) (attrNames set));
       optionalAttrs = cond: attrs: if cond then attrs else {};
       # mapAttrs but without the `name` argument
       mapAttrValues = f: mapAttrs (_: f);
@@ -90,9 +94,9 @@
       # rather than apply our nixpkgs patches as a flake input, do that here instead.
       # this (temporarily?) resolves the bad UX wherein a subflake residing in the same git
       # repo as the main flake causes the main flake to have an unstable hash.
-      nixpkgs = (import ./nixpatches/flake.nix).outputs {
-        self = nixpkgs;
-        nixpkgs = nixpkgs-unpatched;
+      patchNixpkgs = variant: nixpkgs: (import ./nixpatches/flake.nix).outputs {
+        inherit variant nixpkgs;
+        self = patchNixpkgs variant nixpkgs;
       } // {
         # provide values that nixpkgs ordinarily sources from the flake.lock file,
         # inaccessible to it here because of the import-from-derivation.
@@ -108,9 +112,10 @@
         inherit (self) shortRev;
       };
 
+      nixpkgs = patchNixpkgs "master" nixpkgs-unpatched;
       nixpkgsCompiledBy = system: nixpkgs.legacyPackages."${system}";
 
-      evalHost = { name, local, target, light ? false }: nixpkgs.lib.nixosSystem {
+      evalHost = { name, local, target, light ? false, nixpkgs ? nixpkgs }: nixpkgs.lib.nixosSystem {
         system = target;
         modules = [
           {
@@ -148,7 +153,19 @@
           moby-light  = { name = "moby";   local = "x86_64-linux"; target = "aarch64-linux"; light = true; };
           rescue      = { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux";  };
         };
-      in mapAttrValues evalHost hosts;
+        stagingHosts = mapAttrs' (h: v: {
+          name = "${h}-staging";
+          value = v // { nixpkgs = patchNixpkgs "staging" nixpkgs-staging-unpatched; };
+        }) hosts;
+        stagingNextHosts = mapAttrs' (h: v: {
+          name = "${h}-staging-next";
+          value = v // { nixpkgs = patchNixpkgs "staging-next" nixpkgs-staging-next-unpatched; };
+        }) hosts;
+      in mapAttrValues evalHost (
+        hosts //
+        (optionalAttrs (nixpkgs-staging-unpatched != null) stagingHosts) //
+        (optionalAttrs (nixpkgs-staging-next-unpatched != null) stagingNextHosts)
+      );
 
       # unofficial output
       # this produces a EFI-bootable .img file (GPT with a /boot partition and a system (/ or /nix) partition).
