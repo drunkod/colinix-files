@@ -35,23 +35,7 @@
         "type": "github"
       }
     },
-    "nixpkgs-stable": {
-      "locked": {
-        "lastModified": 1702148972,
-        "narHash": "sha256-h2jODFP6n+ABrUWcGRSVPRFfLOkM9TJ2pO+h+9JcaL0=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "b8f33c044e51de6dde3ad80a9676945e0e4e3227",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "release-23.05",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-staging-next-unpatched": {
+    "nixpkgs-next-unpatched": {
       "locked": {
         "lastModified": 1702317658,
         "narHash": "sha256-jYzBIMW18oQG+uQ9TVZwiYFHVafYIqllW+zFLROtwcE=",
@@ -67,18 +51,18 @@
         "type": "github"
       }
     },
-    "nixpkgs-staging-unpatched": {
+    "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1702311933,
-        "narHash": "sha256-bARcUNREf0wVSYzWhcK+mKCUgzeHbiKKDbpHBH92Mdk=",
-        "owner": "nixos",
+        "lastModified": 1702148972,
+        "narHash": "sha256-h2jODFP6n+ABrUWcGRSVPRFfLOkM9TJ2pO+h+9JcaL0=",
+        "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "14b1b887952e70c12c6b8fc4ee9c1e22ec32faa6",
+        "rev": "b8f33c044e51de6dde3ad80a9676945e0e4e3227",
         "type": "github"
       },
       "original": {
-        "owner": "nixos",
-        "ref": "staging",
+        "owner": "NixOS",
+        "ref": "release-23.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -102,8 +86,7 @@
     "root": {
       "inputs": {
         "mobile-nixos": "mobile-nixos",
-        "nixpkgs-staging-next-unpatched": "nixpkgs-staging-next-unpatched",
-        "nixpkgs-staging-unpatched": "nixpkgs-staging-unpatched",
+        "nixpkgs-next-unpatched": "nixpkgs-next-unpatched",
         "nixpkgs-unpatched": "nixpkgs-unpatched",
         "sops-nix": "sops-nix",
         "uninsane-dot-org": "uninsane-dot-org"

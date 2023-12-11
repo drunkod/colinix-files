@@ -29,7 +29,7 @@
     # - daily:
     #   - nixos-unstable cut from master after enough packages have been built in caches.
     # - every 6 hours:
-    #   - master auto-merged into staging.
+    #   - master auto-merged into staging and staging-next
     #   - staging-next auto-merged into staging.
     # - manually, approximately once per month:
     #   - staging-next is cut from staging.
@@ -44,8 +44,9 @@
     # <https://github.com/nixos/nixpkgs/tree/nixos-unstable>
     # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=master";
-    nixpkgs-staging-next-unpatched.url = "github:nixos/nixpkgs?ref=staging-next";
-    nixpkgs-staging-unpatched.url = "github:nixos/nixpkgs?ref=staging";
+    # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-staging";
+    # nixpkgs-unpatched.url = "github:nixos/nixpkgs?ref=nixos-staging-next";
+    nixpkgs-next-unpatched.url = "github:nixos/nixpkgs?ref=staging-next";
 
     mobile-nixos = {
       # <https://github.com/nixos/mobile-nixos>
@@ -74,8 +75,7 @@
   outputs = {
     self,
     nixpkgs-unpatched,
-    nixpkgs-staging-unpatched ? null,
-    nixpkgs-staging-next-unpatched ? null,
+    nixpkgs-next-unpatched ? nixpkgs-unpatched,
     mobile-nixos,
     sops-nix,
     uninsane-dot-org,
@@ -153,18 +153,12 @@
           moby-light  = { name = "moby";   local = "x86_64-linux"; target = "aarch64-linux"; light = true; };
           rescue      = { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux";  };
         };
-        stagingHosts = mapAttrs' (h: v: {
-          name = "${h}-staging";
-          value = v // { nixpkgs = patchNixpkgs "staging" nixpkgs-staging-unpatched; };
-        }) hosts;
-        stagingNextHosts = mapAttrs' (h: v: {
-          name = "${h}-staging-next";
-          value = v // { nixpkgs = patchNixpkgs "staging-next" nixpkgs-staging-next-unpatched; };
+        hostsNext = mapAttrs' (h: v: {
+          name = "${h}-next";
+          value = v // { nixpkgs = patchNixpkgs "staging-next" nixpkgs-next-unpatched; };
         }) hosts;
       in mapAttrValues evalHost (
-        hosts //
-        (optionalAttrs (nixpkgs-staging-unpatched != null) stagingHosts) //
-        (optionalAttrs (nixpkgs-staging-next-unpatched != null) stagingNextHosts)
+        hosts // hostsNext
       );
 
       # unofficial output
@@ -491,7 +485,7 @@
           };
 
           check.hostConfigs = checkHostConfigsApp "";
-          check.hostConfigsNext = checkHostConfigsApp "-staging-next";
+          check.hostConfigsNext = checkHostConfigsApp "-next";
 
           check.rescue = {
             type = "app";
