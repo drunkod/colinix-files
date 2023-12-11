@@ -15,7 +15,6 @@
 , fetchFromSourcehut
 , fetchpatch
 , gnugrep
-, gojq
 , grim
 , inotify-tools
 , j4-dmenu-desktop
@@ -66,7 +65,6 @@ let
     curl
     dbus
     gnugrep  # also in busybox
-    gojq
     inotify-tools
     j4-dmenu-desktop
     jq
