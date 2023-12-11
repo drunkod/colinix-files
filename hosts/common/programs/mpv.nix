@@ -126,7 +126,7 @@ in
     mime.associations."video/quicktime" = "mpv.desktop";
     mime.associations."video/webm" = "mpv.desktop";
     mime.associations."video/x-matroska" = "mpv.desktop";
-    mime.urlAssociations."^https?://(www.)?youtube.com/watch\?.*v=" = "mpv --player-operation-mode=pseudo-gui -- %U";
+    mime.urlAssociations."^https?://(www.)?youtube.com/watch\?.*v=" = "mpv.desktop";
   };
 }
 

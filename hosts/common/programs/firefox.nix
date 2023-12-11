@@ -204,8 +204,6 @@ in
           "x-scheme-handler/about" = desktop;
           "x-scheme-handler/unknown" = desktop;
         };
-        # TODO: cleanup mimeo and remove this
-        mime.urlAssociations."^https?://.*" = "librewolf --name librewolf %U";
 
         # env.BROWSER = "${package}/bin/${cfg.browser.libName}";
         env.BROWSER = cfg.browser.libName;  # used by misc tools like xdg-email, as fallback
