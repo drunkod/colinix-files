@@ -83,8 +83,6 @@
       inherit (builtins) attrNames elem listToAttrs map mapAttrs;
       # redefine some nixpkgs `lib` functions to avoid the infinite recursion
       # of if we tried to use patched `nixpkgs.lib` as part of the patching process.
-      mapAttrs' = f: set:
-        listToAttrs (map (attr: f attr set.${attr}) (attrNames set));
       optionalAttrs = cond: attrs: if cond then attrs else {};
       # mapAttrs but without the `name` argument
       mapAttrValues = f: mapAttrs (_: f);
@@ -113,16 +111,11 @@
       nixpkgsCompiledBy = system: nixpkgs.legacyPackages."${system}";
 
       evalHost = { name, local, target, light ? false }: nixpkgs.lib.nixosSystem {
-        system = target;
+        # system = target;
         modules = [
           {
-            nixpkgs = (if (local != null) then {
-              buildPlatform = local;
-            } else {}) // {
-              # TODO: does the earlier `system` arg to nixosSystem make its way here?
-              hostPlatform.system = target;
-            };
-            # nixpkgs.buildPlatform = local;  # set by instantiate.nix instead
+            nixpkgs.buildPlatform.system = local;
+            nixpkgs.hostPlatform.system = target;
             # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
           }
           (optionalAttrs light {
@@ -140,39 +133,18 @@
         ];
       };
     in {
-      nixosConfigurations =
-        let
-          hosts = {
-            servo       = { name = "servo";  local = "x86_64-linux"; target = "x86_64-linux";  };
-            desko       = { name = "desko";  local = "x86_64-linux"; target = "x86_64-linux";  };
-            desko-light = { name = "desko";  local = "x86_64-linux"; target = "x86_64-linux";  light = true; };
-            lappy       = { name = "lappy";  local = "x86_64-linux"; target = "x86_64-linux";  };
-            lappy-light = { name = "lappy";  local = "x86_64-linux"; target = "x86_64-linux";  light = true; };
-            moby        = { name = "moby";   local = "x86_64-linux"; target = "aarch64-linux"; };
-            moby-light  = { name = "moby";   local = "x86_64-linux"; target = "aarch64-linux"; light = true; };
-            rescue      = { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux";  };
-          };
-          # cross-compiled builds: instead of emulating the host, build using a cross-compiler.
-          # - these are faster to *build* than the emulated variants (useful when tweaking packages),
-          # - but fewer of their packages can be found in upstream caches.
-          cross = mapAttrValues evalHost hosts;
-          emulated = mapAttrValues
-            (args: evalHost (args // { local = null; }))
-            hosts;
-          prefixAttrs = prefix: attrs: mapAttrs'
-            (name: value: {
-              name = prefix + name;
-              inherit value;
-            })
-            attrs;
-        in
-          (prefixAttrs "cross-" cross) //
-          (prefixAttrs "emulated-" emulated) // {
-            # prefer native builds for these machines:
-            inherit (emulated) servo desko desko-light lappy lappy-light rescue;
-            # prefer cross-compiled builds for these machines:
-            inherit (cross) moby moby-light;
-          };
+      nixosConfigurations = let
+        hosts = {
+          servo       = { name = "servo";  local = "x86_64-linux"; target = "x86_64-linux";  };
+          desko       = { name = "desko";  local = "x86_64-linux"; target = "x86_64-linux";  };
+          desko-light = { name = "desko";  local = "x86_64-linux"; target = "x86_64-linux";  light = true; };
+          lappy       = { name = "lappy";  local = "x86_64-linux"; target = "x86_64-linux";  };
+          lappy-light = { name = "lappy";  local = "x86_64-linux"; target = "x86_64-linux";  light = true; };
+          moby        = { name = "moby";   local = "x86_64-linux"; target = "aarch64-linux"; };
+          moby-light  = { name = "moby";   local = "x86_64-linux"; target = "aarch64-linux"; light = true; };
+          rescue      = { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux";  };
+        };
+      in mapAttrValues evalHost hosts;
 
       # unofficial output
       # this produces a EFI-bootable .img file (GPT with a /boot partition and a system (/ or /nix) partition).
