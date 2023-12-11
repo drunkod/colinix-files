@@ -275,6 +275,40 @@
             program = ''${deployScript host addr action}'';
           };
 
+          checkHostConfigsApp = variant: {
+            type = "app";
+            program = let
+              checkHost = host: let
+                shellHost = pkgs.lib.replaceStrings [ "-" ] [ "_" ] host;
+              in ''
+                nix build -v '.#nixosConfigurations.${host}.config.system.build.toplevel' --out-link ./result-${host} -j2 $@
+                RC_${shellHost}=$?
+              '';
+            in builtins.toString (pkgs.writeShellScript
+              "check-host-configs${variant}"
+              ''
+                # build minimally-usable hosts first, then their full image.
+                # this gives me a minimal image i can deploy or copy over, early.
+                ${checkHost "desko-light${variant}"}
+                ${checkHost "moby-light${variant}"}
+                ${checkHost "lappy-light${variant}"}
+
+                ${checkHost "desko${variant}"}
+                ${checkHost "lappy${variant}"}
+                ${checkHost "servo${variant}"}
+                ${checkHost "moby${variant}"}
+                ${checkHost "rescue${variant}"}
+
+                echo "desko: $RC_desko"
+                echo "lappy: $RC_lappy"
+                echo "servo: $RC_servo"
+                echo "moby: $RC_moby"
+                echo "rescue: $RC_rescue"
+                exit $(($RC_desko | $RC_lappy | $RC_servo | $RC_moby | $RC_rescue))
+              ''
+            );
+          };
+
           # pkg updating.
           # a cleaner alternative lives here: <https://discourse.nixos.org/t/how-can-i-run-the-updatescript-of-personal-packages/25274/2>
           # mkUpdater :: [ String ] -> { type = "app"; program = path; }
@@ -456,39 +490,8 @@
             '');
           };
 
-          check.hostConfigs = {
-            type = "app";
-            program = let
-              checkHost = host: let
-                shellHost = pkgs.lib.replaceStrings [ "-" ] [ "_" ] host;
-              in ''
-                nix build -v '.#nixosConfigurations.${host}.config.system.build.toplevel' --out-link ./result-${host} -j2 $@
-                RC_${shellHost}=$?
-              '';
-            in builtins.toString (pkgs.writeShellScript
-              "check-host-configs"
-              ''
-                # build minimally-usable hosts first, then their full image.
-                # this gives me a minimal image i can deploy or copy over, early.
-                ${checkHost "desko-light"}
-                ${checkHost "moby-light"}
-                ${checkHost "lappy-light"}
-
-                ${checkHost "desko"}
-                ${checkHost "lappy"}
-                ${checkHost "servo"}
-                ${checkHost "moby"}
-                ${checkHost "rescue"}
-
-                echo "desko: $RC_desko"
-                echo "lappy: $RC_lappy"
-                echo "servo: $RC_servo"
-                echo "moby: $RC_moby"
-                echo "rescue: $RC_rescue"
-                exit $(($RC_desko | $RC_lappy | $RC_servo | $RC_moby | $RC_rescue))
-              ''
-            );
-          };
+          check.hostConfigs = checkHostConfigsApp "";
+          check.hostConfigsNext = checkHostConfigsApp "-staging-next";
 
           check.rescue = {
             type = "app";
