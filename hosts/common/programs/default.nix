@@ -44,6 +44,7 @@
     ./lemoa.nix
     ./mako.nix
     ./mepo.nix
+    ./mimeo.nix
     ./mopidy.nix
     ./mpv.nix
     ./msmtp.nix
