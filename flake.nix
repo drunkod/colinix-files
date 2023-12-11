@@ -111,13 +111,17 @@
       nixpkgsCompiledBy = system: nixpkgs.legacyPackages."${system}";
 
       evalHost = { name, local, target, light ? false }: nixpkgs.lib.nixosSystem {
-        # system = target;
+        system = target;
         modules = [
           {
             nixpkgs.buildPlatform.system = local;
-            nixpkgs.hostPlatform.system = target;
             # nixpkgs.config.replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
           }
+          (optionalAttrs (local != target) {
+            # XXX(2023/12/11): cache.nixos.org uses `system = ...` instead of `hostPlatform.system`, and that choice impacts the closure of every package.
+            # so avoid specifying hostPlatform.system on non-cross builds, so i can use upstream caches.
+            nixpkgs.hostPlatform.system = target;
+          })
           (optionalAttrs light {
             sane.enableSlowPrograms = false;
           })
