@@ -474,6 +474,10 @@
                 ${checkHost "moby"}
                 ${checkHost "rescue"}
 
+                # still want to build the -light variants first so as to avoid multiple simultaneous webkitgtk builds
+                ${checkHost "desko-light-next"}
+                ${checkHost "moby-light-next"}
+
                 ${checkHost "desko-next"}
                 ${checkHost "lappy-next"}
                 ${checkHost "servo-next"}
