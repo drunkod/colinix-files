@@ -112,10 +112,10 @@
         inherit (self) shortRev;
       };
 
-      nixpkgs = patchNixpkgs "master" nixpkgs-unpatched;
-      nixpkgsCompiledBy = system: nixpkgs.legacyPackages."${system}";
+      nixpkgs' = patchNixpkgs "master" nixpkgs-unpatched;
+      nixpkgsCompiledBy = system: nixpkgs'.legacyPackages."${system}";
 
-      evalHost = { name, local, target, light ? false, nixpkgs ? nixpkgs }: nixpkgs.lib.nixosSystem {
+      evalHost = { name, local, target, light ? false, nixpkgs ? nixpkgs' }: nixpkgs.lib.nixosSystem {
         system = target;
         modules = [
           {
@@ -267,40 +267,6 @@
           deployApp = host: addr: action: {
             type = "app";
             program = ''${deployScript host addr action}'';
-          };
-
-          checkHostConfigsApp = variant: {
-            type = "app";
-            program = let
-              checkHost = host: let
-                shellHost = pkgs.lib.replaceStrings [ "-" ] [ "_" ] host;
-              in ''
-                nix build -v '.#nixosConfigurations.${host}.config.system.build.toplevel' --out-link ./result-${host} -j2 $@
-                RC_${shellHost}=$?
-              '';
-            in builtins.toString (pkgs.writeShellScript
-              "check-host-configs${variant}"
-              ''
-                # build minimally-usable hosts first, then their full image.
-                # this gives me a minimal image i can deploy or copy over, early.
-                ${checkHost "desko-light${variant}"}
-                ${checkHost "moby-light${variant}"}
-                ${checkHost "lappy-light${variant}"}
-
-                ${checkHost "desko${variant}"}
-                ${checkHost "lappy${variant}"}
-                ${checkHost "servo${variant}"}
-                ${checkHost "moby${variant}"}
-                ${checkHost "rescue${variant}"}
-
-                echo "desko: $RC_desko"
-                echo "lappy: $RC_lappy"
-                echo "servo: $RC_servo"
-                echo "moby: $RC_moby"
-                echo "rescue: $RC_rescue"
-                exit $(($RC_desko | $RC_lappy | $RC_servo | $RC_moby | $RC_rescue))
-              ''
-            );
           };
 
           # pkg updating.
@@ -484,8 +450,53 @@
             '');
           };
 
-          check.hostConfigs = checkHostConfigsApp "";
-          check.hostConfigsNext = checkHostConfigsApp "-next";
+          check.hostConfigs = {
+            type = "app";
+            program = let
+              checkHost = host: let
+                shellHost = pkgs.lib.replaceStrings [ "-" ] [ "_" ] host;
+              in ''
+                nix build -v '.#nixosConfigurations.${host}.config.system.build.toplevel' --out-link ./result-${host} -j2 $@
+                RC_${shellHost}=$?
+              '';
+            in builtins.toString (pkgs.writeShellScript
+              "check-host-configs"
+              ''
+                # build minimally-usable hosts first, then their full image.
+                # this gives me a minimal image i can deploy or copy over, early.
+                ${checkHost "desko-light"}
+                ${checkHost "moby-light"}
+                ${checkHost "lappy-light"}
+
+                ${checkHost "desko"}
+                ${checkHost "lappy"}
+                ${checkHost "servo"}
+                ${checkHost "moby"}
+                ${checkHost "rescue"}
+
+                ${checkHost "desko-next"}
+                ${checkHost "lappy-next"}
+                ${checkHost "servo-next"}
+                ${checkHost "moby-next"}
+                ${checkHost "rescue-next"}
+
+                echo "desko: $RC_desko"
+                echo "lappy: $RC_lappy"
+                echo "servo: $RC_servo"
+                echo "moby: $RC_moby"
+                echo "rescue: $RC_rescue"
+
+                echo "desko-next: $RC_desko_next"
+                echo "lappy-next: $RC_lappy_next"
+                echo "servo-next: $RC_servo_next"
+                echo "moby-next: $RC_moby_next"
+                echo "rescue-next: $RC_rescue_next"
+
+                # i don't really care if the -next hosts fail. i build them mostly to keep the cache fresh/ready
+                exit $(($RC_desko | $RC_lappy | $RC_servo | $RC_moby | $RC_rescue))
+              ''
+            );
+          };
 
           check.rescue = {
             type = "app";
