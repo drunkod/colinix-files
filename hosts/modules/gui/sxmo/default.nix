@@ -237,6 +237,7 @@ in
             SXMO_NO_AUDIO = mkSettingsOpt "" "don't start pipewire/pulseaudio in sxmo_hook_start.sh, don't show audio in statusbar, disable audio menu";
             SXMO_STATES = mkSettingsOpt "unlock screenoff" "list of states the device should support (unlock, lock, screenoff)";
             SXMO_SWAY_SCALE = mkSettingsOpt "1" "sway output scale";
+            SXMO_WOB_DISABLE = mkSettingsOpt "" "disable the on-screen volume display";
           };
       };
       default = {};
