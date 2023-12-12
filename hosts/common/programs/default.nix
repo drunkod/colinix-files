@@ -42,6 +42,7 @@
     ./koreader
     ./libreoffice.nix
     ./lemoa.nix
+    ./loupe.nix
     ./mako.nix
     ./mepo.nix
     ./mimeo
