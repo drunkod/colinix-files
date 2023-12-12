@@ -52,6 +52,7 @@
     ./newsflash.nix
     ./nheko.nix
     ./nix-index.nix
+    ./notejot.nix
     ./ntfy-sh.nix
     ./obsidian.nix
     ./offlineimap.nix

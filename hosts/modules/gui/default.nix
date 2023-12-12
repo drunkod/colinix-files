@@ -115,6 +115,7 @@ in
     "komikku"
     "koreader"
     "megapixels"  # camera app
+    "notejot"  # note taking, e.g. shopping list
     "portfolio-filemanager"
     "tangram"  # web browser
     "wike"  # Wikipedia Reader
