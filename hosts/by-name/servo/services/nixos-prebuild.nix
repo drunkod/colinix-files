@@ -9,7 +9,7 @@
       git clone https://git.uninsane.org/colin/nix-files.git
       cd nix-files
       nix flake update
-      nix run '.#check' -- -j1 --cores 5
+      nix run '.#check' -- -j1 --cores 5 --builders ""
       popd
       rm -rf "$working"
     '';
