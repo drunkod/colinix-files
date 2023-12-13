@@ -123,6 +123,13 @@ in (lib.makeScope newScope (self: with self; {
       version = "11.7.0";
       hash = "sha256-Xb+hFxFTfGE0IKp87JKLUoaLbgjwhnWUYwTNlYj1LCM=";
     };
+    fx_cast = fetchVersionedAddon rec {
+      extid = "fx_cast@matt.tf";
+      pname = "fx_cast";
+      url = "https://github.com/hensm/fx_cast/releases/download/v${version}/fx_cast-${version}.xpi";
+      version = "0.3.1";
+      hash = "sha256-zaYnUJpJkRAPSCpM3S20PjMS4aeBtQGhXB2wgdlFkSQ=";
+    };
     i2p-in-private-browsing = fetchVersionedAddon rec {
       extid = "i2ppb@eyedeekay.github.io";
       pname = "i2p-in-private-browsing";

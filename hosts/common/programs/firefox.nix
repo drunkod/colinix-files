@@ -55,7 +55,11 @@ let
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
     inherit (cfg.browser) extraPrefsFiles libName;
 
-    extraNativeMessagingHosts = optional cfg.addons.browserpass-extension.enable pkgs.browserpass;
+    extraNativeMessagingHosts = lib.optionals cfg.addons.browserpass-extension.enable [
+      pkgs.browserpass
+    ] ++ lib.optionals cfg.addons.fxCast.enable [
+      pkgs.fx-cast-bridge
+    ];
     # extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
 
     nixExtensions = concatMap (ext: optional ext.enable ext.package) (attrValues cfg.addons);
@@ -157,6 +161,12 @@ in
         default = {};
       };
       sane.programs.firefox.config.addons = {
+        fxCast = {
+          # add a menu to cast to chromecast devices.
+          # supposedly, anyway. it doesn't seem to work for me.
+          package = pkgs.firefox-extensions.fx_cast;
+          enable = lib.mkDefault false;
+        };
         browserpass-extension = {
           package = pkgs.firefox-extensions.browserpass-extension;
           enable = lib.mkDefault true;
