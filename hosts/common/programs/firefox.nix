@@ -187,6 +187,10 @@ in
           package = pkgs.firefox-extensions.i2p-in-private-browsing;
           enable = lib.mkDefault config.services.i2p.enable;
         };
+        open-in-mpv = {
+          package = pkgs.firefox-extensions.open-in-mpv;
+          enable = lib.mkDefault config.sane.programs.open-in-mpv.enabled;
+        };
         sidebery = {
           package = pkgs.firefox-extensions.sidebery;
           enable = lib.mkDefault true;
@@ -208,6 +212,10 @@ in
     ({
       sane.programs.firefox = {
         inherit package;
+
+        suggestedPrograms = [
+          "open-in-mpv"
+        ];
 
         mime.associations = let
           inherit (cfg.browser) desktop;

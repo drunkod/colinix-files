@@ -137,6 +137,17 @@ in (lib.makeScope newScope (self: with self; {
       version = "1.47";
       hash = "sha256-LnR5z3fqNJywlr/khFdV4qloKGQhbxNZQvWCEgz97DU=";
     };
+    open-in-mpv = fetchVersionedAddon rec {
+      # usage:
+      # - click the "puzzle" icon in top-right of browser -> open in mpv
+      # - or, (shift)right-click a video and select "open in mpv"
+      #   - but note that this option does not work for Youtube videos
+      extid = "{d66c8515-1e0d-408f-82ee-2682f2362726}";
+      pname = "open-in-mpv";
+      url = "https://github.com/Baldomo/open-in-mpv/releases/download/v${version}/firefox.xpi";
+      version = "2.1.0";
+      hash = "sha256-jRP0hvEyScGnQ2K5EFX+ggtu6B0h9Y3fJxYYnI8cMbc=";
+    };
     sidebery = fetchVersionedAddon rec {
       extid = "{3c078156-979c-498b-8990-85f7987dd929}";
       pname = "sidebery";
