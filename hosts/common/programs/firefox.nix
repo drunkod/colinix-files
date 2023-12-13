@@ -162,8 +162,12 @@ in
       };
       sane.programs.firefox.config.addons = {
         fxCast = {
-          # add a menu to cast to chromecast devices.
-          # supposedly, anyway. it doesn't seem to work for me.
+          # add a menu to cast to chromecast devices, but it doesn't seem to work very well.
+          # right click (or shift+rc) a video, then select "cast".
+          # - asciinema.org: icon appears, but glitches when clicked.
+          # - youtube.com: no icon appears, even when site is whitelisted.
+          # future: maybe better to have browser open all videos in mpv, and then use mpv for casting.
+          # see e.g. `ff2mpv`, `open-in-mpv` (both are packaged in nixpkgs)
           package = pkgs.firefox-extensions.fx_cast;
           enable = lib.mkDefault false;
         };
