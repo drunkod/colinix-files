@@ -260,6 +260,10 @@ in
           // note that too-large scrollbars (like 50px wide) tend to obscure content (and make buttons unclickable)
           defaultPref("widget.non-native-theme.scrollbar.size.override", 20);
           defaultPref("widget.non-native-theme.scrollbar.style", 4);
+
+          // auto-dispatch mpv:// URIs to xdg-open without prompting.
+          // can do this with other protocols too (e.g. matrix?). see about:config for common handlers.
+          defaultPref("network.protocol-handler.external.mpv", true);
         '';
         fs."${cfg.browser.dotDir}/default".dir = {};
         # instruct Firefox to put the profile in a predictable directory (so we can do things like persist just it).
