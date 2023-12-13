@@ -55,12 +55,11 @@ let
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
     inherit (cfg.browser) extraPrefsFiles libName;
 
-    extraNativeMessagingHosts = lib.optionals cfg.addons.browserpass-extension.enable [
+    nativeMessagingHosts = lib.optionals cfg.addons.browserpass-extension.enable [
       pkgs.browserpass
     ] ++ lib.optionals cfg.addons.fxCast.enable [
       pkgs.fx-cast-bridge
     ];
-    # extraNativeMessagingHosts = [ pkgs.gopass-native-messaging-host ];
 
     nixExtensions = concatMap (ext: optional ext.enable ext.package) (attrValues cfg.addons);
 
