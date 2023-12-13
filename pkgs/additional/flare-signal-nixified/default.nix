@@ -127,12 +127,15 @@ let
           "--cross-file=${crossFile}"
         ];
 
-      # patch so meson will invoke our `crate2nix_cmd.sh` instead of cargo
       postPatch = ''
+        # patch so meson will invoke our `crate2nix_cmd.sh` instead of cargo
         substituteInPlace src/meson.build \
           --replace 'cargo_options,'  "" \
           --replace "cargo, 'build',"  "'bash', 'crate2nix_cmd.sh'," \
           --replace "'target' / rust_target" "'target/bin'"
+        # enable the "Primary Device" button (beta)
+        substituteInPlace data/resources/ui/setup_window.blp \
+          --replace 'sensitive: false;' ""
       '';
       postConfigure = ''
         # copied from <pkgs/development/tools/build-managers/meson/setup-hook.sh>
