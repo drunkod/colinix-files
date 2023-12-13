@@ -52,7 +52,7 @@
 , xrdb
 , supportSway ? true
 , supportDwm ? false
-, preferSystemd ? false
+, preferSystemd ? true
 , preferXdgOpen ? true
 }:
 
