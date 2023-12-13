@@ -857,10 +857,71 @@ in with final; {
   #   ];
   # });
 
-  glycin-loaders = prev.glycin-loaders.overrideAttrs (upstream: {
-    # loaders/meson.build:72:7: ERROR: Program 'msgfmt' not found or not executable
-    # new error: "error: linker `cc` not found"
-    nativeBuildInputs = upstream.nativeBuildInputs ++ [ buildPackages.gettext ];
+  glycin-loaders = prev.glycin-loaders.overrideAttrs (upstream:
+  let
+    cargoEnvWrapper = buildPackages.writeShellScript "cargo-env-wrapper" ''
+      CARGO_BIN="$1"
+      shift
+      CARGO_OP="$1"
+      shift
+
+      ${rust.envVars.setEnv} "$CARGO_BIN" "$CARGO_OP" --target "${rust.envVars.rustHostPlatformSpec}" "$@"
+    '';
+  in {
+    nativeBuildInputs = upstream.nativeBuildInputs ++ [
+      # fixes: loaders/meson.build:72:7: ERROR: Program 'msgfmt' not found or not executable
+      buildPackages.gettext
+      rustPlatform.cargoSetupHook
+      # buildPackages.xz
+      # buildPackages.gnutar
+    ];
+    cargoVendorDir = "vendor";
+    # dontCargoSetupPostUnpack = true;
+    # mesonFlags = [
+    #   "-Dprofile=dev"
+    #   "-Dtest_skip_install=true"
+    # ];
+    # fixes: "error: linker `cc` not found"
+    preConfigure = ''
+      # cp .cargo/config $sourceRoot/.cargo/config
+      cp ../.cargo/config .cargo/config
+      export RUST_TARGET="${stdenv.hostPlatform.rust.rustcTargetSpec}"
+    '';
+    # configureFlags = [
+    #   "RUST_TARGET=${stdenv.hostPlatform.rust.rustcTarget}"
+    #   # "RUSTFLAGS=-Clinker=$CC"
+    # ];
+    # postConfigure = ''
+    #   export RUST_TARGET="${stdenv.hostPlatform.rust.rustcTarget}"
+    #   export RUSTFLAGS="-Clinker=$CC"
+    # '';
+    postPatch = ''
+      substituteInPlace loaders/meson.build \
+        --replace "cargo_bin, 'build'," "'${cargoEnvWrapper}', cargo_bin, 'build'," \
+        --replace "'loaders' / rust_target" "'loaders' / '${rust.envVars.rustHostPlatformSpec}' / rust_target"
+    '';
+    # postConfigure = ''
+    #   echo "source root: $sourceRoot"
+    #   export RUSTFLAGS="-Clinker=$CC"
+    #   # export RUST_TARGET="${stdenv.hostPlatform.rust.rustcTarget}"
+    # '';
+    # env = let
+    #   ccForBuild = "${buildPackages.stdenv.cc}/bin/${buildPackages.stdenv.cc.targetPrefix}cc";
+    #   cxxForBuild = "${buildPackages.stdenv.cc}/bin/${buildPackages.stdenv.cc.targetPrefix}c++";
+    #   ccForHost = "${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc";
+    #   cxxForHost = "${stdenv.cc}/bin/${stdenv.cc.targetPrefix}c++";
+    #   rustBuildPlatform = rust.toRustTarget stdenv.buildPlatform;
+    #   rustTargetPlatform = rust.toRustTarget stdenv.hostPlatform;
+    #   rustTargetPlatformSpec = rust.toRustTargetSpec stdenv.hostPlatform;
+    # in {
+    #   # taken from <pkgs/build-support/rust/hooks/default.nix>
+    #   # fixes "cargo:warning=aarch64-unknown-linux-gnu-gcc: error: unrecognized command-line option ‘-m64’"
+    #   # XXX: these aren't necessarily valid environment variables: the referenced nix file is more clever to get them to work.
+    #   "CC_${rustBuildPlatform}" = "${ccForBuild}";
+    #   "CXX_${rustBuildPlatform}" = "${cxxForBuild}";
+    #   "CC_${rustTargetPlatform}" = "${ccForHost}";
+    #   "CXX_${rustTargetPlatform}" = "${cxxForHost}";
+    # };
   });
 
 
