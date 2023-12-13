@@ -1361,6 +1361,24 @@ in with final; {
     # depsBuildBuild = (upstream.depsBuildBuild or []) ++ [ pkg-config ];
   });
 
+  loupe = prev.loupe.overrideAttrs (upstream:
+  let
+    cargoEnvWrapper = buildPackages.writeShellScript "cargo-env-wrapper" ''
+      CARGO_BIN="$1"
+      shift
+      CARGO_OP="$1"
+      shift
+
+      ${rust.envVars.setEnv} "$CARGO_BIN" "$CARGO_OP" --target "${rust.envVars.rustHostPlatformSpec}" "$@"
+    '';
+  in {
+    postPatch = (upstream.postPatch or "") + ''
+      substituteInPlace src/meson.build \
+        --replace "cargo, 'build'," "'${cargoEnvWrapper}', cargo, 'build'," \
+        --replace "'src' / rust_target" "'src' / '${rust.envVars.rustHostPlatformSpec}' / rust_target"
+    '';
+  });
+
   mepo = (prev.mepo.override {
     # nixpkgs mepo correctly puts `zig_0_11.hook` in nativeBuildInputs,
     # but for some reason that tries to use the host zig instead of the build zig.
