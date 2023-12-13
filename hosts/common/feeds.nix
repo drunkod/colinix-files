@@ -136,6 +136,7 @@ let
 
     ## No Moods, Ads or Cutesy Fucking Icons
     (fromDb "rifters.com/crawl" // uncat)
+    (fromDb "bitsaboutmoney.com" // uncat)
 
     # DEVELOPERS
     (fromDb "blog.jmp.chat" // tech)
