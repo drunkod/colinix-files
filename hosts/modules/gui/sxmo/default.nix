@@ -465,7 +465,7 @@ in
             in assert terminal -> events == []; events;
 
           # trigger ${button}_hold_N every `holdTime` ms until ${button} is released
-          recurseHold = button: { count ? 1, maxHolds ? 5, prefix ? "", holdTime ? 400, ... }@opts: lib.optionalAttrs (count <= maxHolds) {
+          recurseHold = button: { count ? 1, maxHolds ? 5, prefix ? "", holdTime ? 600, ... }@opts: lib.optionalAttrs (count <= maxHolds) {
             "${button}_released".terminal = true;  # end the hold -> back to root state
             timeout = {
               ms = holdTime;
@@ -493,7 +493,7 @@ in
           # map sequences of "events" to an argument to pass to sxmo_hook_inputhandler.sh
 
           # map: power (short), power (short) x2, power (long)
-          power_pressed.timeout.ms = 1000; # press w/o release. this is a long timeout because it's tied to the "kill window" action.
+          power_pressed.timeout.ms = 900; # press w/o release. this is a long timeout because it's tied to the "kill window" action.
           power_pressed.timeout.trigger = "powerhold";
           power_pressed.power_released.timeout.trigger = "powerbutton_one";
           power_pressed.power_released.timeout.ms = 300;
