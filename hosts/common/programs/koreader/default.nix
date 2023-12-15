@@ -1,7 +1,15 @@
+# docs:
+# - <https://koreader.rocks/user_guide/>
+# - <https://github.com/koreader/koreader/wiki>
+#
 # post-installation setup:
 # - download dictionaries:
 #   - search icon > settings > dictionary settings > download dictionaries
 #   - these are stored in `~/.config/koreader/data/dict`
+# - configure defaults:
+#   - edit keys in ~/.config/koreader/settings.reader.lua
+#     - default font size: `["copt_font_size"] = 28,`
+#     - home dir: `["home_dir"] = "/home/colin/Books",`
 { config, lib, pkgs, sane-lib, ... }:
 
 let
@@ -18,7 +26,7 @@ let
     # enable_filter         = true => only render content that matches the filter_element css selector.
     let fields = [
       (lib.escapeShellArg feed.url)
-      "limit = 5"
+      "limit = 20"
       "download_full_article = true"
       "include_images = true"
       "enable_filter = false"
