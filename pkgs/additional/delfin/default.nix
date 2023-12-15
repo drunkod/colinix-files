@@ -38,6 +38,7 @@ stdenv.mkDerivation rec {
 
 
   nativeBuildInputs = [
+    appstream
     desktop-file-utils
     meson
     ninja
@@ -49,7 +50,6 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    appstream
     gtk4
     libadwaita
     libglvnd
