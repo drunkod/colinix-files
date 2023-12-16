@@ -57,7 +57,9 @@ in
       ];
     };
     persist.byStore.plaintext = [ ".local/state/mpv/watch_later" ];
-    fs.".config/mpv/input.conf".symlink.text = ''
+    fs.".config/mpv/input.conf".symlink.text = let
+      execInTerm = "${pkgs.xdg-terminal-exec}/bin/xdg-terminal-exec";
+    in ''
       # docs:
       # - <https://mpv.io/manual/master/#list-of-input-commands>
       # - script-binding: <https://mpv.io/manual/master/#command-interface-script-binding>
@@ -91,9 +93,9 @@ in
       alt+i       script-binding uosc/keybinds           #! Utils > Key bindings
       O           script-binding uosc/show-in-directory  #! Utils > Show in directory
       #           script-binding uosc/open-config-directory #! Utils > Open config directory
-      #           set pause yes; run xdg-terminal-exec go2tv -v "''${stream-open-filename}" #! Cast
-      #           set pause yes; run xdg-terminal-exec go2tv -u "''${stream-open-filename}" #! Cast (...) > Stream
-      #           set pause yes; run xdg-terminal-exec go2tv #! Cast (...) > GUI
+      #           set pause yes; run ${execInTerm} go2tv -v "''${stream-open-filename}" #! Cast
+      #           set pause yes; run ${execInTerm} go2tv -u "''${stream-open-filename}" #! Cast (...) > Stream
+      #           set pause yes; run go2tv #! Cast (...) > GUI
       # TODO: unify "Cast" and "Cast (stream)" options above.
     '';
     fs.".config/mpv/mpv.conf".symlink.text = ''
