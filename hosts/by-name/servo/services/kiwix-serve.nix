@@ -6,10 +6,14 @@
 
 { ... }:
 {
+  sane.persist.sys.byStore.ext = [
+    { user = "colin"; group = "users"; path = "/var/lib/kiwix"; }
+  ];
+
   sane.services.kiwix-serve = {
     enable = true;
     port = 8013;
-    zimPaths = [ "/var/lib/uninsane/www-archive/wikipedia_en_all_maxi_2023-11.zim" ];
+    zimPaths = [ "/var/lib/kiwix/wikipedia_en_all_maxi_2023-11.zim" ];
   };
 
   services.nginx.virtualHosts."w.uninsane.org" = {
