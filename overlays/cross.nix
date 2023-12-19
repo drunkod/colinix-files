@@ -1253,6 +1253,24 @@ in with final; {
   # ```
   # koreader-from-src = needsBinfmt prev.koreader-from-src;
 
+  lemoa = prev.lemoa.overrideAttrs (upstream:
+    let
+      rustTargetPlatform = rust.toRustTarget stdenv.hostPlatform;
+    in {
+      # nixpkgs sets CARGO_BUILD_TARGET to the build platform target, so correct that.
+      buildPhase = ''
+        runHook preBuild
+
+        mkdir -p target/release
+        ln -s ../${rustTargetPlatform}/release/lemoa target/release/lemoa
+
+        ${rust.envVars.setEnv} "CARGO_BUILD_TARGET=${rustTargetPlatform}" ninja -j$NIX_BUILD_CORES
+
+        runHook postBuild
+      '';
+    }
+  );
+
   # libgweather = rmNativeInputs [ glib ] (prev.libgweather.override {
   #   # alternative to emulating python3 is to specify it in `buildInputs` instead of `nativeBuildInputs` (upstream),
   #   #   but presumably that's just a different way to emulate it.
