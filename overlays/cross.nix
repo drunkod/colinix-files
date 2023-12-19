@@ -836,6 +836,7 @@ in with final; {
   #   ];
   # });
 
+  # 2023/12/19: upstreaming is unblocked
   glycin-loaders = prev.glycin-loaders.overrideAttrs (upstream:
   let
     cargoEnvWrapper = buildPackages.writeShellScript "cargo-env-wrapper" ''
@@ -1358,6 +1359,7 @@ in with final; {
     # depsBuildBuild = (upstream.depsBuildBuild or []) ++ [ pkg-config ];
   });
 
+  # 2023/12/19: upstreaming blocked on glycin-loaders
   loupe = prev.loupe.overrideAttrs (upstream:
   let
     cargoEnvWrapper = buildPackages.writeShellScript "cargo-env-wrapper" ''
@@ -2101,7 +2103,7 @@ in with final; {
     ];
   });
 
-  # 2023/12/08: upstreaming is blocked by qtsvg (via pipewire)
+  # 2023/12/19: upstreaming is blocked by qtsvg (via pipewire)
   spot = prev.spot.overrideAttrs (upstream:
     let
       rustTargetPlatform = rust.toRustTarget stdenv.hostPlatform;
