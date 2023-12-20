@@ -1,3 +1,8 @@
+# outstanding cross-compilation PRs/issues:
+# - all: <https://github.com/NixOS/nixpkgs/labels/6.topic%3A%20cross-compilation>
+# - qtsvg mixed deps: <https://github.com/NixOS/nixpkgs/issues/269756>
+#   - big Qt fix: <https://github.com/NixOS/nixpkgs/pull/267311>
+#
 # outstanding issues:
 # - 2023/10/10: build python3 is pulled in by many things
 #   - nix why-depends --all /nix/store/8g3kd2jxifq10726p6317kh8srkdalf5-nixos-system-moby-23.11.20231011.dirty /nix/store/pzf6dnxg8gf04xazzjdwarm7s03cbrgz-python3-3.10.12/bin/python3.10
@@ -304,6 +309,8 @@ let
         nativeInstallCheckInputs = unsplicePkgs (upstream.nativeInstallCheckInputs or []);
       });
 
+  # TODO: may be able to use qemu-system instead of booting a full linux?
+  # - <https://github.com/NixOS/nixpkgs/issues/119885#issuecomment-858491472>
   buildInQemu = overrides: pkg: emulateBuilderQemu (buildOnHost overrides pkg);
   # buildInProot = pkg: emulateBuilderProot (buildOnHost pkg);
 in with final; {
@@ -517,7 +524,7 @@ in with final; {
   # }).overrideAttrs (upstream: {
   #   nativeBuildInputs = lib.remove glib upstream.nativeBuildInputs;
   # });
-  # 2023/12/08: upstreaming is unblocked (all dconf-editor deps build)
+  # 2023/12/20: out for PR: <https://github.com/NixOS/nixpkgs/pull/275732>
   dconf = prev.dconf.overrideAttrs (upstream: {
     # we need dconf to build with vala, because dconf-editor requires that.
     # upstream nixpkgs explicitly disables that on cross compilation, but in fact, it works.
@@ -886,6 +893,7 @@ in with final; {
   # 2023/12/08: upstreaming is unblocked (but requires building webkitgtk-4.0)
   gthumb = mvInputs { nativeBuildInputs = [ glib ]; } prev.gthumb;
 
+  # 2023/12/20: upstreaming is blocked on qtsvg (via pipewire), jbig2dec
   gnome-frog = prev.gnome-frog.overrideAttrs (upstream: {
     # blueprint-compiler runs on the build machine, but tries to load gobject-introspection types meant for the host.
     postPatch = (upstream.postPatch or "") + ''
@@ -906,6 +914,7 @@ in with final; {
     #   - that's an explicit choice/limitation in nixpkgs upstream
     # - TODO: vapi stuff is contained in <dconf.dev:/share/vala/vapi/dconf.vapi>
     #   it's cross-platform; should be possible to ship dconf only in buildInputs & point dconf-editor to the right place
+    # 2023/12/20: out for PR: <https://github.com/NixOS/nixpkgs/pull/275732>
     # dconf-editor = addNativeInputs [ dconf ] super.dconf-editor;
     # evince = super.evince.overrideAttrs (orig: {
     #   # 2023/12/08: upstreaming is unblocked, working without patch
@@ -1197,12 +1206,16 @@ in with final; {
   #   };
   # };
 
+  # 2023/12/20: upstreamed into staging, waiting on staging -> master merge: <https://github.com/NixOS/nixpkgs/pull/275027>
   jbig2dec = prev.jbig2dec.overrideAttrs (_: {
     # adding configureFlags here fixes: "configure: error: cannot run C compiled programs."
     #   autogen needs the --host flag, i guess
-    preConfigure = ''
-      ./autogen.sh $configureFlags
-    '';
+    # preConfigure = ''
+    #   ./autogen.sh $configureFlags
+    # '';
+    # alternatively, we've set `configureScript` and so no longer need the preConfigure step
+    configureScript = "./autogen.sh";
+    preConfigure = "";
   });
 
   # jellyfin-media-player = mvToBuildInputs
