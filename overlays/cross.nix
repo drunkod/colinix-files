@@ -403,8 +403,8 @@ in with final; {
   #   };
 
   # error: "imdi/imdi_make: line 1: ^?ELF^B^A^A^B�^A�@�^W^A@8: not found"
-  # 2023/12/08: upstreaming is unblocked
-  argyllcms = needsBinfmtOrQemu prev.argyllcms;
+  # 2023/12/20: upstreaming is unblocked; implemented in nixpatches/list.nix
+  # argyllcms = needsBinfmtOrQemu prev.argyllcms;
 
   # binutils = prev.binutils.override {
   #   # fix that resulting binary files would specify build #!sh as their interpreter.
