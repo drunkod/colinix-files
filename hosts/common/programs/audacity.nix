@@ -8,5 +8,15 @@
         withWebKit = false;
       };
     };
+
+    # disable first-run splash screen
+    fs.".config/audacity/audacity.cfg".file.text = ''
+      PrefsVersion=1.1.1r1
+      [GUI]
+      ShowSplashScreen=0
+      [Version]
+      Major=3
+      Minor=4
+    '';
   };
 }
