@@ -42,18 +42,21 @@ in [
     prUrl = "https://github.com/NixOS/nixpkgs/pull/266254";
     hash = "sha256-HOR9oehqs1n3KE4jKZavXYy7pqEq9osJsxupCDnrtHY=";
     merged.staging = "202312062110";
+    merged.staging-next = "202312210000";
   })
   (fetchpatch' {
     title = "jbig2dec cross fix";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/275027";
     hash = "sha256-sGBX1UamML46oS7zPZcuQXURjwADiPvvcEmAphoHvMg=";
     merged.staging = "202312202300";
+    merged.staging-next = "202312210000";
   })
   (fetchpatch' {
     title = "vala: look for files in targetOffset";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/267550";
     hash = "sha256-Dl9ZQazjXjIbw38Q78otQvgVCB/QZAC1IYoFX0Tuyw0=";
     merged.staging = "202312012359";
+    merged.staging-next = "202312210000";
   })
 
   # (fetchpatch' {
