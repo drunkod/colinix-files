@@ -31,6 +31,25 @@ in [
     saneCommit = "8631ddfb99aa8e935276b27d55ef5e10f5ab0367";
     hash = "sha256-AkxtrCJrf0wpTdty4SOIWBrWwqfG7rBI4ON38BjDi6s=";
   })
+  (fetchpatch' {
+    title = "jbig2dec: fix cross";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/266254";
+    hash = "sha256-HOR9oehqs1n3KE4jKZavXYy7pqEq9osJsxupCDnrtHY=";
+    merged.staging = "202312062110";
+  })
+  (fetchpatch' {
+    title = "jbig2dec cross fix";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/275027";
+    hash = "sha256-sGBX1UamML46oS7zPZcuQXURjwADiPvvcEmAphoHvMg=";
+    merged.staging = "202312202300";
+  })
+  (fetchpatch' {
+    title = "vala: look for files in targetOffset";
+    prUrl = "https://github.com/NixOS/nixpkgs/pull/267550";
+    hash = "sha256-Dl9ZQazjXjIbw38Q78otQvgVCB/QZAC1IYoFX0Tuyw0=";
+    merged.staging = "202312012359";
+  })
+
   # (fetchpatch' {
   #   title = "fx-cast-bridge: Pin nodejs to version 18";
   #   prUrl = "https://github.com/NixOS/nixpkgs/pull/273768";
@@ -56,11 +75,6 @@ in [
     title = "nixos/slskd: option fixes";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/270646";
     hash = "sha256-5brmmPfYp7G+5Dr5q2skWSwkrEwsRAe/UetoN0AqGjY=";
-  })
-  (fetchpatch' {
-    title = "vala: look for files in targetOffset";
-    prUrl = "https://github.com/NixOS/nixpkgs/pull/267550";
-    hash = "sha256-Dl9ZQazjXjIbw38Q78otQvgVCB/QZAC1IYoFX0Tuyw0=";
   })
   # (fetchpatch' {
   #   # N.B.: obsoleted by 267550 PR above
@@ -333,11 +347,6 @@ in [
   #   hash = "sha256-rD0es4uUbaLMrI9ZB2HzPmRLyu/ixNBLAFyDJtFHNko=";
   # })
 
-  (fetchpatch' {
-    title = "blueman: support cross compilation";
-    saneCommit = "e070195bdf213dffb0164574397b6a7417f81c9e";
-    hash = "sha256-6JnIJCVBbV4tmFinX7Qv2wO2AThrgxrnyb9T4Ov6p5w=";
-  })
   # (fetchpatch' {
   #   # 2023/11/14: deps don't cross compile (e.g. pipewire; qtsvg)
   #   title = "clapper: support cross compilation";
