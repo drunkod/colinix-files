@@ -30,7 +30,7 @@ in [
     title = "argyllcms: support cross compilation";
     prUrl = "https://github.com/NixOS/nixpkgs/pull/275755";
     saneCommit = "8114d5dabbf5f4f1e8c370b889d4f2986b63998b";
-    hash = "sha256-CaA2s6HmDrp4FJwhHbsH1oGrxmfizSfkNIbda4/jVQY=";
+    hash = "sha256-z/vY2CxdrUVd4n7w+m8aNffXaN/jH7IWEwRfWNr9w94=";
   })
   (fetchpatch' {
     title = "ripgrep: fix shell completions when cross compiling";
