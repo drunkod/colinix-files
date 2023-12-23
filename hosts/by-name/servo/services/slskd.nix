@@ -66,8 +66,8 @@
     serviceConfig = {
       # run this behind the OVPN static VPN
       NetworkNamespacePath = "/run/netns/ovpns";
-      Restart = "on-failure";
-      RestartSec = "30s";
+      Restart = "always";  # exits "success" when it fails to connect to soulseek server
+      RestartSec = "60s";
       Group = "media";
     };
   };
