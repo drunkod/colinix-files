@@ -66,7 +66,7 @@
     serviceConfig = {
       # run this behind the OVPN static VPN
       NetworkNamespacePath = "/run/netns/ovpns";
-      Restart = "always";  # exits "success" when it fails to connect to soulseek server
+      Restart = lib.mkForce "always";  # exits "success" when it fails to connect to soulseek server
       RestartSec = "60s";
       Group = "media";
     };
