@@ -260,7 +260,6 @@ in
       # };
       # sane.persist.sys.byStore.plaintext = [ "/var/lib/alsa" ];
 
-      networking.useDHCP = false;
       networking.networkmanager.enable = true;
       networking.wireless.enable = lib.mkForce false;
 
