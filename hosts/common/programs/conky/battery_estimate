@@ -22,7 +22,7 @@ log() {
 }
 
 try_path() {
-  # returns:
+  # assigns output variables:
   # - perc, perc_left  (0-100)
   # - full, rate (pos means charging)
   if [ -f "$1/capacity" ]; then
@@ -36,10 +36,15 @@ try_path() {
     # current is positive when charging
     full=$(cat "$1/charge_full_design")
     rate=$(cat "$1/current_now")
-  fi
-  if [ -f "$1/energy_full" ] && [ -f "$1/energy_now" ]; then
+  elif [ -f "$1/energy_full" ] && [ -f "$1/power_now" ]; then
+    log "full, rate from %s and %s" "$1/energy_full" "$1/power_now"
+    # power_now is positive when discharging
+    full=$(cat "$1/energy_full")
+    rate=-$(cat "$1/power_now")
+  elif [ -f "$1/energy_full" ] && [ -f "$1/energy_now" ]; then
     log "full, rate from %s and %s" "$1/energy_full" "$1/energy_now"
-    # energy is positive when discharging
+    log "  this is a compatibility path for legacy Thinkpad batteries which do not populate the 'power_now' field, and incorrectly populate 'energy_now' with power info"
+    # energy_now is positive when discharging
     full=$(cat "$1/energy_full")
     rate=-$(cat "$1/energy_now")
   fi
