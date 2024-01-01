@@ -124,7 +124,7 @@ class Suspender:
     def suspend(self, duration: int, mode: str):
         logger.info(f"calling suspend for duration: {duration}")
         if mode == 'rtcwake':
-            self.executor.exec(['rtcwake', '-m', 'mem', '-s', str(duration)], check=False)
+            self.executor.exec(['rtcwake', '-m', 'mem', '-s', str(duration)], sudo=True, check=False)
         elif mode == 'sleep':
             time.sleep(duration)
         else:
