@@ -173,6 +173,7 @@ let
     (fromDb "harihareswara.net" // tech // pol)  # rec by Cory Doctorow
     (fromDb "mako.cc/copyrighteous" // tech // pol)  # rec by Cory Doctorow
     # (mkText "https://til.simonwillison.net/tils/feed.atom" // tech // weekly)
+    (fromDb "webcurious.co.uk" // uncat)
 
     # TECH PROJECTS
     (fromDb "blog.rust-lang.org" // tech)
