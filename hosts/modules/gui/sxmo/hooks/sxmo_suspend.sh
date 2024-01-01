@@ -30,9 +30,14 @@ logger = logging.getLogger(__name__)
 
 NTFY_HOST = 'uninsane.org'
 NTFY_PORT_BASE = 5550
-SUSPEND_TIME=300
+
+# duration in seconds to sleep for
+SUSPEND_TIME = 300
 # take care that WOWLAN_DELAY might include more than you think (e.g. time spent configuring wowlan pattern rules)
-WOWLAN_DELAY=6
+WOWLAN_DELAY = 6
+
+# SXMO LED blink frequency to set on resume
+BLINK_FREQ = 5
 
 class Executor:
     def __init__(self, dry_run: bool = False):
@@ -58,6 +63,8 @@ class Executor:
             logger.warning(res.stderr)
         if check:
             res.check_returncode()
+
+        return res
 
     def try_connect(self, dest, delay):
         logger.debug(f"opening socket to {dest} with timeout {delay}")
@@ -131,6 +138,24 @@ class Suspender:
             assert False, f"unknown suspend mode: {mode}"
 
 
+class SxmoApi:
+    def __init__(self, executor: Executor):
+        self.executor = executor
+
+    def halt_services(self) -> None:
+        res = self.executor.exec(['sxmo_jobs.sh', 'running', 'periodic_blink'], check=False)
+        self.was_blinking = res and res.returncode == 0
+        if self.was_blinking:
+            self.executor.exec(['sxmo_jobs.sh', 'stop', 'periodic_blink'], check=False)
+
+    def resume_services(self) -> None:
+        if self.was_blinking:
+            self.executor.exec(['sxmo_jobs.sh', 'start', 'periodic_blink', 'sxmo_run_periodically.sh', str(BLINK_FREQ), 'sxmo_led.sh', 'blink', 'red', 'blue'], check=False)
+
+    def call_postwake_hook(self) -> None:
+        self.executor.exec(['sxmo_hook_postwake.sh'], check=False)
+
+
 def main():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
@@ -152,7 +177,9 @@ def main():
     suspend_mode = args.suspend_mode
     executor = Executor(dry_run=args.dry_run)
     suspender = Suspender(executor, wowlan_delay=wowlan_delay)
+    sxmo_api = SxmoApi(executor)
 
+    sxmo_api.halt_services()
     suspender.open_ntfy_stream()
     suspender.configure_wowlan()
 
@@ -165,7 +192,8 @@ def main():
     logger.info(f"suspended for {time_spent:.0f} seconds")
 
     suspender.close_ntfy_stream()
-    executor.exec(['sxmo_hook_postwake.sh'], check=False)
+    sxmo_api.resume_services()
+    sxmo_api.call_postwake_hook()
 
 if __name__ == '__main__':
     main()
