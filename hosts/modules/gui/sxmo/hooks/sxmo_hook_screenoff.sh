@@ -5,7 +5,7 @@
 # - the LED frequency is adjusted from its default of "blink every 2s"
 # - dwm-specific bits are removed
 
-BLINK_FREQ=8
+BLINK_FREQ=12
 
 swaymsg mode default
 sxmo_wm.sh dpms on
@@ -15,8 +15,7 @@ sxmo_jobs.sh start periodic_blink sxmo_run_periodically.sh "$BLINK_FREQ" sxmo_le
 
 wait
 
-# avoid immediate suspension. particularly, ensure that we get at least one blink in
-sxmo_wakelock.sh lock sxmo_hold_a_bit "$BLINK_FREQ"s
-sxmo_wakelock.sh unlock sxmo_not_screenoff
-
+# # avoid immediate suspension. particularly, ensure that we get at least one blink in
+# sxmo_wakelock.sh lock sxmo_hold_a_bit "$BLINK_FREQ"s
+# sxmo_wakelock.sh unlock sxmo_not_screenoff
 
