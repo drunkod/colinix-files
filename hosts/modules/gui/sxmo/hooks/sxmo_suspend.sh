@@ -43,7 +43,9 @@ class Executor:
     def __init__(self, dry_run: bool = False):
         self.dry_run = dry_run
 
-    def exec(self, cmd: list[str], sudo: bool = False, check: bool = True):
+    def exec(self, cmd: list[str], sudo: bool = False, check: bool = True, wait: bool = True):
+        if check: assert wait, "can't check_output without first waiting for process completion"
+
         if sudo:
             cmd = [ 'doas' ] + cmd
 
@@ -51,18 +53,22 @@ class Executor:
         if self.dry_run:
             return
 
-        try:
-            res = subprocess.run(cmd, capture_output=True)
-        except Exception as e:
-            if check: raise
-            logger.warning(f"error invoking subprocess: {e}")
-            return
+        if wait:
+            try:
+                res = subprocess.run(cmd, capture_output=True)
+            except Exception as e:
+                if check: raise
+                logger.warning(f"error invoking subprocess: {e}")
+                return
 
-        logger.debug(res.stdout)
-        if res.stderr:
-            logger.warning(res.stderr)
-        if check:
-            res.check_returncode()
+            logger.debug(res.stdout)
+            if res.stderr:
+                logger.warning(res.stderr)
+            if check:
+                res.check_returncode()
+
+        else:
+            res = subprocess.Popen(cmd)
 
         return res
 
@@ -150,7 +156,9 @@ class SxmoApi:
 
     def resume_services(self) -> None:
         if self.was_blinking:
-            self.executor.exec(['sxmo_jobs.sh', 'start', 'periodic_blink', 'sxmo_run_periodically.sh', str(BLINK_FREQ), 'sxmo_led.sh', 'blink', 'red', 'blue'], check=False)
+            # XXX: sxmo_jobs.sh is supposed to run the job in the background, but somehow it fails (blocks), only when invoked from Python.
+            #      oh well, just call it asynchronously (wait=False)
+            self.executor.exec(['sxmo_jobs.sh', 'start', 'periodic_blink', 'sxmo_run_periodically.sh', str(BLINK_FREQ), 'sxmo_led.sh', 'blink', 'red', 'blue'], check=False, wait=False)
 
     def call_postwake_hook(self) -> None:
         self.executor.exec(['sxmo_hook_postwake.sh'], check=False)
