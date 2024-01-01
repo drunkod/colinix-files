@@ -156,7 +156,8 @@ let
     ## shared blog by a few NixOS devs, notably onny
     (fromDb "project-insanity.org" // tech)
     ## Vitalik Buterin
-    (fromDb "vitalik.ca" // tech)
+    # (fromDb "vitalik.ca" // tech)  # moved to vitalik.eth.limo
+    (fromDb "vitalik.eth.limo" // tech)
     ## ian (Sanctuary)
     (fromDb "sagacioussuricata.com" // tech)
     (fromDb "artemis.sh" // tech)
