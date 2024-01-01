@@ -32,7 +32,7 @@ while [ "$waited" != "0" ]; do
     fi
     if [ "$FWD_COUNT" -eq "$SXMO_HOOK_BLOCK_SUSPEND_DEPTH" ]; then
       echo "forwarding to: $p/sxmo_hook_block_suspend.sh"
-      "$p/sxmo_hook_block_suspend.sh"
+      SXMO_HOOK_BLOCK_SUSPEND_DEPTH="$SXMO_HOOK_BLOCK_SUSPEND_DEPTH" "$p/sxmo_hook_block_suspend.sh"
     fi
   done
 done
