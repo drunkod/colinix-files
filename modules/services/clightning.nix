@@ -34,7 +34,7 @@ in
       enable = mkEnableOption "clightning, a Lightning Network implementation in C";
       package = mkPackageOption pkgs "clightning" { };
       bitcoindName = mkOption {
-        type = str;
+        type = types.str;
         default = "mainnet";
         description = ''
           name of bitcoind config to attach to.
@@ -125,6 +125,7 @@ in
       after = [ "bitcoind-${cfg.bitcoindName}.service" ];
 
       serviceConfig = {
+        # TODO: hardening
         ExecStart = "${cfg.package}/bin/lightningd --lightning-dir=${cfg.dataDir}";
         User = cfg.user;
         Restart = "on-failure";
