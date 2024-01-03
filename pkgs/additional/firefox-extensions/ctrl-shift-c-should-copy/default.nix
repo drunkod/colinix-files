@@ -33,6 +33,14 @@ stdenv.mkDerivation {
   meta = {
     homepage = "https://github.com/jscher2000/Ctrl-Shift-C-Should-Copy";
     description = "Potential Firefox extension to intercept Ctrl+Shift+C, block opening developer tools, and copy the selection to the clipboard.";
+    longDescription = ''
+      it comes with several limitations:
+      - doesn't work on new-tab page
+      - doesn't work if the focus isn't on page content
+        - e.g. ctrl+shift+c from URL bar still brings up dev console, incorrectly.
+
+      the proper fix to disabling Ctrl+Shift+C seems to require compiling Firefox from source, as of their Quantum project post-2019.
+    '';
     maintainer = with lib.maintainers; [ colinsane ];
   };
 }
