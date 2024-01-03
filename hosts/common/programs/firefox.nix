@@ -38,18 +38,6 @@ let
   # defaultSettings = firefoxSettings;
   defaultSettings = librewolfSettings;
 
-  addon = name: extid: hash: pkgs.fetchFirefoxAddon {
-    inherit name hash;
-    url = "https://addons.mozilla.org/firefox/downloads/latest/${name}/latest.xpi";
-    # extid can be found by unar'ing the above xpi, and copying browser_specific_settings.gecko.id field
-    fixedExtid = extid;
-  };
-  localAddon = pkg: pkgs.fetchFirefoxAddon {
-    inherit (pkg) name;
-    src = "${pkg}/share/mozilla/extensions/\\{ec8030f7-c20a-464f-9b0e-13a3a9e97384\\}/${pkg.extid}.xpi";
-    fixedExtid = pkg.extid;
-  };
-
   package = (pkgs.wrapFirefox cfg.browser.browser {
     # inherit the default librewolf.cfg
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
