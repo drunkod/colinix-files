@@ -50,7 +50,7 @@ let
     fixedExtid = pkg.extid;
   };
 
-  package = pkgs.wrapFirefox cfg.browser.browser {
+  package = (pkgs.wrapFirefox cfg.browser.browser {
     # inherit the default librewolf.cfg
     # it can be further customized via ~/.librewolf/librewolf.overrides.cfg
     inherit (cfg.browser) extraPrefsFiles libName;
@@ -116,7 +116,17 @@ let
       # NewTabPage = true;
     };
     # extraPrefs = ...
-  };
+  }).overrideAttrs (base: {
+    # de-associate `ctrl+shift+c` from activating the devtools.
+    # based on <https://stackoverflow.com/a/54260938>
+    buildCommand = (base.buildCommand or "") + ''
+      mkdir omni
+      ${pkgs.buildPackages.unzip}/bin/unzip $out/lib/${cfg.browser.libName}/browser/omni.ja -d omni
+      rm $out/lib/${cfg.browser.libName}/browser/omni.ja
+      ${pkgs.buildPackages.gnused}/bin/sed -i s'/devtools-commandkey-inspector = C/devtools-commandkey-inspector = VK_F12/' omni/localization/en-US/devtools/startup/key-shortcuts.ftl
+      pushd omni; ${pkgs.buildPackages.zip}/bin/zip $out/lib/${cfg.browser.libName}/browser/omni.ja -r ./*; popd
+    '';
+  });
 
   addonOpts = types.submodule {
     options = {
@@ -180,7 +190,7 @@ in
         };
         ctrl-shift-c-should-copy = {
           package = pkgs.firefox-extensions.ctrl-shift-c-should-copy;
-          enable = lib.mkDefault true;
+          enable = lib.mkDefault false;  # prefer patching firefox source code, so it works in more places
         };
         ether-metamask = {
           package = pkgs.firefox-extensions.ether-metamask;
