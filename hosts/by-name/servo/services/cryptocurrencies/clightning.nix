@@ -14,20 +14,30 @@
 # - `lightning-cli listpeers`
 #   should show the new peer, with `connected: true`
 #
+# then, fund the clightning wallet
+# - `lightning-cli newaddr`
+#
 # then, open channels
+# - `lightning-cli connect ...`
+# - `lightning-cli fundchannel <node_id> <amount_in_satoshis>`
+#
+# who to federate with?
 # - a lot of the larger nodes allow hands-free channel creation
 #   - either inbound or outbound, sometimes paid
 # - find nodes on:
-#   - <https://amboss.space>
-#   - <https://mempool.space>
-#   - <https://hashxp.org>
 #   - <https://1ml.com>
+#   - <https://mempool.space/lightning>
+#   - <https://amboss.space>
 #     - tor nodes: <https://1ml.com/node?order=capacity&iponionservice=true>
 # - a few tor-capable nodes which allow channel creation:
 #   - <https://c-otto.de/>
 #   - <https://cyberdyne.sh/>
 #   - <https://yalls.org/about/>
 #   - <https://coincept.com/>
+# - more resources: <https://www.lopp.net/lightning-information.html>
+#
+# teardown:
+# - `lightning-cli withdraw <bc1... dest addr> <amount in satoshis> [feerate]`
 #
 # sanity:
 # - `lightning-cli listfunds`
@@ -71,6 +81,11 @@
 
   systemd.services.clightning.after = [ "tor.service" ];
 
+  # lightning-config contains fields from here:
+  # - <https://docs.corelightning.org/docs/configuration>
+  # - bitcoin-rpcpassword
+  # - alias=nodename
+  # - rgb=rrggbb
   sane.services.clightning.extraConfigFiles = [ config.sops.secrets."lightning-config".path ];
   sops.secrets."lightning-config" = {
     mode = "0600";
