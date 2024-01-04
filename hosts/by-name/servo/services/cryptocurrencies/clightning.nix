@@ -78,5 +78,5 @@
     group = "clightning";
   };
 
-  sane.programs.clightning.enableFor.user.colin = true;  # put `lightning-cli` onto PATH
+  sane.programs.clightning.enableFor.user.colin = true;  # for debugging/admin: `lightning-cli`
 }
