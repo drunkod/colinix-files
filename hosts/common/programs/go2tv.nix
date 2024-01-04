@@ -3,7 +3,7 @@
 #
 # SANITY CHECKS:
 # - `go2tv -u 'https://uninsane.org/share/AmenBreak.mp4'`
-#   - LGTV: works
+#   - LGTV: works, but not seekable
 # - `go2tv -u 'https://youtu.be/p3G5IXn0K7A'`
 #   - LGTV: FAILS ("this file cannot be recognized")
 #     - no fix via transcoding, altering the URI, etc.
