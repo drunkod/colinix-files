@@ -2,6 +2,7 @@
 # as such, this assumes that `services.bitcoin` is enabled.
 # docs:
 # - tor clightning config: <https://docs.corelightning.org/docs/tor>
+# - `lightning-cli` and subcommands: <https://docs.corelightning.org/reference/lightning-cli>
 #
 # management/setup/use:
 # - guide: <https://github.com/ElementsProject/lightning>
@@ -25,16 +26,23 @@
 # - a lot of the larger nodes allow hands-free channel creation
 #   - either inbound or outbound, sometimes paid
 # - find nodes on:
+#   - <https://terminal.lightning.engineering/>
 #   - <https://1ml.com>
+#     - tor nodes: <https://1ml.com/node?order=capacity&iponionservice=true>
 #   - <https://mempool.space/lightning>
 #   - <https://amboss.space>
-#     - tor nodes: <https://1ml.com/node?order=capacity&iponionservice=true>
 # - a few tor-capable nodes which allow channel creation:
 #   - <https://c-otto.de/>
 #   - <https://cyberdyne.sh/>
 #   - <https://yalls.org/about/>
 #   - <https://coincept.com/>
 # - more resources: <https://www.lopp.net/lightning-information.html>
+#   - node routability: https://hashxp.org/lightning/node/<id>
+#
+# tune payment parameters
+# - `lightning-cli setchannel id [feebase] [feeppm] [htlcmin] [htlcmax] [enforcedelay] [ignorefeelimits]`
+#   - e.g. `lightning-cli setchannel all 0 10`
+#   - it's suggested that feebase=0 simplifies routing.
 #
 # teardown:
 # - `lightning-cli withdraw <bc1... dest addr> <amount in satoshis> [feerate]`
@@ -47,6 +55,11 @@
 #   - then give the resulting bolt11 URI to the payer
 # to send a payment:
 # - `lightning-cli pay <bolt11 URI>`
+#   - or `lightning-cli pay <bolt11 URI> [amount_msat] [label] [riskfactor] [maxfeepercent] ...`
+#   - amount_msat must be "null" if the bolt11 URI specifies a value
+#   - riskfactor defaults to 10
+#   - maxfeepercent defaults to 0.5
+#   - label is a human-friendly label for my records
 
 { config, ... }:
 {
