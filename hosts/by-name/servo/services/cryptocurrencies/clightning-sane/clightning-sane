@@ -48,15 +48,15 @@ class TxBounds:
         apply min/max HTLC size restrictions of the given channel.
         """
         if ch:
-            why = why or ch.scid
+            why = why or ch.directed_scid_to_me
         if why: why = f"{why}: "
 
         new_min, new_max = self.min_msat, self.max_msat
-        if ch.htlc_minimum > self.min_msat:
-            new_min = ch.htlc_minimum
+        if ch.htlc_minimum_to_me > self.min_msat:
+            new_min = ch.htlc_minimum_to_me
             logger.debug(f"{why}raising min_msat due to HTLC requirements: {self.min_msat} -> {new_min}")
-        if ch.htlc_maximum < self.max_msat:
-            new_max = ch.htlc_maximum
+        if ch.htlc_maximum_to_me < self.max_msat:
+            new_max = ch.htlc_maximum_to_me
             logger.debug(f"{why}lowering max_msat due to HTLC requirements: {self.max_msat} -> {new_max}")
         return TxBounds(min_msat=new_min, max_msat=new_max)
 
@@ -86,7 +86,7 @@ class TxBounds:
 
 class LocalChannel:
     def __init__(self, channels: list, rpc: "RpcHelper"):
-        assert len(channels) <= 2, f"unexpected: channel count > 2: {channels}"
+        assert 0 < len(channels) <= 2, f"unexpected: channel count: {channels}"
         out = None
         in_ = None
         for c in channels:
@@ -113,10 +113,11 @@ class LocalChannel:
         return self.to_str(with_scid=True, with_bal_ratio=True, with_cost=True, with_ppm=True)
 
     def to_str(self, with_scid: bool=False, with_bal_msat: bool=False, with_bal_ratio: bool=False, with_cost:bool = False, with_ppm:bool = False) -> str:
-        alias = f"({self.remote_alias})"
+        base_flag = "*" if self.to_me is None or self.to_me["base_fee_millisatoshi"] != 0 else ""
+        alias = f"({self.remote_alias}){base_flag}"
         scid = f"  scid:{self.scid:>13}" if with_scid else ""
         bal = f"  S:{int(self.sendable):11}/R:{int(self.receivable):11}" if with_bal_msat else ""
-        ratio = f"  MINE:{(100*self.send_ratio):>7.3f}%" if with_bal_ratio else ""
+        ratio = f"  MINE:{(100*self.send_ratio):>8.4f}%" if with_bal_ratio else ""
         cost = f"  COST:{self.opportunity_cost_lent:>11}" if with_cost else ""
         ppm_to_me = self.to_me["fee_per_millionth"] if self.to_me else "N/A"
         ppm = f"  THEIR_PPM:{ppm_to_me:>6}" if with_ppm else ""
@@ -221,7 +222,10 @@ class RpcHelper:
         self.self_id = rpc.getinfo()["id"]
 
     def localchannel(self, scid: str) -> LocalChannel:
-        return LocalChannel(self.rpc.listchannels(scid)["channels"], self)
+        listchan = self.rpc.listchannels(scid)
+        # this assertion would probably indicate a typo in the scid
+        assert listchan and listchan.get("channels", []) != [], f"bad listchannels for {scid}: {listchan}"
+        return LocalChannel(listchan["channels"], self)
 
     def node(self, id: str) -> dict:
         nodes = self.rpc.listnodes(id)["nodes"]
