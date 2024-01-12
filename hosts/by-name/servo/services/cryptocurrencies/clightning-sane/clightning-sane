@@ -296,11 +296,15 @@ def main():
     logger.setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser(description="rebalance lightning channel balances")
-    parser.add_argument("out", help="peer id to send tx through")
-    parser.add_argument("in_", help="peer id to receive tx through")
     parser.add_argument("--verbose", action="store_true", help="more logging")
-    parser.add_argument("--min-msat", default="999", help="min to rebalance")
-    parser.add_argument("--max-msat", default="1000000", help="max to rebalance")
+    subparsers = parser.add_subparsers(help="action")
+
+    loop_parser = subparsers.add_parser("loop")
+    loop_parser.set_defaults(action="loop")
+    loop_parser.add_argument("out", help="peer id to send tx through")
+    loop_parser.add_argument("in_", help="peer id to receive tx through")
+    loop_parser.add_argument("--min-msat", default="999", help="min to rebalance")
+    loop_parser.add_argument("--max-msat", default="1000000", help="max to rebalance")
 
     args = parser.parse_args()
 
@@ -310,11 +314,12 @@ def main():
     rpc = LightningRpc(RPC_FILE)
     balancer = Balancer(rpc)
 
-    bounds = TxBounds(
-        min_msat = int(args.min_msat),
-        max_msat = int(args.max_msat),
-    )
-    balancer.balance_once_with_retries(args.out, args.in_, bounds)
+    if args.action == "loop":
+        bounds = TxBounds(
+            min_msat = int(args.min_msat),
+            max_msat = int(args.max_msat),
+        )
+        balancer.balance_once_with_retries(args.out, args.in_, bounds)
 
 if __name__ == '__main__':
     main()
