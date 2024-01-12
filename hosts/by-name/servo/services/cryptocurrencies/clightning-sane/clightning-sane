@@ -77,32 +77,63 @@ class TxBounds:
 
 
 class LocalChannel:
-    def __init__(self, channels: list, self_id: str):
-        assert len(channels) == 2, f"unexpected: more than 2 channels: {channels}"
+    def __init__(self, channels: list, rpc: "RpcHelper"):
+        assert len(channels) <= 2, f"unexpected: channel count > 2: {channels}"
         out = None
         in_ = None
         for c in channels:
-            if c["source"] == self_id:
+            if c["source"] == rpc.self_id:
                 assert out is None, f"unexpected: multiple channels from self: {channels}"
                 out = c
-            if c["destination"] == self_id:
+            if c["destination"] == rpc.self_id:
                 assert in_ is None, f"unexpected: multiple channels to self: {channels}"
                 in_ = c
-        assert out is not None, f"no channel from self: {channels}"
-        assert in_ is not None, f"no channel to self: {channels}"
-        assert out["destination"] == in_["source"], f"channel peers are asymmetric?! {channels}"
-        assert out["short_channel_id"] == in_["short_channel_id"], f"channel ids differ?! {channels}"
+
+        # assert out is not None, f"no channel from self: {channels}"
+        # assert in_ is not None, f"no channel to self: {channels}"
+
+        if out and in_:
+            assert out["destination"] == in_["source"], f"channel peers are asymmetric?! {channels}"
+            assert out["short_channel_id"] == in_["short_channel_id"], f"channel ids differ?! {channels}"
 
         self.from_me = out
         self.to_me = in_
+        self.remote_node = rpc.node(self.remote_peer)
+        self.peer_ch = rpc.peerchannel(self.scid, self.remote_peer)
+
+    def __repr__(self) -> str:
+        return self.to_str(with_scid=True, with_bal_ratio=True, with_cost=True)
+
+    def to_str(self, with_scid: bool=False, with_bal_msat: bool=False, with_bal_ratio: bool=False, with_cost:bool = False) -> str:
+        alias = f"({self.remote_alias})"
+        scid = f"  scid:{self.scid:>13}" if with_scid else ""
+        bal = f"  S:{int(self.sendable):11}/R:{int(self.receivable):11}" if with_bal_msat else ""
+        ratio = f"  MINE:{(100*self.send_ratio):>7.3f}%" if with_bal_ratio else ""
+        cost = f"  COST:{self.opportunity_cost_lent:>11}" if with_cost else ""
+        return f"channel{alias:30}{scid}{bal}{ratio}{cost}"
+
+
+    @property
+    def online(self) -> bool:
+        return self.from_me and self.to_me
 
     @property
     def remote_peer(self) -> str:
-        return self.from_me["destination"]
+        if self.from_me:
+            return self.from_me["destination"]
+        else:
+            return self.to_me["source"]
+
+    @property
+    def remote_alias(self) -> str:
+        return self.remote_node["alias"]
 
     @property
     def scid(self) -> str:
-        return self.from_me["short_channel_id"]
+        if self.from_me:
+            return self.from_me["short_channel_id"]
+        else:
+            return self.to_me["short_channel_id"]
 
     @property
     def htlc_minimum_msat(self) -> Millisatoshi:
@@ -122,13 +153,11 @@ class LocalChannel:
 
     @property
     def directed_scid_to_me(self) -> str:
-        scid, dir = self.to_me["short_channel_id"], self.direction_to_me
-        return f"{scid}/{dir}"
+        return f"{self.scid}/{self.direction_to_me}"
 
     @property
     def directed_scid_from_me(self) -> str:
-        scid, dir = self.from_me["short_channel_id"], self.direction_from_me
-        return f"{scid}/{dir}"
+        return f"{self.scid}/{self.direction_from_me}"
 
     @property
     def delay_them(self) -> str:
@@ -138,18 +167,55 @@ class LocalChannel:
     def delay_me(self) -> str:
         return self.from_me["delay"]
 
-class Balancer:
+    @property
+    def ppm_from_me(self) -> int:
+        return self.peer_ch["fee_proportional_millionths"]
+
+    @property
+    def receivable(self) -> int:
+        return self.peer_ch["receivable_msat"]
+
+    @property
+    def sendable(self) -> int:
+        return self.peer_ch["spendable_msat"]
+
+    @property
+    def send_ratio(self) -> float:
+        cap = self.receivable + self.sendable
+        return self.sendable / cap
+
+    @property
+    def opportunity_cost_lent(self) -> int:
+        """ how much msat did we gain by pushing their channel to its current balance? """
+        return int(self.receivable * self.ppm_from_me / 1000000)
+
+class RpcHelper:
     def __init__(self, rpc: LightningRpc):
         self.rpc = rpc
         self.self_id = rpc.getinfo()["id"]
+
+    def localchannel(self, scid: str) -> LocalChannel:
+        return LocalChannel(self.rpc.listchannels(scid)["channels"], self)
+
+    def node(self, id: str) -> dict:
+        nodes = self.rpc.listnodes(id)["nodes"]
+        assert len(nodes) == 1, f"unexpected: multiple nodes for {id}: {nodes}"
+        return nodes[0]
+
+    def peerchannel(self, scid: str, peer_id: str) -> dict:
+        peerchannels = self.rpc.listpeerchannels(peer_id)["channels"]
+        channels = [c for c in peerchannels if c["short_channel_id"] == scid]
+        assert len(channels) == 1, f"expected exactly 1 channel, got: {channels}"
+        return channels[0]
+
+class Balancer:
+    def __init__(self, rpc: RpcHelper):
+        self.rpc = rpc
         self.bad_channels = []  # list of directed scid
         self.nonzero_base_channels = []  # list of directed scid
 
-    def _localchannel(self, scid: str) -> LocalChannel:
-        return LocalChannel(self.rpc.listchannels(scid)["channels"], self.self_id)
-
     def _get_directed_scid(self, scid: str, direction: int) -> dict:
-        channels = self.rpc.listchannels(scid)["channels"]
+        channels = self.rpc.rpc.listchannels(scid)["channels"]
         channels = [c for c in channels if c["direction"] == direction]
         assert len(channels) == 1, f"expected exactly 1 channel: {channels}"
         return channels[0]
@@ -169,8 +235,8 @@ class Balancer:
             logger.info(f"failed to rebalance {out_scid} -> {in_scid} within {retries} attempts")
 
     def balance_once(self, out_scid: str, in_scid: str, bounds: TxBounds) -> None:
-        out_ch = self._localchannel(out_scid)
-        in_ch = self._localchannel(in_scid)
+        out_ch = self.rpc.localchannel(out_scid)
+        in_ch = self.rpc.localchannel(in_scid)
 
         if out_ch.directed_scid_from_me in self.bad_channels or in_ch.directed_scid_to_me in self.bad_channels:
             logger.info(f"rebalance {out_scid} -> {in_scid} failed in our own channel")
@@ -193,14 +259,14 @@ class Balancer:
         amount_msat = route[0]["amount_msat"]
         invoice_id = f"rebalance-{time.time():.6f}".replace(".", "_")
         invoice_desc = f"bal {out_scid}:{in_scid}"
-        invoice = self.rpc.invoice("any", invoice_id, invoice_desc)
+        invoice = self.rpc.rpc.invoice("any", invoice_id, invoice_desc)
         logger.debug(f"invoice: {invoice}")
 
-        payment = self.rpc.sendpay(route, invoice["payment_hash"], invoice_id, amount_msat, invoice["bolt11"], invoice["payment_secret"])
+        payment = self.rpc.rpc.sendpay(route, invoice["payment_hash"], invoice_id, amount_msat, invoice["bolt11"], invoice["payment_secret"])
         logger.debug(f"sent: {payment}")
 
         try:
-            wait = self.rpc.waitsendpay(invoice["payment_hash"])
+            wait = self.rpc.rpc.waitsendpay(invoice["payment_hash"])
             logger.debug(f"result: {wait}")
         except RpcError as e:
             err_data = e.error["data"]
@@ -220,7 +286,7 @@ class Balancer:
             # in_ch.directed_scid_from_me,
 
             # alternatively, never route through self. this avoids a class of logic error, like what to do with fees i charge "myself".
-            self.self_id
+            self.rpc.self_id
         ] + self.bad_channels + self.nonzero_base_channels
 
         out_peer = out_ch.remote_peer
@@ -240,7 +306,7 @@ class Balancer:
         return route
 
     def _find_partial_route(self, out_peer: str, in_peer: str, bounds: TxBounds, exclude: list[str]=[]) -> list[dict] | RouteError | TxBounds:
-        route = self.rpc.getroute(in_peer, amount_msat=bounds.max_msat, riskfactor=0, fromid=out_peer, exclude=exclude, cltv=CLTV)
+        route = self.rpc.rpc.getroute(in_peer, amount_msat=bounds.max_msat, riskfactor=0, fromid=out_peer, exclude=exclude, cltv=CLTV)
         route = route["route"]
         if route == []:
             logger.debug(f"no route for {bounds.max_msat}msat {out_peer} -> {in_peer}")
@@ -267,7 +333,7 @@ class Balancer:
 
     def _add_route_endpoints(self, route, out_ch: LocalChannel, in_ch: LocalChannel):
         inbound_hop = dict(
-          id=self.self_id,
+          id=self.rpc.self_id,
           channel=in_ch.scid,
           direction=in_ch.direction_to_me,
           amount_msat=route[-1]["amount_msat"],
@@ -290,6 +356,13 @@ class Balancer:
     def _add_route_delay(self, route: list[dict], delay: int) -> list[dict]:
         return [ dict(hop, delay=hop["delay"] + delay) for hop in route ]
 
+def show_status(rpc: RpcHelper):
+    """
+    show a table of channel balances between peers.
+    """
+    for ch in rpc.rpc.listpeerchannels()["channels"]:
+        ch = rpc.localchannel(ch["short_channel_id"])
+        print(ch)
 
 def main():
     logging.basicConfig()
@@ -298,6 +371,9 @@ def main():
     parser = argparse.ArgumentParser(description="rebalance lightning channel balances")
     parser.add_argument("--verbose", action="store_true", help="more logging")
     subparsers = parser.add_subparsers(help="action")
+
+    status_parser = subparsers.add_parser("status")
+    status_parser.set_defaults(action="status")
 
     loop_parser = subparsers.add_parser("loop")
     loop_parser.set_defaults(action="loop")
@@ -311,10 +387,13 @@ def main():
     if args.verbose:
         logger.setLevel(logging.DEBUG)
 
-    rpc = LightningRpc(RPC_FILE)
-    balancer = Balancer(rpc)
+    rpc = RpcHelper(LightningRpc(RPC_FILE))
+
+    if args.action == "status":
+        show_status(rpc)
 
     if args.action == "loop":
+        balancer = Balancer(rpc)
         bounds = TxBounds(
             min_msat = int(args.min_msat),
             max_msat = int(args.max_msat),
