@@ -23,8 +23,7 @@ RPC_FILE = "/var/lib/clightning/bitcoin/lightning-rpc"
 # CLTV (HLTC delta) of the final hop
 CLTV = 9
 
-class RebalanceResult(Enum):
-    SUCCESS = "SUCCESS"
+class RebalanceError(Enum):
     FAIL_TEMPORARY = "FAIL_TEMPORARY"
     FAIL_PERMANENT = "FAIL_PERMANENT"
 
@@ -250,42 +249,45 @@ class Balancer:
         assert len(channels) == 1, f"expected exactly 1 channel: {channels}"
         return channels[0]
 
-    def balance_once_with_retries(self, out_scid: str, in_scid: str, tx: TxBounds, retries: int = 20) -> None:
+    def balance_once_with_retries(self, out_scid: str, in_scid: str, tx: TxBounds, retries: int = 20) -> int:
         for i in range(retries):
             if i != 0:
                 logger.info(f"retrying rebalance: {i} of {retries}\n")
             res = self.balance_once(out_scid, in_scid, tx)
-            if res == RebalanceResult.SUCCESS:
-                logger.info(f"rebalanced once with success {out_scid} -> {in_scid}")
-                break
-            if res == RebalanceResult.FAIL_PERMANENT:
+            if res == RebalanceError.FAIL_PERMANENT:
                 logger.info(f"rebalance {out_scid} -> {in_scid} is impossible (likely no route)")
                 break
+            elif res == RebalanceError.FAIL_TEMPORARY:
+                continue
+            else:
+                return res  # success
         else:
             logger.info(f"failed to rebalance {out_scid} -> {in_scid} within {retries} attempts")
 
-    def balance_once(self, out_scid: str, in_scid: str, bounds: TxBounds) -> None:
+        return 0
+
+    def balance_once(self, out_scid: str, in_scid: str, bounds: TxBounds) -> RebalanceError|int:
         out_ch = self.rpc.localchannel(out_scid)
         in_ch = self.rpc.localchannel(in_scid)
 
         if out_ch.directed_scid_from_me in self.bad_channels or in_ch.directed_scid_to_me in self.bad_channels:
             logger.info(f"rebalance {out_scid} -> {in_scid} failed in our own channel")
-            return RebalanceResult.FAIL_PERMANENT
+            return RebalanceError.FAIL_PERMANENT
 
         # bounds = bounds.restrict_to_htlc(out_ch)  # htlc bounds seem to be enforced only in the outward direction
         bounds = bounds.restrict_to_htlc(in_ch)
         bounds = bounds.restrict_to_zero_fees(in_ch)
         if not bounds.is_satisfiable():
-            return RebalanceResult.FAIL_PERMANENT  # no valid bounds
+            return RebalanceError.FAIL_PERMANENT  # no valid bounds
 
         logger.debug(f"route with bounds {bounds}")
         route = self.route(out_ch, in_ch, bounds)
         logger.debug(f"route: {route}")
         if route == RouteError.NO_ROUTE:
-            return RebalanceResult.FAIL_PERMANENT
+            return RebalanceError.FAIL_PERMANENT
         elif route == RouteError.HAS_BASE_FEE:
             # try again with a different route
-            return RebalanceResult.FAIL_TEMPORARY
+            return RebalanceError.FAIL_TEMPORARY
 
         amount_msat = route[0]["amount_msat"]
         invoice_id = f"rebalance-{time.time():.6f}".replace(".", "_")
@@ -305,9 +307,9 @@ class Balancer:
             err_directed_scid = f"{err_scid}/{err_dir}"
             logger.debug(f"ch failed, adding to excludes: {err_directed_scid}; {e.error}")
             self.bad_channels.append(err_directed_scid)
-            return RebalanceResult.FAIL_TEMPORARY
+            return RebalanceError.FAIL_TEMPORARY
         else:
-            return RebalanceResult.SUCCESS
+            return int(amount_msat)
 
     def route(self, out_ch: LocalChannel, in_ch: LocalChannel, bounds: TxBounds) -> list[dict] | RouteError:
         exclude = [
@@ -411,6 +413,7 @@ def main():
     loop_parser.add_argument("in_", help="peer id to receive tx through")
     loop_parser.add_argument("--min-msat", default="999", help="min to rebalance")
     loop_parser.add_argument("--max-msat", default="1000000", help="max to rebalance")
+    loop_parser.add_argument("--max-tx", default="1", help="maximum times to rebalance")
 
     args = parser.parse_args()
 
@@ -428,7 +431,20 @@ def main():
             min_msat = int(args.min_msat),
             max_msat = int(args.max_msat),
         )
-        balancer.balance_once_with_retries(args.out, args.in_, bounds)
+
+        asked_to_route = bounds.max_msat
+        total_routed = 0
+        for i in range(int(args.max_tx)):
+            bounds.max_msat = min(bounds.max_msat, asked_to_route - total_routed)
+            if not bounds.is_satisfiable(): break
+
+            amt_balanced = balancer.balance_once_with_retries(args.out, args.in_, bounds)
+            total_routed += amt_balanced
+            if amt_balanced == 0: break
+            logger.info(f"rebalanced {amt_balanced} (total: {total_routed} of {asked_to_route})")
+            bounds.max_msat = min(bounds.max_msat, amt_balanced)
+
+        logger.info(f"rebalanced {total_routed} of {asked_to_route}")
 
 if __name__ == '__main__':
     main()
