@@ -24,11 +24,13 @@ RPC_FILE = "/var/lib/clightning/bitcoin/lightning-rpc"
 # set this too low and you might get inadvertent channel closures (?)
 CLTV = 18
 
-class RebalanceError(Enum):
-    FAIL_TEMPORARY = "FAIL_TEMPORARY"
-    FAIL_PERMANENT = "FAIL_PERMANENT"
+class LoopError(Enum):
+    """ error when trying to loop sats, or when unable to calculate a route for the loop """
+    FAIL_TEMPORARY = "FAIL_TEMPORARY"  # try again, we'll maybe find a different route
+    FAIL_PERMANENT = "FAIL_PERMANENT"  # not worth trying again, channels are un-loopable
 
 class RouteError(Enum):
+    """ error when calculated a route """
     HAS_BASE_FEE = "HAS_BASE_FEE"
     NO_ROUTE = "NO_ROUTE"
 
@@ -241,7 +243,7 @@ class RpcHelper:
         assert len(channels) == 1, f"expected exactly 1 channel, got: {channels}"
         return channels[0]
 
-class Balancer:
+class LoopRouter:
     def __init__(self, rpc: RpcHelper):
         self.rpc = rpc
         self.bad_channels = []  # list of directed scid
@@ -253,48 +255,48 @@ class Balancer:
         assert len(channels) == 1, f"expected exactly 1 channel: {channels}"
         return channels[0]
 
-    def balance_once_with_retries(self, out_scid: str, in_scid: str, tx: TxBounds, retries: int = 20) -> int:
+    def loop_once_with_retries(self, out_scid: str, in_scid: str, tx: TxBounds, retries: int = 20) -> int:
         for i in range(retries):
             if i != 0:
-                logger.info(f"retrying rebalance: {i} of {retries}\n")
-            res = self.balance_once(out_scid, in_scid, tx)
-            if res == RebalanceError.FAIL_PERMANENT:
-                logger.info(f"rebalance {out_scid} -> {in_scid} is impossible (likely no route)")
+                logger.info(f"retrying loop: {i} of {retries}\n")
+            res = self.loop_once(out_scid, in_scid, tx)
+            if res == LoopError.FAIL_PERMANENT:
+                logger.info(f"loop {out_scid} -> {in_scid} is impossible (likely no route)")
                 break
-            elif res == RebalanceError.FAIL_TEMPORARY:
+            elif res == LoopError.FAIL_TEMPORARY:
                 continue
             else:
                 return res  # success
         else:
-            logger.info(f"failed to rebalance {out_scid} -> {in_scid} within {retries} attempts")
+            logger.info(f"failed to loop {out_scid} -> {in_scid} within {retries} attempts")
 
         return 0
 
-    def balance_once(self, out_scid: str, in_scid: str, bounds: TxBounds) -> RebalanceError|int:
+    def loop_once(self, out_scid: str, in_scid: str, bounds: TxBounds) -> LoopError|int:
         out_ch = self.rpc.localchannel(out_scid)
         in_ch = self.rpc.localchannel(in_scid)
 
         if out_ch.directed_scid_from_me in self.bad_channels or in_ch.directed_scid_to_me in self.bad_channels:
-            logger.info(f"rebalance {out_scid} -> {in_scid} failed in our own channel")
-            return RebalanceError.FAIL_PERMANENT
+            logger.info(f"loop {out_scid} -> {in_scid} failed in our own channel")
+            return LoopError.FAIL_PERMANENT
 
         # bounds = bounds.restrict_to_htlc(out_ch)  # htlc bounds seem to be enforced only in the outward direction
         bounds = bounds.restrict_to_htlc(in_ch)
         bounds = bounds.restrict_to_zero_fees(in_ch)
         if not bounds.is_satisfiable():
-            return RebalanceError.FAIL_PERMANENT  # no valid bounds
+            return LoopError.FAIL_PERMANENT  # no valid bounds
 
         logger.debug(f"route with bounds {bounds}")
         route = self.route(out_ch, in_ch, bounds)
         logger.debug(f"route: {route}")
         if route == RouteError.NO_ROUTE:
-            return RebalanceError.FAIL_PERMANENT
+            return LoopError.FAIL_PERMANENT
         elif route == RouteError.HAS_BASE_FEE:
             # try again with a different route
-            return RebalanceError.FAIL_TEMPORARY
+            return LoopError.FAIL_TEMPORARY
 
         amount_msat = route[0]["amount_msat"]
-        invoice_id = f"rebalance-{time.time():.6f}".replace(".", "_")
+        invoice_id = f"loop-{time.time():.6f}".replace(".", "_")
         invoice_desc = f"bal {out_scid}:{in_scid}"
         invoice = self.rpc.rpc.invoice("any", invoice_id, invoice_desc)
         logger.debug(f"invoice: {invoice}")
@@ -311,7 +313,7 @@ class Balancer:
             err_directed_scid = f"{err_scid}/{err_dir}"
             logger.debug(f"ch failed, adding to excludes: {err_directed_scid}; {e.error}")
             self.bad_channels.append(err_directed_scid)
-            return RebalanceError.FAIL_TEMPORARY
+            return LoopError.FAIL_TEMPORARY
         else:
             return int(amount_msat)
 
@@ -405,7 +407,7 @@ def show_status(rpc: RpcHelper, full: bool=False):
             print(ch.to_str(with_scid=True, with_bal_ratio=True, with_cost=True, with_ppm_theirs=True, with_ppm_mine=full, with_peer_id=full))
 
 def balance_loop(rpc: RpcHelper, out: str, in_: str, min_msat: int, max_msat: int, max_tx: int):
-    balancer = Balancer(rpc)
+    looper = LoopRouter(rpc)
     bounds = TxBounds(min_msat=min_msat, max_msat=max_msat)
 
     asked_to_route = bounds.max_msat
@@ -414,7 +416,7 @@ def balance_loop(rpc: RpcHelper, out: str, in_: str, min_msat: int, max_msat: in
         bounds.max_msat = min(bounds.max_msat, asked_to_route - total_routed)
         if not bounds.is_satisfiable(): break
 
-        amt_balanced = balancer.balance_once_with_retries(out, in_, bounds)
+        amt_balanced = looper.loop_once_with_retries(out, in_, bounds)
         total_routed += amt_balanced
         if amt_balanced == 0: break
         logger.info(f"rebalanced {amt_balanced} (total: {total_routed} of {asked_to_route})")
