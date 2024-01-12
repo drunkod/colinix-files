@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 RPC_FILE = "/var/lib/clightning/bitcoin/lightning-rpc"
 # CLTV (HLTC delta) of the final hop
-CLTV = 9
+# set this too low and you might get inadvertent channel closures (?)
+CLTV = 18
 
 class RebalanceError(Enum):
     FAIL_TEMPORARY = "FAIL_TEMPORARY"
