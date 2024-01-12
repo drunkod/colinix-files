@@ -25,7 +25,6 @@ RPC_FILE = "/var/lib/clightning/bitcoin/lightning-rpc"
 # set this too low and you might get inadvertent channel closures (?)
 CLTV = 18
 
-MAX_ROUTE_ATTEMPTS = 20
 MAX_SEQUENTIAL_JOB_FAILURES = 100
 
 class LoopError(Enum):
@@ -264,23 +263,6 @@ class LoopRouter:
         channels = [c for c in channels if c["direction"] == direction]
         assert len(channels) == 1, f"expected exactly 1 channel: {channels}"
         return channels[0]
-
-    def loop_once_with_retries(self, out_scid: str, in_scid: str, tx: TxBounds, retries: int = MAX_ROUTE_ATTEMPTS) -> int:
-        for i in range(retries):
-            if i != 0:
-                logger.info(f"retrying loop: {i} of {retries}")
-            res = self.loop_once(out_scid, in_scid, tx)
-            if res == LoopError.FAIL_PERMANENT:
-                logger.info(f"loop {out_scid} -> {in_scid} is impossible (likely no route)")
-                break
-            elif res == LoopError.FAIL_TEMPORARY:
-                continue
-            else:
-                return res  # success
-        else:
-            logger.info(f"failed to loop {out_scid} -> {in_scid} within {retries} attempts")
-
-        return 0
 
     def loop_once(self, out_scid: str, in_scid: str, bounds: TxBounds) -> LoopError|int:
         out_ch = self.rpc.localchannel(out_scid)
