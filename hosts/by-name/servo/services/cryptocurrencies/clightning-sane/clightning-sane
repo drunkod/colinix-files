@@ -404,6 +404,24 @@ def show_status(rpc: RpcHelper, full: bool=False):
         else:
             print(ch.to_str(with_scid=True, with_bal_ratio=True, with_cost=True, with_ppm_theirs=True, with_ppm_mine=full, with_peer_id=full))
 
+def balance_loop(rpc: RpcHelper, out: str, in_: str, min_msat: int, max_msat: int, max_tx: int):
+    balancer = Balancer(rpc)
+    bounds = TxBounds(min_msat=min_msat, max_msat=max_msat)
+
+    asked_to_route = bounds.max_msat
+    total_routed = 0
+    for i in range(max_tx):
+        bounds.max_msat = min(bounds.max_msat, asked_to_route - total_routed)
+        if not bounds.is_satisfiable(): break
+
+        amt_balanced = balancer.balance_once_with_retries(out, in_, bounds)
+        total_routed += amt_balanced
+        if amt_balanced == 0: break
+        logger.info(f"rebalanced {amt_balanced} (total: {total_routed} of {asked_to_route})")
+        bounds.max_msat = min(bounds.max_msat, amt_balanced)
+
+    logger.info(f"rebalanced {total_routed} of {asked_to_route}")
+
 def main():
     logging.basicConfig()
     logger.setLevel(logging.INFO)
@@ -435,25 +453,7 @@ def main():
         show_status(rpc, full=args.full)
 
     if args.action == "loop":
-        balancer = Balancer(rpc)
-        bounds = TxBounds(
-            min_msat = int(args.min_msat),
-            max_msat = int(args.max_msat),
-        )
-
-        asked_to_route = bounds.max_msat
-        total_routed = 0
-        for i in range(int(args.max_tx)):
-            bounds.max_msat = min(bounds.max_msat, asked_to_route - total_routed)
-            if not bounds.is_satisfiable(): break
-
-            amt_balanced = balancer.balance_once_with_retries(args.out, args.in_, bounds)
-            total_routed += amt_balanced
-            if amt_balanced == 0: break
-            logger.info(f"rebalanced {amt_balanced} (total: {total_routed} of {asked_to_route})")
-            bounds.max_msat = min(bounds.max_msat, amt_balanced)
-
-        logger.info(f"rebalanced {total_routed} of {asked_to_route}")
+        balance_loop(rpc, out=args.out, in_=args.in_, min_msat=int(args.min_msat), max_msat=int(args.max_msat), max_tx=int(args.max_tx))
 
 if __name__ == '__main__':
     main()
