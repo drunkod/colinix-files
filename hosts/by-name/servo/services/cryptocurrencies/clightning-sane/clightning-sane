@@ -394,9 +394,13 @@ def show_status(rpc: RpcHelper, full: bool=False):
     """
     show a table of channel balances between peers.
     """
-    for ch in rpc.rpc.listpeerchannels()["channels"]:
-        ch = rpc.localchannel(ch["short_channel_id"])
-        print(ch.to_str(with_scid=True, with_bal_ratio=True, with_cost=True, with_ppm_theirs=True, with_ppm_mine=full))
+    for peerch in rpc.rpc.listpeerchannels()["channels"]:
+        try:
+            ch = rpc.localchannel(peerch["short_channel_id"])
+        except:
+            print(f"{peerch['peer_id']} scid:{peerch['short_channel_id']} state:{peerch['state']} NO CHANNELS")
+        else:
+            print(ch.to_str(with_scid=True, with_bal_ratio=True, with_cost=True, with_ppm_theirs=True, with_ppm_mine=full))
 
 def main():
     logging.basicConfig()
