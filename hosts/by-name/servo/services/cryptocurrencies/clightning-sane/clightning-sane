@@ -109,18 +109,20 @@ class LocalChannel:
         self.peer_ch = rpc.peerchannel(self.scid, self.remote_peer)
 
     def __repr__(self) -> str:
-        return self.to_str(with_scid=True, with_bal_ratio=True, with_cost=True, with_ppm=True)
+        return self.to_str(with_scid=True, with_bal_ratio=True, with_cost=True, with_ppm_out=True)
 
-    def to_str(self, with_scid: bool=False, with_bal_msat: bool=False, with_bal_ratio: bool=False, with_cost:bool = False, with_ppm:bool = False) -> str:
+    def to_str(self, with_scid: bool=False, with_bal_msat: bool=False, with_bal_ratio: bool=False, with_cost:bool = False, with_ppm_out:bool = False, with_ppm_in:bool = False) -> str:
         base_flag = "*" if self.to_me is None or self.to_me["base_fee_millisatoshi"] != 0 else ""
         alias = f"({self.remote_alias}){base_flag}"
         scid = f"  scid:{self.scid:>13}" if with_scid else ""
         bal = f"  S:{int(self.sendable):11}/R:{int(self.receivable):11}" if with_bal_msat else ""
         ratio = f"  MINE:{(100*self.send_ratio):>8.4f}%" if with_bal_ratio else ""
         cost = f"  COST:{self.opportunity_cost_lent:>11}" if with_cost else ""
-        ppm_to_me = self.to_me["fee_per_millionth"] if self.to_me else "N/A"
-        ppm = f"  THEIR_PPM:{ppm_to_me:>6}" if with_ppm else ""
-        return f"channel{alias:30}{scid}{bal}{ratio}{cost}{ppm}"
+        ppm_out = self.to_me["fee_per_millionth"] if self.to_me else "N/A"
+        ppm_out = f"  PPM_TO:{ppm_out:>6}" if with_ppm_out else ""
+        ppm_in = self.from_me["fee_per_millionth"] if self.from_me else "N/A"
+        ppm_in = f"  PPM_TO:{ppm_in:>6}" if with_ppm_in else ""
+        return f"channel{alias:30}{scid}{bal}{ratio}{cost}{ppm_out}{ppm_in}"
 
 
     @property
@@ -388,13 +390,13 @@ class Balancer:
     def _add_route_delay(self, route: list[dict], delay: int) -> list[dict]:
         return [ dict(hop, delay=hop["delay"] + delay) for hop in route ]
 
-def show_status(rpc: RpcHelper):
+def show_status(rpc: RpcHelper, full: bool=False):
     """
     show a table of channel balances between peers.
     """
     for ch in rpc.rpc.listpeerchannels()["channels"]:
         ch = rpc.localchannel(ch["short_channel_id"])
-        print(ch)
+        print(ch.to_str(with_scid=True, with_bal_ratio=True, with_cost=True, with_ppm_out=True, with_ppm_in=full))
 
 def main():
     logging.basicConfig()
@@ -406,6 +408,7 @@ def main():
 
     status_parser = subparsers.add_parser("status")
     status_parser.set_defaults(action="status")
+    status_parser.add_argument("--full", action="store_true", help="more info per channel")
 
     loop_parser = subparsers.add_parser("loop")
     loop_parser.set_defaults(action="loop")
@@ -423,7 +426,7 @@ def main():
     rpc = RpcHelper(LightningRpc(RPC_FILE))
 
     if args.action == "status":
-        show_status(rpc)
+        show_status(rpc, full=args.full)
 
     if args.action == "loop":
         balancer = Balancer(rpc)
