@@ -475,7 +475,9 @@ class LoopBalancer(AbstractLoopRunner):
         self.route_fail_count = 0
 
     def pop_job(self) -> LoopJob | None:
-        if self.tx_fail_count + self.route_fail_count >= MAX_SEQUENTIAL_JOB_FAILURES: return None
+        if self.tx_fail_count + self.route_fail_count >= MAX_SEQUENTIAL_JOB_FAILURES:
+            logger.info("too many sequential failures: giving up")
+            return None
 
         amount_avail = self.amount_target - self.amount_looped - self.amount_outstanding
         if amount_avail < self.bounds.min_msat: return None
