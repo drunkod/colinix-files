@@ -207,7 +207,7 @@ let
     (fromDb "youtube.com/@hbomberguy")
     (fromDb "youtube.com/@JackStauber")
     (fromDb "youtube.com/@PolyMatter")
-    (fromDb "youtube.com/@rossmanngroup" // pol // tech)  # Louis Rossmann
+    # (fromDb "youtube.com/@rossmanngroup" // pol // tech)  # Louis Rossmann
     (fromDb "youtube.com/@TechnologyConnections" // tech)
     (fromDb "youtube.com/@TheB1M")
     (fromDb "youtube.com/@TomScottGo")
