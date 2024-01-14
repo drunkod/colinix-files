@@ -26,6 +26,24 @@ buildGoModule rec {
   vendorHash = "sha256-OOwXWsFVxieOtzF7arXVNeWo4YB/EQbxQMAIxDVIhfg=";
   proxyVendor = true;
 
+  postPatch = ''
+    # upstream Makefile builds with `-ldflags "-X main.GitCommit=<hash>"`, but we bypass Makefile and have to do that manually.
+    # GOFLAGS or CGO_LDFLAGS could both sort of do this, but they struggle with the spaces/quoting of the above,
+    # so instead i manually patch in the values
+    substituteInPlace cmd/peerswap-plugin/main.go \
+      --replace 'var GitCommit string' 'var GitCommit string = "${src.rev}"'
+    substituteInPlace cmd/peerswaplnd/peerswapd/main.go \
+      --replace 'var GitCommit string' 'var GitCommit string = "${src.rev}"'
+    substituteInPlace cmd/peerswaplnd/pscli/main.go \
+      --replace 'var GitCommit string' 'var GitCommit string = "${src.rev}"'
+  '';
+
+  postInstall = ''
+    # the upstream Makefile compiles peerswap-plugin/main.go into a binary named `peerswap`,
+    # but since we use buildGoModule, that doesn't go through the Makefile and we have to manually rename.
+    mv $out/bin/peerswap-plugin $out/bin/peerswap
+  '';
+
   meta = with lib; {
     description = "PeerSwap enables Lightning Network nodes to balance their channels by facilitating atomic swaps with direct peers.";
     homepage = "https://peerswap.dev";
