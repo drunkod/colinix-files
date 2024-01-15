@@ -9,19 +9,39 @@
 # N.B.: maximum interface name in Linux is 15 characters.
 let
   def-wg-vpn = name: { endpoint, publicKey, address, dns, privateKeyFile }: {
-    networking.wg-quick.interfaces."${name}" = {
-      inherit address privateKeyFile dns;
-      peers = [
-        {
-          allowedIPs = [
-            "0.0.0.0/0"
-            "::/0"
-          ];
-          inherit endpoint publicKey;
-        }
-      ];
-      # to start: `systemctl start wg-quick-${name}`
-      autostart = false;
+    # networking.wg-quick.interfaces."${name}" = {
+    #   inherit address privateKeyFile dns;
+    #   peers = [
+    #     {
+    #       allowedIPs = [
+    #         "0.0.0.0/0"
+    #         "::/0"
+    #       ];
+    #       inherit endpoint publicKey;
+    #     }
+    #   ];
+    #   # to start: `systemctl start wg-quick-${name}`
+    #   autostart = false;
+    # };
+    systemd.network.netdevs."${name}" = {
+      # see: `man 5 systemd.netdev`
+      wireguardConfig = {
+        PrivateKeyFile = privateKeyFile;
+      };
+      wireguardPeers = [{
+        AllowedIPs = [
+          "0.0.0.0/0"
+          "::/0"
+        ];
+        Endpoint = endpoint;
+        PublicKey = publicKey;
+      }];
+    };
+    systemd.network.networks."${name}" = {
+      # see: `man 5 systemd.network`
+      matchConfig.Name = name;
+      networkConfig.Address = address;
+      networkConfig.DNS = dns;
     };
   };
   def-ovpn = name: { endpoint, publicKey, address }: def-wg-vpn "ovpnd-${name}" {
