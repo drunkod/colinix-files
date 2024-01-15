@@ -8,7 +8,7 @@
 # - copy the Address, PublicKey, Endpoint from OVPN's config
 # N.B.: maximum interface name in Linux is 15 characters.
 let
-  def-wg-vpn = name: { endpoint, publicKey, address, dns, privateKeyFile, extraOptions ? {} }: {
+  def-wg-vpn = name: { endpoint, publicKey, address, dns, privateKeyFile }: {
     networking.wg-quick.interfaces."${name}" = {
       inherit address privateKeyFile dns;
       peers = [
@@ -22,7 +22,7 @@ let
       ];
       # to start: `systemctl start wg-quick-${name}`
       autostart = false;
-    } // extraOptions;
+    };
   };
   def-ovpn = name: { endpoint, publicKey, address }: def-wg-vpn "ovpnd-${name}" {
     inherit endpoint publicKey address;
