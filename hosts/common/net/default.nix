@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./dns.nix
     ./hostnames.nix
     ./upnp.nix
     ./vpn.nix
