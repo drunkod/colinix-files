@@ -4,7 +4,6 @@
     ./calibre.nix
     ./coturn.nix
     ./cryptocurrencies
-    ./ddns-he.nix
     ./email
     ./ejabberd.nix
     ./freshrss.nix
