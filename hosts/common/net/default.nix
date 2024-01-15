@@ -1,6 +1,10 @@
 { lib, pkgs, ... }:
 
 {
+  imports = [
+    ./hostnames.nix
+    ./vpn.nix
+  ];
   # the default backend is "wpa_supplicant".
   # wpa_supplicant reliably picks weak APs to connect to.
   # see: <https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/474>
