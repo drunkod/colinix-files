@@ -36,7 +36,9 @@
   networking.networkmanager.plugins = lib.mkForce [];
 
   networking.firewall.allowedUDPPorts = [
-    1900  # to received UPnP advertisements. required by sane-ip-check-upnp
+    # to receive UPnP advertisements. required by sane-ip-check.
+    # N.B. sane-ip-check isn't query/response based. it needs to receive on port 1900 -- not receive responses FROM port 1900.
+    1900
   ];
 
   networking.firewall.extraCommands = with pkgs; ''
