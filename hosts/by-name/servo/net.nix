@@ -24,12 +24,6 @@ in
     sane.ports.openFirewall = true;
     sane.ports.openUpnp = true;
 
-    # these useDHCP lines are legacy from the auto-generated config. might be safe to remove now?
-    networking.useDHCP = false;
-    networking.interfaces.eth0.useDHCP = true;
-    # XXX colin: probably don't need this. wlan0 won't be populated unless i touch a value in networking.interfaces.wlan0
-    networking.wireless.enable = false;
-
     # this is needed to forward packets from the VPN to the host
     boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 
