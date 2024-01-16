@@ -24,9 +24,6 @@ in
     sane.ports.openFirewall = true;
     sane.ports.openUpnp = true;
 
-    # view refused packets with: `sudo journalctl -k`
-    # networking.firewall.logRefusedPackets = true;
-
     # these useDHCP lines are legacy from the auto-generated config. might be safe to remove now?
     networking.useDHCP = false;
     networking.interfaces.eth0.useDHCP = true;
