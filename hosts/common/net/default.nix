@@ -11,10 +11,13 @@
   systemd.network.enable = true;
   networking.useNetworkd = true;
 
-  # view refused packets with: `sudo journalctl -k`
+  # view refused/dropped packets with: `sudo journalctl -k`
   # networking.firewall.logRefusedPackets = true;
   # networking.firewall.logRefusedUnicastsOnly = false;
-  # networking.firewall.logReversePathDrops = true;
+  networking.firewall.logReversePathDrops = true;
+  # linux will drop inbound packets if it thinks a reply to that packet wouldn't exit via the same interface (rpfilter).
+  #   that heuristic fails for complicated VPN-style routing, especially with SNAT.
+  # networking.firewall.checkReversePath = false;  # or "loose" to keep it partially.
   # networking.firewall.enable = false;  #< set false to debug
 
   # the default backend is "wpa_supplicant".
