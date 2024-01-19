@@ -6,7 +6,6 @@
 # - upload pubkey to OVPN.com (`cat wg.priv | wg pubkey`)
 # - generate config @ OVPN.com
 # - copy the Address, PublicKey, Endpoint from OVPN's config
-# N.B.: maximum interface name in Linux is 15 characters.
 #
 # debugging:
 # - `journalctl -u systemd-networkd`
@@ -44,31 +43,12 @@ let
       matchConfig.Name = name;
       networkConfig.Address = [ addrV4 ];
       networkConfig.DNS = dns;
+      # TODO: `sane-vpn up <vpn>` should configure DNS to be sent over the VPN
       # DNSDefaultRoute: system DNS queries are sent to this link's DNS server
       # networkConfig.DNSDefaultRoute = true;
       # Domains = ~.: system DNS queries are sent to this link's DNS server
       # networkConfig.Domains = "~.";
-      # XXX: this commented-out bit would make all system traffic flow over the VPN.
       routingPolicyRules = [
-        # {
-        #   routingPolicyRuleConfig = {
-        #     # allow all non-default-route rules in the main table to take precedence over our wireguard rules.
-        #     # this allows reaching LAN machines (and the LAN's gateway!) without traversing the VPN.
-        #     Priority = 10000;
-        #     SuppressPrefixLength = 0;
-        #     Table = "main";
-        #   };
-        # }
-        # {
-        #   routingPolicyRuleConfig = {
-        #     # send traffic *from* my VPN address out over the VPN.
-        #     # this allows me to signal that traffic should be sent over the VPN by source-NATing it.
-        #     # yes, the only way to do source-based routing is to use a whole new table, wtf.
-        #     Priority = id;
-        #     From = addrV4;
-        #     Table = id;
-        #   };
-        # }
         {
           routingPolicyRuleConfig = {
             # send traffic from the the container bridge out over the VPN.
@@ -80,25 +60,8 @@ let
             Table = id;
           };
         }
-        # {
-        #   routingPolicyRuleConfig = {
-        #     # redirect any outbound packet not yet marked over to the wireguard table, through which it will enter the wg device.
-        #     #   the wg device will then route it over the tunnel, using the LAN gateway to reach the tunnel endpoint
-        #     #   -- which it can route directly, thanks to the higher-precedent rule above which allows reaching the LAN (and therefore gateway) without tunneling.
-        #     # this defines an ip rule: show it with `ip rule`.
-        #     FirewallMark = 51820;
-        #     InvertRule = true;
-        #     Table = 51820;
-        #     Priority = 10001;
-        #   };
-        # }
       ];
       routes = [{
-        # ovpn.com tunnels don't use a gateway. it's as if this link peers with the entire internet.
-        # routeConfig.Gateway = addrV4;
-        # routeConfig.GatewayOnLink = true;
-        # view this table with: `ip route list table <name>`
-        # routeConfig.Table = 51820;  #< TODO: use name-based table, per VPN
         routeConfig.Table = id;
         routeConfig.Scope = "link";
         routeConfig.Destination = "0.0.0.0/0";
@@ -106,8 +69,6 @@ let
       }];
       # RequiredForOnline => should `systemd-networkd-wait-online` fail if this network can't come up?
       linkConfig.RequiredForOnline = false;
-      # ActivationPolicy = "manual" means don't auto-up this interface (default is "up")
-      # linkConfig.ActivationPolicy = "manual";
     };
 
     systemd.network.netdevs."99-br-${name}" = {
