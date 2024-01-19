@@ -72,7 +72,7 @@ let
     (fromDb "feeds.feedburner.com/80000HoursPodcast" // rat)
     (fromDb "feeds.feedburner.com/dancarlin/history" // rat)
     (fromDb "feeds.feedburner.com/radiolab" // pol)  # Radiolab -- also available here, but ONLY OVER HTTP: <http://feeds.wnyc.org/radiolab>
-    (fromDb "feeds.libsyn.com/421877" // rat)  # Less Wrong Curated
+    # (fromDb "feeds.libsyn.com/421877" // rat)  # Less Wrong Curated
     (fromDb "feeds.megaphone.fm/behindthebastards" // pol)  # also Maggie Killjoy
     # (fromDb "feeds.megaphone.fm/hubermanlab" // uncat)  # Daniel Huberman on sleep
     (fromDb "feeds.megaphone.fm/recodedecode" // tech)  # The Verge - Decoder
