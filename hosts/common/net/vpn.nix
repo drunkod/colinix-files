@@ -156,10 +156,6 @@ let
     };
   };
 in lib.mkMerge [
-  {
-    # has to be here instead of in the VPN definitions because it can't be defined more than once (even if identical)
-    boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
-  }
   (def-ovpn "us" {
     endpoint = "vpn31.prd.losangeles.ovpn.com:9929";
     publicKey = "VW6bEWMOlOneta1bf6YFE25N/oMGh1E1UFBCfyggd0k=";
