@@ -39,25 +39,52 @@ let
     else if net == "vpn" then
       let
         vpn = lib.findSingle (v: v.default) null null (builtins.attrValues config.sane.vpn);
+        # XXX: firejail needs suid bit for some (not all) of its sandboxing methods. hence, rely on the user installing it system-wide and call it by suid path.
+        firejailBin = "/run/wrappers/bin/firejail";
         firejailFlags = [
           "--net=${vpn.bridgeDevice}"
         ] ++ (builtins.map (addr: "--dns=${addr}") vpn.dns);
       in
-        # TODO: update the package's `.desktop` files to ensure they exec the sandboxed app.
-        pkgs.symlinkJoin {
-          inherit (package) name;
-          paths = [ package ];
-          postBuild = ''
-            for p in $(ls "$out/bin/"); do
-              unlink "$out/bin/$p"
-              cat <<EOF >> "$out/bin/$p"
-            #!/bin/sh
-            exec ${pkgs.firejail}/bin/firejail ${lib.concatStringsSep " " firejailFlags} "${package}/bin/$p" "\$@"
-            EOF
+        # two ways i could wrap a package in a sandbox:
+        # 1. package.overrideAttrs, with `postFixup`.
+        # 2. pkgs.symlinkJoin, or pkgs.runCommand, creating an entirely new package which calls into the inner binaries.
+        #
+        # no.2 would require special-casing for .desktop files, to ensure they refer to the jailed version.
+        # no.1 may require extra care for recursive binaries, or symlink-heavy binaries (like busybox)
+        #   but even no.2 has to consider such edge-cases, just less frequently.
+        # no.1 may bloat rebuild times.
+        #
+        # ultimately, no.1 is probably more reliable, but i expect i'll factor out a switch to allow either approach -- particularly when debugging package buld failures.
+        package.overrideAttrs (unwrapped: {
+          postFixup = (unwrapped.postFixup or "") + ''
+          getFirejailProfile() {
+              _maybeProfile="${pkgs.firejail}/etc/firejail/$1.profile"
+              if [ -e "$_maybeProfile" ]; then
+                firejailProfileFlags="--profile=$_maybeProfile"
+              else
+                firejailProfileFlags=
+              fi
+            }
+            firejailWrap() {
+              name="$1"
+              getFirejailProfile "$name"
+              mv "$out/bin/$name" "$out/bin/.$name-firejailed"
+              cat <<EOF >> "$out/bin/$name"
+          #!/bin/sh
+          exec ${firejailBin} ${lib.concatStringsSep " " firejailFlags} $firejailProfileFlags "$out/bin/.$name-firejailed" "\$@"
+          EOF
               chmod +x "$out/bin/$p"
+            }
+
+            for p in $(ls "$out/bin/"); do
+              firejailWrap "$p"
             done
           '';
-        }
+          meta = (unwrapped.meta or {}) // {
+            # take precedence over non-sandboxed versions of the same binary.
+            priority = ((unwrapped.meta or {}).priority or 0) - 1;
+          };
+        })
     else
       throw "unknown net type '${net}'"
   );
