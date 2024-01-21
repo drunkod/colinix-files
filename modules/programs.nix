@@ -63,6 +63,7 @@ let
                 firejailProfileFlags="--profile=$_maybeProfile"
               else
                 firejailProfileFlags=
+                echo "failed to locate firejail profile for $1 (expected $_maybeProfile): aborting!" && false
               fi
             }
             firejailWrap() {
