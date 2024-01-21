@@ -10,6 +10,7 @@
       '';
     });
     net = "vpn";
+    sandbox.method = "firejail";
     # ".config/nicotine": contains the config file, with plaintext creds.
     # TODO: define this as a secret instead of persisting it.
     persist.byStore.private = [ ".config/nicotine" ];

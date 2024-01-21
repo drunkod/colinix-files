@@ -33,18 +33,36 @@ let
   defaultEnables = solveDefaultEnableFor cfg;
 
   # wrap a package so that its binaries (maybe) run in a sandbox
-  wrapPkg = { net }: package: (
-    if net == "clearnet" then
+  wrapPkg = { sandbox, fs, net, ... }: package: (
+    if sandbox.method == null then
       package
-    else if net == "vpn" then
+    else if sandbox.method == "firejail" then
       let
-        vpn = lib.findSingle (v: v.default) null null (builtins.attrValues config.sane.vpn);
         # XXX: firejail needs suid bit for some (not all) of its sandboxing methods. hence, rely on the user installing it system-wide and call it by suid path.
         firejailBin = "/run/wrappers/bin/firejail";
-        firejailFlags = [
+        vpn = lib.findSingle (v: v.default) null null (builtins.attrValues config.sane.vpn);
+        vpnFlags = [
           "--net=${vpn.bridgeDevice}"
         ] ++ (builtins.map (addr: "--dns=${addr}") vpn.dns);
-      in
+        allowPath = p: [
+          "--noblacklist=${p}"
+          "--whitelist=${p}"
+        ];
+        fsFlags = lib.flatten (builtins.map
+          (p: allowPath ''''${HOME}/${p}'')
+          (builtins.attrNames fs)
+        );
+        firejailFlags = [
+          # "--quiet"  #< TODO: enable
+          # "--tracelog"  # logs blacklist violations to syslog (but default firejail disallows this)
+        ] ++ allowPath "/run/current-system"  #< for basics like `ls`, and all this program's `suggestedPrograms`
+          ++ fsFlags
+          ++ lib.optionals (net == "vpn") vpnFlags;
+
+        firejailBase = pkgs.writeShellScript
+          "firejail-${package.pname}-base"
+          ''exec ${firejailBin} ${lib.escapeShellArgs firejailFlags} \'';
+
         # two ways i could wrap a package in a sandbox:
         # 1. package.overrideAttrs, with `postFixup`.
         # 2. pkgs.symlinkJoin, or pkgs.runCommand, creating an entirely new package which calls into the inner binaries.
@@ -55,9 +73,9 @@ let
         # no.1 may bloat rebuild times.
         #
         # ultimately, no.1 is probably more reliable, but i expect i'll factor out a switch to allow either approach -- particularly when debugging package buld failures.
-        package.overrideAttrs (unwrapped: {
+        packageWrapped = package.overrideAttrs (unwrapped: {
           postFixup = (unwrapped.postFixup or "") + ''
-          getFirejailProfile() {
+            getFirejailProfile() {
               _maybeProfile="${pkgs.firejail}/etc/firejail/$1.profile"
               if [ -e "$_maybeProfile" ]; then
                 firejailProfileFlags="--profile=$_maybeProfile"
@@ -70,22 +88,39 @@ let
               name="$1"
               getFirejailProfile "$name"
               mv "$out/bin/$name" "$out/bin/.$name-firejailed"
-              cat <<EOF >> "$out/bin/$name"
-          #!/bin/sh
-          exec ${firejailBin} ${lib.concatStringsSep " " firejailFlags} $firejailProfileFlags "$out/bin/.$name-firejailed" "\$@"
+              cat <<EOF >> "tmp-firejail-$name"
+          $firejailProfileFlags \
+          --join-or-start="${package.name}-$name" \
+          -- "$out/bin/.$name-firejailed" "\$@"
           EOF
-              chmod +x "$out/bin/$p"
+              cat ${firejailBase} "tmp-firejail-$name" > "$out/bin/$name"
+              chmod +x "$out/bin/$name"
             }
 
-            for p in $(ls "$out/bin/"); do
-              firejailWrap "$p"
+            for _p in $(ls "$out/bin/"); do
+              firejailWrap "$_p"
             done
+
+            # stamp file which can be consumed to ensure this wrapping code was actually called.
+            mkdir -p $out/nix-support
+            touch $out/nix-support/sandboxed-firejail
           '';
           meta = (unwrapped.meta or {}) // {
             # take precedence over non-sandboxed versions of the same binary.
             priority = ((unwrapped.meta or {}).priority or 0) - 1;
           };
-        })
+          passthru = (unwrapped.passthru or {}) // {
+            checkSandboxed = pkgs.runCommand "${package.name}-check-sandboxed" {} ''
+              # this pseudo-package gets "built" as part of toplevel system build.
+              # if the build is failing here, that means the program isn't properly sandboxed:
+              # make sure that "postFixup" gets called as part of the package's build script
+              test -f "${packageWrapped}/nix-support/sandboxed-${sandbox.method}" \
+                && touch "$out"
+            '';
+          };
+        });
+      in
+        packageWrapped
     else
       throw "unknown net type '${net}'"
   );
@@ -235,6 +270,13 @@ let
           - "vpn" to route all traffic over the default VPN.
         '';
       };
+      sandbox.method = mkOption {
+        type = types.nullOr (types.enum [ "firejail" ]);
+        default = null;  #< TODO: default to firejail
+        description = ''
+          how/whether to sandbox all binaries in the package.
+        '';
+      };
       configOption = mkOption {
         type = types.raw;
         default = mkOption {
@@ -258,17 +300,26 @@ let
       package = if config.packageUnwrapped == null then
         null
       else
-        wrapPkg { inherit (config) net; } config.packageUnwrapped
+        wrapPkg config config.packageUnwrapped
         ;
     };
   });
   toPkgSpec = with lib; types.coercedTo types.package (p: { package = p; }) pkgSpec;
 
   configs = lib.mapAttrsToList (name: p: {
-    assertions = builtins.map (sug: {
+    assertions = [
+      {
+        assertion = (p.net == "clearnet") || p.sandbox.method != null;
+        message = ''program "${name}" requests net "${p.net}", which requires sandboxing, but sandboxing was disabled'';
+      }
+    ] ++ builtins.map (sug: {
       assertion = cfg ? "${sug}";
       message = ''program "${sug}" referenced by "${name}", but not defined'';
     }) p.suggestedPrograms;
+
+    system.checks = lib.optionals (p.enabled && p.sandbox.method != null && p.package != null) [
+      p.package.passthru.checkSandboxed
+    ];
 
     # conditionally add to system PATH and env
     environment = lib.optionalAttrs (p.enabled && p.enableFor.system) {
@@ -343,6 +394,7 @@ in
         users.users = f.users.users;
         sane.users = f.sane.users;
         sops.secrets = f.sops.secrets;
+        system.checks = f.system.checks;
       };
     in lib.mkMerge [
       (take (sane-lib.mkTypedMerge take configs))
