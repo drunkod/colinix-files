@@ -37,21 +37,24 @@ let
     if net == "clearnet" then
       package
     else if net == "vpn" then
-      # TODO: update the package's `.desktop` files to ensure they exec the sandboxed app.
-      pkgs.symlinkJoin {
-        inherit (package) name;
-        paths = [ package ];
-        postBuild = ''
-          for p in $(ls "$out/bin/"); do
-            unlink "$out/bin/$p"
-            cat <<EOF >> "$out/bin/$p"
-          #!/bin/sh
-          exec ${pkgs.sane-scripts.vpn}/bin/sane-vpn do default "${package}/bin/$p" "\$@"
-          EOF
-            chmod +x "$out/bin/$p"
-          done
-        '';
-      }
+      let
+        defaultVpn = lib.findSingle (v: v.default) null null (builtins.attrValues config.sane.vpn);
+      in
+        # TODO: update the package's `.desktop` files to ensure they exec the sandboxed app.
+        pkgs.symlinkJoin {
+          inherit (package) name;
+          paths = [ package ];
+          postBuild = ''
+            for p in $(ls "$out/bin/"); do
+              unlink "$out/bin/$p"
+              cat <<EOF >> "$out/bin/$p"
+            #!/bin/sh
+            exec ${pkgs.sane-scripts.vpn}/bin/sane-vpn do ${defaultVpn.name} "${package}/bin/$p" "\$@"
+            EOF
+              chmod +x "$out/bin/$p"
+            done
+          '';
+        }
     else
       throw "unknown net type '${net}'"
   );

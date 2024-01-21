@@ -8,8 +8,14 @@
 { config, lib, pkgs, sane-lib, ... }:
 let
   cfg = config.sane.vpn;
-  vpnOpts = with lib; types.submodule {
+  vpnOpts = with lib; types.submodule ({ name, config, ... }: {
     options = {
+      name = mkOption {
+        type = types.str;
+        description = ''
+          read-only value: must match the attrName of this vpn.
+        '';
+      };
       id = mkOption {
         type = types.ints.between 1 99;
         description = ''
@@ -64,9 +70,10 @@ let
     };
 
     config = {
+      inherit name;
       default = builtins.all (other: config.id <= other.id) (builtins.attrValues cfg);
     };
-  };
+  });
   mkVpnConfig = name: { id, dns, endpoint, publicKey, addrV4, privateKeyFile, ... }: let
     fwmark = id + 10000;
     bridgeAddrV4 = "10.20.${builtins.toString id}.1/24";
