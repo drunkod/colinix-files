@@ -60,6 +60,13 @@ let
           dns servers to use for traffic associated with this VPN.
         '';
       };
+      bridgeDevice = mkOption {
+        type = types.str;
+        default = "br-${name}";
+        description = ''
+          name of the bridge net device which will be created and configured so as to route all its outbound traffic over the VPN.
+        '';
+      };
       privateKeyFile = mkOption {
         type = types.either types.str types.path;
         description = ''
@@ -74,7 +81,7 @@ let
       default = builtins.all (other: config.id <= other.id) (builtins.attrValues cfg);
     };
   });
-  mkVpnConfig = name: { id, dns, endpoint, publicKey, addrV4, privateKeyFile, ... }: let
+  mkVpnConfig = name: { id, dns, endpoint, publicKey, addrV4, privateKeyFile, bridgeDevice, ... }: let
     fwmark = id + 10000;
     bridgeAddrV4 = "10.20.${builtins.toString id}.1/24";
   in {
@@ -138,12 +145,12 @@ let
       linkConfig.RequiredForOnline = false;
     };
 
-    systemd.network.netdevs."99-br-${name}" = {
+    systemd.network.netdevs."99-${bridgeDevice}" = {
       netdevConfig.Kind = "bridge";
-      netdevConfig.Name = "br-${name}";
+      netdevConfig.Name = bridgeDevice;
     };
-    systemd.network.networks."51-br-${name}" = {
-      matchConfig.Name = "br-${name}";
+    systemd.network.networks."51-${bridgeDevice}" = {
+      matchConfig.Name = bridgeDevice;
       networkConfig.Description = "NATs inbound traffic to ${name}, intended for container isolation";
       networkConfig.Address = [ bridgeAddrV4 ];
       networkConfig.DNS = dns;

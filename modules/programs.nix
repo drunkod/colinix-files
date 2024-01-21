@@ -38,7 +38,10 @@ let
       package
     else if net == "vpn" then
       let
-        defaultVpn = lib.findSingle (v: v.default) null null (builtins.attrValues config.sane.vpn);
+        vpn = lib.findSingle (v: v.default) null null (builtins.attrValues config.sane.vpn);
+        firejailFlags = [
+          "--net=${vpn.bridgeDevice}"
+        ] ++ (builtins.map (addr: "--dns=${addr}") vpn.dns);
       in
         # TODO: update the package's `.desktop` files to ensure they exec the sandboxed app.
         pkgs.symlinkJoin {
@@ -49,7 +52,7 @@ let
               unlink "$out/bin/$p"
               cat <<EOF >> "$out/bin/$p"
             #!/bin/sh
-            exec ${pkgs.sane-scripts.vpn}/bin/sane-vpn do ${defaultVpn.name} "${package}/bin/$p" "\$@"
+            exec ${pkgs.firejail}/bin/firejail ${lib.concatStringsSep " " firejailFlags} "${package}/bin/$p" "\$@"
             EOF
               chmod +x "$out/bin/$p"
             done
