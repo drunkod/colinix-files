@@ -11,13 +11,17 @@ let
   vpnOpts = with lib; types.submodule {
     options = {
       id = mkOption {
-        type = types.int;
+        type = types.ints.between 1 99;
         description = ''
           unique integer identifier for this VPN.
           lower number = higher priority, in many senses.
           lowest number = default VPN to use when no other is specified, or when multiple are enabled in the same circumstance.
-
-          safe values for this number: 1 < id < 100.
+        '';
+      };
+      default = mkOption {
+        type = types.bool;
+        description = ''
+          read-only value: set based on whichever VPN has the lowest id.
         '';
       };
       endpoint = mkOption {
@@ -58,11 +62,21 @@ let
         '';
       };
     };
+
+    config = {
+      default = builtins.all (other: config.id <= other.id) (builtins.attrValues cfg);
+    };
   };
-  mkVpnConfig = name: { id, dns, endpoint, publicKey, addrV4, privateKeyFile }: let
+  mkVpnConfig = name: { id, dns, endpoint, publicKey, addrV4, privateKeyFile, ... }: let
     fwmark = id + 10000;
     bridgeAddrV4 = "10.20.${builtins.toString id}.1/24";
   in {
+    assertions = [
+      {
+        assertion = (lib.count (c: c.id == id) (builtins.attrValues cfg)) == 1;
+        message = "multiple VPNs share id ${id}";
+      }
+    ];
     systemd.network.netdevs."98-${name}" = {
       # see: `man 5 systemd.netdev`
       netdevConfig = {
@@ -198,6 +212,7 @@ in
   config = let
     configs = lib.mapAttrsToList mkVpnConfig cfg;
     take = f: {
+      assertions = f.assertions;
       networking.firewall.checkReversePath = f.networking.firewall.checkReversePath;
       networking.localCommands = f.networking.localCommands;
       systemd.network = f.systemd.network;
