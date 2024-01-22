@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
 {
   sane.programs.conky = {
+    sandbox.method = "firejail";
     fs.".config/conky/conky.conf".symlink.target =
       let
         battery_estimate = pkgs.static-nix-shell.mkBash {
