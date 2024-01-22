@@ -27,6 +27,8 @@ in
     # packageUnwrapped = pkgs.fractal-latest;
     # packageUnwrapped = pkgs.fractal-next;
 
+    sandbox.method = "firejail";
+
     configOption = with lib; mkOption {
       default = {};
       type = types.submodule {
