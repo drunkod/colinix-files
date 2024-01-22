@@ -39,7 +39,8 @@ let
     else if sandbox.method == "firejail" then
       let
         # XXX: firejail needs suid bit for some (not all) of its sandboxing methods. hence, rely on the user installing it system-wide and call it by suid path.
-        firejailBin = "/run/wrappers/bin/firejail";
+        # firejailBin = "/run/wrappers/bin/firejail";
+        firejailBin = "firejail";
 
         allowPath = p: [
           "noblacklist ${p}"
@@ -140,7 +141,7 @@ let
           #!${pkgs.runtimeShell}
           exec ${firejailBin} \
           --include="${pkgName}.local" \
-          --profile="$firejailProfileName" \
+          --profile=":$firejailProfileName" \
           --join-or-start="$firejailProfileName" \
           -- "$out/bin/.$name-firejailed" "\$@"
           EOF
