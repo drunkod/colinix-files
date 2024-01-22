@@ -22,6 +22,7 @@ in
     };
 
     packageUnwrapped = pkgs.signal-desktop-from-src;
+    sandbox.method = "firejail";
 
     # creds, media
     persist.byStore.private = [
