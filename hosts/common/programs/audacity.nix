@@ -9,6 +9,8 @@
       };
     };
 
+    sandbox.method = null; # "firejail"; # TODO: it can't load audacity.cfg
+
     # disable first-run splash screen
     fs.".config/audacity/audacity.cfg".file.text = ''
       PrefsVersion=1.1.1r1
