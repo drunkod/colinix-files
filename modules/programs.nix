@@ -395,8 +395,10 @@ let
     ];
 
     sane.fs = lib.optionalAttrs (p.enabled && p.sandbox.method == "firejail" && p.package != null) {
-      "/etc/firejail/${name}.local".symlink.text =
-        p.package.passthru.firejailLocalConfig + p.sandbox.extraFirejailConfig;
+      "/etc/firejail/${name}.local".symlink.text = ''
+        ${p.package.passthru.firejailLocalConfig}
+        ${p.sandbox.extraFirejailConfig}
+      '';
     };
 
     # conditionally add to system PATH and env
