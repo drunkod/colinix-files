@@ -86,7 +86,17 @@ let
         # no.1 may bloat rebuild times.
         #
         # ultimately, no.1 is probably more reliable, but i expect i'll factor out a switch to allow either approach -- particularly when debugging package buld failures.
-        packageWrapped = package.overrideAttrs (unwrapped: {
+        package' = if package.override.__functionArgs ? runCommand then
+          package.override {
+            runCommand = name: env: cmd: pkgs.runCommand name env (cmd + lib.optionalString (name == package.name) ''
+              # if the package is a runCommand (common for wrappers), then patch it to call our `postFixup` hook, first
+              runHook postFixup
+            '');
+          }
+        else
+          package
+        ;
+        packageWrapped = package'.overrideAttrs (unwrapped: {
           postFixup = (unwrapped.postFixup or "") + ''
             tryFirejailProfile() {
               _maybeProfile="${pkgs.firejail}/etc/firejail/$1.profile"
