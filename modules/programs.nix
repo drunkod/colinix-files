@@ -33,7 +33,7 @@ let
   defaultEnables = solveDefaultEnableFor cfg;
 
   # wrap a package so that its binaries (maybe) run in a sandbox
-  wrapPkg = { fs, net, persist, sandbox, ... }: package: (
+  wrapPkg = pkgName: { fs, net, persist, sandbox, ... }: package: (
     if sandbox.method == null then
       package
     else if sandbox.method == "firejail" then
@@ -42,24 +42,25 @@ let
         firejailBin = "/run/wrappers/bin/firejail";
 
         allowPath = p: [
-          "--noblacklist=${p}"
-          "--whitelist=${p}"
+          "noblacklist ${p}"
+          "whitelist ${p}"
         ];
         allowHomePath = p: allowPath ''''${HOME}/${p}'';
         allowPaths = paths: lib.flatten (builtins.map allowPath paths);
         allowHomePaths = paths: lib.flatten (builtins.map allowHomePath paths);
 
-        fsFlags = allowHomePaths (builtins.attrNames fs);
-        persistFlags = allowHomePaths (builtins.attrNames persist.byPath);
+        fsItems = allowHomePaths (builtins.attrNames fs);
+        persistItems = allowHomePaths (builtins.attrNames persist.byPath);
 
         vpn = lib.findSingle (v: v.default) null null (builtins.attrValues config.sane.vpn);
-        vpnFlags = [
-          "--net=${vpn.bridgeDevice}"
-        ] ++ (builtins.map (addr: "--dns=${addr}") vpn.dns);
+        vpnItems = [
+          "net ${vpn.bridgeDevice}"
+        ] ++ (builtins.map (addr: "dns ${addr}") vpn.dns);
 
-        firejailFlags = [
+        firejailItems = [
           # "--quiet"  #< TODO: enable
           # "--tracelog"  # logs blacklist violations to syslog (but default firejail disallows this)
+          # "--keep-dev-shm"  #< required for spotify
         ] ++ allowPaths [
           "/run/current-system"  #< for basics like `ls`, and all this program's `suggestedPrograms` (/run/current-system/sw/bin)
           "/run/wrappers"  #< SUID wrappers, in this case so that firejail can be re-entrant
@@ -68,13 +69,10 @@ let
           # /run/opengl-driver is a symlink into /nix/store; needed by e.g. mpv
           "/run/opengl-driver"
           "/run/opengl-driver-32"
-        ] ++ fsFlags
-          ++ persistFlags
-          ++ lib.optionals (net == "vpn") vpnFlags;
-
-        firejailBase = pkgs.writeShellScript
-          "firejail-${package.pname or package.name or "unknown"}-base"
-          ''exec ${firejailBin} ${lib.escapeShellArgs firejailFlags} \'';
+          # "/dev/dri"  #< fix non-fatal "libEGL warning: wayland-egl: could not open /dev/dri/renderD128" (geary)
+        ] ++ fsItems
+          ++ persistItems
+          ++ lib.optionals (net == "vpn") vpnItems;
 
         # two ways i could wrap a package in a sandbox:
         # 1. package.overrideAttrs, with `postFixup`.
@@ -96,6 +94,7 @@ let
         else
           package
         ;
+
         packageWrapped = package'.overrideAttrs (unwrapped: {
           postFixup = (unwrapped.postFixup or "") + ''
             tryFirejailProfile() {
@@ -130,18 +129,21 @@ let
                 || tryFirejailProfile "$1" \
                 || tryFirejailProfile "${unwrapped.pname or ""}" \
                 || tryFirejailProfile "${unwrapped.name or ""}" \
+                || tryFirejailProfile "${pkgName}" \
                 || (echo "failed to locate firejail profile for $1: aborting!" && false)
             }
             firejailWrap() {
               name="$1"
               getFirejailProfile "$name"
               mv "$out/bin/$name" "$out/bin/.$name-firejailed"
-              cat <<EOF >> "tmp-firejail-$name"
-          --profile="$firejailProfilePath" \
+              cat <<EOF >> "$out/bin/$name"
+          #!${pkgs.runtimeShell}
+          exec ${firejailBin} \
+          --include="${pkgName}.local" \
+          --profile="$firejailProfileName" \
           --join-or-start="$firejailProfileName" \
           -- "$out/bin/.$name-firejailed" "\$@"
           EOF
-              cat ${firejailBase} "tmp-firejail-$name" > "$out/bin/$name"
               chmod +x "$out/bin/$name"
             }
 
@@ -165,6 +167,7 @@ let
               test -f "${packageWrapped}/nix-support/sandboxed-${sandbox.method}" \
                 && touch "$out"
             '';
+            firejailLocalConfig = builtins.concatStringsSep "\n" firejailItems;
           };
         });
       in
@@ -335,6 +338,18 @@ let
             then set `sandbox.binMap.umpv = "mpv";` to sandbox `bin/umpv` with the same rules as `bin/mpv`
         '';
       };
+      sandbox.extraFirejailConfig = mkOption {
+        type = types.lines;
+        default = "";
+        description = ''
+          extra lines to add to this package's /etc/firejail/{pname}.local file, which is included when running any of the package's /bin files if sandbox.method is set to "firejail".
+
+          example: sandbox.extraFirejailConfig = '''
+            whitelist ''${HOME}/.ssh
+            keep-dev-shm
+          ''';
+        '';
+      };
       configOption = mkOption {
         type = types.raw;
         default = mkOption {
@@ -358,7 +373,7 @@ let
       package = if config.packageUnwrapped == null then
         null
       else
-        wrapPkg config config.packageUnwrapped
+        wrapPkg name config config.packageUnwrapped
         ;
     };
   });
@@ -378,6 +393,11 @@ let
     system.checks = lib.optionals (p.enabled && p.sandbox.method != null && p.package != null) [
       p.package.passthru.checkSandboxed
     ];
+
+    sane.fs = lib.optionalAttrs (p.enabled && p.sandbox.method == "firejail" && p.package != null) {
+      "/etc/firejail/${name}.local".symlink.text =
+        p.package.passthru.firejailLocalConfig + p.sandbox.extraFirejailConfig;
+    };
 
     # conditionally add to system PATH and env
     environment = lib.optionalAttrs (p.enabled && p.enableFor.system) {
@@ -450,6 +470,7 @@ in
         environment.systemPackages = f.environment.systemPackages;
         environment.variables = f.environment.variables;
         users.users = f.users.users;
+        sane.fs = f.sane.fs;
         sane.users = f.sane.users;
         sops.secrets = f.sops.secrets;
         system.checks = f.system.checks;
