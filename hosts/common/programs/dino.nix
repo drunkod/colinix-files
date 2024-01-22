@@ -45,6 +45,8 @@ in
       };
     };
 
+    sandbox.method = "firejail";
+
     persist.byStore.private = [ ".local/share/dino" ];
 
     services.dino = {
