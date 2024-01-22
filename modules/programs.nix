@@ -60,11 +60,15 @@ let
         firejailFlags = [
           # "--quiet"  #< TODO: enable
           # "--tracelog"  # logs blacklist violations to syslog (but default firejail disallows this)
-        ] ++ allowPath "/run/current-system"  #< for basics like `ls`, and all this program's `suggestedPrograms`
-          # ++ allowPath "/bin/sh"  #< to allow `firejail --join=...` (doesn't work)
-          ++ allowPath "/run/systemd/resolve"  #< to allow reading /etc/resolv.conf, which ultimately symlinks here
-          ++ allowPaths [ "/run/opengl-driver" "/run/opengl-driver-32" ]  #< symlinks to /nix/store; needed by e.g. mpv
-          ++ fsFlags
+        ] ++ allowPaths [
+          "/run/current-system"  #< for basics like `ls`, and all this program's `suggestedPrograms` (/run/current-system/sw/bin)
+          "/run/wrappers"  #< SUID wrappers, in this case so that firejail can be re-entrant
+          # "/bin/sh"  #< to allow `firejail --join=...` (doesn't work)
+          "/run/systemd/resolve"  #< to allow reading /etc/resolv.conf, which ultimately symlinks here
+          # /run/opengl-driver is a symlink into /nix/store; needed by e.g. mpv
+          "/run/opengl-driver"
+          "/run/opengl-driver-32"
+        ] ++ fsFlags
           ++ persistFlags
           ++ lib.optionals (net == "vpn") vpnFlags;
 
