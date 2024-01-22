@@ -20,5 +20,7 @@ in
     package = cfg.package;
   };
   # the SUID wrapper can't also be a firejail (idk why? it might be that the binary's already *too* restricted).
-  security.wrappers.dumpcap.source = lib.mkIf cfg.enabled (lib.mkForce "${cfg.package}/bin/.dumpcap-firejailed");
+  security.wrappers = lib.mkIf cfg.enabled {
+    dumpcap.source = lib.mkForce "${cfg.package}/bin/.dumpcap-firejailed";
+  };
 }
