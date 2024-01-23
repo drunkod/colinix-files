@@ -217,7 +217,7 @@ in
     ({
       sane.programs.firefox = {
         inherit packageUnwrapped;
-        sandbox.method = "firejail";
+        sandbox.method = "bwrap";
 
         suggestedPrograms = [
           "open-in-mpv"
@@ -305,7 +305,7 @@ in
         # TODO: find a way to not expose ~/.ssh to firefox
         # - unlock sops at login?
         fs.".ssh" = lib.mkIf cfg.addons.browserpass-extension.enable {};
-        fs.".ssh/id_ed25519" = lib.mkIf cfg.addons.browserpass-extension.enable {};
+        # fs.".ssh/id_ed25519" = lib.mkIf cfg.addons.browserpass-extension.enable {};
         fs.".config/sops" = lib.mkIf cfg.addons.browserpass-extension.enable {};
         fs."private/knowledge/secrets/accounts" = lib.mkIf cfg.addons.browserpass-extension.enable {};
       };
