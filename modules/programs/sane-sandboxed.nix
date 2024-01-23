@@ -29,5 +29,6 @@ stdenv.mkDerivation {
       1. to abstract over the particular sandbox implementation (bwrap, firejail, ...).
       2. to modify sandbox settings without forcing a rebuild of the sandboxed package.
     '';
+    mainProgram = "sane-sandboxed";
   };
 }

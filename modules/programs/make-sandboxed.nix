@@ -2,12 +2,11 @@
 , firejail
 , runCommand
 , runtimeShell
+, sane-sandboxed
 }:
 { pkgName, package, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], binMap ? {} }:
 let
-  # XXX: firejail needs suid bit for some (not all) of its sandboxing methods. hence, rely on the user installing it system-wide and call it by suid path.
-  # firejailBin = "/run/wrappers/bin/firejail";
-  firejailBin = "firejail";
+  sane-sandboxed' = sane-sandboxed.meta.mainProgram;  #< load by bin name to reduce rebuilds
 
   allowPath = p: [
     "noblacklist ${p}"
@@ -93,11 +92,11 @@ let
         mv "$out/bin/$name" "$out/bin/.$name-firejailed"
         cat <<EOF >> "$out/bin/$name"
     #!${runtimeShell}
-    exec ${firejailBin} \
-    --include="${pkgName}.local" \
-    --profile=":$firejailProfileName" \
-    --join-or-start="$firejailProfileName" \
-    -- "$out/bin/.$name-firejailed" "\$@"
+    exec ${sane-sandboxed'} \
+    --sane-sandbox-firejail-arg --include="${pkgName}.local" \
+    --sane-sandbox-firejail-arg --profile=":$firejailProfileName" \
+    --sane-sandbox-firejail-arg --join-or-start="$firejailProfileName" \
+    "$out/bin/.$name-firejailed" "\$@"
     EOF
         chmod +x "$out/bin/$name"
       }

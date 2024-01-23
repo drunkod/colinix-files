@@ -38,7 +38,7 @@ let
       package
     else if sandbox.method == "firejail" then
       let
-        makeSandboxed = pkgs.callPackage ./make-sandboxed.nix { };
+        makeSandboxed = pkgs.callPackage ./make-sandboxed.nix { sane-sandboxed = config.sane.sandboxHelper; };
         vpn = lib.findSingle (v: v.default) null null (builtins.attrValues config.sane.vpn);
       in
         makeSandboxed {
