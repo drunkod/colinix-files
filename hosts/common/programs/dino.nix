@@ -45,7 +45,7 @@ in
       };
     };
 
-    sandbox.method = "firejail";
+    sandbox.method = "bwrap";
 
     persist.byStore.private = [ ".local/share/dino" ];
 
