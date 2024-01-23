@@ -3,6 +3,7 @@
 test -n "$SANE_SANDBOX_DEBUG" && set -x
 
 cliArgs=()
+autodetect=
 profilesNamed=()
 rootPaths=()
 homePaths=()
@@ -67,21 +68,28 @@ parseArgs() {
         method="$1"
         shift
         ;;
+      (--sane-sandbox-autodetect)
+        # autodetect: crawl the CLI program's args & bind any which look like paths into the sandbox.
+        # this is handy for e.g. media players or document viewers.
+        # it's best combined with some two-tiered thing.
+        #   e.g. first drop to the broadest path set of interest (Music,Videos,tmp, ...), then drop via autodetect.
+        autodetect=1
+        ;;
       (--sane-sandbox-dns)
         # N.B.: these named temporary variables ensure that `set -x` causes $1 to be printed
         _dns="$1"
-        dns+=("$_dns")
         shift
+        dns+=("$_dns")
         ;;
       (--sane-sandbox-firejail-arg)
         _fjFlag="$1"
-        firejailFlags+=("$_fjFlag")
         shift
+        firejailFlags+=("$_fjFlag")
         ;;
       (--sane-sandbox-bwrap-arg)
         _bwrapFlag="$1"
-        bwrapFlags+=("$_bwrapFlag")
         shift
+        bwrapFlags+=("$_bwrapFlag")
         ;;
       (--sane-sandbox-net)
         net="$1"
@@ -89,13 +97,13 @@ parseArgs() {
         ;;
       (--sane-sandbox-home-path)
         _path="$1"
-        homePaths+=("$_path")
         shift
+        homePaths+=("$_path")
         ;;
       (--sane-sandbox-path)
         _path="$1"
-        rootPaths+=("$_path")
         shift
+        rootPaths+=("$_path")
         ;;
       (--sane-sandbox-profile)
         tryLoadProfileByName "$1"
@@ -175,7 +183,7 @@ bwrapIngestProfile() {
 # WIP
 
 bwrapExec() {
-  PATH="$PATH:@bubblewrap@/bin" exec bwrap --dev /dev --proc /proc "${bwrapFlags[@]}" -- "${cliArgs[@]}"
+  PATH="$PATH:@bubblewrap@/bin" exec bwrap --dev /dev --proc /proc --tmpfs /tmp "${bwrapFlags[@]}" -- "${cliArgs[@]}"
 }
 
 
@@ -196,6 +204,17 @@ done
 for _path in "${homePaths[@]}"; do
   "$method"IngestHomePath "$_path"
 done
+
+if [ -n "$autodetect" ]; then
+  _pwd=$(pwd)
+  for _arg in "${cliArgs[@]}"; do
+    if [[ "$_arg" == "/*" ]]; then
+      test -e "$_arg" && "$method"IngestRootPath "$_arg"
+    elif test -e "$_pwd/$_arg"; then
+      "$method"IngestRootPath "$_pwd/$_arg"
+    fi
+  done
+fi
 
 if [ -n "$net" ]; then
   "$method"IngestNet "$net"

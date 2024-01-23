@@ -63,7 +63,9 @@ in
     });
 
     sandbox.method = "bwrap";
-    # sandbox.method = "firejail";  #< fails on moby
+    sandbox.extraConfig = [
+      "--sane-sandbox-autodetect"
+    ];
 
     persist.byStore.plaintext = [ ".local/state/mpv/watch_later" ];
     fs.".config/mpv/input.conf".symlink.text = let

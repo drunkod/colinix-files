@@ -40,24 +40,12 @@ let
       let
         makeSandboxed = pkgs.callPackage ./make-sandboxed.nix { sane-sandboxed = config.sane.sandboxHelper; };
         vpn = lib.findSingle (v: v.default) null null (builtins.attrValues config.sane.vpn);
-        # TODO: restrict access to these media paths a bit more.
-        #       maybe mount them user=nobody and restrict based on group?
-        mediaHomePaths = [
-          "Books"
-          "Music"
-          "Pictures"
-          "Videos"
-          "tmp"
-        ];
-        mediaRootPaths = [
-          "/mnt/servo-media"
-        ];
       in
         makeSandboxed {
           inherit pkgName package;
           inherit (sandbox) binMap method extraConfig;
           vpn = if net == "vpn" then vpn else null;
-          allowedHomePaths = builtins.attrNames fs ++ builtins.attrNames persist.byPath ++ mediaHomePaths;
+          allowedHomePaths = builtins.attrNames fs ++ builtins.attrNames persist.byPath;
           allowedRootPaths = [
             "/nix/store"
             "/bin/sh"
@@ -72,7 +60,7 @@ let
             "/run/user"  #< particularly /run/user/$id/wayland-1, pulse, etc.
             "/run/secrets/home"
             # "/dev/dri"  #< fix non-fatal "libEGL warning: wayland-egl: could not open /dev/dri/renderD128" (geary)
-          ] ++ mediaRootPaths ++ sandbox.extraPaths;
+          ] ++ sandbox.extraPaths;
         }
   );
   pkgSpec = with lib; types.submodule ({ config, name, ... }: {
