@@ -144,7 +144,9 @@ firejailExec() {
 ## BUBBLEWRAP BACKEND
 
 bwrapIngestRootPath() {
-  bwrapFlags+=("--dev-bind" "$1" "$1")
+  # N.B.: use --dev-bind-try instead of --dev-bind for platform-specific paths like /run/opengl-driver-32
+  #   which don't exist on aarch64, as the -try variant will gracefully fail (i.e. not bind it).
+  bwrapFlags+=("--dev-bind-try" "$1" "$1")
 }
 bwrapIngestHomePath() {
   bwrapFlags+=("--dev-bind" "$HOME/$1" "$HOME/$1")
