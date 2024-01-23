@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
 {
   sane.programs.conky = {
+    # TODO: non-sandboxed `conky` still ships via `sxmo-utils`, but unused
     sandbox.method = "firejail";
     fs.".config/conky/conky.conf".symlink.target =
       let
