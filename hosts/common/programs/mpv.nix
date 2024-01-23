@@ -62,7 +62,7 @@ in
       '';
     });
 
-    sandbox.method = null;
+    sandbox.method = "bwrap";
     # sandbox.method = "firejail";  #< fails on moby
 
     persist.byStore.plaintext = [ ".local/state/mpv/watch_later" ];
