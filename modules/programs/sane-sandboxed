@@ -18,8 +18,10 @@ debug() {
 }
 
 loadProfileByPath() {
-  _profArgs="$(cat $1)"
-  parseArgs $_profArgs
+  # profile format is simply a list of arguments one would pass to this sane-sandboxed script itself,
+  # with one argument per line
+  readarray -t _profArgs < <(cat "$1")
+  parseArgs "${_profArgs[@]}"
 }
 
 tryLoadProfileByName() {
