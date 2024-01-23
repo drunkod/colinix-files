@@ -8,6 +8,7 @@
 { ... }:
 {
   sane.programs.g4music = {
+    sandbox.method = "bwrap";
     persist.byStore.plaintext = [
       # index?
       ".cache/com.github.neithern.g4music"
