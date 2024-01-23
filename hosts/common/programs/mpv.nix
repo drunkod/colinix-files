@@ -62,7 +62,8 @@ in
       '';
     });
 
-    sandbox.method = "firejail";
+    sandbox.method = null;
+    # sandbox.method = "firejail";  #< fails on moby
 
     persist.byStore.plaintext = [ ".local/state/mpv/watch_later" ];
     fs.".config/mpv/input.conf".symlink.text = let
