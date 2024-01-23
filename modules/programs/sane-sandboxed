@@ -2,76 +2,132 @@
 
 test -n "$SANE_SANDBOX_DEBUG" && set -x
 
-_cli=()
-_rootPaths=()
-_homePaths=()
-_net=
-_dns=()
-_firejailFlags=()
+cliArgs=()
+name=
+firejailProfile=
+rootPaths=()
+homePaths=()
+net=
+dns=()
+firejailFlags=()
 
-allowPath() {
-  # if the path is relative, add to _homePaths, else _rootPaths
-  if [ "${1:0:1}" = "/" ]; then
-    _rootPaths+=("$1")
-  else
-    _homePaths+=("$1")
+debug() {
+  [ -n "$SANE_SANDBOX_DEBUG" ] && printf "[debug] %s" "$1" >&2
+}
+
+loadProfileByPath() {
+  _profArgs="$(cat $1)"
+  parseArgs $_profArgs
+}
+
+tryLoadProfileByName() {
+  if [ -z "$name" ]; then
+    name="$1"
+  fi
+
+  _profileDirs=(@profileDirs@)
+  for _profileDir in "${_profileDirs[@]}"; do
+    _profile="$_profileDir/$1.profile"
+    debug "try profile at path: '$_profile'"
+    if [ -f "$_profile" ]; then
+      loadProfileByPath "$_profile"
+      break
+    fi
+  done
+
+  if [ -z "$firejailProfile" ]; then
+    _fjProfileDirs=(@firejailProfileDirs@)
+    for _fjProfileDir in "${_fjProfileDirs[@]}"; do
+      _fjProfile="$_fjProfileDir/$1.profile"
+      debug "try firejail profile at path: '$_fjProfile'"
+      if [ -f "$_fjProfile" ]; then
+        firejailProfile="$_fjProfile"
+      fi
+    done
   fi
 }
 
 ## parse CLI args into the variables declared above
+## args not intended for this helper are put into $parseArgsExtra
+parseArgs() {
+  parseArgsExtra=()
+  while [ "$#" -ne 0 ]; do
+    _arg="$1"
+    shift
+    case "$_arg" in
+      (--)
+        # rest of args are for the CLI
+        parseArgsExtra+=$@
+        break
+        ;;
+      (--sane-sandbox-debug)
+        SANE_SANDBOX_DEBUG=1
+        set -x
+        ;;
+      (--sane-sandbox-disable)
+        SANE_SANDBOX_DISABLE=1
+        ;;
+      (--sane-sandbox-dns)
+        dns+=("$1")
+        shift
+        ;;
+      (--sane-sandbox-firejail-arg)
+        firejailFlags+=("$1")
+        shift
+        ;;
+      (--sane-sandbox-net)
+        net="$1"
+        shift
+        ;;
+      (--sane-sandbox-home-path)
+        homePaths+=("$1")
+        shift
+        ;;
+      (--sane-sandbox-path)
+        rootPaths+=("$1")
+        shift
+        ;;
+      (--sane-sandbox-profile)
+        tryLoadProfileByName "$1"
+        shift
+        ;;
+      (*)
+        parseArgsExtra+=("$_arg")
+        ;;
+    esac
+  done
+}
 
-while [ "$#" -ne 0 ]; do
-  _arg="$1"
-  shift
-  case "$_arg" in
-    (--)
-      # rest of args are for the CLI
-      _cli+=$@
-      break
-      ;;
-    (--sane-sandbox-disable)
-      SANE_SANDBOX_DISABLE=1
-      ;;
-    (--sane-sandbox-firejail-arg)
-      _firejailFlags+=("$1")
-      shift
-      ;;
-    (--sane-sandbox-path)
-      allowPath "$1"
-      shift
-      ;;
-    (--sane-sandbox-net)
-      _net="$1"
-      shift
-      ;;
-    (--sane-sandbox-dns)
-      _dns+=("$1")
-      shift
-      ;;
-    (*)
-      _cli+=("$_arg")
-      ;;
-  esac
-done
+parseArgs "$@"
+cliArgs+="${parseArgsExtra[@]}"
 
-test -n "$SANE_SANDBOX_DISABLE" && exec "${_cli[@]}"
+test -n "$SANE_SANDBOX_DISABLE" && exec "${cliArgs[@]}"
 
 ## construct firejail flags from sane-sandbox flags
 
-for _path in "${_rootPaths[@]}"; do
-  _firejailFlags+=("--noblacklist=$_path" "--whitelist=$_path")
+for _path in "${rootPaths[@]}"; do
+  firejailFlags+=("--noblacklist=$_path" "--whitelist=$_path")
 done
 
-for _path in "${_homePaths[@]}"; do
-  _firejailFlags+=("--noblacklist="'${HOME}/'"$_path" "--whitelist="'${HOME}/'"$_path")
+for _path in "${homePaths[@]}"; do
+  firejailFlags+=("--noblacklist="'${HOME}/'"$_path" "--whitelist="'${HOME}/'"$_path")
 done
 
-if [ -n "$_net" ]; then
-  _firejailFlags+=("--net=$_net")
+if [ -n "$net" ]; then
+  firejailFlags+=("--net=$net")
 fi
 
-for _addr in "${_dns[@]}"; do
-  _firejailFlags+=("--dns=$_addr")
+for _addr in "${dns[@]}"; do
+  firejailFlags+=("--dns=$_addr")
 done
 
-PATH="$PATH:@firejail@" exec firejail "${_firejailFlags[@]}" -- "${_cli[@]}"
+if [ -n "$name" ]; then
+  firejailFlags+=("--join-or-start=$name")
+fi
+
+# order matters: customizations (i.e. the above) must be before --profile
+if [ -n "$firejailProfile" ]; then
+  firejailFlags+=("--profile=$firejailProfile")
+fi
+
+PATH="$PATH:@firejail@" exec firejail "${firejailFlags[@]}" -- "${cliArgs[@]}"

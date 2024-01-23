@@ -1,30 +1,35 @@
 { lib
+, buildPackages
 , firejail
 , runCommand
 , runtimeShell
 , sane-sandboxed
+, writeTextFile
 }:
 { pkgName, package, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], binMap ? {} }:
 let
   sane-sandboxed' = sane-sandboxed.meta.mainProgram;  #< load by bin name to reduce rebuilds
 
   allowPath = p: [
-    "noblacklist ${p}"
-    "whitelist ${p}"
+    "--sane-sandbox-path"
+    p
   ];
-  allowHomePath = p: allowPath ''''${HOME}/${p}'';
+  allowHomePath = p: [
+    "--sane-sandbox-home-path"
+    p
+  ];
   allowPaths = paths: lib.flatten (builtins.map allowPath paths);
   allowHomePaths = paths: lib.flatten (builtins.map allowHomePath paths);
 
   vpnItems = [
-    "net ${vpn.bridgeDevice}"
-  ] ++ (builtins.map (addr: "dns ${addr}") vpn.dns);
+    "--sane-sandbox-net"
+    vpn.bridgeDevice
+  ] ++ lib.flatten (builtins.map (addr: [
+    "--sane-sandbox-dns"
+    addr
+  ]) vpn.dns);
 
-  firejailItems = [
-    # "--quiet"  #< TODO: enable
-    # "--tracelog"  # logs blacklist violations to syslog (but default firejail disallows this)
-    # "--keep-dev-shm"  #< required for spotify
-  ] ++ allowPaths allowedRootPaths
+  sandboxFlags = allowPaths allowedRootPaths
     ++ allowHomePaths allowedHomePaths
     ++ lib.optionals (vpn != null) vpnItems;
 
@@ -51,58 +56,45 @@ let
 
   packageWrapped = package'.overrideAttrs (unwrapped: {
     postFixup = (unwrapped.postFixup or "") + ''
-      tryFirejailProfile() {
-        _maybeProfile="${firejail}/etc/firejail/$1.profile"
-        echo "checking for firejail profile at: $_maybeProfile"
-        if [ -e "$_maybeProfile" ]; then
-          firejailProfilePath="$_maybeProfile"
-          firejailProfileName="$1"
-          true
-        else
-          false
-        fi
-      }
-      tryFirejailProfileFromBinMap() {
+      getProfileFromBinMap() {
         case "$1" in
           ${builtins.concatStringsSep "\n" (lib.mapAttrsToList
             (bin: profile: ''
               (${bin})
-                tryFirejailProfile "${profile}"
+                echo "${profile}"
               ;;
             '')
             binMap
           )}
           (*)
-            echo "no special-case profile for $1"
-            false
             ;;
         esac
       }
-      getFirejailProfile() {
-        tryFirejailProfileFromBinMap "$1" \
-          || tryFirejailProfile "$1" \
-          || tryFirejailProfile "${unwrapped.pname or ""}" \
-          || tryFirejailProfile "${unwrapped.name or ""}" \
-          || tryFirejailProfile "${pkgName}" \
-          || (echo "failed to locate firejail profile for $1: aborting!" && false)
-      }
-      firejailWrap() {
-        name="$1"
-        getFirejailProfile "$name"
-        mv "$out/bin/$name" "$out/bin/.$name-firejailed"
-        cat <<EOF >> "$out/bin/$name"
+      sandboxWrap() {
+        _name="$1"
+        _profileFromBinMap="$(getProfileFromBinMap $_name)"
+
+        _profiles=("$_profileFromBinMap" "$_name" "${pkgName}" "${unwrapped.pname or ""}" "${unwrapped.name or ""}")
+        # filter to just the unique profiles
+        _profileArgs=()
+        for _profile in "''${_profiles[@]}"; do
+          if [ -n "$_profile" ] && ! [[ " ''${_profileArgs[@]} " =~ " $_profile " ]]; then
+            _profileArgs+=("--sane-sandbox-profile" "$_profile")
+          fi
+        done
+
+        mv "$out/bin/$_name" "$out/bin/.$_name-sandboxed"
+        cat <<EOF >> "$out/bin/$_name"
     #!${runtimeShell}
     exec ${sane-sandboxed'} \
-    --sane-sandbox-firejail-arg --include="${pkgName}.local" \
-    --sane-sandbox-firejail-arg --profile=":$firejailProfileName" \
-    --sane-sandbox-firejail-arg --join-or-start="$firejailProfileName" \
-    "$out/bin/.$name-firejailed" "\$@"
+    ''${_profileArgs[@]} \
+    "$out/bin/.$_name-sandboxed" "\$@"
     EOF
-        chmod +x "$out/bin/$name"
+        chmod +x "$out/bin/$_name"
       }
 
       for _p in $(ls "$out/bin/"); do
-        firejailWrap "$_p"
+        sandboxWrap "$_p"
       done
 
       # stamp file which can be consumed to ensure this wrapping code was actually called.
@@ -114,14 +106,18 @@ let
       priority = ((unwrapped.meta or {}).priority or 0) - 1;
     };
     passthru = (unwrapped.passthru or {}) // {
-      checkSandboxed = runCommand "${unwrapped.name or unwrapped.pname or "unknown"}-check-sandboxed" {} ''
+      checkSandboxed = runCommand "${pkgName}-check-sandboxed" {} ''
         # this pseudo-package gets "built" as part of toplevel system build.
         # if the build is failing here, that means the program isn't properly sandboxed:
         # make sure that "postFixup" gets called as part of the package's build script
         test -f "${packageWrapped}/nix-support/sandboxed" \
           && touch "$out"
       '';
-      firejailLocalConfig = builtins.concatStringsSep "\n" firejailItems;
+      sandboxProfiles = writeTextFile {
+        name = "${pkgName}-sandbox-profiles";
+        destination = "/share/sane-sandboxed/profiles/${pkgName}.profile";
+        text = builtins.concatStringsSep "\n" sandboxFlags;
+      };
     };
   });
 in

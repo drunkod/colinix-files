@@ -278,13 +278,9 @@ let
     system.checks = lib.optionals (p.enabled && p.sandbox.method != null && p.package != null) [
       p.package.passthru.checkSandboxed
     ];
-
-    sane.fs = lib.optionalAttrs (p.enabled && p.sandbox.method == "firejail" && p.package != null) {
-      "/etc/firejail/${name}.local".symlink.text = ''
-        ${p.package.passthru.firejailLocalConfig}
-        ${p.sandbox.extraFirejailConfig}
-      '';
-    };
+    sane.sandboxProfiles = lib.optionals (p.enabled && p.sandbox.method != null && p.package != null) [
+      p.package.passthru.sandboxProfiles
+    ];
 
     # conditionally add to system PATH and env
     environment = lib.optionalAttrs (p.enabled && p.enableFor.system) {
@@ -356,6 +352,14 @@ in
         exposed to facilitate debugging, e.g. `nix build '.#hostConfigs.desko.sane.sandboxHelper'`
       '';
     };
+    sane.sandboxProfiles = mkOption {
+      type = types.listOf types.package;
+      default = [];
+      description = ''
+        packages with /share/sane-sandbox profiles indicating how to sandbox their associated package.
+        this is mostly an internal implementation detail.
+      '';
+    };
   };
 
   config =
@@ -365,7 +369,7 @@ in
         environment.systemPackages = f.environment.systemPackages;
         environment.variables = f.environment.variables;
         users.users = f.users.users;
-        sane.fs = f.sane.fs;
+        sane.sandboxProfiles = f.sane.sandboxProfiles;
         sane.users = f.sane.users;
         sops.secrets = f.sops.secrets;
         system.checks = f.system.checks;
@@ -373,7 +377,14 @@ in
     in lib.mkMerge [
       (take (sane-lib.mkTypedMerge take configs))
       {
-        environment.systemPackages = [ config.sane.sandboxHelper ];
+        environment.pathsToLink = [ "/share/sane-sandboxed" ];
+        environment.systemPackages = [(
+          config.sane.sandboxHelper.withProfiles
+            (pkgs.symlinkJoin {
+              name = "sane-sandbox-profiles";
+              paths = config.sane.sandboxProfiles;
+            })
+        )];
       }
       {
         # expose the pkgs -- as available to the system -- as a build target.
