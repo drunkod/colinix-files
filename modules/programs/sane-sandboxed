@@ -207,7 +207,9 @@ done
 
 if [ -n "$autodetect" ]; then
   _pwd=$(pwd)
-  for _arg in "${cliArgs[@]}"; do
+  for _arg in "${cliArgs[@]:1}"; do
+    # TODO: might want to also mount the directory *above* this file,
+    # to access e.g. adjacent album art in the media's folder.
     if [[ "$_arg" == "/*" ]]; then
       test -e "$_arg" && "$method"IngestRootPath "$_arg"
     elif test -e "$_pwd/$_arg"; then
