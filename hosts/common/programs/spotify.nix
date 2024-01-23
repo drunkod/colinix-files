@@ -2,9 +2,10 @@
 {
   sane.programs.spotify = {
     sandbox.method = "bwrap";
-    sandbox.extraFirejailConfig = ''
-      keep-dev-shm
-    '';
+    sandbox.extraConfig = [
+      "--sane-sandbox-firejail-arg"
+      "--keep-dev-shm"
+    ];
     persist.byStore.plaintext = [
       # probably just songs and such (haven't checked)
       ".cache/spotify"

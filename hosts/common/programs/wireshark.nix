@@ -5,12 +5,14 @@ in
 {
   sane.programs.wireshark = {
     sandbox.method = "firejail";
-    sandbox.extraFirejailConfig = ''
+    sandbox.extraConfig = [
       # somehow needs `setpcap` (makes these bounding capabilities also be inherited?)
       # else no interfaces appear on the main page
-      ignore caps.keep dac_override,dac_read_search,net_admin,net_raw
-      caps.keep dac_override,dac_read_search,net_admin,net_raw,setpcap
-    '';
+      "--sane-sandbox-firejail-arg"
+      "--ignore=caps.keep dac_override,dac_read_search,net_admin,net_raw"
+      "--sane-sandbox-firejail-arg"
+      "--caps.keep=dac_override,dac_read_search,net_admin,net_raw,setpcap"
+    ];
     slowToBuild = true;
   };
 
@@ -21,6 +23,6 @@ in
   };
   # the SUID wrapper can't also be a firejail (idk why? it might be that the binary's already *too* restricted).
   security.wrappers = lib.mkIf cfg.enabled {
-    dumpcap.source = lib.mkForce "${cfg.package}/bin/.dumpcap-firejailed";
+    dumpcap.source = lib.mkForce "${cfg.package}/bin/.dumpcap-sandboxed";
   };
 }

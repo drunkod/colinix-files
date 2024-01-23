@@ -55,11 +55,12 @@ let
       in
         makeSandboxed {
           inherit pkgName package;
-          inherit (sandbox) binMap method;
+          inherit (sandbox) binMap method extraConfig;
           vpn = if net == "vpn" then vpn else null;
           allowedHomePaths = builtins.attrNames fs ++ builtins.attrNames persist.byPath ++ mediaHomePaths;
           allowedRootPaths = [
             "/nix/store"
+            "/bin/sh"
             "/etc"  #< especially for /etc/profiles/per-user/$USER/bin
             "/run/current-system"  #< for basics like `ls`, and all this program's `suggestedPrograms` (/run/current-system/sw/bin)
             "/run/wrappers"  #< SUID wrappers, in this case so that firejail can be re-entrant
@@ -67,10 +68,10 @@ let
             "/run/systemd/resolve"  #< to allow reading /etc/resolv.conf, which ultimately symlinks here
             # /run/opengl-driver is a symlink into /nix/store; needed by e.g. mpv
             "/run/opengl-driver"
-            "/run/opengl-driver-32"
+            "/run/opengl-driver-32"  #< XXX: doesn't exist on aarch64?
             "/run/user"  #< particularly /run/user/$id/wayland-1, pulse, etc.
             # "/dev/dri"  #< fix non-fatal "libEGL warning: wayland-egl: could not open /dev/dri/renderD128" (geary)
-          ] ++ mediaRootPaths;
+          ] ++ mediaRootPaths ++ sandbox.extraPaths;
         }
   );
   pkgSpec = with lib; types.submodule ({ config, name, ... }: {
@@ -236,16 +237,24 @@ let
             then set `sandbox.binMap.umpv = "mpv";` to sandbox `bin/umpv` with the same rules as `bin/mpv`
         '';
       };
-      sandbox.extraFirejailConfig = mkOption {
-        type = types.lines;
-        default = "";
+      sandbox.extraPaths = mkOption {
+        type = types.listOf types.str;
+        default = [];
         description = ''
-          extra lines to add to this package's /etc/firejail/{pname}.local file, which is included when running any of the package's /bin files if sandbox.method is set to "firejail".
-
-          example: sandbox.extraFirejailConfig = '''
-            whitelist ''${HOME}/.ssh
-            keep-dev-shm
-          ''';
+          additional absolute paths to bind into the sandbox.
+        '';
+      };
+      sandbox.extraConfig = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = ''
+          extra arguments to pass to the sandbox wrapper.
+          example: [
+            "--sane-sandbox-firejail-arg"
+            "--whitelist=''${HOME}/.ssh"
+            "--sane-sandbox-firejail-arg"
+            "--keep-dev-shm"
+          ]
         '';
       };
       configOption = mkOption {
@@ -273,6 +282,8 @@ let
       else
         wrapPkg name config config.packageUnwrapped
         ;
+      suggestedPrograms = lib.optionals (config.sandbox.method == "bwrap") [ "bubblewrap" ]
+        ++ lib.optionals (config.sandbox.method == "firejail") [ "firejail" ];
     };
   });
   toPkgSpec = with lib; types.coercedTo types.package (p: { package = p; }) pkgSpec;

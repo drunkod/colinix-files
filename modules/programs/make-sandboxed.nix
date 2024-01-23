@@ -4,7 +4,7 @@
 , sane-sandboxed
 , writeTextFile
 }:
-{ pkgName, package, method, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], binMap ? {} }:
+{ pkgName, package, method, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], binMap ? {}, extraConfig ? [] }:
 let
   sane-sandboxed' = sane-sandboxed.meta.mainProgram;  #< load by bin name to reduce rebuilds
 
@@ -31,7 +31,8 @@ let
     "--sane-sandbox-method" method
   ] ++ allowPaths allowedRootPaths
     ++ allowHomePaths allowedHomePaths
-    ++ lib.optionals (vpn != null) vpnItems;
+    ++ lib.optionals (vpn != null) vpnItems
+    ++ extraConfig;
 
   # two ways i could wrap a package in a sandbox:
   # 1. package.overrideAttrs, with `postFixup`.
