@@ -1,7 +1,7 @@
 { ... }:
 {
   sane.programs.spotify = {
-    sandbox.method = "firejail";
+    sandbox.method = "bwrap";
     sandbox.extraFirejailConfig = ''
       keep-dev-shm
     '';
