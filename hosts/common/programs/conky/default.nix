@@ -2,7 +2,7 @@
 {
   sane.programs.conky = {
     # TODO: non-sandboxed `conky` still ships via `sxmo-utils`, but unused
-    sandbox.method = "firejail";
+    sandbox.method = "bwrap";
     fs.".config/conky/conky.conf".symlink.target =
       let
         battery_estimate = pkgs.static-nix-shell.mkBash {
