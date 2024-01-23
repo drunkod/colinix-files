@@ -348,6 +348,14 @@ in
         whether to ship programs which are uniquely slow to build.
       '';
     };
+    sane.sandboxHelper = mkOption {
+      type = types.package;
+      default = pkgs.callPackage ./sane-sandboxed.nix {};
+      description = ''
+        `sane-sandbox` package.
+        exposed to facilitate debugging, e.g. `nix build '.#hostConfigs.desko.sane.sandboxHelper'`
+      '';
+    };
   };
 
   config =
@@ -364,6 +372,9 @@ in
       };
     in lib.mkMerge [
       (take (sane-lib.mkTypedMerge take configs))
+      {
+        environment.systemPackages = [ config.sane.sandboxHelper ];
+      }
       {
         # expose the pkgs -- as available to the system -- as a build target.
         system.build.pkgs = pkgs;

@@ -1,0 +1,77 @@
+#!@runtimeShell@
+
+test -n "$SANE_SANDBOX_DEBUG" && set -x
+
+_cli=()
+_rootPaths=()
+_homePaths=()
+_net=
+_dns=()
+_firejailFlags=()
+
+allowPath() {
+  # if the path is relative, add to _homePaths, else _rootPaths
+  if [ "${1:0:1}" = "/" ]; then
+    _rootPaths+=("$1")
+  else
+    _homePaths+=("$1")
+  fi
+}
+
+## parse CLI args into the variables declared above
+
+while [ "$#" -ne 0 ]; do
+  _arg="$1"
+  shift
+  case "$_arg" in
+    (--)
+      # rest of args are for the CLI
+      _cli+=$@
+      break
+      ;;
+    (--sane-sandbox-disable)
+      SANE_SANDBOX_DISABLE=1
+      ;;
+    (--sane-sandbox-firejail-arg)
+      _firejailFlags+=("$1")
+      shift
+      ;;
+    (--sane-sandbox-path)
+      allowPath "$1"
+      shift
+      ;;
+    (--sane-sandbox-net)
+      _net="$1"
+      shift
+      ;;
+    (--sane-sandbox-dns)
+      _dns+=("$1")
+      shift
+      ;;
+    (*)
+      _cli+=("$_arg")
+      ;;
+  esac
+done
+
+test -n "$SANE_SANDBOX_DISABLE" && exec "${_cli[@]}"
+
+## construct firejail flags from sane-sandbox flags
+
+for _path in "${_rootPaths[@]}"; do
+  _firejailFlags+=("--noblacklist=$_path" "--whitelist=$_path")
+done
+
+for _path in "${_homePaths[@]}"; do
+  _firejailFlags+=("--noblacklist="'${HOME}/'"$_path" "--whitelist="'${HOME}/'"$_path")
+done
+
+if [ -n "$_net" ]; then
+  _firejailFlags+=("--net=$_net")
+fi
+
+for _addr in "${_dns[@]}"; do
+  _firejailFlags+=("--dns=$_addr")
+done
+
+PATH="$PATH:@firejail@" exec firejail "${_firejailFlags[@]}" -- "${_cli[@]}"
