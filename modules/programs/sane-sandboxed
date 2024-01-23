@@ -66,6 +66,12 @@ parseArgs() {
         SANE_SANDBOX_DEBUG=1
         set -x
         ;;
+      (--sane-sandbox-replace-cli)
+        # keep the sandbox flags, but clear any earlier CLI args.
+        # this lets the user do things like `mpv --sane-sandbox-replace-cli sh` to enter a shell
+        # with the sandbox that `mpv` would see.
+        parseArgsExtra=()
+        ;;
       (--sane-sandbox-disable)
         SANE_SANDBOX_DISABLE=1
         ;;
@@ -159,11 +165,6 @@ parseArgs "$@"
 cliArgs+=("${parseArgsExtra[@]}")
 
 test -n "$SANE_SANDBOX_DISABLE" && exec "${cliArgs[@]}"
-
-test "$method" = "exit0fortest" && echo "exiting 0 for test" && exit 0
-
-# drop into an interactive shell to e.g. inspect the mount space
-test "$method" = "debugshell" && exec sh
 
 ### convert generic args into sandbox-specific args
 # order matters: for firejail, early args override the later --profile args

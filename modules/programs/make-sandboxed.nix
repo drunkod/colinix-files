@@ -109,7 +109,10 @@ let
         # ensuring that every binary has in fact been wrapped.
         _numExec=0
         for b in ${packageWrapped}/bin/*; do
-          PATH="$PATH:${packageWrapped}/bin:${sane-sandboxed}/bin" "$b" --sane-sandbox-method exit0fortest | grep "exiting 0 for test"
+          PATH="$PATH:${packageWrapped}/bin:${sane-sandboxed}/bin" \
+            SANE_SANDBOX_DISABLE=1 \
+            "$b" --sane-sandbox-replace-cli echo "printing for test" \
+            | grep "printing for test"
           _numExec=$(( $_numExec + 1 ))
         done
 
