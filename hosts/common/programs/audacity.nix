@@ -9,7 +9,13 @@
       };
     };
 
-    sandbox.method = null; # "firejail"; # TODO: it can't load audacity.cfg
+    sandbox.method = "bwrap";
+    sandbox.extraConfig = [
+      "--sane-sandbox-autodetect"
+    ];
+    # support media imports via file->open dir to some common media directories
+    fs."tmp" = {};
+    fs."Music" = {};
 
     # disable first-run splash screen
     fs.".config/audacity/audacity.cfg".file.text = ''
@@ -20,5 +26,7 @@
       Major=3
       Minor=4
     '';
+    # audacity needs the entire config dir mounted if running in a sandbox
+    fs.".config/audacity".dir = {};
   };
 }
