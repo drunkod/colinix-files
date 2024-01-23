@@ -80,15 +80,19 @@ parseArgs() {
         shift
         ;;
       (--sane-sandbox-dns)
-        dns+=("$1")
+        # N.B.: these named temporary variables ensure that `set -x` causes $1 to be printed
+        _dns="$1"
+        dns+=("$_dns")
         shift
         ;;
       (--sane-sandbox-firejail-arg)
-        firejailFlags+=("$1")
+        _fjFlag="$1"
+        firejailFlags+=("$_fjFlag")
         shift
         ;;
       (--sane-sandbox-bwrap-arg)
-        bwrapFlags+=("$1")
+        _bwrapFlag="$1"
+        bwrapFlags+=("$_bwrapFlag")
         shift
         ;;
       (--sane-sandbox-net)
@@ -96,11 +100,13 @@ parseArgs() {
         shift
         ;;
       (--sane-sandbox-home-path)
-        homePaths+=("$1")
+        _path="$1"
+        homePaths+=("$_path")
         shift
         ;;
       (--sane-sandbox-path)
-        rootPaths+=("$1")
+        _path="$1"
+        rootPaths+=("$_path")
         shift
         ;;
       (--sane-sandbox-profile)
