@@ -1,12 +1,10 @@
 { lib
-, buildPackages
-, firejail
 , runCommand
 , runtimeShell
 , sane-sandboxed
 , writeTextFile
 }:
-{ pkgName, package, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], binMap ? {} }:
+{ pkgName, package, method, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], binMap ? {} }:
 let
   sane-sandboxed' = sane-sandboxed.meta.mainProgram;  #< load by bin name to reduce rebuilds
 
@@ -29,7 +27,9 @@ let
     addr
   ]) vpn.dns);
 
-  sandboxFlags = allowPaths allowedRootPaths
+  sandboxFlags = [
+    "--sane-sandbox-method" method
+  ] ++ allowPaths allowedRootPaths
     ++ allowHomePaths allowedHomePaths
     ++ lib.optionals (vpn != null) vpnItems;
 
@@ -96,23 +96,27 @@ let
       for _p in $(ls "$out/bin/"); do
         sandboxWrap "$_p"
       done
-
-      # stamp file which can be consumed to ensure this wrapping code was actually called.
-      mkdir -p $out/nix-support
-      touch $out/nix-support/sandboxed
     '';
+
     meta = (unwrapped.meta or {}) // {
       # take precedence over non-sandboxed versions of the same binary.
       priority = ((unwrapped.meta or {}).priority or 0) - 1;
     };
+
     passthru = (unwrapped.passthru or {}) // {
       checkSandboxed = runCommand "${pkgName}-check-sandboxed" {} ''
-        # this pseudo-package gets "built" as part of toplevel system build.
-        # if the build is failing here, that means the program isn't properly sandboxed:
-        # make sure that "postFixup" gets called as part of the package's build script
-        test -f "${packageWrapped}/nix-support/sandboxed" \
-          && touch "$out"
+        # invoke each binary in a way only the sandbox wrapper will recognize,
+        # ensuring that every binary has in fact been wrapped.
+        _numExec=0
+        for b in ${packageWrapped}/bin/*; do
+          PATH="$PATH:${packageWrapped}/bin:${sane-sandboxed}/bin" "$b" --sane-sandbox-method exit0fortest | grep "exiting 0 for test"
+          _numExec=$(( $_numExec + 1 ))
+        done
+
+        echo "successfully tested $_numExec binaries"
+        test "$_numExec" -ne 0 && touch "$out"
       '';
+
       sandboxProfiles = writeTextFile {
         name = "${pkgName}-sandbox-profiles";
         destination = "/share/sane-sandboxed/profiles/${pkgName}.profile";

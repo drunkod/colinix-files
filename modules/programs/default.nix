@@ -36,17 +36,19 @@ let
   wrapPkg = pkgName: { fs, net, persist, sandbox, ... }: package: (
     if sandbox.method == null then
       package
-    else if sandbox.method == "firejail" then
+    else
       let
         makeSandboxed = pkgs.callPackage ./make-sandboxed.nix { sane-sandboxed = config.sane.sandboxHelper; };
         vpn = lib.findSingle (v: v.default) null null (builtins.attrValues config.sane.vpn);
       in
         makeSandboxed {
           inherit pkgName package;
-          inherit (sandbox) binMap;
+          inherit (sandbox) binMap method;
           vpn = if net == "vpn" then vpn else null;
           allowedHomePaths = builtins.attrNames fs ++ builtins.attrNames persist.byPath;
           allowedRootPaths = [
+            "/nix/store"
+            "/etc"  #< especially for /etc/profiles/per-user/$USER/bin
             "/run/current-system"  #< for basics like `ls`, and all this program's `suggestedPrograms` (/run/current-system/sw/bin)
             "/run/wrappers"  #< SUID wrappers, in this case so that firejail can be re-entrant
             # "/bin/sh"  #< to allow `firejail --join=...` (doesn't work)
@@ -54,11 +56,10 @@ let
             # /run/opengl-driver is a symlink into /nix/store; needed by e.g. mpv
             "/run/opengl-driver"
             "/run/opengl-driver-32"
+            "/run/user"  #< particularly /run/user/$id/wayland-1, pulse, etc.
             # "/dev/dri"  #< fix non-fatal "libEGL warning: wayland-egl: could not open /dev/dri/renderD128" (geary)
           ];
         }
-    else
-      throw "unknown sandbox type '${sandbox.method}'"
   );
   pkgSpec = with lib; types.submodule ({ config, name, ... }: {
     options = {
@@ -207,8 +208,8 @@ let
         '';
       };
       sandbox.method = mkOption {
-        type = types.nullOr (types.enum [ "firejail" ]);
-        default = null;  #< TODO: default to firejail
+        type = types.nullOr (types.enum [ "bwrap" "firejail" ]);
+        default = null;  #< TODO: default to bwrap
         description = ''
           how/whether to sandbox all binaries in the package.
         '';

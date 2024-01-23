@@ -9,7 +9,9 @@ rootPaths=()
 homePaths=()
 net=
 dns=()
+method=
 firejailFlags=()
+bwrapFlags=()
 
 debug() {
   [ -n "$SANE_SANDBOX_DEBUG" ] && printf "[debug] %s" "$1" >&2
@@ -67,12 +69,20 @@ parseArgs() {
       (--sane-sandbox-disable)
         SANE_SANDBOX_DISABLE=1
         ;;
+      (--sane-sandbox-method)
+        method="$1"
+        shift
+        ;;
       (--sane-sandbox-dns)
         dns+=("$1")
         shift
         ;;
       (--sane-sandbox-firejail-arg)
         firejailFlags+=("$1")
+        shift
+        ;;
+      (--sane-sandbox-bwrap-arg)
+        bwrapFlags+=("$1")
         shift
         ;;
       (--sane-sandbox-net)
@@ -98,36 +108,87 @@ parseArgs() {
   done
 }
 
+
+## FIREJAIL BACKEND
+
+firejailIngestRootPath() {
+  firejailFlags+=("--noblacklist=$1" "--whitelist=$1")
+}
+firejailIngestHomePath() {
+  firejailFlags+=("--noblacklist="'${HOME}/'"$1" "--whitelist="'${HOME}/'"$1")
+}
+firejailIngestNet() {
+  firejailFlags+=("--net=$1")
+}
+firejailIngestDns() {
+  firejailFlags+=("--dns=$1")
+}
+firejailIngestName() {
+  firejailFlags+=("--join-or-start=$1")
+}
+
+firejailExec() {
+  if [ -n "$firejailProfile" ]; then
+    firejailFlags+=("--profile=$firejailProfile")
+  fi
+  PATH="$PATH:@firejail@/bin" exec firejail "${firejailFlags[@]}" -- "${cliArgs[@]}"
+}
+
+
+## BUBBLEWRAP BACKEND
+
+bwrapIngestRootPath() {
+  bwrapFlags+=("--dev-bind" "$1" "$1")
+}
+bwrapIngestHomePath() {
+  bwrapFlags+=("--dev-bind" "$HOME/$1" "$HOME/$1")
+}
+bwrapIngestName() {
+  echo "bwrap naming/labeling not yet implemented"
+}
+# WIP
+
+bwrapExec() {
+  PATH="$PATH:@bubblewrap@/bin" exec bwrap --dev /dev --proc /proc "${bwrapFlags[@]}" -- "${cliArgs[@]}"
+}
+
+
+## BACKEND HANDOFF
+
 parseArgs "$@"
-cliArgs+="${parseArgsExtra[@]}"
+cliArgs+=("${parseArgsExtra[@]}")
 
 test -n "$SANE_SANDBOX_DISABLE" && exec "${cliArgs[@]}"
 
-## construct firejail flags from sane-sandbox flags
+test "$method" = "exit0fortest" && echo "exiting 0 for test" && exit 0
+
+# drop into an interactive shell to e.g. inspect the mount space
+test "$method" = "debugshell" && exec sh
+
+### convert generic args into sandbox-specific args
+# order matters: for firejail, early args override the later --profile args
 
 for _path in "${rootPaths[@]}"; do
-  firejailFlags+=("--noblacklist=$_path" "--whitelist=$_path")
+  "$method"IngestRootPath "$_path"
 done
 
 for _path in "${homePaths[@]}"; do
-  firejailFlags+=("--noblacklist="'${HOME}/'"$_path" "--whitelist="'${HOME}/'"$_path")
+  "$method"IngestHomePath "$_path"
 done
 
 if [ -n "$net" ]; then
-  firejailFlags+=("--net=$net")
+  "$method"IngestNet "$net"
 fi
 
 for _addr in "${dns[@]}"; do
-  firejailFlags+=("--dns=$_addr")
+  "$method"IngestDns "$_addr"
 done
 
 if [ -n "$name" ]; then
-  firejailFlags+=("--join-or-start=$name")
+  "$method"IngestName "$name"
 fi
 
-# order matters: customizations (i.e. the above) must be before --profile
-if [ -n "$firejailProfile" ]; then
-  firejailFlags+=("--profile=$firejailProfile")
-fi
+"$method"Exec
 
-PATH="$PATH:@firejail@" exec firejail "${firejailFlags[@]}" -- "${cliArgs[@]}"
+echo "sandbox glue failed for method='$method'"
+exit 1

@@ -1,4 +1,5 @@
 { lib, stdenv
+, bubblewrap
 , firejail
 , runtimeShell
 , substituteAll
@@ -8,8 +9,7 @@
 let
   sane-sandboxed = substituteAll {
     src = ./sane-sandboxed;
-    inherit runtimeShell;
-    firejail = "${firejail}/bin/firejail";
+    inherit bubblewrap firejail runtimeShell;
     firejailProfileDirs = "/run/current-system/sw/etc/firejail /etc/firejail ${firejail}/etc/firejail";
     # /run might be unavailable inside a container, so to support nested containers
     # fallback to a profile dir adjacent to the sane-sandboxed binary
