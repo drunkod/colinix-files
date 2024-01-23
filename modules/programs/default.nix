@@ -70,6 +70,7 @@ let
             "/run/opengl-driver"
             "/run/opengl-driver-32"  #< XXX: doesn't exist on aarch64?
             "/run/user"  #< particularly /run/user/$id/wayland-1, pulse, etc.
+            "/run/secrets/home"
             # "/dev/dri"  #< fix non-fatal "libEGL warning: wayland-egl: could not open /dev/dri/renderD128" (geary)
           ] ++ mediaRootPaths ++ sandbox.extraPaths;
         }
@@ -284,6 +285,10 @@ let
         ;
       suggestedPrograms = lib.optionals (config.sandbox.method == "bwrap") [ "bubblewrap" ]
         ++ lib.optionals (config.sandbox.method == "firejail") [ "firejail" ];
+      # declare a fs dependency for each secret, but don't specify how to populate it yet.
+      #   can't populate it here because it varies per-user.
+      # this gets the symlink into the sandbox, but not the actual secret.
+      fs = lib.mapAttrs (_homePath: _secretSrc: {}) config.secrets;
     };
   });
   toPkgSpec = with lib; types.coercedTo types.package (p: { package = p; }) pkgSpec;
