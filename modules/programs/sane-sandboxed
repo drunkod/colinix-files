@@ -48,7 +48,10 @@ parseArgs() {
     case "$_arg" in
       (--)
         # rest of args are for the CLI
-        parseArgsExtra+=$@
+        # XXX: this interacts weird with other CLIs that use `--` to signal.
+        #   e.g. `mpv -- my_file.mp3` gets transformed into `.mpv-sandboxed my_file.mp3` (no `--`)
+        #   possibly turning a file-name into an option that the wrapped program may parse
+        parseArgsExtra+=("$@")
         break
         ;;
       (--sane-sandbox-debug)
