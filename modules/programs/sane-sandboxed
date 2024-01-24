@@ -47,10 +47,19 @@ parseArgs() {
     shift
     case "$_arg" in
       (--)
-        # rest of args are for the CLI
-        # XXX: this interacts weird with other CLIs that use `--` to signal.
-        #   e.g. `mpv -- my_file.mp3` gets transformed into `.mpv-sandboxed my_file.mp3` (no `--`)
-        #   possibly turning a file-name into an option that the wrapped program may parse
+        # rest of args are for the CLI, and not for us.
+        # consider two cases:
+        # - sane-sandboxed --sane-sandbox-flag1 -- /nix/store/.../mpv --arg0 arg1
+        # - sane-sandboxed /nix/store/.../mpv --arg0 -- arg1
+        # in the first case, we swallow the -- and treat the rest as CLI args.
+        # in the second case, the -- is *probably* intended for the application.
+        #    but it could be meant for us. do the most conservative thing here
+        #    and stop our own parsing, and also forward the -- to the wrapped binary.
+        #
+        # this mode of argument parsing is clearly ambiguous, it's probably worth reducing our own API in the future
+        if [ -n "$parseArgsExtra" ]; then
+          parseArgsExtra+=("--")
+        fi
         parseArgsExtra+=("$@")
         break
         ;;
