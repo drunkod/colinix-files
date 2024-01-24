@@ -31,11 +31,8 @@
     };
     sandbox.method = "bwrap";
     persist.byStore.plaintext = [
-      # game progress
-      # i'm not sure which of these is correct. i think it might actually use both of these, in different places.
-      # but it's probably the ~/.config one?
-      ".config/Holy Pangolin/Animatch"
-      ".local/share/Holy Pangolin/Animatch"
+      # ".config/Holy Pangolin/Animatch"  #< used for SuperDerpy config (e.g. debug, disableTouch, fullscreen, enable sound, etc). SuperDerpy.ini
+      ".local/share/Holy Pangolin/Animatch"  #< used for game state (level clears). SuperDerpy.ini
     ];
   };
 }
