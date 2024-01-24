@@ -60,7 +60,11 @@ let
             "/run/user"  #< particularly /run/user/$id/wayland-1, pulse, etc.
             "/run/secrets/home"
             "/usr/bin/env"
-            # "/dev/dri"  #< fix non-fatal "libEGL warning: wayland-egl: could not open /dev/dri/renderD128" (geary)
+            # /dev/dri/renderD128: requested by wayland-egl (e.g. KOreader, animatch, geary)
+            #   but everything seems to gracefully fallback to *something* (MESA software rendering?)
+            #   GPU attack surface is *large*: <https://security.stackexchange.com/questions/182501/modern-linux-gpu-driver-security>
+            # TODO: restrict /dev/dri to just the applications that actually benefit from it
+            # "/dev/dri" "/sys/dev/char" "/sys/devices" (lappy: "/sys/devices/pci0000:00")
           ] ++ sandbox.extraPaths;
         }
   );
