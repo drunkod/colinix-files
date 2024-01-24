@@ -59,6 +59,7 @@ let
             "/run/opengl-driver-32"  #< XXX: doesn't exist on aarch64?
             "/run/user"  #< particularly /run/user/$id/wayland-1, pulse, etc.
             "/run/secrets/home"
+            "/usr/bin/env"
             # "/dev/dri"  #< fix non-fatal "libEGL warning: wayland-egl: could not open /dev/dri/renderD128" (geary)
           ] ++ sandbox.extraPaths;
         }
