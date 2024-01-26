@@ -239,8 +239,10 @@ bwrapExec() {
 
 ## BACKEND HANDOFF
 
+test -n "$SANE_SANDBOX_PREPEND" && parseArgs "${SANE_SANDBOX_PREPEND[@]}"
 parseArgs "$@"
 cliArgs+=("${parseArgsExtra[@]}")
+test -n "$SANE_SANDBOX_APPEND" && parseArgs "${SANE_SANDBOX_APPEND[@]}"
 
 test -n "$SANE_SANDBOX_DISABLE" && exec "${cliArgs[@]}"
 
