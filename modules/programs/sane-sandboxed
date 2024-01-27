@@ -242,8 +242,10 @@ bwrapIngestRootPath() {
 }
 bwrapIngestHomePath() {
   _path="$HOME/$1"
-  # `test -r` isn't needed here, unless/until i try mounting a symlink like `~/Videos/servo` directly.
-  bwrapFlags+=("--dev-bind" "$_path" "$_path")
+  # `-try` version of binding is still desireable for user files.
+  # although it'd be nice if all program directories could be required to exist, some things are scoped poorly.
+  #   e.g. ~/.local/share/historic.json for wike's history. i don't want to give it all of ~/.local/share, and i don't want it to fail if its history file doesn't exist.
+  bwrapFlags+=("--dev-bind-try" "$_path" "$_path")
 }
 bwrapIngestProfile() {
   debug "bwrap doesn't implement profiles"
