@@ -14,6 +14,7 @@ dns=()
 method=
 firejailFlags=()
 bwrapFlags=()
+landlockPaths=
 
 debug() {
   [ -n "$SANE_SANDBOX_DEBUG" ] && printf "[debug] %s" "$1" >&2
@@ -234,6 +235,25 @@ bwrapIngestCapability() {
 
 bwrapExec() {
   PATH="$PATH:@bubblewrap@/bin" exec bwrap --dev /dev --proc /proc --tmpfs /tmp "${bwrapFlags[@]}" -- "${cliArgs[@]}"
+}
+
+
+## LANDLOCK BACKEND
+landlockIngestRootPath() {
+  # TODO: escape colons
+  landlockPaths="$landlockPaths:$1"
+}
+landlockIngestHomePath() {
+  landlockIngestRootPath "$HOME/$1"
+}
+landlockIngestProfile() {
+  debug "landlock doesn't implement profiles"
+}
+landlockIngestCapability() {
+  debug "landlock doesn't implement capabilities"
+}
+landlockExec() {
+  PATH="$PATH:@landlockSandboxer@/bin" LL_FS_RO= LL_FS_RW="$landlockPaths" exec sandboxer "${cliArgs[@]}"
 }
 
 

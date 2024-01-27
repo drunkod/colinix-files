@@ -58,7 +58,7 @@ let
             "/run/opengl-driver"
             "/run/opengl-driver-32"  #< XXX: doesn't exist on aarch64?
             "/run/user"  #< particularly /run/user/$id/wayland-1, pulse, etc.
-            "/run/secrets/home"
+            "/run/secrets/home"  #< TODO: this could be restricted per-app based on the HOME paths they need
             "/usr/bin/env"
             # /dev/dri/renderD128: requested by wayland-egl (e.g. KOreader, animatch, geary)
             #   but everything seems to gracefully fallback to *something* (MESA software rendering?)
@@ -215,8 +215,8 @@ let
         '';
       };
       sandbox.method = mkOption {
-        type = types.nullOr (types.enum [ "bwrap" "firejail" ]);
-        default = null;  #< TODO: default to bwrap
+        type = types.nullOr (types.enum [ "bwrap" "firejail" "landlock" ]);
+        default = null;  #< TODO: default to something non-null
         description = ''
           how/whether to sandbox all binaries in the package.
         '';
