@@ -277,9 +277,11 @@ landlockExec() {
   landlockIngestRootPath '/tmp'
   # /dev/{stderr,stdin,stdout} are links to /proc/self/fd/N
   # and /proc/self is a link to /proc/<N>.
-  # there seems to be an issue, observed with wireguard, in binding these.
-  # probably, we bind the symlinks but not the actual data being pointed to.
+  # there seems to be an issue, observed with wireshark, in binding these.
+  # maybe i bound the symlinks but not the actual data being pointed to.
   # if you want to bind /dev/std*, then also bind all of /proc.
+  # landlockIngestRootPath '/proc/self'
+  # landlockIngestRootPath "/proc/$$"
   # landlockIngestRootPath '/dev/stderr'
   # landlockIngestRootPath '/dev/stdin'
   # landlockIngestRootPath '/dev/stdout'
