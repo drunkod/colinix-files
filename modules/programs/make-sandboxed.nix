@@ -15,7 +15,7 @@ let
     runHook postFixup
   '';
 in
-{ pkgName, package, method, wrapperType, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], binMap ? {}, extraConfig ? [], embedProfile ? false }:
+{ pkgName, package, method, wrapperType, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], binMap ? {}, capabilities ? [], extraConfig ? [], embedProfile ? false }:
 let
   sane-sandboxed' = sane-sandboxed.meta.mainProgram;  #< load by bin name to reduce rebuilds
 
@@ -30,6 +30,8 @@ let
   allowPaths = paths: lib.flatten (builtins.map allowPath paths);
   allowHomePaths = paths: lib.flatten (builtins.map allowHomePath paths);
 
+  capabilityFlags = lib.flatten (builtins.map (c: [ "--sane-sandbox-cap" c ]) capabilities);
+
   vpnItems = [
     "--sane-sandbox-net"
     vpn.bridgeDevice
@@ -42,6 +44,7 @@ let
     "--sane-sandbox-method" method
   ] ++ allowPaths allowedRootPaths
     ++ allowHomePaths allowedHomePaths
+    ++ capabilityFlags
     ++ lib.optionals (vpn != null) vpnItems
     ++ extraConfig;
 
@@ -62,7 +65,7 @@ let
   # note that no.2 ("wrappedDerivation") *doesn't support .desktop files yet*.
   # the final package simply doesn't include .desktop files, only bin/.
   package' = if wrapperType == "inplace" then
-    if package.override.__functionArgs ? runCommand then
+    if ((package.override or {}).__functionArgs or {}) ? runCommand then
       package.override {
         runCommand = name: env: cmd: runCommand name env (cmd + lib.optionalString (name == package.name) ''
           # if the package is a runCommand (common for wrappers), then patch it to call our `postFixup` hook, first

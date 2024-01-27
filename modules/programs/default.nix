@@ -34,7 +34,7 @@ let
 
   # wrap a package so that its binaries (maybe) run in a sandbox
   wrapPkg = pkgName: { fs, net, persist, sandbox, ... }: package: (
-    if sandbox.method == null then
+    if !sandbox.enable || sandbox.method == null then
       package
     else
       let
@@ -43,7 +43,7 @@ let
       in
         makeSandboxed {
           inherit pkgName package;
-          inherit (sandbox) binMap embedProfile extraConfig method wrapperType;
+          inherit (sandbox) binMap capabilities embedProfile extraConfig method wrapperType;
           vpn = if net == "vpn" then vpn else null;
           allowedHomePaths = builtins.attrNames fs ++ builtins.attrNames persist.byPath ++ sandbox.extraHomePaths;
           allowedRootPaths = [
@@ -222,6 +222,10 @@ let
           how/whether to sandbox all binaries in the package.
         '';
       };
+      sandbox.enable = mkOption {
+        type = types.bool;
+        default = true;
+      };
       sandbox.embedProfile = mkOption {
         type = types.bool;
         default = false;
@@ -256,6 +260,14 @@ let
           for example,
             if the package ships `bin/mpv` and `bin/umpv`, this module might know how to sandbox `mpv` but not `umpv`.
             then set `sandbox.binMap.umpv = "mpv";` to sandbox `bin/umpv` with the same rules as `bin/mpv`
+        '';
+      };
+      sandbox.capabilities = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = ''
+          list of Linux capabilities the program needs. lowercase, and without the cap_ prefix.
+          e.g. sandbox.capabilities = [ "net_admin" "net_raw" ];
         '';
       };
       sandbox.extraPaths = mkOption {
