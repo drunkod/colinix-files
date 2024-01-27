@@ -45,10 +45,11 @@ let
           inherit pkgName package;
           inherit (sandbox) binMap method extraConfig;
           vpn = if net == "vpn" then vpn else null;
-          allowedHomePaths = builtins.attrNames fs ++ builtins.attrNames persist.byPath;
+          allowedHomePaths = builtins.attrNames fs ++ builtins.attrNames persist.byPath ++ sandbox.extraHomePaths;
           allowedRootPaths = [
             "/nix/store"
             "/bin/sh"
+
             "/etc"  #< especially for /etc/profiles/per-user/$USER/bin
             "/run/current-system"  #< for basics like `ls`, and all this program's `suggestedPrograms` (/run/current-system/sw/bin)
             "/run/wrappers"  #< SUID wrappers, in this case so that firejail can be re-entrant
@@ -236,6 +237,13 @@ let
         default = [];
         description = ''
           additional absolute paths to bind into the sandbox.
+        '';
+      };
+      sandbox.extraHomePaths = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = ''
+          additional home-relative paths to bind into the sandbox.
         '';
       };
       sandbox.extraConfig = mkOption {
