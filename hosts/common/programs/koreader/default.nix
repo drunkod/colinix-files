@@ -3,6 +3,15 @@
 # - <https://github.com/koreader/koreader/wiki>
 #
 # post-installation setup:
+# - add FTP server:
+#   - click near top of window
+#   - tools icon > Cloud storage
+#   - plus icon > FTP server
+#     - "Your FTP name": (anything, e.g. "servo books")
+#     - FTP address: ftp://servo-hn
+#     - FTP username: anonymous
+#     - FTP password: (leave empty)
+#     - base directory: /media/Books
 # - download dictionaries:
 #   - search icon > settings > dictionary settings > download dictionaries
 #   - these are stored in `~/.config/koreader/data/dict`
