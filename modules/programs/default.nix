@@ -252,6 +252,13 @@ let
           "wrappedDerivation" is mostly good for prototyping.
         '';
       };
+      sandbox.autodetectCliPaths = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          if a CLI argument looks like a PATH, should we add it to the sandbox?
+        '';
+      };
       sandbox.binMap = mkOption {
         type = types.attrsOf types.str;
         default = {};
