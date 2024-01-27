@@ -307,7 +307,8 @@ let
     # conditionally add to system PATH and env
     environment = lib.optionalAttrs (p.enabled && p.enableFor.system) {
       systemPackages = lib.optional (p.package != null) p.package;
-      variables = p.env;
+      # sessionVariables are set by PAM, as opposed to environment.variables which goes in /etc/profile
+      sessionVariables = p.env;
     };
 
     # conditionally add to user(s) PATH
@@ -392,7 +393,7 @@ in
       take = f: {
         assertions = f.assertions;
         environment.systemPackages = f.environment.systemPackages;
-        environment.variables = f.environment.variables;
+        environment.sessionVariables = f.environment.sessionVariables;
         users.users = f.users.users;
         sane.sandboxProfiles = f.sane.sandboxProfiles;
         sane.users = f.sane.users;
