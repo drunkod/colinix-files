@@ -267,14 +267,22 @@ landlockExec() {
   # other sandboxing methods would create fake /dev, /proc, /tmp filesystems
   # but landlock can't do that. so bind a minimal number of assumed-to-exist files.
   # note that most applications actually do start without these, but maybe produce weird errors during their lifetime.
+  # typical failure mode:
+  # - /tmp: application can't perform its task
+  # - /dev/{null,random,urandom,zero}: application warns but works around it
   landlockIngestRootPath '/dev/null'
   landlockIngestRootPath '/dev/random'
-  landlockIngestRootPath '/dev/stderr'
-  landlockIngestRootPath '/dev/stdin'
-  landlockIngestRootPath '/dev/stdout'
   landlockIngestRootPath '/dev/urandom'
   landlockIngestRootPath '/dev/zero'
   landlockIngestRootPath '/tmp'
+  # /dev/{stderr,stdin,stdout} are links to /proc/self/fd/N
+  # and /proc/self is a link to /proc/<N>.
+  # there seems to be an issue, observed with wireguard, in binding these.
+  # probably, we bind the symlinks but not the actual data being pointed to.
+  # if you want to bind /dev/std*, then also bind all of /proc.
+  # landlockIngestRootPath '/dev/stderr'
+  # landlockIngestRootPath '/dev/stdin'
+  # landlockIngestRootPath '/dev/stdout'
   PATH="$PATH:@landlockSandboxer@/bin" LL_FS_RO= LL_FS_RW="$landlockPaths" exec sandboxer "${cliArgs[@]}"
 }
 
