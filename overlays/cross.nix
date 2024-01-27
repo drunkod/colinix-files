@@ -1563,6 +1563,11 @@ in with final; {
   #   # '';
   # });
 
+  modemmanager = prev.modemmanager.overrideAttrs (upstream: {
+    # fixes "meson.build:53:26: ERROR: python3 not found"
+    nativeBuildInputs = upstream.nativeBuildInputs ++ upstream.nativeInstallCheckInputs;
+  });
+
   # fixes: "ar: command not found"
   # `ar` is provided by bintools
   # 2023/07/27: upstreaming is unblocked by deps; but turns out to not be this simple
