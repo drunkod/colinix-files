@@ -335,6 +335,10 @@ let
   configs = lib.mapAttrsToList (name: p: {
     assertions = [
       {
+        assertion = !(p.sandbox.enable && p.sandbox.method == null) || !p.enabled || p.package == null || !config.sane.strictSandboxing;
+        message = "program ${name} specified no `sandbox.method`; please configure a method, or set sandbox.enable = false.";
+      }
+      {
         assertion = (p.net == "clearnet") || p.sandbox.method != null;
         message = ''program "${name}" requests net "${p.net}", which requires sandboxing, but sandboxing was disabled'';
       }
@@ -446,6 +450,13 @@ in
       description = ''
         packages with /share/sane-sandbox profiles indicating how to sandbox their associated package.
         this is mostly an internal implementation detail.
+      '';
+    };
+    sane.strictSandboxing = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        whether to require that every `sane.program` explicitly specify its sandbox settings
       '';
     };
   };
