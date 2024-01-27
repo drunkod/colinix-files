@@ -17,6 +17,7 @@ method=
 firejailFlags=()
 bwrapFlags=()
 landlockPaths=
+landlockCapshCapsArg=
 
 debug() {
   [ -n "$isDebug" ] && printf "[debug] %s" "$1" >&2
@@ -261,7 +262,16 @@ landlockIngestProfile() {
   debug "landlock doesn't implement profiles"
 }
 landlockIngestCapability() {
-  debug "landlock doesn't implement capabilities"
+  # N.B. `capsh` parsing of `--caps=X` arg is idiosyncratic:
+  # - valid: `capsh --caps=CAP_FOO,CAP_BAR=eip -- <cmd>`
+  # - valid: `capsh --caps= -- <cmd>`
+  # - invalid: `capsh --caps=CAP_FOO,CAP_BAR -- <cmd>`
+  # - invalid: `capsh --caps==eip -- <cmd>`
+  if [ -z "$landlockCapshCapsArg" ]; then
+    landlockCapshCapsArg="cap_$1=eip"
+  else
+    landlockCapshCapsArg="cap_$1,$landlockCapshCapsArg"
+  fi
 }
 landlockExec() {
   # other sandboxing methods would create fake /dev, /proc, /tmp filesystems
@@ -285,7 +295,15 @@ landlockExec() {
   # landlockIngestRootPath '/dev/stderr'
   # landlockIngestRootPath '/dev/stdin'
   # landlockIngestRootPath '/dev/stdout'
-  PATH="$PATH:@landlockSandboxer@/bin" LL_FS_RO= LL_FS_RW="$landlockPaths" exec sandboxer "${cliArgs[@]}"
+
+  # landlock sandboxer has no native support for capabilities (except that it sets nonewprivs),
+  # so trampoline through `capsh` as well, to drop privs.
+  # N.B: capsh passes its arg to bash (via /nix/store/.../bash), which means you have to `-c "my command"` to
+  # invoke the actual user command.
+  PATH="$PATH:@landlockSandboxer@/bin:@libcap@/bin" LL_FS_RO= LL_FS_RW="$landlockPaths" exec \
+    sandboxer \
+    capsh "--caps=$landlockCapshCapsArg" -- \
+      -c "${cliArgs[*]}"
 }
 
 
