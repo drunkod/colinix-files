@@ -105,10 +105,16 @@ let
     # in order to support packages which invoke sandboxed apps in their check phase.
     # note that it's not just for packages which invoke their *own* binaries in check phase,
     # but also packages which invoke OTHER PACKAGES' sandboxed binaries.
+    # hence, put the fake sandbox in nativeBuildInputs instead of nativeCheckInputs.
     env = (unwrapped.env or {}) // {
       SANE_SANDBOX_DISABLE = 1;
     };
     nativeBuildInputs = (unwrapped.nativeBuildInputs or []) ++ [
+      fakeSaneSandboxed
+    ];
+    disallowedReferences = (unwrapped.disallowedReferences or []) ++ [
+      # the fake sandbox gates itself behind SANE_SANDBOX_DISABLE, so if it did end up deployed
+      # then it wouldn't permit anything not already permitted. but it would still be annoying.
       fakeSaneSandboxed
     ];
 
