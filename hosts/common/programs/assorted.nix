@@ -216,7 +216,7 @@ in
       "nodejs"
       "patchelf"
       "rustc"
-      "tree-sitter"
+      # "tree-sitter"
     ];
 
 
