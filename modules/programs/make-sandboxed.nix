@@ -136,7 +136,8 @@ let
         # ensuring that every binary has in fact been wrapped.
         _numExec=0
         for b in ${packageWrapped}/bin/*; do
-          PATH="$PATH:${packageWrapped}/bin:${sane-sandboxed}/bin" \
+          echo "checking if $b is sandboxed"
+          PATH="${packageWrapped}/bin:${sane-sandboxed}/bin:$PATH" \
             SANE_SANDBOX_DISABLE=1 \
             "$b" --sane-sandbox-replace-cli echo "printing for test" \
             | grep "printing for test"

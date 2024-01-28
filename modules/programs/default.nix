@@ -353,8 +353,8 @@ let
         message = "program ${name} specified no `sandbox.method`; please configure a method, or set sandbox.enable = false.";
       }
       {
-        assertion = (p.net == "clearnet") || p.sandbox.method != null;
-        message = ''program "${name}" requests net "${p.net}", which requires sandboxing, but sandboxing was disabled'';
+        assertion = p.net == "clearnet" || p.sandbox.method != null;
+        message = ''program "${name}" requests net "${p.net}", which requires sandboxing, but sandboxing wasn't configured'';
       }
     ] ++ builtins.map (sug: {
       assertion = cfg ? "${sug}";
@@ -470,7 +470,7 @@ in
       type = types.bool;
       default = false;
       description = ''
-        whether to require that every `sane.program` explicitly specify its sandbox settings
+        whether to require that every `sane.program` explicitly specify its sandbox settings.
       '';
     };
   };
