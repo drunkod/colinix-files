@@ -166,7 +166,7 @@ parseArgs() {
         shift
         rootPaths+=("$_path")
         ;;
-      (--sand-sandbox-add-pwd)
+      (--sane-sandbox-add-pwd)
         _path="$(pwd)"
         rootPaths+=("$_path")
         ;;
