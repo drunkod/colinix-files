@@ -56,7 +56,7 @@ in
 
 
     sysadminUtils = declPackageSet [
-      "bridge-utils"
+      "bridge-utils"  # for brctl; debug linux "bridge" inet devices
       "btrfs-progs"
       "cacert.unbundled"  # some services require unbundled /etc/ssl/certs
       "cryptsetup"
@@ -85,7 +85,7 @@ in
       "killall"
       "libcap_ng"  # for `netcap`
       "lsof"
-      "miniupnpc"
+      # "miniupnpc"
       "nano"
       #  "ncdu"  # ncurses disk usage. doesn't cross compile (zig)
       "neovim"
@@ -93,7 +93,7 @@ in
       "nethogs"
       "nmap"
       "nvme-cli"  # nvme
-      "openssl"
+      # "openssl"
       "parted"
       "pciutils"
       "powertop"
@@ -106,7 +106,7 @@ in
       "subversion"
       "tcpdump"
       "tree"
-      "usbutils"
+      "usbutils"  # lsusb
       "util-linux"  # lsblk, lscpu, etc
       "wget"
       "wirelesstools"  # iwlist
@@ -129,10 +129,10 @@ in
       "alsaUtils"  # for aplay, speaker-test
       "binutils-unwrapped"  # for strings; though this brings 80MB of unrelated baggage too
       # "cdrtools"
-      "clinfo"
-      "dmidecode"
+      # "clinfo"
+      # "dmidecode"
       "dtrx"  # `unar` alternative, "Do The Right eXtraction"
-      "efivar"
+      # "efivar"
       "eza"  # a better 'ls'
       # "flashrom"
       "git"  # needed as a user package, for config.
@@ -141,9 +141,9 @@ in
       # "gopass"
       # "gopass-jsonapi"
       # "helix"  # text editor
-      "libsecret"  # for managing user keyrings. TODO: what needs this? lift into the consumer
-      "lm_sensors"  # for sensors-detect. TODO: what needs this? lift into the consumer
-      "lshw"
+      # "libsecret"  # for managing user keyrings (secret-tool)
+      # "lm_sensors"  # for sensors-detect
+      # "lshw"
       # "memtester"
       "mercurial"  # hg
       "mimeo"  # like xdg-open
@@ -170,7 +170,7 @@ in
       # "tageditor"  # music tagging
       # "unar"
       "unzip"
-      "wireguard-tools"
+      "wireguard-tools"  # for `wg`
       "xdg-utils"  # for xdg-open
       # "yarn"
       "zsh"
@@ -195,8 +195,8 @@ in
 
     pcTuiApps = declPackageSet [
       "aerc"  # email client
-      "msmtp"  # sendmail
-      "offlineimap"  # email mailbox sync
+      # "msmtp"  # sendmail
+      # "offlineimap"  # email mailbox sync
       # "sfeed"  # RSS fetcher
       "visidata"  # TUI spreadsheet viewer/editor
       "w3m"  # web browser
