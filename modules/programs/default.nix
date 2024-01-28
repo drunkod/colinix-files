@@ -216,7 +216,7 @@ let
         '';
       };
       sandbox.method = mkOption {
-        type = types.nullOr (types.enum [ "bwrap" "firejail" "landlock" ]);
+        type = types.nullOr (types.enum [ "bwrap" "capshonly" "firejail" "landlock" ]);
         default = null;  #< TODO: default to something non-null
         description = ''
           how/whether to sandbox all binaries in the package.
