@@ -80,7 +80,7 @@ in
       "inetutils"  # for telnet
       "iotop"
       "iptables"
-      "iw"
+      # "iw"
       "jq"
       "killall"
       "libcap_ng"  # for `netcap`
@@ -140,7 +140,7 @@ in
       # "gocryptfs"
       # "gopass"
       # "gopass-jsonapi"
-      "helix"  # text editor
+      # "helix"  # text editor
       "libsecret"  # for managing user keyrings. TODO: what needs this? lift into the consumer
       "lm_sensors"  # for sensors-detect. TODO: what needs this? lift into the consumer
       "lshw"
@@ -162,8 +162,8 @@ in
       "rsync"
       "sane-scripts.bittorrent"
       "sane-scripts.cli"
-      "snapper"
-      "sops"
+      # "snapper"
+      # "sops"
       "speedtest-cli"
       # "ssh-to-age"
       "sudo"
@@ -177,7 +177,7 @@ in
     ];
 
     pcConsoleUtils = declPackageSet [
-      "gh"  # MS GitHub cli
+      # "gh"  # MS GitHub cli
       "nix-index"
       "nixpkgs-review"
       "sane-scripts.dev"
@@ -185,7 +185,7 @@ in
     ];
 
     consoleMediaUtils = declPackageSet [
-      "catt"  # cast videos to chromecast
+      # "catt"  # cast videos to chromecast
       "ffmpeg"
       "go2tv"  # cast videos to UPNP/DLNA device (i.e. tv).
       "imagemagick"
@@ -203,9 +203,9 @@ in
     ];
 
     iphoneUtils = declPackageSet [
-      "ifuse"
-      "ipfs"
-      "libimobiledevice"
+      # "ifuse"
+      # "ipfs"
+      # "libimobiledevice"
       "sane-scripts.sync-from-iphone"
     ];
 
