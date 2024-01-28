@@ -15,7 +15,7 @@ let
     runHook postFixup
   '';
 in
-{ pkgName, package, method, wrapperType, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], autodetectCliPaths ? [], binMap ? {}, capabilities ? [], extraConfig ? [], embedProfile ? false }:
+{ pkgName, package, method, wrapperType, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], autodetectCliPaths ? false, binMap ? {}, capabilities ? [], extraConfig ? [], embedProfile ? false, whitelistPwd ? false }:
 let
   sane-sandboxed' = sane-sandboxed.meta.mainProgram;  #< load by bin name to reduce rebuilds
 
@@ -46,6 +46,7 @@ let
     ++ allowHomePaths allowedHomePaths
     ++ capabilityFlags
     ++ lib.optionals autodetectCliPaths [ "--sane-sandbox-autodetect" ]
+    ++ lib.optionals whitelistPwd [ "--sane-sandbox-add-pwd" ]
     ++ lib.optionals (vpn != null) vpnItems
     ++ extraConfig;
 

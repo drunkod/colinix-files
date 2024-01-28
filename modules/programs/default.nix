@@ -259,6 +259,13 @@ let
           if a CLI argument looks like a PATH, should we add it to the sandbox?
         '';
       };
+      sandbox.whitelistPwd = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          allow the program full access to whichever directory it was launched from.
+        '';
+      };
       sandbox.binMap = mkOption {
         type = types.attrsOf types.str;
         default = {};
