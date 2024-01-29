@@ -130,25 +130,30 @@ let
   # - share/man
   # - share/mime
   # TODO: it'd be nice to just symlink these instead, but then we couldn't leverage `disallowedReferences` like this.
-  copyNonBinaries = pkgName: package: runCommand "${pkgName}-sandboxed-non-binary" {
+  copyNonBinaries = pkgName: package: sandboxedBins: runCommand "${pkgName}-sandboxed-non-binary" {
     disallowedReferences = [ package ];
   } ''
     mkdir "$out"
     if [ -e "${package}/share" ]; then
       cp -R "${package}/share" "$out/"
     fi
+    # fixup a few files i understand well enough
+    for d in $out/share/applications/*.desktop; do
+      substituteInPlace "$d" \
+        --replace "Exec=${package}/bin/" "Exec=${sandboxedBins}/bin/"
+    done
   '';
 
   # take the nearly-final sandboxed package, with binaries and and else, and
   # populate passthru attributes the caller expects, like `sandboxProfiles` and `checkSandboxed`.
-  fixupMetaAndPassthru = pkgName: pkg: sandboxProfiles: pkg.overrideAttrs (orig: let
+  fixupMetaAndPassthru = pkgName: pkg: sandboxProfiles: extraPassthru: pkg.overrideAttrs (orig: let
     final = fixupMetaAndPassthru pkgName pkg sandboxProfiles;
   in {
     meta = (orig.meta or {}) // {
       # take precedence over non-sandboxed versions of the same binary.
       priority = ((orig.meta or {}).priority or 0) - 1;
     };
-    passthru = (pkg.passthru or {}) // {
+    passthru = (pkg.passthru or {}) // extraPassthru // {
       inherit sandboxProfiles;
       checkSandboxed = runCommand "${pkgName}-check-sandboxed" {} ''
         # invoke each binary in a way only the sandbox wrapper will recognize,
@@ -225,33 +230,31 @@ let
   # 2. pkgs.symlinkJoin, creating an entirely new package which calls into the inner binaries.
   #
   # here we switch between the options.
-  # note that no.2 ("wrappedDerivation") *doesn't support .desktop files yet*.
-  # the final package simply doesn't include .desktop files, only bin/.
-  packageWrapped = if wrapperType == "inplace" then
-    sandboxBinariesInPlace
+  # regardless of which one is chosen here, all other options are exposed via `passthru`.
+  sandboxedBy = {
+    inplace = sandboxBinariesInPlace
       binMap
       sane-sandboxed'
       maybeEmbedProfilesDir
       pkgName
-      (makeHookable package)
-  else if wrapperType == "wrappedDerivation" then
-    let
-      binariesOnly = symlinkBinaries pkgName package;
-      binariesWrapped = sandboxBinariesInPlace
+      (makeHookable package);
+
+    wrappedDerivation = let
+      binaries = sandboxBinariesInPlace
         binMap
         sane-sandboxed'
         maybeEmbedProfilesDir
         pkgName
-        binariesOnly;
-    in
-      symlinkJoin {
-        name = "${pkgName}-sandboxed-all";
-        paths = [
-          binariesWrapped
-          (copyNonBinaries pkgName package)
-        ];
-      }
-  else
-    builtins.throw "unknown wrapperType: ${wrapperType}";
+        (symlinkBinaries pkgName package);
+      nonBinaries = copyNonBinaries pkgName package binaries;
+    in symlinkJoin {
+      name = "${pkgName}-sandboxed-all";
+      paths = [ binaries nonBinaries ];
+      passthru = { inherit binaries nonBinaries; };
+    };
+  };
+  packageWrapped = sandboxedBy."${wrapperType}";
 in
-  fixupMetaAndPassthru pkgName packageWrapped sandboxProfilesPkg
+  fixupMetaAndPassthru pkgName packageWrapped sandboxProfilesPkg {
+    inherit sandboxedBy;
+  }
