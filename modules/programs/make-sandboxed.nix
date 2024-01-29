@@ -132,19 +132,33 @@ let
   # TODO: it'd be nice to just symlink these instead, but then we couldn't leverage `disallowedReferences` like this.
   copyNonBinaries = pkgName: package: sandboxedBins: runCommand "${pkgName}-sandboxed-non-binary" {
     disallowedReferences = [ package ];
+    # users can build this one when they get a disallowed references failure
+    passthru.unchecked = (copyNonBinaries pkgName package sandboxedBins).overrideAttrs (_: {
+      disallowedReferences = [];
+    });
   } ''
+    trySubstitute() {
+      _outPath="$1"
+      _pattern="$2"
+      _from=$(printf "$_pattern" "${package}")
+      _to=$(printf "$_pattern" "${sandboxedBins}")
+      printf "applying known substitutions to %s" "$_outPath"
+      # substituteInPlace can fail on symlinks, but frequently that's fine because
+      # the referenced file is already safe, so don't error on failure here.
+      substituteInPlace "$_outPath" \
+        --replace "$_from" "$_to" \
+        || true
+    }
     mkdir "$out"
     if [ -e "${package}/share" ]; then
       cp -R "${package}/share" "$out/"
     fi
     # fixup a few files i understand well enough
     for d in $out/share/applications/*.desktop; do
-      substituteInPlace "$d" \
-        --replace "Exec=${package}/bin/" "Exec=${sandboxedBins}/bin/"
+      trySubstitute "$d" "Exec=%s/bin/"
     done
     for d in $out/share/dbus-1/services/*.service; do
-      substituteInPlace "$d" \
-        --replace "Exec=${package}/bin/" "Exec=${sandboxedBins}/bin/"
+      trySubstitute "$d" "Exec=%s/bin/"
     done
   '';
 
