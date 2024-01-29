@@ -211,6 +211,9 @@ parseArgs() {
 firejailName=
 firejailProfile=
 
+firejailSetup() {
+  debug "firejailSetup: noop"
+}
 firejailIngestPath() {
   # XXX: firejail flat-out refuses to whitelist certain root paths
   #      this exception list is non-exhaustive
@@ -245,12 +248,17 @@ firejailExec() {
   if [ -n "$firejailProfile" ]; then
     firejailFlags+=("--profile=$firejailProfile")
   fi
-  PATH="$PATH:@firejail@/bin" exec firejail "${firejailFlags[@]}" -- "${cliArgs[@]}"
+  PATH="$PATH:@firejail@/bin" exec \
+    firejail "${firejailFlags[@]}" -- \
+    "${cliArgs[@]}"
 }
 
 
 ## BUBBLEWRAP BACKEND
 
+bwrapSetup() {
+  debug "bwrapSetup: noop"
+}
 bwrapIngestPath() {
   # N.B.: use --dev-bind-try instead of --dev-bind for platform-specific paths like /run/opengl-driver-32
   #   which don't exist on aarch64, as the -try variant will gracefully fail (i.e. not bind it).
@@ -264,7 +272,7 @@ bwrapIngestPath() {
   bwrapFlags+=("--dev-bind-try" "$1" "$1")
 }
 bwrapIngestProfile() {
-  debug "bwrap doesn't implement profiles"
+  debug "bwrapIngestProfile: stubbed"
 }
 bwrapIngestCapability() {
   bwrapFlags+=("--cap-add" "cap_$1")
@@ -272,11 +280,38 @@ bwrapIngestCapability() {
 # WIP
 
 bwrapExec() {
-  PATH="$PATH:@bubblewrap@/bin" exec bwrap --dev /dev --proc /proc --tmpfs /tmp "${bwrapFlags[@]}" -- "${cliArgs[@]}"
+  PATH="$PATH:@bubblewrap@/bin" exec \
+    bwrap --dev /dev --proc /proc --tmpfs /tmp "${bwrapFlags[@]}" -- \
+    "${cliArgs[@]}"
 }
 
 
 ## LANDLOCK BACKEND
+landlockSetup() {
+  # other sandboxing methods would create fake /dev, /proc, /tmp filesystems
+  # but landlock can't do that. so bind a minimal number of assumed-to-exist files.
+  # note that most applications actually do start without these, but maybe produce weird errors during their lifetime.
+  # typical failure mode:
+  # - /tmp: application can't perform its task
+  # - /dev/{null,random,urandom,zero}: application warns but works around it
+  paths+=(\
+    /dev/null
+    /dev/random
+    /dev/urandom
+    /dev/zero
+    /tmp
+  )
+  # /dev/{stderr,stdin,stdout} are links to /proc/self/fd/N
+  # and /proc/self is a link to /proc/<N>.
+  # there seems to be an issue, observed with wireshark, in binding these.
+  # maybe i bound the symlinks but not the actual data being pointed to.
+  # if you want to bind /dev/std*, then also bind all of /proc.
+  # /proc/self
+  # "/proc/$$"
+  # /dev/stderr
+  # /dev/stdin
+  # /dev/stdout
+}
 landlockIngestPath() {
   # TODO: escape colons
   if [ -e "$1" ]; then
@@ -291,42 +326,19 @@ landlockIngestPath() {
   fi
 }
 landlockIngestProfile() {
-  debug "landlock doesn't implement profiles"
+  debug "landlockIngestProfile: stubbed"
 }
 landlockIngestCapability() {
   capshonlyIngestCapability "$1"
 }
 landlockExec() {
-  # other sandboxing methods would create fake /dev, /proc, /tmp filesystems
-  # but landlock can't do that. so bind a minimal number of assumed-to-exist files.
-  # note that most applications actually do start without these, but maybe produce weird errors during their lifetime.
-  # typical failure mode:
-  # - /tmp: application can't perform its task
-  # - /dev/{null,random,urandom,zero}: application warns but works around it
-  landlockIngestPath '/dev/null'
-  landlockIngestPath '/dev/random'
-  landlockIngestPath '/dev/urandom'
-  landlockIngestPath '/dev/zero'
-  landlockIngestPath '/tmp'
-  # /dev/{stderr,stdin,stdout} are links to /proc/self/fd/N
-  # and /proc/self is a link to /proc/<N>.
-  # there seems to be an issue, observed with wireshark, in binding these.
-  # maybe i bound the symlinks but not the actual data being pointed to.
-  # if you want to bind /dev/std*, then also bind all of /proc.
-  # landlockIngestPath '/proc/self'
-  # landlockIngestPath "/proc/$$"
-  # landlockIngestPath '/dev/stderr'
-  # landlockIngestPath '/dev/stdin'
-  # landlockIngestPath '/dev/stdout'
-
   # landlock sandboxer has no native support for capabilities (except that it sets nonewprivs),
   # so trampoline through `capsh` as well, to drop privs.
   # N.B: capsh passes its arg to bash (via /nix/store/.../bash), which means you have to `-c "my command"` to
   # invoke the actual user command.
   PATH="$PATH:@landlockSandboxer@/bin:@libcap@/bin" LL_FS_RO= LL_FS_RW="$landlockPaths" exec \
     sandboxer \
-    capsh "--caps=$capshCapsArg" -- \
-      -c "${cliArgs[*]}"
+    capsh "--caps=$capshCapsArg" --shell="${cliArgs[0]}" -- "${cliArgs[@]:1}"
 }
 
 
@@ -334,11 +346,14 @@ landlockExec() {
 # this backend exists because apps which are natively bwrap may complain about having ambient privileges.
 # then, run them in a capsh sandbox, which ignores any path sandboxing and just lowers privs to what's needed.
 
+capshonlySetup() {
+  debug "capshonlySetup: noop"
+}
 capshonlyIngestPath() {
-  debug "capshonly doesn't implement root paths"
+  debug "capshonlyIngestPath: stubbed"
 }
 capshonlyIngestProfile() {
-  debug "capshonly doesn't implement profiles"
+  debug "capshonlyIngestProfile: stubbed"
 }
 capshonlyIngestCapability() {
   # N.B. `capsh` parsing of `--caps=X` arg is idiosyncratic:
@@ -478,6 +493,8 @@ export SANE_SANDBOX_APPEND="$SANE_SANDBOX_APPEND"
 
 test -n "$isDisable" && exec "${cliArgs[@]}"
 
+# method-specific setup could add additional paths that need binding, so do that before canonicalization
+"$method"Setup
 maybeAutodetectPaths
 canonicalizePaths
 
