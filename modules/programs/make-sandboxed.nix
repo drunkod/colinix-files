@@ -34,9 +34,15 @@ let
     runHook postFixup
   '';
 in
-{ pkgName, package, method, wrapperType, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], autodetectCliPaths ? false, binMap ? {}, capabilities ? [], embedProfile ? false, extraConfig ? [], whitelistPwd ? false }:
+{ pkgName, package, method, wrapperType, vpn ? null, allowedHomePaths ? [], allowedRootPaths ? [], autodetectCliPaths ? false, binMap ? {}, capabilities ? [], embedProfile ? false, embedSandboxer ? false, extraConfig ? [], whitelistPwd ? false }:
 let
-  sane-sandboxed' = sane-sandboxed.meta.mainProgram;  #< load by bin name to reduce rebuilds
+  sane-sandboxed' = if embedSandboxer then
+    # optionally hard-code the sandboxer. this forces rebuilds, but allows deep iteration w/o deploys.
+    lib.getExe sane-sandboxed
+  else
+    #v prefer to load by bin name to reduce rebuilds
+    sane-sandboxed.meta.mainProgram
+  ;
 
   allowPath = p: [
     "--sane-sandbox-path"
