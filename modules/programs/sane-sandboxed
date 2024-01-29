@@ -10,8 +10,7 @@ cliArgs=()
 cliPathArgs=()
 autodetect=
 profilesNamed=()
-rootPaths=()
-homePaths=()
+paths=()
 capabilities=()
 net=
 dns=()
@@ -157,18 +156,18 @@ parseArgs() {
         shift
         ;;
       (--sane-sandbox-home-path)
-        _path="$1"
+        _path="$HOME/$1"
         shift
-        homePaths+=("$_path")
+        paths+=("$_path")
         ;;
       (--sane-sandbox-path)
         _path="$1"
         shift
-        rootPaths+=("$_path")
+        paths+=("$_path")
         ;;
       (--sane-sandbox-add-pwd)
         _path="$(pwd)"
-        rootPaths+=("$_path")
+        paths+=("$_path")
         ;;
       (--sane-sandbox-profile)
         tryLoadProfileByName "$1"
@@ -192,13 +191,10 @@ parseArgs() {
 firejailName=
 firejailProfile=
 
-firejailIngestRootPath() {
+firejailIngestPath() {
   # XXX: firejail flat-out refuses to whitelist certain root paths
   #      this exception list is non-exhaustive
   [ "$1" != "/bin" ] && [ "$1" != "/etc" ] && firejailFlags+=("--noblacklist=$1" "--whitelist=$1")
-}
-firejailIngestHomePath() {
-  firejailFlags+=("--noblacklist="'${HOME}/'"$1" "--whitelist="'${HOME}/'"$1")
 }
 firejailIngestNet() {
   firejailFlags+=("--net=$1")
@@ -235,21 +231,17 @@ firejailExec() {
 
 ## BUBBLEWRAP BACKEND
 
-bwrapIngestRootPath() {
+bwrapIngestPath() {
   # N.B.: use --dev-bind-try instead of --dev-bind for platform-specific paths like /run/opengl-driver-32
   #   which don't exist on aarch64, as the -try variant will gracefully fail (i.e. not bind it).
   # N.B.: `test -r` for paths like /mnt/servo-media, which may otherwise break bwrap when offline with
   #   "bwrap: Can't get type of source /mnt/...: Input/output error"
   # HOWEVER, paths such as `/run/secrets` are not readable, so don't do that (or, try `test -e` if this becomes a problem again).
-  # test -r "$1" && bwrapFlags+=("--dev-bind-try" "$1" "$1")
-  bwrapFlags+=("--dev-bind-try" "$1" "$1")
-}
-bwrapIngestHomePath() {
-  _path="$HOME/$1"
   # `-try` version of binding is still desireable for user files.
   # although it'd be nice if all program directories could be required to exist, some things are scoped poorly.
   #   e.g. ~/.local/share/historic.json for wike's history. i don't want to give it all of ~/.local/share, and i don't want it to fail if its history file doesn't exist.
-  bwrapFlags+=("--dev-bind-try" "$_path" "$_path")
+  # test -r "$1" && bwrapFlags+=("--dev-bind-try" "$1" "$1")
+  bwrapFlags+=("--dev-bind-try" "$1" "$1")
 }
 bwrapIngestProfile() {
   debug "bwrap doesn't implement profiles"
@@ -265,7 +257,7 @@ bwrapExec() {
 
 
 ## LANDLOCK BACKEND
-landlockIngestRootPath() {
+landlockIngestPath() {
   # TODO: escape colons
   if [ -e "$1" ]; then
     # landlock is fd-based and requires `open`ing the path;
@@ -277,9 +269,6 @@ landlockIngestRootPath() {
       landlockPaths="$landlockPaths:$1"
     fi
   fi
-}
-landlockIngestHomePath() {
-  landlockIngestRootPath "$HOME/$1"
 }
 landlockIngestProfile() {
   debug "landlock doesn't implement profiles"
@@ -294,21 +283,21 @@ landlockExec() {
   # typical failure mode:
   # - /tmp: application can't perform its task
   # - /dev/{null,random,urandom,zero}: application warns but works around it
-  landlockIngestRootPath '/dev/null'
-  landlockIngestRootPath '/dev/random'
-  landlockIngestRootPath '/dev/urandom'
-  landlockIngestRootPath '/dev/zero'
-  landlockIngestRootPath '/tmp'
+  landlockIngestPath '/dev/null'
+  landlockIngestPath '/dev/random'
+  landlockIngestPath '/dev/urandom'
+  landlockIngestPath '/dev/zero'
+  landlockIngestPath '/tmp'
   # /dev/{stderr,stdin,stdout} are links to /proc/self/fd/N
   # and /proc/self is a link to /proc/<N>.
   # there seems to be an issue, observed with wireshark, in binding these.
   # maybe i bound the symlinks but not the actual data being pointed to.
   # if you want to bind /dev/std*, then also bind all of /proc.
-  # landlockIngestRootPath '/proc/self'
-  # landlockIngestRootPath "/proc/$$"
-  # landlockIngestRootPath '/dev/stderr'
-  # landlockIngestRootPath '/dev/stdin'
-  # landlockIngestRootPath '/dev/stdout'
+  # landlockIngestPath '/proc/self'
+  # landlockIngestPath "/proc/$$"
+  # landlockIngestPath '/dev/stderr'
+  # landlockIngestPath '/dev/stdin'
+  # landlockIngestPath '/dev/stdout'
 
   # landlock sandboxer has no native support for capabilities (except that it sets nonewprivs),
   # so trampoline through `capsh` as well, to drop privs.
@@ -325,11 +314,8 @@ landlockExec() {
 # this backend exists because apps which are natively bwrap may complain about having ambient privileges.
 # then, run them in a capsh sandbox, which ignores any path sandboxing and just lowers privs to what's needed.
 
-capshonlyIngestRootPath() {
+capshonlyIngestPath() {
   debug "capshonly doesn't implement root paths"
-}
-capshonlyIngestHomePath() {
-  debug "capshonly doesn't implement home paths"
 }
 capshonlyIngestProfile() {
   debug "capshonly doesn't implement profiles"
@@ -365,12 +351,8 @@ test -n "$isDisable" && exec "${cliArgs[@]}"
 ### convert generic args into sandbox-specific args
 # order matters: for firejail, early args override the later --profile args
 
-for _path in "${rootPaths[@]}"; do
-  "$method"IngestRootPath "$_path"
-done
-
-for _path in "${homePaths[@]}"; do
-  "$method"IngestHomePath "$_path"
+for _path in "${paths[@]}"; do
+  "$method"IngestPath "$_path"
 done
 
 if [ -n "$autodetect" ]; then
@@ -380,7 +362,7 @@ if [ -n "$autodetect" ]; then
   for _path in "${cliPathArgs[@]}"; do
     # TODO: might want to also mount the directory *above* this file,
     # to access e.g. adjacent album art in the media's folder.
-    "$method"IngestRootPath "$_path"
+    "$method"IngestPath "$_path"
   done
 fi
 
