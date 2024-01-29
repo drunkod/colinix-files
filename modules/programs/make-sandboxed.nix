@@ -147,7 +147,7 @@ let
   # take the nearly-final sandboxed package, with binaries and and else, and
   # populate passthru attributes the caller expects, like `sandboxProfiles` and `checkSandboxed`.
   fixupMetaAndPassthru = pkgName: pkg: sandboxProfiles: extraPassthru: pkg.overrideAttrs (orig: let
-    final = fixupMetaAndPassthru pkgName pkg sandboxProfiles;
+    final = fixupMetaAndPassthru pkgName pkg sandboxProfiles extraPassthru;
   in {
     meta = (orig.meta or {}) // {
       # take precedence over non-sandboxed versions of the same binary.
