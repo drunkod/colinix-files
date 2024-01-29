@@ -142,6 +142,10 @@ let
       substituteInPlace "$d" \
         --replace "Exec=${package}/bin/" "Exec=${sandboxedBins}/bin/"
     done
+    for d in $out/share/dbus-1/services/*.service; do
+      substituteInPlace "$d" \
+        --replace "Exec=${package}/bin/" "Exec=${sandboxedBins}/bin/"
+    done
   '';
 
   # take the nearly-final sandboxed package, with binaries and and else, and
