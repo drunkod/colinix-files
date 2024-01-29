@@ -305,11 +305,6 @@ in
       requests
     ]);
 
-    ripgrep.sandbox.method = "landlock";
-    ripgrep.sandbox.wrapperType = "wrappedDerivation";  # slow to build
-    ripgrep.sandbox.autodetectCliPaths = true;
-    ripgrep.sandbox.whitelistPwd = true;
-
     rsync.sandbox.method = "bwrap";  # TODO:sandbox: untested
     rsync.sandbox.autodetectCliPaths = true;
 
