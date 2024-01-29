@@ -256,7 +256,8 @@ let
                                binaries wrap the binaries in the original derivation with a sandbox.
 
           "inplace" is more reliable, but "wrappedDerivation" is more lightweight (doesn't force any rebuilds).
-          the biggest gap in "wrappedDerivation" is that it doesn't handle .desktop files; just the binaries.
+          the biggest gap in "wrappedDerivation" is that it doesn't link anything outside `bin/`, except for
+          some limited (verified safe) support for `share/applications/*.desktop`
           "wrappedDerivation" is mostly good for prototyping.
         '';
       };
