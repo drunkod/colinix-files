@@ -1,10 +1,8 @@
 #!@runtimeShell@
 
-isDebug="$SANE_SANDBOX_DEBUG"
-test -n "$isDebug" && set -x
-isDisable="$SANE_SANDBOX_DISABLE"
-
 profileDirs=(@profileDirs@)
+isDebug=
+isDisable=
 
 cliArgs=()
 cliPathArgs=()
@@ -19,6 +17,11 @@ firejailFlags=()
 bwrapFlags=()
 landlockPaths=
 capshCapsArg=
+
+enableDebug() {
+  isDebug=1
+  set -x
+}
 
 debug() {
   [ -n "$isDebug" ] && printf "[debug] %s" "$1" >&2
@@ -60,6 +63,9 @@ urldecode() {
   echo -e "${_//%/\\x}"
 }
 
+# if the argument looks path-like, then add it to cliPathArgs.
+# this function ingests absolute, relative, or file:///-type URIs.
+# but it converts any such path into an absolute path before adding it to cliPathArgs.
 tryArgAsPath() {
   _arg="$1"
   _path=
@@ -78,6 +84,21 @@ tryArgAsPath() {
 
   if [ -e "$_path" ]; then
     cliPathArgs+=("$_path")
+  fi
+}
+
+# remove duplicate //, reduce '.' and '..' (naively).
+# chomps trailing slashes.
+# does not resolve symlinks, nor check for existence of any component of the path.
+normPath() {
+  realpath --logical --no-symlinks --canonicalize-missing "$1"
+}
+
+ensureTrailingSlash() {
+  if [ "${1:-1}" = "/" ]; then
+    printf "%s" "$1"
+  else
+    printf "%s/" "$1"
   fi
 }
 
@@ -107,8 +128,7 @@ parseArgs() {
         break
         ;;
       (--sane-sandbox-debug)
-        isDebug=1
-        set -x
+        enableDebug
         ;;
       (--sane-sandbox-replace-cli)
         # keep the sandbox flags, but clear any earlier CLI args.
@@ -136,7 +156,7 @@ parseArgs() {
         capabilities+=("$_cap")
         ;;
       (--sane-sandbox-dns)
-        # N.B.: these named temporary variables ensure that `set -x` causes $1 to be printed
+        # N.B.: these named temporary variables ensure that "set -x" causes $1 to be printed
         _dns="$1"
         shift
         dns+=("$_dns")
@@ -339,48 +359,113 @@ capshonlyExec() {
 }
 
 
-## BACKEND HANDOFF
+## ARGUMENT POST-PROCESSING
 
-test -n "$SANE_SANDBOX_PREPEND" && parseArgs $SANE_SANDBOX_PREPEND
-parseArgs "$@"
-cliArgs+=("${parseArgsExtra[@]}")
-test -n "$SANE_SANDBOX_APPEND" && parseArgs $SANE_SANDBOX_APPEND
+### autodetect: if one of the CLI args looks like a path, that could be an input or output file
+#   so allow access to it.
+maybeAutodetectPaths() {
+  if [ -n "$autodetect" ]; then
+    for _arg in "${cliArgs[@]:1}"; do
+      tryArgAsPath "$_arg"
+    done
+    for _path in "${cliPathArgs[@]}"; do
+      # TODO: might want to also mount the directory *above* this file,
+      # to access e.g. adjacent album art in the media's folder.
+      paths+=("$_path")
+    done
+  fi
+}
 
-test -n "$isDisable" && exec "${cliArgs[@]}"
+### path sorting: if the app has access both to /FOO and /FOO/BAR, some backends get confused.
+#   notably bwrap, --bind /FOO /FOO followed by --bind /FOO/BAR /FOO/BAR results in /FOO being accessible but /FOO/BAR *not*.
+#   so reduce the paths to the minimal set which includes those requested.
+#   for more sophisticated (i.e. complex) backends like firejail, this may break subpaths which were blacklisted earlier.
+canonicalizePaths() {
+  # remove '//' and simplify '.', '..' paths, into canonical absolute logical paths.
+  _normPaths=()
+  for _path in "${paths[@]}"; do
+    _normPaths+=($(normPath "$_path"))
+  done
+
+  # remove subpaths, but the result might include duplicates.
+  _toplevelPaths=()
+  for _path in "${_normPaths[@]}"; do
+    _isSubpath=
+    for _other in "${_normPaths[@]}"; do
+      if [[ "$_path" =~ ^$_other/.* ]]; then
+        # N.B.: $_path lacks a trailing slash, so this never matches self.
+        _isSubpath=1
+      fi
+    done
+    if [ -z "$_isSubpath" ]; then
+      _toplevelPaths+=("$_path")
+    fi
+  done
+
+  # remove duplicated paths.
+  canonicalizedPaths=()
+  for _path in "${_toplevelPaths[@]}"; do
+    _isAlreadyListed=
+    for _other in "${canonicalizedPaths[@]}"; do
+      if [ "$_path" = "$_other" ]; then
+        _isAlreadyListed=1
+      fi
+    done
+    if [ -z "$_isAlreadyListed" ]; then
+      canonicalizedPaths+=("$_path")
+    fi
+  done
+}
+
+
+## TOPLEVEL ADAPTERS
+#  - convert CLI args/env into internal structures
+#  - convert internal structures into backend-specific structures
+
+### parse arguments, with consideration of any which may be injected via the environment
+parseArgsAndEnvironment() {
+  if [ -n "$SANE_SANDBOX_DEBUG" ]; then
+    enableDebug
+  fi
+  if [ -n "$SANE_SANDBOX_DISABLE" ]; then
+    isDisable=1
+  fi
+
+  test -n "$SANE_SANDBOX_PREPEND" && parseArgs $SANE_SANDBOX_PREPEND
+  parseArgs "$@"
+  cliArgs+=("${parseArgsExtra[@]}")
+  test -n "$SANE_SANDBOX_APPEND" && parseArgs $SANE_SANDBOX_APPEND
+}
 
 ### convert generic args into sandbox-specific args
 # order matters: for firejail, early args override the later --profile args
-
-for _path in "${paths[@]}"; do
-  "$method"IngestPath "$_path"
-done
-
-if [ -n "$autodetect" ]; then
-  for _arg in "${cliArgs[@]:1}"; do
-    tryArgAsPath "$_arg"
-  done
-  for _path in "${cliPathArgs[@]}"; do
-    # TODO: might want to also mount the directory *above* this file,
-    # to access e.g. adjacent album art in the media's folder.
+ingestForBackend() {
+  for _path in "${canonicalizedPaths[@]}"; do
     "$method"IngestPath "$_path"
   done
-fi
 
-for _cap in "${capabilities[@]}"; do
-  "$method"IngestCapability "$_cap"
-done
+  for _cap in "${capabilities[@]}"; do
+    "$method"IngestCapability "$_cap"
+  done
 
-if [ -n "$net" ]; then
-  "$method"IngestNet "$net"
-fi
+  if [ -n "$net" ]; then
+    "$method"IngestNet "$net"
+  fi
 
-for _addr in "${dns[@]}"; do
-  "$method"IngestDns "$_addr"
-done
+  for _addr in "${dns[@]}"; do
+    "$method"IngestDns "$_addr"
+  done
 
-for _prof in "${profilesNamed[@]}"; do
-  "$method"IngestProfile "$_prof"
-done
+  for _prof in "${profilesNamed[@]}"; do
+    "$method"IngestProfile "$_prof"
+  done
+}
+
+
+## TOPLEVEL EXECUTION
+#  no code evaluated before this point should be dependent on user args / environment.
+
+parseArgsAndEnvironment "$@"
 
 # variables meant to be inherited
 # N.B.: SANE_SANDBOX_DEBUG FREQUENTLY BREAKS APPLICATIONS WHICH PARSE STDOUT
@@ -390,6 +475,13 @@ export SANE_SANDBOX_DEBUG="$SANE_SANDBOX_DEBUG"
 export SANE_SANDBOX_DISABLE="$SANE_SANDBOX_DISABLE"
 export SANE_SANDBOX_PREPEND="$SANE_SANDBOX_PREPEND"
 export SANE_SANDBOX_APPEND="$SANE_SANDBOX_APPEND"
+
+test -n "$isDisable" && exec "${cliArgs[@]}"
+
+maybeAutodetectPaths
+canonicalizePaths
+
+ingestForBackend
 "$method"Exec
 
 echo "sandbox glue failed for method='$method'"
