@@ -230,6 +230,7 @@ in
 
     # creds, but also 200 MB of node modules, etc
     discord.sandbox.method = "bwrap";
+    discord.sandbox.wrapperType = "wrappedDerivation";
     discord.persist.byStore.private = [ ".config/discord" ];
 
     dtc.sandbox.method = "bwrap";
@@ -257,20 +258,24 @@ in
     ffmpeg.sandbox.autodetectCliPaths = true;
 
     file.sandbox.method = "bwrap";
+    file.sandbox.wrapperType = "wrappedDerivation";
     file.sandbox.autodetectCliPaths = true;
 
     fluffychat-moby.persist.byStore.plaintext = [ ".local/share/chat.fluffy.fluffychat" ];
 
     font-manager.sandbox.method = "bwrap";
+    font-manager.sandbox.wrapperType = "inplace";  # .desktop and dbus .service file refer to /libexec
     font-manager.packageUnwrapped = pkgs.font-manager.override {
       # build without the "Google Fonts" integration feature, to save closure / avoid webkitgtk_4_0
       withWebkit = false;
     };
 
     gawk.sandbox.method = "bwrap";  # TODO:sandbox: untested
+    gawk.sandbox.wrapperType = "inplace";  # share/gawk libraries refer to /libexec
     gawk.sandbox.autodetectCliPaths = true;
 
     gdb.sandbox.method = "landlock";  # TODO:sandbox: untested
+    gdb.sandbox.wrapperType = "wrappedDerivation";
     gdb.sandbox.autodetectCliPaths = true;
 
     # MS GitHub stores auth token in .config
@@ -286,6 +291,7 @@ in
     # jq.sandbox.autodetectCliPaths = true;  # liable to over-detect
 
     mercurial.sandbox.method = "bwrap";  # TODO:sandbox: untested
+    mercurial.sandbox.wrapperType = "wrappedDerivation";
     mercurial.sandbox.whitelistPwd = true;
     mimeo.sandbox.method = "capshonly";  # xdg-open replacement
 
@@ -296,6 +302,7 @@ in
     mumble.persist.byStore.private = [ ".local/share/Mumble" ];
 
     nano.sandbox.method = "bwrap";
+    nano.sandbox.wrapperType = "wrappedDerivation";
     nano.sandbox.autodetectCliPaths = true;
 
     # settings (electron app)
@@ -306,6 +313,7 @@ in
     ]);
 
     rsync.sandbox.method = "bwrap";  # TODO:sandbox: untested
+    rsync.sandbox.wrapperType = "wrappedDerivation";
     rsync.sandbox.autodetectCliPaths = true;
 
     sequoia.sandbox.method = "bwrap";  # TODO:sandbox: untested
@@ -321,6 +329,7 @@ in
     space-cadet-pinball.persist.byStore.plaintext = [ ".local/share/SpaceCadetPinball" ];
 
     subversion.sandbox.method = "bwrap";
+    subversion.sandbox.wrapperType = "wrappedDerivation";
     subversion.sandbox.whitelistPwd = true;
     sudo.sandbox.enable = false;
 
@@ -331,31 +340,38 @@ in
     tokodon.persist.byStore.private = [ ".cache/KDE/tokodon" ];
 
     tcpdump.sandbox.method = "landlock";
+    tcpdump.sandbox.wrapperType = "wrappedDerivation";
     tcpdump.sandbox.autodetectCliPaths = true;
     tcpdump.sandbox.capabilities = [ "net_admin" "net_raw" ];
     tree.sandbox.method = "landlock";
+    tree.sandbox.wrapperType = "wrappedDerivation";
     tree.sandbox.autodetectCliPaths = true;
     tree.sandbox.whitelistPwd = true;
 
     unzip.sandbox.method = "bwrap";
+    unzip.sandbox.wrapperType = "wrappedDerivation";
     unzip.sandbox.autodetectCliPaths = true;
     unzip.sandbox.whitelistPwd = true;
 
     visidata.sandbox.method = "bwrap";  # TODO:sandbox: untested
+    visidata.sandbox.wrapperType = "wrappedDerivation";
     visidata.sandbox.autodetectCliPaths = true;
 
     vvvvvv.persist.byStore.plaintext = [ ".local/share/VVVVVV" ];
 
     wget.sandbox.method = "bwrap";  # TODO:sandbox: untested
+    wget.sandbox.wrapperType = "wrappedDerivation";
     wget.sandbox.whitelistPwd = true;  # saves to pwd by default
 
     whalebird.persist.byStore.private = [ ".config/Whalebird" ];
 
     xdg-utils.sandbox.method = "capshonly";
+    xdg-utils.sandbox.wrapperType = "wrappedDerivation";
 
     yarn.persist.byStore.plaintext = [ ".cache/yarn" ];
 
     yt-dlp.sandbox.method = "bwrap";  # TODO:sandbox: untested
+    yt-dlp.sandbox.wrapperType = "wrappedDerivation";
     yt-dlp.sandbox.whitelistPwd = true;  # saves to pwd by default
   };
 
