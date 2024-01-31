@@ -250,6 +250,11 @@ in
           # ".config/sops"
           "private/knowledge/secrets/accounts"
         ];
+        sandbox.extraPaths = [
+          # ~/Pictures/servo-macros links to here.
+          # TODO: consider a bind-mount, so that access to ~/Pictures also gives access to here.
+          "/mnt/servo-media/Pictures/macros"
+        ];
         fs.".config/sops".dir = lib.mkIf cfg.addons.browserpass-extension.enable {};  #< needs to be created, not *just* added to the sandbox
 
         suggestedPrograms = [
