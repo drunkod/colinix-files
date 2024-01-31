@@ -28,7 +28,7 @@
   # XXX colin: phosh doesn't work well with passwordless login,
   # so set this more reliable default password should anything go wrong
   users.users.colin.initialPassword = "147147";
-  services.getty.autologinUser = "root";  # allows for emergency maintenance?
+  # services.getty.autologinUser = "root";  # allows for emergency maintenance?
 
   sops.secrets.colin-passwd.neededForUsers = true;
 
