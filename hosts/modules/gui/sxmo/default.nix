@@ -108,14 +108,14 @@ in
       type = types.bool;
     };
     sane.gui.sxmo.greeter = mkOption {
-      type = types.enum [
+      type = types.nullOr (types.enum [
         "greetd-phog"
         "greetd-sway-gtkgreet"
         "greetd-sway-phog"
         "greetd-sxmo"
         "lightdm-mobile"
         "unl0kr"
-      ];
+      ]);
       # default = "lightdm-mobile";
       # default = "greetd-sway-phog";
       default = "unl0kr";
