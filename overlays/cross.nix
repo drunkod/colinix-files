@@ -2148,6 +2148,15 @@ in with final; {
   #   });
   # };
 
+  # fixes: "Run-time dependency scdoc found: NO (tried pkgconfig)"
+  unl0kr = prev.unl0kr.overrideAttrs (upstream: {
+    postPatch = (upstream.postPatch or "") + ''
+      substituteInPlace meson.build \
+        --replace "scdoc = dependency('scdoc')" "" \
+        --replace "scdoc.get_pkgconfig_variable('scdoc')" "'scdoc'"
+    '';
+  });
+
   # visidata = prev.visidata.override {
   #   # hdf5 / h5py don't cross-compile, but i don't use that file format anyway.
   #   # setting this to null means visidata will work as normal but not be able to load hdf files.
