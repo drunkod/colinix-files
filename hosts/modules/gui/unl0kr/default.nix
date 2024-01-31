@@ -22,19 +22,9 @@ let
       #   i.e. `pw=$(unl0kr); (sleep 1 && echo "$pw" | redirect-tty "/dev/(tty)") &; login -p <user>`
       #   but modified to not leak pword to CLI
       # - implement some sort of watchdog (e.g. detect spawned children?)
-      set -x
-      set +o errexit
-      set +o nounset
-      set +o pipefail
-
-      # login -p: preserve environment
-      # TODO: try getty --init-string to relay the password into `login`?
-      # lets me ditch `unbuffer` and the like, though it places the password on the CLI
-      # ( unl0kr; cat /dev/stdin; sleep 30 ) | socat EXEC:'login -p ${cfg.user}',pty STDIO
-      # unl0kr | socat EXEC:'login -p ${cfg.user}',pty STDIN
-      # (unl0kr ; sleep 60) | exec unbuffer -p login -p ${cfg.user}
 
       redirect-tty "/dev/${tty}" unl0kr &
+      # login -p: preserve environment
       login -p ${cfg.user}
     '';
   };
