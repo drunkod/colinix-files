@@ -124,5 +124,9 @@ in
         sleep ${builtins.toString cfg.delay} && exec ${cfg.afterLogin}
       fi
     '';
+
+    # disable timeout for `login` program.
+    # this lets me pipe input into `login` and not worry about the pipe randomly dying.
+    security.loginDefs.settings.LOGIN_TIMEOUT = 0;
   };
 }
