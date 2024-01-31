@@ -1,20 +1,19 @@
 # N.B.: landlock is a relatively new thing as of 2024/01, and undergoing ABI revisions.
 # the ABI is versioned, and the sandboxer will work when run against either a newer or older kernel than it was built from,
-# but it will complain (stderr) if the kernel announces an ABI version greater than that which the sandboxer knows of.
-# so, build against the latest linux we can.
+# but it will complain (stderr) about an update being available if kernel max ABI != sandbox max ABI.
 { stdenv
-, linuxKernel
+, linux
 }:
-let
-  # linux = linuxKernel.kernels.linux_6_7;  # build fails
-  linux = linuxKernel.kernels.linux_6_6;
-in
 stdenv.mkDerivation rec {
   pname = "landlock-sandboxer";
   version = linux.version;
   src = linux.src;
 
-  sourceRoot = "linux-${version}/samples/landlock";
+  # sourceRoot = "linux-${version}/samples/landlock";
+  preBuild = ''
+    cd samples/landlock
+  '';
+
   makeFlags = [ "sandboxer" ];
   installPhase = ''
     mkdir -p $out/bin
