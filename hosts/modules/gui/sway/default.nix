@@ -59,6 +59,7 @@ in
       description = ''
         launch sway via a greeter (like greetd's gtkgreet).
         sway is usable without a greeter, but skipping the greeter means no PAM session.
+        alternatively, one may launch it directly from a TTY, which does get a PAM session.
       '';
       default = true;
       type = types.bool;
