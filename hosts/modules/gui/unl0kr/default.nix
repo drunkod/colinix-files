@@ -14,14 +14,14 @@ let
       redirect-tty
     ];
     text = ''
-      # TODO: on auth failure, this will sit here indefinitely
+      # TODO: if unl0kr or the redirection fails unexpectedly, this will sit here indefinitely
       #       (well, user can use /dev/stdin to auth -- if that's wired to a usable input device)
       # could either:
-      # - reduce login tries to 1.
-      # - wait on `unl0kr` to complete _before_ starting `login`
+      # - wait on `unl0kr` to complete _before_ starting `login`, and re-introduce a timeout to `login`
       #   i.e. `pw=$(unl0kr); (sleep 1 && echo "$pw" | redirect-tty "/dev/(tty)") &; login -p <user>`
       #   but modified to not leak pword to CLI
       # - implement some sort of watchdog (e.g. detect spawned children?)
+      # - set a timeout at the outer scope (which gets canceled upon successful login)
 
       redirect-tty "/dev/${tty}" unl0kr &
       # login -p: preserve environment
@@ -115,8 +115,13 @@ in
       fi
     '';
 
+    # see: `man login.defs`
     # disable timeout for `login` program.
-    # this lets me pipe input into `login` and not worry about the pipe randomly dying.
+    # LOGIN_TIMEOUT=0 lets me pipe input into `login` and not worry about the pipe randomly dying.
     security.loginDefs.settings.LOGIN_TIMEOUT = 0;
+    # LOGIN_RETRIES=1 ensures that if the password is wrong, then login exits and the whole service restarts so unl0kr re-appears.
+    # docs mention `UNIX_MAX_RETRIES` setting within pam_unix (hardcoded to 3): seems that's an upper-limit to this value, but no lower limit.
+    security.loginDefs.settings.LOGIN_RETRIES = 1;
+    security.loginDefs.settings.FAIL_DELAY = 1;  #< delay this long after failed loging before allowing retry
   };
 }
