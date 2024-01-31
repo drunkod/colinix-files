@@ -163,7 +163,7 @@ in
       "sane-scripts.bittorrent"
       "sane-scripts.cli"
       # "snapper"
-      # "sops"
+      "sops"  # for manually viewing secrets; outside `sane-secrets` (TODO: improve sane-secrets!)
       "speedtest-cli"
       # "ssh-to-age"
       "sudo"
@@ -325,6 +325,16 @@ in
 
     # printer/filament settings
     slic3r.persist.byStore.plaintext = [ ".Slic3r" ];
+
+    sops.sandbox.method = "bwrap";  # TODO:sandbox: untested
+    sops.sandbox.wrapperType = "wrappedDerivation";
+    sops.sandbox.extraHomePaths = [
+      ".config/sops"
+      "dev/nixos"
+      # TODO: sops should only need access to knowledge/secrets,
+      # except that i currently put its .sops.yaml config in the root of ~/knowledge
+      "knowledge"
+    ];
 
     space-cadet-pinball.persist.byStore.plaintext = [ ".local/share/SpaceCadetPinball" ];
 
