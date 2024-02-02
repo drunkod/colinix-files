@@ -50,6 +50,6 @@ stdenv.mkDerivation rec {
     homepage = "https://www.suruatoel.xyz/codes/mcg";
     platforms = platforms.linux;
     # license = TODO
-    maintainers = with maintainers; [ alexsane ];
+    maintainers = with maintainers; [ colinsane ];
   };
 }

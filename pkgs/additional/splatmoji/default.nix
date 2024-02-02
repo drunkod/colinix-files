@@ -50,7 +50,7 @@ stdenv.mkDerivation rec {
     description = "Quickly look up and input emoji and/or emoticons/kaomoji on your GNU/Linux desktop via pop-up menu";
     homepage = "https://github.com/cspeterson/splatmoji";
     license = licenses.mit;
-    maintainers = with maintainers; [ alexsane ];
+    maintainers = with maintainers; [ colinsane ];
     platforms = platforms.linux;
   };
 }

@@ -32,7 +32,7 @@ stdenv.mkDerivation {
     # - <https://github.com/NixOS/mobile-nixos/pull/391/files>
     homepage = "https://github.com/anarsoul/rtl8723bt-firmware";
     license = licenses.unfreeRedistributableFirmware;
-    maintainers = with maintainers; [ alexsane ];
+    maintainers = with maintainers; [ colinsane ];
     platforms = with platforms; linux;
   };
 }

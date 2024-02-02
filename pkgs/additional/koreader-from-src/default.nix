@@ -249,6 +249,6 @@ stdenv.mkDerivation rec {
     sourceProvenance = with sourceTypes; [ fromSource ];
     platforms = platforms.linux;
     license = licenses.agpl3Only;
-    maintainers = with maintainers; [ alexsane contrun neonfuz];
+    maintainers = with maintainers; [ colinsane contrun neonfuz];
   };
 }

@@ -244,7 +244,7 @@ stdenv.mkDerivation rec {
     homepage = "https://git.sr.ht/~mil/sxmo-utils";
     description = "Contains the scripts and small C programs that glues the sxmo enviroment together";
     license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ alexsane ];
+    maintainers = with lib.maintainers; [ colinsane ];
     platforms = lib.platforms.linux; 
   };
 }

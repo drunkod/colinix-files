@@ -47,7 +47,7 @@ buildGoModule rec {
   meta = with lib; {
     description = "PeerSwap enables Lightning Network nodes to balance their channels by facilitating atomic swaps with direct peers.";
     homepage = "https://peerswap.dev";
-    maintainers = with maintainers; [ alexsane ];
+    maintainers = with maintainers; [ colinsane ];
     license = licenses.mit;
     platforms = platforms.linux;
   };

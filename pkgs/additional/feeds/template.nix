@@ -20,7 +20,7 @@ stdenv.mkDerivation {
   meta = {
     description = "metadata about any feeds available at ${feedName}";
     homepage = feedName;
-    maintainers = with lib.maintainers; [ alexsane ];
+    maintainers = with lib.maintainers; [ colinsane ];
     platforms = lib.platforms.all;
   };
 }

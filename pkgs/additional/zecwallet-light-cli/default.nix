@@ -33,6 +33,6 @@ rustPlatform.buildRustPackage rec {
     description = "Zecwallet-Lite is z-Addr first lightwallet for Zcash";
     homepage = "https://github.com/adityapk00/zecwallet-light-cli";
     license = licenses.mit;
-    maintainers = with maintainers; [ alexsane ];
+    maintainers = with maintainers; [ colinsane ];
   };
 }

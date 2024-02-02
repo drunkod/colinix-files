@@ -54,7 +54,7 @@ self = stdenv.mkDerivation rec {
   meta = with lib; {
     platforms = platforms.linux;
     description = "A less resource-heavy Youtube interface";
-    maintainers = with maintainers; [ alexsane ];
+    maintainers = with maintainers; [ colinsane ];
     homepage = "https://codemadness.org/idiotbox.html";
     license = licenses.isc;
   };

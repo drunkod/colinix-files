@@ -64,6 +64,6 @@ stdenv.mkDerivation (final: with final; {
     description = "🍋 Follow discussions on Lemmy";
     homepage = "https://github.com/mdwalters/lemonade";
     license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ alexsane ];
+    maintainers = with maintainers; [ colinsane ];
   };
 })

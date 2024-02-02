@@ -75,6 +75,6 @@ stdenv.mkDerivation rec {
     description = "stream movies and TV shows from Jellyfin";
     homepage = "https://www.delfin.avery.cafe/";
     license = licenses.gpl3Only;
-    maintainers = with maintainers; [ alexsane ];
+    maintainers = with maintainers; [ colinsane ];
   };
 }

@@ -47,6 +47,6 @@ stdenv.mkDerivation rec {
     homepage = "https://gitlab.com/magnolia1234/bypass-paywalls-firefox-clean";
     description = "Add-on allows you to read articles from (supported) sites that implement a paywall.";
     license = with lib.licenses; [ mit ];
-    maintainer = with lib.maintainers; [ alexsane ];
+    maintainer = with lib.maintainers; [ colinsane ];
   };
 }
