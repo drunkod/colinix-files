@@ -36,7 +36,7 @@
   # sops.secrets.alex-passwd.neededForUsers = true;
 
   sane.gui.sxmo.enable = true;
-  sane.programs.consoleUtils.enableFor.user.alex = false;
+  sane.programs.consoleUtils.enableFor.user.alex = true;
   sane.programs.guiApps.enableFor.user.alex = false;
   sane.programs.blueberry.enableFor.user.alex = false;  # bluetooth manager: doesn't cross compile!
   sane.programs.mercurial.enableFor.user.alex = false;  # does not cross compile
