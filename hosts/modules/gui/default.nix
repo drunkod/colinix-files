@@ -51,7 +51,7 @@ in
 
   sane.programs.guiApps = declPackageSet [
     # package sets
-    "gameApps"
+    # "gameApps"
     "guiBaseApps"
   ];
 
