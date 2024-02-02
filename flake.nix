@@ -66,7 +66,7 @@
     };
     uninsane-dot-org = {
       # provides the package to deploy <https://uninsane.org>, used only when building the servo host
-      url = "git+https://git.uninsane.org/alex/uninsane";
+      url = "git+https://git.uninsane.org/colin/uninsane";
       # inputs.nixpkgs.follows = "nixpkgs";
       inputs.nixpkgs.follows = "nixpkgs-unpatched";
     };
