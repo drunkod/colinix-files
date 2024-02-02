@@ -26,6 +26,6 @@
   sane.ports.ports."18080" = {
     protocol = [ "tcp" ];
     visibleTo.wan = true;
-    description = "colin-monero-p2p";
+    description = "alex-monero-p2p";
   };
 }

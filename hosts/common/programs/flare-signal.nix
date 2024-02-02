@@ -12,7 +12,7 @@
 # - `RUST_LOG=flare=trace flare`
 #
 ### error signatures (to reset, run `sane-wipe flare`):
-#### upon sending a message, the other side receives it, but Signal desktop gets "A message from Colin could not be delivered" and the local CLI shows:
+#### upon sending a message, the other side receives it, but Signal desktop gets "A message from alex could not be delivered" and the local CLI shows:
 #   ```
 #   ERROR libsignal_service::websocket] SignalWebSocket: Websocket error: SignalWebSocket: end of application request stream; socket closing
 #   ERROR presage::manager] Error opening envelope: ProtobufDecodeError(DecodeError { description: "invalid tag value: 0", stack: [("Content", "data_message")] }), message will be skipped!

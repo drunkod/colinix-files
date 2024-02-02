@@ -77,7 +77,7 @@ in
       protocol = [ "udp" ];
       visibleTo.lan = true;
       visibleTo.wan = cfg.visibleToWan;
-      description = "colin-wireguard";
+      description = "alex-wireguard";
     };
 
     networking.wireguard.interfaces.wg-home = lib.mkMerge [

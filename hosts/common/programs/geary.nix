@@ -56,7 +56,7 @@ in
       save_sent=true
       use_signature=false
       signature=
-      sender_mailboxes=colin@uninsane.org;
+      sender_mailboxes=alex@uninsane.org;
       service_provider=other
 
       [Folders]
@@ -67,7 +67,7 @@ in
       trash_folder=
 
       [Incoming]
-      login=colin
+      login=alex
       remember_password=true
       host=imap.uninsane.org
       port=993

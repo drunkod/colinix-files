@@ -3,7 +3,7 @@
 # initializes the default libsecret keyring (used by gnome-keyring) if not already initialized.
 # this initializes it to be plaintext/unencrypted.
 
-ringdir=/home/colin/private/.local/share/keyrings
+ringdir=/home/alex/private/.local/share/keyrings
 if test -f "$ringdir/default"
 then
   echo 'keyring already initialized: not doing anything'
@@ -15,7 +15,7 @@ else
   echo 'display-name=Default keyring' >> "$keyring.new"
   echo 'lock-on-idle=false' >> "$keyring.new"
   echo 'lock-after=false' >> "$keyring.new"
-  chown colin:users "$keyring.new"
+  chown alex:users "$keyring.new"
   # closest to an atomic update we can achieve
   mv "$keyring.new" "$keyring" && echo -n "Default_keyring" > "$ringdir/default"
 fi

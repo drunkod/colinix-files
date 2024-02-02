@@ -101,7 +101,7 @@ i.e. you might find value in using these in your own config:
           `sane.programs.firefox.enableFor.user."<user>" = true;`
 - `modules/users.nix`
     - convenience layer atop the above modules so that you can just write
-      `fs.".config/git"` instead of `fs."/home/colin/.config/git"`
+      `fs.".config/git"` instead of `fs."/home/alex/.config/git"`
 
 some things in here could easily find broader use. if you would find benefit in
 them being factored out of my config, message me and we could work to make that happen.
@@ -111,8 +111,8 @@ them being factored out of my config, message me and we could work to make that 
 ## Mirrors
 
 this repo exists in a few known locations:
-- primary: <https://git.uninsane.org/colin/nix-files>
-- mirror: <https://github.com/nix-community/nur-combined/tree/master/repos/colinsane>
+- primary: <https://git.uninsane.org/alex/nix-files>
+- mirror: <https://github.com/nix-community/nur-combined/tree/master/repos/alexsane>
 
 ## Contact
 

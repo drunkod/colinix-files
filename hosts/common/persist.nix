@@ -1,9 +1,9 @@
 { ... }:
 
 {
-  sane.persist.stores.private.origin = "/home/colin/private";
-  # store /home/colin/a/b in /home/private/a/b instead of /home/private/home/colin/a/b
-  sane.persist.stores.private.prefix = "/home/colin";
+  sane.persist.stores.private.origin = "/home/alex/private";
+  # store /home/alex/a/b in /home/private/a/b instead of /home/private/home/alex/a/b
+  sane.persist.stores.private.prefix = "/home/alex";
 
   sane.persist.sys.byStore.plaintext = [
     # TODO: these should be private.. somehow

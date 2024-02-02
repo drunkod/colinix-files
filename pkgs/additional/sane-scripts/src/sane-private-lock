@@ -1,4 +1,4 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -i bash
 
-sudo umount /home/colin/private
+sudo umount /home/alex/private

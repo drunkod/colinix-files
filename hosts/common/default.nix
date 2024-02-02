@@ -22,7 +22,7 @@
   sane.persist.enable = lib.mkDefault true;
   sane.root-on-tmpfs = lib.mkDefault true;
   sane.programs.sysadminUtils.enableFor.system = lib.mkDefault true;
-  sane.programs.consoleUtils.enableFor.user.colin = lib.mkDefault true;
+  sane.programs.consoleUtils.enableFor.user.alex = lib.mkDefault true;
 
   nixpkgs.config.allowUnfree = true;  # NIXPKGS_ALLOW_UNFREE=1
   nixpkgs.config.allowBroken = true;  # NIXPKGS_ALLOW_BROKEN=1
@@ -128,7 +128,7 @@
       '';
     })
   ];
-  # sane.programs.glib.enableFor.user.colin = true;  # for `gsettings`
+  # sane.programs.glib.enableFor.user.alex = true;  # for `gsettings`
 
   # link debug symbols into /run/current-system/sw/lib/debug
   # hopefully picked up by gdb automatically?

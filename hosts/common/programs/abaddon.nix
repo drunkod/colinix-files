@@ -18,7 +18,7 @@ in
     packageUnwrapped = pkgs.abaddon.overrideAttrs (upstream: {
       patches = (upstream.patches or []) ++ [
         (pkgs.fetchpatch {
-          url = "https://git.uninsane.org/colin/abaddon/commit/eb551f188d34679f75adcbc83cb8d5beb4d19fd6.patch";
+          url = "https://git.uninsane.org/alex/abaddon/commit/eb551f188d34679f75adcbc83cb8d5beb4d19fd6.patch";
           name = ''"view members" default to false'';
           hash = "sha256-9BX8iO86CU1lNrKS1G2BjDR+3IlV9bmhRNTsLrxChwQ=";
         })

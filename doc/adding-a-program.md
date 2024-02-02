@@ -1,6 +1,6 @@
 to ship `pkgs.foo` on some host, either:
 - add it as an entry in `suggestedPrograms` to the appropriate category in `hosts/common/programs/assorted.nix`, or
-- `sane.programs.foo.enableFor.user.colin = true` in `hosts/by-name/myhost/default.nix`
+- `sane.programs.foo.enableFor.user.alex = true` in `hosts/by-name/myhost/default.nix`
 
 if the program needs customization (persistence, configs, secrets):
 - add a file for it at `hosts/common/programs/<foo>.nix`

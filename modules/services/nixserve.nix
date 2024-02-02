@@ -34,7 +34,7 @@ in
     sane.ports.ports."${builtins.toString cfg.port}" = {
       visibleTo.lan = true;  # not needed for servo; only desko
       protocol = [ "tcp" ];
-      description = "colin-nix-serve-cache";
+      description = "alex-nix-serve-cache";
     };
     services.nix-serve = {
       enable = true;

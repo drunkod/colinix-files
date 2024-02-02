@@ -1,7 +1,7 @@
 { fuse, gocryptfs, util-linux, lib }:
 
 (gocryptfs.overrideAttrs (upstream: {
-  # XXX `su colin` hangs when pam_mount tries to mount a gocryptfs system
+  # XXX `su alex` hangs when pam_mount tries to mount a gocryptfs system
   # unless `logger` (util-linux) is accessible from gocryptfs.
   # this is surprising: the code LOOKS like it's meant to handle logging failures.
   # propagating util-linux through either `environment.systemPackages` or `security.pam.mount.additionalSearchPaths` DOES NOT WORK.

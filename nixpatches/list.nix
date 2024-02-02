@@ -15,7 +15,7 @@ let
         # prUrl takes precedence over any specific commit
         "${prUrl}.diff"
       else if saneCommit != null then
-        "https://git.uninsane.org/colin/nixpkgs/commit/${saneCommit}.diff"
+        "https://git.uninsane.org/alex/nixpkgs/commit/${saneCommit}.diff"
       else
         "https://github.com/NixOS/nixpkgs/commit/${nixpkgsCommit}.patch"
       ;

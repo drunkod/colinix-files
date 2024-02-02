@@ -96,7 +96,7 @@ python.pkgs.buildPythonApplication rec {
   # };
   src = fetchFromGitea {
     domain = "git.uninsane.org";
-    owner = "colin";
+    owner = "alex";
     repo = "sublime-music";
     rev = "b64498960147c705f530f3d8f91c6217ed66a8f8";
     sha256 = "sha256-jyC3Fh+b+MBLjHlFr3nOOM7eT/3PPF7dynHsPJaIzLU=";

@@ -9,9 +9,9 @@
 #   - use: <https://github.com/bitcoin/bitcoin/blob/master/share/rpcauth/rpcauth.py>
 #     (rpcauth.py is not included in the `'.#bitcoin'` package result)
 #   - `wget https://raw.githubusercontent.com/bitcoin/bitcoin/master/share/rpcauth/rpcauth.py`
-#   - `python ./rpcauth.py colin`
+#   - `python ./rpcauth.py alex`
 #   - copy the hash here. it's SHA-256, so safe to be public.
-#   - add "rpcuser=colin" and "rpcpassword=<output>" to secrets/servo/bitcoin.conf  (i.e. ~/.bitcoin/bitcoin.conf)
+#   - add "rpcuser=alex" and "rpcpassword=<output>" to secrets/servo/bitcoin.conf  (i.e. ~/.bitcoin/bitcoin.conf)
 #     - bitcoin.conf docs: <https://github.com/bitcoin/bitcoin/blob/master/doc/bitcoin-conf.md>
 # - validate with `bitcoin-cli -netinfo`
 { config, lib, pkgs, sane-lib, ... }:
@@ -38,7 +38,7 @@ in
   #   # this allows other nodes and clients to download blocks from me.
   #   protocol = [ "tcp" ];
   #   visibleTo.wan = true;
-  #   description = "colin-bitcoin";
+  #   description = "alex-bitcoin";
   # };
 
   services.tor.relay.onionServices.bitcoind = {
@@ -57,7 +57,7 @@ in
   services.bitcoind.mainnet = {
     enable = true;
     package = bitcoindWithExternalIp;
-    rpc.users.colin = {
+    rpc.users.alex = {
       # see docs at top of file for how to generate this
       passwordHMAC = "30002c05d82daa210550e17a182db3f3$6071444151281e1aa8a2729f75e3e2d224e9d7cac3974810dab60e7c28ffaae4";
     };
@@ -73,12 +73,12 @@ in
 
   systemd.services.bitcoind-mainnet.serviceConfig.RestartSec = "30s";  #< default is 0
 
-  sane.users.colin.fs.".bitcoin/bitcoin.conf" = sane-lib.fs.wantedSymlinkTo config.sops.secrets."bitcoin.conf".path;
+  sane.users.alex.fs.".bitcoin/bitcoin.conf" = sane-lib.fs.wantedSymlinkTo config.sops.secrets."bitcoin.conf".path;
   sops.secrets."bitcoin.conf" = {
     mode = "0600";
-    owner = "colin";
+    owner = "alex";
     group = "users";
   };
 
-  sane.programs.bitcoind.enableFor.user.colin = true;  # for debugging/administration: `bitcoin-cli`
+  sane.programs.bitcoind.enableFor.user.alex = true;  # for debugging/administration: `bitcoin-cli`
 }

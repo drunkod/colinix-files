@@ -333,7 +333,7 @@ in
         '';
 
         # TODO: env.PASSWORD_STORE_DIR only needs to be present within the browser session.
-        env.PASSWORD_STORE_DIR = "/home/colin/private/knowledge/secrets/accounts";
+        env.PASSWORD_STORE_DIR = "/home/alex/private/knowledge/secrets/accounts";
         # alternative to PASSWORD_STORE_DIR, but firejail doesn't handle this symlink well
         # fs.".password-store".symlink.target = lib.mkIf cfg.addons.browserpass-extension.enable "private/knowledge/secrets/accounts";
       };

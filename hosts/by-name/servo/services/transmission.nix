@@ -26,7 +26,7 @@
     #rpc-host-whitelist = "bt.uninsane.org";
     #rpc-whitelist = "*.*.*.*";
     rpc-authentication-required = true;
-    rpc-username = "colin";
+    rpc-username = "alex";
     # salted pw. to regenerate, set this plaintext, run nixos-rebuild, and then find the salted pw in:
     # /var/lib/transmission/.config/transmission-daemon/settings.json
     rpc-password = "{503fc8928344f495efb8e1f955111ca5c862ce0656SzQnQ5";
@@ -94,7 +94,7 @@
   sane.ports.ports."51413" = {
     protocol = [ "tcp" "udp" ];
     visibleTo.ovpn = true;
-    description = "colin-bittorrent";
+    description = "alex-bittorrent";
   };
 }
 

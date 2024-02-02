@@ -1,5 +1,5 @@
 commit 86593b754405a194e749e424e27710aa08533853
-Author: Colin <colin@uninsane.org>
+Author: alex <alex@uninsane.org>
 Date:   2023-08-26 12:26:36 +0000
 
     make phoc-specific wayland interface optional: zphoc_layer_shell_effects_v1

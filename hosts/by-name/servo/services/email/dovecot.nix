@@ -10,13 +10,13 @@
     protocol = [ "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
-    description = "colin-imap-imap.uninsane.org";
+    description = "alex-imap-imap.uninsane.org";
   };
   sane.ports.ports."993" = {
     protocol = [ "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
-    description = "colin-imaps-imap.uninsane.org";
+    description = "alex-imaps-imap.uninsane.org";
   };
 
   # exists only to manage certs for dovecot
@@ -42,9 +42,9 @@
   services.dovecot2.enablePAM = false;
 
   # sieve scripts require me to set a user for... idk why?
-  services.dovecot2.mailUser = "colin";
+  services.dovecot2.mailUser = "alex";
   services.dovecot2.mailGroup = "users";
-  users.users.colin.isSystemUser = lib.mkForce false;
+  users.users.alex.isSystemUser = lib.mkForce false;
 
   services.dovecot2.extraConfig =
   let

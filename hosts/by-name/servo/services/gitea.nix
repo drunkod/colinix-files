@@ -108,6 +108,6 @@
     protocol = [ "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
-    description = "colin-git@git.uninsane.org";
+    description = "alex-git@git.uninsane.org";
   };
 }

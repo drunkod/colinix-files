@@ -159,5 +159,5 @@ class TransmissionApi:
         return self.check_output([
             "transmission-remote",
             self.ENDPOINT,
-            "--auth", f"colin:{self.auth}",
+            "--auth", f"alex:{self.auth}",
         ] + args).decode("utf-8")

@@ -25,7 +25,7 @@ in
     (mkIf cfg.enable {
       # enable opt-in emulation of any package at runtime.
       # i.e. `nix build '.#hostPkgs.moby.bash' ; qemu-aarch64 ./result/bin/bash`.
-      sane.programs.qemu.enableFor.user.colin = true;
+      sane.programs.qemu.enableFor.user.alex = true;
       # serve packages to other machines that ask for them
       sane.services.nixserve.enable = true;
       sane.services.nixserve.remoteBuilderPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4KI7I2w5SvXRgUrXYiuBXPuTL+ZZsPoru5a2YkIuCf root@nixremote";

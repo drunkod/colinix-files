@@ -9,9 +9,9 @@
 
   sane.programs = {
     # for administering services
-    freshrss.enableFor.user.colin = true;
-    matrix-synapse.enableFor.user.colin = true;
-    signaldctl.enableFor.user.colin = true;
+    freshrss.enableFor.user.alex = true;
+    matrix-synapse.enableFor.user.alex = true;
+    signaldctl.enableFor.user.alex = true;
   };
 
   sane.roles.build-machine.enable = true;

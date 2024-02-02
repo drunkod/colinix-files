@@ -28,7 +28,7 @@
 #
 #
 # create users with:
-# - `sudo -u prosody prosodyctl adduser colin@uninsane.org`
+# - `sudo -u prosody prosodyctl adduser alex@uninsane.org`
 #
 #
 # federation/support matrix:
@@ -63,41 +63,41 @@ in
     protocol = [ "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
-    description = "colin-xmpp-prosody-fileshare-proxy65";
+    description = "alex-xmpp-prosody-fileshare-proxy65";
   };
   sane.ports.ports."5222" = {
     protocol = [ "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
-    description = "colin-xmpp-client-to-server";
+    description = "alex-xmpp-client-to-server";
   };
   sane.ports.ports."5223" = {
     protocol = [ "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
-    description = "colin-xmpps-client-to-server";  # XMPP over TLS
+    description = "alex-xmpps-client-to-server";  # XMPP over TLS
   };
   sane.ports.ports."5269" = {
     protocol = [ "tcp" ];
     visibleTo.wan = true;
-    description = "colin-xmpp-server-to-server";
+    description = "alex-xmpp-server-to-server";
   };
   sane.ports.ports."5270" = {
     protocol = [ "tcp" ];
     visibleTo.wan = true;
-    description = "colin-xmpps-server-to-server";  # XMPP over TLS
+    description = "alex-xmpps-server-to-server";  # XMPP over TLS
   };
   sane.ports.ports."5280" = {
     protocol = [ "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
-    description = "colin-xmpp-bosh";
+    description = "alex-xmpp-bosh";
   };
   sane.ports.ports."5281" = {
     protocol = [ "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
-    description = "colin-xmpp-prosody-https";  # necessary?
+    description = "alex-xmpp-prosody-https";  # necessary?
   };
 
   users.users.prosody.extraGroups = [
@@ -169,7 +169,7 @@ in
       );
       # withCommunityModules = [ "turncredentials" ];
     };
-    admins = [ "colin@uninsane.org" ];
+    admins = [ "alex@uninsane.org" ];
     # allowRegistration = false;  # defaults to false
 
     muc = [

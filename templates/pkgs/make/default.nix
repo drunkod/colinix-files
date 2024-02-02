@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     description = "TODO (don't end in period)";
     homepage = "TODO";
     license = licenses.TODO;
-    maintainers = with maintainers; [ colinsane ];
+    maintainers = with maintainers; [ alexsane ];
     platforms = platforms.linux;
   };
 }

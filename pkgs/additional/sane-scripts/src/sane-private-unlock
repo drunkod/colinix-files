@@ -5,7 +5,7 @@ set -ex
 
 # mounts ~/private
 
-mount=/home/colin/private
+mount=/home/alex/private
 cipher="/nix/persist$mount"
 mkdir -p "$mount"
 if [ ! -f "$mount/init" ]

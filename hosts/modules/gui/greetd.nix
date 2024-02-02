@@ -69,7 +69,7 @@ in
     };
     sane.gui.greetd.sway.gtkgreet.session.user = mkOption {
       type = types.str;
-      default = "colin";
+      default = "alex";
       description = ''
         name of user which one expects to login as.
       '';
@@ -87,7 +87,7 @@ in
         in "${pkgs.sway}/bin/sway --debug --config ${swayAsGreeterConfig}";
       } else {
         name = "sway";
-        user = lib.mkDefault "colin";
+        user = lib.mkDefault "alex";
         command = "${pkgs.sway}/bin/sway --debug";
       };
     })

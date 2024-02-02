@@ -18,7 +18,7 @@ let
   };
   # src = fetchFromGitea {
   #   domain = "git.uninsane.org";
-  #   owner = "colin";
+  #   owner = "alex";
   #   repo = "browserpass-extension";
   #   # hack in sops support
   #   rev = "e3bf558ff63d002d3c15f2ce966071f04fada306";

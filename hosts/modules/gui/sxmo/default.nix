@@ -400,7 +400,7 @@ in
           };
         };
 
-        sane.programs.sxmoApps.enableFor.user.colin = true;
+        sane.programs.sxmoApps.enableFor.user.alex = true;
 
         sane.programs.sway-autoscaler.config.defaultScale = builtins.fromJSON cfg.settings.SXMO_SWAY_SCALE;
 
@@ -612,7 +612,7 @@ in
           sxmoEnvSetup = ''
             # mimic my sxmo_init.sh a bit. refer to the actual sxmo_init.sh above for details.
             # the specific ordering, and the duplicated profile sourcing, matters.
-            export HOME="''${HOME:-/home/colin}"
+            export HOME="''${HOME:-/home/alex}"
             export XDG_CONFIG_HOME="''${XDG_CONFIG_HOME:-$HOME/.config}"
             source "$XDG_CONFIG_HOME/sxmo/profile"
             source ${package}/etc/profile.d/sxmo_init.sh
@@ -677,7 +677,7 @@ in
           # lightdm greeters get the login users from lightdm which gets it from org.freedesktop.Accounts.ListCachedUsers.
           # this requires the user we want to login as to be cached.
           displayManager.job.preStart = ''
-            ${pkgs.systemd}/bin/busctl call org.freedesktop.Accounts /org/freedesktop/Accounts org.freedesktop.Accounts CacheUser s colin
+            ${pkgs.systemd}/bin/busctl call org.freedesktop.Accounts /org/freedesktop/Accounts org.freedesktop.Accounts CacheUser s alex
           '';
         };
       })
@@ -718,7 +718,7 @@ in
           session.name = "sxmo";
           # session.command = "${package}/bin/sxmo_winit.sh";
           session.command = "${pkgs.sway}/bin/sway --debug";
-          session.user = "colin";
+          session.user = "alex";
         };
       })
 

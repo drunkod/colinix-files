@@ -34,7 +34,7 @@ in
   services.postgresql.package = pkgs.postgresql_15;
 
 
-  # XXX colin: for a proper deploy, we'd want to include something for Pleroma here too.
+  # XXX alex: for a proper deploy, we'd want to include something for Pleroma here too.
   # services.postgresql.initialScript = pkgs.writeText "synapse-init.sql" ''
   #   CREATE ROLE "matrix-synapse" WITH LOGIN PASSWORD '<password goes here>';
   #   CREATE DATABASE "matrix-synapse" WITH OWNER "matrix-synapse"

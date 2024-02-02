@@ -19,7 +19,7 @@
     protocol = [ "tcp" ];
     # not visible to WAN: i run this in a separate netns
     visibleTo.ovpn = true;
-    description = "colin-soulseek";
+    description = "alex-soulseek";
   };
 
   sane.dns.zones."uninsane.org".inet.CNAME."soulseek" = "native";

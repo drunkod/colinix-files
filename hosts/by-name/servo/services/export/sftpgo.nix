@@ -107,7 +107,7 @@ in
     "21" = {
       protocol = [ "tcp" ];
       visibleTo.lan = true;
-      description = "colin-FTP server";
+      description = "alex-FTP server";
     };
   } // (sane-lib.mapToAttrs
     (port: {
@@ -115,7 +115,7 @@ in
       value = {
         protocol = [ "tcp" ];
         visibleTo.lan = true;
-        description = "colin-FTP server data port range";
+        description = "alex-FTP server data port range";
       };
     })
     (lib.range 50000 50100)
@@ -150,7 +150,7 @@ in
         };
 
         banner = ''
-          Welcome, friends, to Colin's read-only FTP server! Also available via NFS on the same host.
+          Welcome, friends, to alex's read-only FTP server! Also available via NFS on the same host.
           Username: "anonymous"
           Password: "anonymous"
           CONFIGURE YOUR CLIENT FOR "PASSIVE" mode, e.g. `ftp --passive uninsane.org`

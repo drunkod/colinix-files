@@ -23,8 +23,8 @@ in
       # top-level options documented:
       # - <https://git-scm.com/docs/git-config#_variables>
 
-      user.name = "Colin";
-      user.email = "colin@uninsane.org";
+      user.name = "alex";
+      user.email = "alex@uninsane.org";
 
       alias.amend   = "commit --amend --no-edit";
       alias.br      = "branch";

@@ -18,7 +18,7 @@
 # - configure defaults:
 #   - edit keys in ~/.config/koreader/settings.reader.lua
 #     - default font size: `["copt_font_size"] = 28,`
-#     - home dir: `["home_dir"] = "/home/colin/Books",`
+#     - home dir: `["home_dir"] = "/home/alex/Books",`
 { config, lib, pkgs, sane-lib, ... }:
 
 let
@@ -59,9 +59,9 @@ in {
     # the naming is IMPORTANT. these must start with a `2-` in order to be invoked during the right initialization phase
     #
     # 2023/10/29: koreader code hasn't changed, but somehow FTP browser seems usable even without the isConnected patch now.
-    # fs.".config/koreader/patches/2-colin-NetworkManager-isConnected.lua".symlink.target = "${./2-colin-NetworkManager-isConnected.lua}";
+    # fs.".config/koreader/patches/2-alex-NetworkManager-isConnected.lua".symlink.target = "${./2-alex-NetworkManager-isConnected.lua}";
 
-    fs.".config/koreader/patches/2-02-colin-impl-clipboard-ops.lua".symlink.target = "${./2-02-colin-impl-clipboard-ops.lua}";
+    fs.".config/koreader/patches/2-02-alex-impl-clipboard-ops.lua".symlink.target = "${./2-02-alex-impl-clipboard-ops.lua}";
 
     # koreader news plugin, enabled by default. file format described here:
     # - <repo:koreader/koreader:plugins/newsdownloader.koplugin/feed_config.lua>

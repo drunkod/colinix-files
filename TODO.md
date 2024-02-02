@@ -7,7 +7,7 @@
 
 ## REFACTORING:
 
-- fold hosts/common/home/ssh.nix -> hosts/common/users/colin.nix
+- fold hosts/common/home/ssh.nix -> hosts/common/users/alex.nix
 
 ### sops/secrets
 - rework secrets to leverage `sane.fs`

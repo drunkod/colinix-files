@@ -20,6 +20,6 @@ rustPlatform.buildRustPackage rec {
     description = "TODO: FILLME";
     homepage = "https://github.com/ruslashev/elfcat";
     license = licenses.zlib;
-    maintainers = with maintainers; [ colinsane ];
+    maintainers = with maintainers; [ alexsane ];
   };
 }

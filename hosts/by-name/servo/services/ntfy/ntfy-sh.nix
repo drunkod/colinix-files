@@ -87,6 +87,6 @@ in
     protocol = [ "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
-    description = "colin-ntfy.uninsane.org";
+    description = "alex-ntfy.uninsane.org";
   };
 }

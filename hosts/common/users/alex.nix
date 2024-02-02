@@ -2,10 +2,10 @@
 
 {
   # docs: https://nixpkgs-manual-sphinx-markedown-example.netlify.app/generated/options-db.xml.html#users-users
-  users.users.colin = {
+  users.users.alex = {
     # sets group to "users" (?)
     isNormalUser = true;
-    home = "/home/colin";
+    home = "/home/alex";
     # i don't get exactly what this is, but nixos defaults to this non-deterministically
     # in /var/lib/nixos/auto-subuid-map and i don't want that.
     subUidRanges = [
@@ -29,9 +29,9 @@
     ];
 
     # initial password is empty, in case anything goes wrong.
-    # if `colin-passwd` (a password hash) is successfully found/decrypted, that becomes the password at boot.
+    # if `alex-passwd` (a password hash) is successfully found/decrypted, that becomes the password at boot.
     initialPassword = lib.mkDefault "";
-    hashedPasswordFile = lib.mkIf (config.sops.secrets ? "colin-passwd") config.sops.secrets.colin-passwd.path;
+    hashedPasswordFile = lib.mkIf (config.sops.secrets ? "alex-passwd") config.sops.secrets.alex-passwd.path;
 
     shell = pkgs.zsh;
 
@@ -41,8 +41,8 @@
     # - <https://github.com/lourkeur/distro/blob/11173454c6bb50f7ccab28cc2c757dca21446d1d/nixos/profiles/users/louis-full.nix>
     # - <https://github.com/dnr/sample-nix-code/blob/03494480c1fae550c033aa54fd96aeb3827761c5/nixos/laptop.nix>
     pamMount = let
-      hasPrivate = config.fileSystems ? "/home/colin/private";
-      priv = config.fileSystems."/home/colin/private";
+      hasPrivate = config.fileSystems ? "/home/alex/private";
+      priv = config.fileSystems."/home/alex/private";
     in lib.mkIf hasPrivate {
       fstype = priv.fsType;
       path = priv.device;
@@ -72,7 +72,7 @@
     #
     # special capabilities "all" and "none" enable all/none of the caps known to the system.
 
-    ^cap_net_admin,^cap_net_raw colin
+    ^cap_net_admin,^cap_net_raw alex
     # include this `none *` line otherwise non-matching users get maximum inheritable capabilities
     none *
   '';
@@ -93,10 +93,10 @@
   # - privileged
   #
   # XXX 2024/01/30: as of systemd 255, ambient capabilities are broken; not set at login and not usable via systemd --user services.
-  # environment.etc."userdb/colin.user".text = ''
+  # environment.etc."userdb/alex.user".text = ''
   #   {
-  #     "userName" : "colin",
-  #     "uid": ${builtins.toString config.users.users.colin.uid},
+  #     "userName" : "alex",
+  #     "uid": ${builtins.toString config.users.users.alex.uid},
   #     "capabilityAmbientSet": [
   #       "cap_net_admin",
   #       "cap_net_raw"
@@ -104,7 +104,7 @@
   #   }
   # '';
 
-  sane.users.colin = {
+  sane.users.alex = {
     default = true;
 
     persist.byStore.plaintext = [
@@ -132,7 +132,7 @@
       # ".rustup"
     ];
 
-    # fs.".cargo".symlink.target = "/tmp/colin-cargo";
+    # fs.".cargo".symlink.target = "/tmp/alex-cargo";
 
     # convenience
     fs."knowledge".symlink.target = "private/knowledge";

@@ -17,6 +17,6 @@ grammar = "nix-shell"
 [[grammar]]
 name = "nix-shell"
 source = { path = "@tree_sitter_nix_shell@" }
-# source = { path = "/home/colin/dev/tree-sitter-nix-shell" }
-# source = { git = "https://git.uninsane.org/colin/tree-sitter-nix-shell", rev = "c2fcc8b6ee91af2cb58a38f62c0800f82d783738" }
+# source = { path = "/home/alex/dev/tree-sitter-nix-shell" }
+# source = { git = "https://git.uninsane.org/alex/tree-sitter-nix-shell", rev = "c2fcc8b6ee91af2cb58a38f62c0800f82d783738" }
 

@@ -66,7 +66,7 @@
     };
     uninsane-dot-org = {
       # provides the package to deploy <https://uninsane.org>, used only when building the servo host
-      url = "git+https://git.uninsane.org/colin/uninsane";
+      url = "git+https://git.uninsane.org/alex/uninsane";
       # inputs.nixpkgs.follows = "nixpkgs";
       inputs.nixpkgs.follows = "nixpkgs-unpatched";
     };
@@ -149,8 +149,9 @@
           desko-light = { name = "desko";  local = "x86_64-linux"; target = "x86_64-linux";  light = true; };
           lappy       = { name = "lappy";  local = "x86_64-linux"; target = "x86_64-linux";  };
           lappy-light = { name = "lappy";  local = "x86_64-linux"; target = "x86_64-linux";  light = true; };
-          moby        = { name = "moby";   local = "x86_64-linux"; target = "aarch64-linux"; };
-          moby-light  = { name = "moby";   local = "x86_64-linux"; target = "aarch64-linux"; light = true; };
+          # moby        = { name = "moby";   local = "x86_64-linux"; target = "aarch64-linux"; };
+          # moby-light  = { name = "moby";   local = "x86_64-linux"; target = "aarch64-linux"; light = true; };
+          moby-light  = { name = "moby";   local = "x86_64-linux"; target = "x86_64-linux"; light = true; };
           rescue      = { name = "rescue"; local = "x86_64-linux"; target = "x86_64-linux";  };
         };
         hostsNext = mapAttrs' (h: v: {
@@ -170,7 +171,7 @@
       #      - chown root:nixbld <part>/nix/store
       #      - chown root:root -R <part>/nix/store/*
       #      - chown root:root -R <part>/persist  # if using impermanence
-      #      - populate any important things (persist/, home/colin/.ssh, etc)
+      #      - populate any important things (persist/, home/alex/.ssh, etc)
       #   - boot
       #   - if fs wasn't resized automatically, then `sudo btrfs filesystem resize max /`
       #   - checkout this flake into /etc/nixos AND UPDATE THE FS UUIDS.
@@ -268,7 +269,7 @@
             # - nix-copy-closure --to $host $result
             # - on target: nix-env set -p /nix/var/nix/profiles/system $result
             # - on target: $result/bin/switch-to-configuration
-            nixos-rebuild --flake '.#${host}' ${action} --target-host colin@${addr} --use-remote-sudo "$@" --fast
+            nixos-rebuild --flake '.#${host}' ${action} --target-host alex@${addr} --use-remote-sudo "$@" --fast
           '';
           deployApp = host: addr: action: {
             type = "app";
@@ -519,7 +520,7 @@
       templates = {
         env.python-data = {
           # initialize with:
-          # - `nix flake init -t '/home/colin/dev/nixos/#env.python-data'`
+          # - `nix flake init -t '/home/alex/dev/nixos/#env.python-data'`
           # then enter with:
           # - `nix develop`
           path = ./templates/env/python-data;
@@ -527,19 +528,19 @@
         };
         pkgs.rust-inline = {
           # initialize with:
-          # - `nix flake init -t '/home/colin/dev/nixos/#pkgs.rust-inline'`
+          # - `nix flake init -t '/home/alex/dev/nixos/#pkgs.rust-inline'`
           path = ./templates/pkgs/rust-inline;
           description = "rust package and development environment (inline rust sources)";
         };
         pkgs.rust = {
           # initialize with:
-          # - `nix flake init -t '/home/colin/dev/nixos/#pkgs.rust'`
+          # - `nix flake init -t '/home/alex/dev/nixos/#pkgs.rust'`
           path = ./templates/pkgs/rust;
           description = "rust package fit to ship in nixpkgs";
         };
         pkgs.make = {
           # initialize with:
-          # - `nix flake init -t '/home/colin/dev/nixos/#pkgs.make'`
+          # - `nix flake init -t '/home/alex/dev/nixos/#pkgs.make'`
           path = ./templates/pkgs/make;
           description = "default Makefile-based derivation";
         };

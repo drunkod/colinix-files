@@ -1,7 +1,7 @@
 # import feeds with e.g.
 # ```console
 # $ nix build '.#nixpkgs.freshrss'
-# $ sudo -u freshrss -g freshrss FRESHRSS_DATA_PATH=/var/lib/freshrss ./result/cli/import-for-user.php --user admin --filename /home/colin/.config/newsflashFeeds.opml
+# $ sudo -u freshrss -g freshrss FRESHRSS_DATA_PATH=/var/lib/freshrss ./result/cli/import-for-user.php --user admin --filename /home/alex/.config/newsflashFeeds.opml
 # ```
 #
 # export feeds with
@@ -42,9 +42,9 @@
     after = [ "freshrss-config.service" ];
     script = ''
       # easiest way to preserve feeds: delete the user, recreate it, import feeds
-      ${pkgs.freshrss}/cli/delete-user.php --user colin || true
-      ${pkgs.freshrss}/cli/create-user.php --user colin --password "$(cat ${config.services.freshrss.passwordFile})" || true
-      ${pkgs.freshrss}/cli/import-for-user.php --user colin --filename ${opml}
+      ${pkgs.freshrss}/cli/delete-user.php --user alex || true
+      ${pkgs.freshrss}/cli/create-user.php --user alex --password "$(cat ${config.services.freshrss.passwordFile})" || true
+      ${pkgs.freshrss}/cli/import-for-user.php --user alex --filename ${opml}
     '';
   };
 

@@ -72,16 +72,16 @@ in
           SAVEHIST=1000000
 
           # auto-cd into any of these dirs by typing them and pressing 'enter':
-          hash -d 3rd="/home/colin/dev/3rd"
-          hash -d dev="/home/colin/dev"
-          hash -d knowledge="/home/colin/knowledge"
-          hash -d nixos="/home/colin/nixos"
-          hash -d nixpkgs="/home/colin/dev/3rd/nixpkgs"
-          hash -d ref="/home/colin/ref"
-          hash -d secrets="/home/colin/knowledge/secrets"
-          hash -d tmp="/home/colin/tmp"
-          hash -d uninsane="/home/colin/dev/uninsane"
-          hash -d Videos="/home/colin/Videos"
+          hash -d 3rd="/home/alex/dev/3rd"
+          hash -d dev="/home/alex/dev"
+          hash -d knowledge="/home/alex/knowledge"
+          hash -d nixos="/home/alex/nixos"
+          hash -d nixpkgs="/home/alex/dev/3rd/nixpkgs"
+          hash -d ref="/home/alex/ref"
+          hash -d secrets="/home/alex/knowledge/secrets"
+          hash -d tmp="/home/alex/tmp"
+          hash -d uninsane="/home/alex/dev/uninsane"
+          hash -d Videos="/home/alex/Videos"
 
           # emulate bash keybindings
           bindkey -e

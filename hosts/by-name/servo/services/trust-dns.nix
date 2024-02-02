@@ -20,7 +20,7 @@ in lib.mkMerge [
     visibleTo.lan = true;
     visibleTo.wan = true;
     visibleTo.ovpn = true;
-    description = "colin-dns-hosting";
+    description = "alex-dns-hosting";
   };
 
   sane.dns.zones."uninsane.org".TTL = 900;
@@ -105,7 +105,7 @@ in lib.mkMerge [
     # - this is complicated in that loopback is a different interface than eth0, so rewriting the destination address would cause the packets to just be dropped by the interface
     protocol = [ "udp" "tcp" ];
     visibleTo.lan = true;
-    description = "colin-redirected-dns-for-lan-namespace";
+    description = "alex-redirected-dns-for-lan-namespace";
   };
 }
 {

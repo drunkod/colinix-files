@@ -61,7 +61,7 @@ impl Runner {
         // TODO: look into caching the messages somewhere on disk (sled; indexeddb)
         let client = Client::builder()
             .homeserver_url(homeserver)
-            .sled_store("/home/colin/mx-sanebot", None)?
+            .sled_store("/home/alex/mx-sanebot", None)?
             .build()
             .await?;
         println!("client built");

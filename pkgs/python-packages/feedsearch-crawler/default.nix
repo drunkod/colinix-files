@@ -66,6 +66,6 @@ buildPythonPackage rec {
     homepage = "https://feedsearch.dev";
     description = "Crawl sites for RSS, Atom, and JSON feeds";
     license = licenses.mit;
-    maintainers = with maintainers; [ colinsane ];
+    maintainers = with maintainers; [ alexsane ];
   };
 }

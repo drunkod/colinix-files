@@ -9,7 +9,7 @@
     persist.byStore.plaintext = [ ".local/state/splatmoji" ];
     fs.".config/splatmoji/splatmoji.config".symlink.text = ''
       # XXX doesn't seem to understand ~ as shorthand for `$HOME`
-      history_file=/home/colin/.local/state/splatmoji/history
+      history_file=/home/alex/.local/state/splatmoji/history
       history_length=5
       paste_command=${pkgs.wtype}/bin/wtype -M Ctrl -k v
       # rofi_command=${pkgs.wofi}/bin/wofi --dmenu --insensitive --cache-file /dev/null

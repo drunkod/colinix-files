@@ -43,18 +43,18 @@ in
 
       # includes/exclude ordering matters, so we explicitly control it here.
       # the first match decides a file's treatment. so here:
-      # - /nix/persist/home/colin/tmp is excluded
+      # - /nix/persist/home/alex/tmp is excluded
       # - *other* /nix/persist/ files are included by default
       # - anything else under `/` are excluded by default
-      "--exclude" "/nix/persist/home/colin/dev/home-logic/coremem/out"  # this can reach > 1 TB
-      "--exclude" "/nix/persist/home/colin/use/iso"  # might want to re-enable... but not critical
-      "--exclude" "/nix/persist/home/colin/.local/share/sublime-music"  # music cache. better to just keep the HQ sources
-      "--exclude" "/nix/persist/home/colin/.local/share/Steam"  # can just re-download games
-      "--exclude" "/nix/persist/home/colin/.bitmonero/lmdb"  # monero blockchain
-      "--exclude" "/nix/persist/home/colin/.rustup"
-      "--exclude" "/nix/persist/home/colin/ref"  # publicly available data: no point in duplicating it
-      "--exclude" "/nix/persist/home/colin/tmp"
-      "--exclude" "/nix/persist/home/colin/Videos"
+      "--exclude" "/nix/persist/home/alex/dev/home-logic/coremem/out"  # this can reach > 1 TB
+      "--exclude" "/nix/persist/home/alex/use/iso"  # might want to re-enable... but not critical
+      "--exclude" "/nix/persist/home/alex/.local/share/sublime-music"  # music cache. better to just keep the HQ sources
+      "--exclude" "/nix/persist/home/alex/.local/share/Steam"  # can just re-download games
+      "--exclude" "/nix/persist/home/alex/.bitmonero/lmdb"  # monero blockchain
+      "--exclude" "/nix/persist/home/alex/.rustup"
+      "--exclude" "/nix/persist/home/alex/ref"  # publicly available data: no point in duplicating it
+      "--exclude" "/nix/persist/home/alex/tmp"
+      "--exclude" "/nix/persist/home/alex/Videos"
       "--exclude" "/nix/persist/var/lib/duplicity"  # don't back up our own backup state!
       "--include" "/nix/persist"
       "--exclude" "/"

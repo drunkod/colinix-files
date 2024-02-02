@@ -27,9 +27,9 @@ let
       federate = false;  # false => Matrix users from other homeservers can't join IRC channels
     };
     ircClients = {
-      nickTemplate = "$LOCALPARTsane";  # @colin:uninsane.org (Matrix) -> colinsane (IRC)
-      realnameFormat = "reverse-mxid";  # @colin:uninsane.org (Matrix) -> org.uninsane:colin (IRC)
-      # realnameFormat = "localpart";  # @colin:uninsane.org (Matrix) -> colin (IRC)  -- but requires the mxid patch below
+      nickTemplate = "$LOCALPARTsane";  # @alex:uninsane.org (Matrix) -> alexsane (IRC)
+      realnameFormat = "reverse-mxid";  # @alex:uninsane.org (Matrix) -> org.uninsane:alex (IRC)
+      # realnameFormat = "localpart";  # @alex:uninsane.org (Matrix) -> alex (IRC)  -- but requires the mxid patch below
       # by default, Matrix will convert messages greater than (3) lines into a pastebin-like URL to send to IRC.
       lineLimit = 20;
       # Rizon in particular allows only 4 connections from one IP before a 30min ban.
@@ -54,7 +54,7 @@ let
     };
 
     # this will let this user message the appservice with `!join #<IRCChannel>` and the rest "Just Works"
-    "@colin:uninsane.org" = "admin";
+    "@alex:uninsane.org" = "admin";
 
     membershipLists = {
       enabled = true;
@@ -83,7 +83,7 @@ let
     # - invite @irc_${lowerName}_NickServ:uninsane.org to a DM and type `help`  => register
     # - invite the matrix-appservice-irc user to a DM and type `!help`   => add PW to database
     # to validate that i'm authenticated on the IRC network, DM @irc_${lowerName}_NickServ:uninsane.org:
-    # - send: `STATUS colinsane`
+    # - send: `STATUS alexsane`
     # - response should be `3`: "user recognized as owner via password identification"
     # passwordEncryptionKeyPath = "/path/to/privkey";  # appservice will generate its own if unspecified
   };

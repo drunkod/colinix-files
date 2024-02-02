@@ -174,7 +174,7 @@
 - this error message comes from the electron binary, itself
   - version encoded into electron binary with `"node_module_version": 116`
   - encoded into node_modules/@signalapp/better-sqlite3/build/config.gypi
-    - when correct: built with `"nodedir": "/home/colin/.electron-gyp/26.3.0"`
+    - when correct: built with `"nodedir": "/home/alex/.electron-gyp/26.3.0"`
     - when correct: doesn't have ldd dep against sqlcipher or libcrypto or libz or libdl
     - IT'S DEFINITELY THE FUCKING BETTER-SQLITE WHICH IS GIVING ME PROBLEMS
 

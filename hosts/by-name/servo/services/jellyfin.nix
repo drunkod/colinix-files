@@ -20,24 +20,24 @@
   sane.ports.ports."1900" = {
     protocol = [ "udp" ];
     visibleTo.lan = true;
-    description = "colin-upnp-for-jellyfin";
+    description = "alex-upnp-for-jellyfin";
   };
   sane.ports.ports."7359" = {
     protocol = [ "udp" ];
     visibleTo.lan = true;
-    description = "colin-jellyfin-specific-client-discovery";
+    description = "alex-jellyfin-specific-client-discovery";
     # ^ not sure if this is necessary: copied this port from nixos jellyfin.openFirewall
   };
   # not sure if 8096/8920 get used either:
   sane.ports.ports."8096" = {
     protocol = [ "tcp" ];
     visibleTo.lan = true;
-    description = "colin-jellyfin-http-lan";
+    description = "alex-jellyfin-http-lan";
   };
   sane.ports.ports."8920" = {
     protocol = [ "tcp" ];
     visibleTo.lan = true;
-    description = "colin-jellyfin-https-lan";
+    description = "alex-jellyfin-https-lan";
   };
 
   sane.persist.sys.byStore.plaintext = [

@@ -52,16 +52,16 @@ let
 in
 {
 
-  # sops.age.sshKeyPaths = [ "/home/colin/.ssh/id_ed25519_dec" ];
+  # sops.age.sshKeyPaths = [ "/home/alex/.ssh/id_ed25519_dec" ];
   sops.gnupg.sshKeyPaths = [];  # disable RSA key import
   # This is using an age key that is expected to already be in the filesystem
-  # sops.age.keyFile = "/home/colin/.ssh/age.pub";
+  # sops.age.keyFile = "/home/alex/.ssh/age.pub";
   # sops.age.keyFile = "/var/lib/sops-nix/key.txt";
   # This will generate a new key if the key specified above does not exist
   # sops.age.generateKey = true;
   # This is the actual specification of the secrets.
   # sops.secrets.example_key = {
-  #   owner = config.users.users.colin.name;
+  #   owner = config.users.users.alex.name;
   # };
   # sops.secrets."myservice/my_subdir/my_secret" = {};
 
@@ -69,9 +69,9 @@ in
     (secretsForHost "common")
     (secretsForHost config.networking.hostName)
     {
-      "jackett_apikey".owner = config.users.users.colin.name;
-      "mx-sanebot-env".owner = config.users.users.colin.name;
-      "transmission_passwd".owner = config.users.users.colin.name;
+      "jackett_apikey".owner = config.users.users.alex.name;
+      "mx-sanebot-env".owner = config.users.users.alex.name;
+      "transmission_passwd".owner = config.users.users.alex.name;
     }
   ];
 }

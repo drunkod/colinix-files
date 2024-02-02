@@ -12,7 +12,7 @@
   # TODO: remove emulation, but need to fix nixos-rebuild to moby for that.
   # sane.roles.build-machine.emulation = true;
 
-  sops.secrets.colin-passwd.neededForUsers = true;
+  sops.secrets.alex-passwd.neededForUsers = true;
 
   sane.ports.openFirewall = true;  # for e.g. nix-serve
 
@@ -29,10 +29,10 @@
   sane.nixcache.remote-builders.desko = false;
 
   sane.gui.sway.enable = true;
-  sane.programs.iphoneUtils.enableFor.user.colin = true;
-  sane.programs.steam.enableFor.user.colin = true;
+  sane.programs.iphoneUtils.enableFor.user.alex = true;
+  sane.programs.steam.enableFor.user.alex = true;
 
-  # sane.programs.devPkgs.enableFor.user.colin = true;
+  # sane.programs.devPkgs.enableFor.user.alex = true;
 
   sane.programs.signal-desktop.config.autostart = true;
   sane.programs."gnome.geary".config.autostart = true;
@@ -56,7 +56,7 @@
     # but that also requires setting up the persist dir as a subvol
     SUBVOLUME = "/nix";
     # TODO: ALLOW_USERS doesn't seem to work. still need `sudo snapper -c nix list`
-    ALLOW_USERS = [ "colin" ];
+    ALLOW_USERS = [ "alex" ];
   };
 
   # docs: https://nixos.org/manual/nixos/stable/options.html#opt-system.stateVersion

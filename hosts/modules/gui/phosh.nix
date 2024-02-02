@@ -35,14 +35,14 @@ in
     }
 
     (mkIf cfg.enable {
-      sane.programs.phoshApps.enableFor.user.colin = true;
+      sane.programs.phoshApps.enableFor.user.alex = true;
 
       # docs: https://github.com/NixOS/nixpkgs/blob/nixos-22.05/nixos/modules/services/x11/desktop-managers/phosh.nix
       # docs: <repo:gnome/phosh:src/phoc.ini.example>
       # docs: <repo:gnome/phosh:src/settings.c#config_ini_handler>
       services.xserver.desktopManager.phosh = {
         enable = true;
-        user = "colin";
+        user = "alex";
         group = "users";
         phocConfig = {
           # xwayland = "true";
@@ -132,7 +132,7 @@ in
       # lightdm greeters get the login users from lightdm which gets it from org.freedesktop.Accounts.ListCachedUsers.
       # this requires the user we want to login as to be cached.
       services.xserver.displayManager.job.preStart = ''
-        ${pkgs.systemd}/bin/busctl call org.freedesktop.Accounts /org/freedesktop/Accounts org.freedesktop.Accounts CacheUser s colin
+        ${pkgs.systemd}/bin/busctl call org.freedesktop.Accounts /org/freedesktop/Accounts org.freedesktop.Accounts CacheUser s alex
       '';
       # XXX for some reason specifying defaultSession = "sm.puri.Phosh" breaks cross-compiled display-manager startup
       # - causes an attempt to load x86-64 glib-2.76.2/lib/libglib-2.0.so.0

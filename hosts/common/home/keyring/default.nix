@@ -11,7 +11,7 @@ in
 
   sane.user.fs."private/.local/share/keyrings/default" = {
     generated.command = [ "${init-keyring}/bin/init-keyring" ];
-    wantedBy = [ config.sane.fs."/home/colin/private".unit ];
+    wantedBy = [ config.sane.fs."/home/alex/private".unit ];
     wantedBeforeBy = [ ];  # don't created this as part of `multi-user.target`
   };
 }

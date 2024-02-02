@@ -94,7 +94,7 @@ in
       method: Pleroma.Captcha.Native
 
 
-    # (enabled by colin)
+    # (enabled by alex)
     # Enable Strict-Transport-Security once SSL is working:
     config :pleroma, :http_security,
       sts: true
@@ -117,7 +117,7 @@ in
       reject: [ {"threads.net", "megacorp"}, {"*.threads.net", "megacorp"} ]
       # reject: [ [host: "threads.net", reason: "megacorp"], [host: "*.threads.net", reason: "megacorp"] ]
 
-    # XXX colin: not sure if this actually _does_ anything
+    # XXX alex: not sure if this actually _does_ anything
     # better to steal emoji from other instances?
     # - <https://docs.pleroma.social/backend/configuration/cheatsheet/#mrf_steal_emoji>
     config :pleroma, :emoji,
@@ -171,7 +171,7 @@ in
       recommendedProxySettings = true;
       # documented: https://git.pleroma.social/pleroma/pleroma/-/blob/develop/installation/pleroma.nginx
       extraConfig = ''
-        # XXX colin: this block is in the nixos examples: i don't understand all of it
+        # XXX alex: this block is in the nixos examples: i don't understand all of it
         add_header 'Access-Control-Allow-Origin' '*' always;
         add_header 'Access-Control-Allow-Methods' 'POST, PUT, DELETE, GET, PATCH, OPTIONS' always;
         add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Idempotency-Key' always;
@@ -194,7 +194,7 @@ in
         # proxy_set_header Host $host;
         # proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
-        # colin: added this due to Pleroma complaining in its logs
+        # alex: added this due to Pleroma complaining in its logs
         # proxy_set_header X-Real-IP $remote_addr;
         # proxy_set_header X-Forwarded-Proto $scheme;
 

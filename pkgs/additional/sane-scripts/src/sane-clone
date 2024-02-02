@@ -4,13 +4,13 @@
 # use like `eval $(sane-clone tuba)` to clone and cd into a tuba checkout
 
 srcattr="$1.src"
-basedir=/home/colin/ref/repos
+basedir=/home/alex/ref/repos
 
 # fetchFromGitHub: provides src.{gitRepoUrl,owner,repo}
 # fetchFromGitLab: provides src.gitRepoUrl only
-repourl="$(nix eval --raw /home/colin/dev/nixos#$srcattr.gitRepoUrl)"
-repoowner="$(nix eval --raw /home/colin/dev/nixos#$srcattr.owner)"
-reponame="$(nix eval --raw /home/colin/dev/nixos#$srcattr.repo)"
+repourl="$(nix eval --raw /home/alex/dev/nixos#$srcattr.gitRepoUrl)"
+repoowner="$(nix eval --raw /home/alex/dev/nixos#$srcattr.owner)"
+reponame="$(nix eval --raw /home/alex/dev/nixos#$srcattr.repo)"
 
 ownerdir="$basedir/$repoowner"
 clonedir="$ownerdir/$reponame"

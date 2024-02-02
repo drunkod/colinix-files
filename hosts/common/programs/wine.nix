@@ -5,7 +5,7 @@
     persist.byStore.cryptClearOnBoot = [ ".wine" ];
     persist.byStore.plaintext = [
       # Power Bomberman: <https://www.bombermanboard.com/viewtopic.php?t=1925>
-      ".wine/drive_c/users/colin/AppData/pb"
+      ".wine/drive_c/users/alex/AppData/pb"
     ];
   };
 }

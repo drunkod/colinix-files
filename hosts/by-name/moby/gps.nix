@@ -56,7 +56,7 @@
     # XXX: setting users != [] might be causing `where-am-i` to time out
     users = [
       # restrict to only one set of users. empty array (default) means "allow any user to access geolocation".
-      (builtins.toString config.users.users.colin.uid)
+      (builtins.toString config.users.users.alex.uid)
     ];
   };
   systemd.services.geoclue.after = lib.mkForce [];  #< defaults to network-online, but not all my sources require network
@@ -65,5 +65,5 @@
   ];
 
   sane.services.eg25-control.enable = true;
-  sane.programs.where-am-i.enableFor.user.colin = true;
+  sane.programs.where-am-i.enableFor.user.alex = true;
 }

@@ -55,7 +55,7 @@
       # SXMO_ROTATION_GRAVITY = "12800";  # uncomfortably high
       # SXMO_ROTATION_GRAVITY = "12500";    # kinda uncomfortable when walking
       SXMO_ROTATION_GRAVITY = "12000";
-      SXMO_SCREENSHOT_DIR = "/home/colin/Pictures";  # default: "$HOME"
+      SXMO_SCREENSHOT_DIR = "/home/alex/Pictures";  # default: "$HOME"
 
       # sway/wayland scaling:
       # - conflicting info out there on how scaling actually works

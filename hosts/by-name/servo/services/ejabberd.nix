@@ -53,53 +53,53 @@ lib.mkIf false
         protocol = [ "tcp" "udp" ];
         visibleTo.lan = true;
         visibleTo.wan = true;
-        description = "colin-xmpp-stun-turn";
+        description = "alex-xmpp-stun-turn";
       };
       "5222" = {
         protocol = [ "tcp" ];
         visibleTo.lan = true;
         visibleTo.wan = true;
-        description = "colin-xmpp-client-to-server";
+        description = "alex-xmpp-client-to-server";
       };
       "5223" = {
         protocol = [ "tcp" ];
         visibleTo.lan = true;
         visibleTo.wan = true;
-        description = "colin-xmpps-client-to-server";  # XMPP over TLS
+        description = "alex-xmpps-client-to-server";  # XMPP over TLS
       };
       "5269" = {
         protocol = [ "tcp" ];
         visibleTo.wan = true;
-        description = "colin-xmpp-server-to-server";
+        description = "alex-xmpp-server-to-server";
       };
       "5270" = {
         protocol = [ "tcp" ];
         visibleTo.wan = true;
-        description = "colin-xmpps-server-to-server";  # XMPP over TLS
+        description = "alex-xmpps-server-to-server";  # XMPP over TLS
       };
       "5280" = {
         protocol = [ "tcp" ];
         visibleTo.lan = true;
         visibleTo.wan = true;
-        description = "colin-xmpp-bosh";
+        description = "alex-xmpp-bosh";
       };
       "5281" = {
         protocol = [ "tcp" ];
         visibleTo.lan = true;
         visibleTo.wan = true;
-        description = "colin-xmpp-bosh-https";
+        description = "alex-xmpp-bosh-https";
       };
       "5349" = {
         protocol = [ "tcp" ];
         visibleTo.lan = true;
         visibleTo.wan = true;
-        description = "colin-xmpp-stun-turn-over-tls";
+        description = "alex-xmpp-stun-turn-over-tls";
       };
       "5443" = {
         protocol = [ "tcp" ];
         visibleTo.lan = true;
         visibleTo.wan = true;
-        description = "colin-xmpp-web-services";  # file uploads, websockets, admin
+        description = "alex-xmpp-web-services";  # file uploads, websockets, admin
       };
     }
   ] ++ (builtins.map
@@ -111,7 +111,7 @@ lib.mkIf false
         protocol = [ "tcp" "udp" ];
         visibleTo.lan = true;
         visibleTo.wan = true;
-        description = "colin-xmpp-turn-${builtins.toString count}-of-${builtins.toString numPorts}";
+        description = "alex-xmpp-turn-${builtins.toString count}-of-${builtins.toString numPorts}";
       };
     })
     turnPortRange
@@ -196,7 +196,7 @@ lib.mkIf false
 
       pam_userinfotype = "jid";
       acl = {
-        admin.user = [ "colin@uninsane.org" ];
+        admin.user = [ "alex@uninsane.org" ];
         local.user_regexp = "";
         loopback.ip = [ "127.0.0.0/8" "::1/128" ];
       };
@@ -340,7 +340,7 @@ lib.mkIf false
             name = "abuse-addresses";
             urls = [
               "mailto:admin.xmpp@uninsane.org"
-              "xmpp:colin@uninsane.org"
+              "xmpp:alex@uninsane.org"
             ];
           }
           {
@@ -348,7 +348,7 @@ lib.mkIf false
             name = "admin-addresses";
             urls = [
               "mailto:admin.xmpp@uninsane.org"
-              "xmpp:colin@uninsane.org"
+              "xmpp:alex@uninsane.org"
             ];
           }
         ];

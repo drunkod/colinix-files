@@ -35,17 +35,17 @@ in
   #   protocol = [ "tcp" ];
   #   # XXX visibleTo.lan effectively means "open firewall, but don't configure any NAT/forwarding"
   #   visibleTo.lan = true;
-  #   description = "colin-smtp-mx.uninsane.org";
+  #   description = "alex-smtp-mx.uninsane.org";
   # };
   # sane.ports.ports."465" = {
   #   protocol = [ "tcp" ];
   #   visibleTo.lan = true;
-  #   description = "colin-smtps-mx.uninsane.org";
+  #   description = "alex-smtps-mx.uninsane.org";
   # };
   # sane.ports.ports."587" = {
   #   protocol = [ "tcp" ];
   #   visibleTo.lan = true;
-  #   description = "colin-smtps-submission-mx.uninsane.org";
+  #   description = "alex-smtps-submission-mx.uninsane.org";
   # };
 
   # exists only to manage certs for Postfix
@@ -98,7 +98,7 @@ in
 
   services.postfix.virtual = ''
     notify.matrix@uninsane.org matrix-synapse
-    @uninsane.org colin
+    @uninsane.org alex
   '';
 
   services.postfix.config = {
@@ -181,12 +181,12 @@ in
     # intercept gitea registration confirmations and manually screen them
     {
       # headerChecks are somehow ignorant of alias rules: have to redirect to a real user
-      action = "REDIRECT colin@uninsane.org";
+      action = "REDIRECT alex@uninsane.org";
       pattern = "/^Subject: Please activate your account/";
     }
     # intercept Matrix registration confirmations
     {
-      action = "REDIRECT colin@uninsane.org";
+      action = "REDIRECT alex@uninsane.org";
       pattern = "/^Subject:.*Validate your email/";
     }
     # XXX postfix only supports performing ONE action per header.

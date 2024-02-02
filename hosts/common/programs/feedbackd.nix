@@ -102,7 +102,7 @@ in
       environment = {
         G_MESSAGES_DEBUG = "all";
       } // (lib.optionalAttrs cfg.config.proxied {
-        FEEDBACK_THEME = "/home/colin/.config/feedbackd/themes/proxied.json";
+        FEEDBACK_THEME = "/home/alex/.config/feedbackd/themes/proxied.json";
       });
     };
   };

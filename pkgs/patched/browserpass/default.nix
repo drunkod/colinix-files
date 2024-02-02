@@ -29,7 +29,7 @@ in
   browserpass.overrideAttrs (upstream: {
     src = fetchFromGitea {
       domain = "git.uninsane.org";
-      owner = "colin";
+      owner = "alex";
       repo = "browserpass-native";
       # don't forcibly append '.gpg'
       rev = "d3ef88e12cb127914fb0ead762b7baee6913592f";

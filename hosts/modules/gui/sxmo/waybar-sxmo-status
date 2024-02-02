@@ -19,7 +19,7 @@
 # setup environment so that the hooks will be on PATH:
 # - sxmo_hook_statusbar.sh
 # - sxmo_hook_icons.sh
-export HOME="${HOME:-/home/colin}"
+export HOME="${HOME:-/home/alex}"
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export PATH="$XDG_CONFIG_HOME/sxmo/hooks:$PATH"
 

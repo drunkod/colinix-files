@@ -42,7 +42,7 @@ in
         # visibleTo.lan = true;
         # visibleTo.wan = true;
         visibleTo.ovpn = true;
-        description = "colin-stun-turn";
+        description = "alex-stun-turn";
       };
       "5349" = {
         # the other port 3478 also supports TLS/DTLS, but presumably clients wanting TLS will default 5349
@@ -50,7 +50,7 @@ in
         # visibleTo.lan = true;
         # visibleTo.wan = true;
         visibleTo.ovpn = true;
-        description = "colin-stun-turn-over-tls";
+        description = "alex-stun-turn-over-tls";
       };
     }
   ] ++ (builtins.map
@@ -63,7 +63,7 @@ in
         # visibleTo.lan = true;
         # visibleTo.wan = true;
         visibleTo.ovpn = true;
-        description = "colin-turn-${builtins.toString count}-of-${builtins.toString numPorts}";
+        description = "alex-turn-${builtins.toString count}-of-${builtins.toString numPorts}";
       };
     })
     turnPortRange

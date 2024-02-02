@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 {
   imports = [
-    ./fs.nix
+    # ./fs.nix
     ./polyfill.nix
   ];
 
@@ -13,24 +13,24 @@
 
   # sane.guest.enable = true;
   sane.gui.sway.enable = true;
-  boot.loader.efi.canTouchEfiVariables = false;
-  sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
+  # boot.loader.efi.canTouchEfiVariables = false;
+  # sane.image.extraBootFiles = [ pkgs.bootpart-uefi-x86_64 ];
 
-  sane.programs.stepmania.enableFor.user.colin = true;
+  # sane.programs.stepmania.enableFor.user.alex = true;
 
-  sops.secrets.colin-passwd.neededForUsers = true;
+  # sops.secrets.alex-passwd.neededForUsers = true;
 
   # default config: https://man.archlinux.org/man/snapper-configs.5
   # defaults to something like:
   #   - hourly snapshots
   #   - auto cleanup; keep the last 10 hourlies, last 10 daylies, last 10 monthlys.
-  services.snapper.configs.nix = {
-    # TODO: for the impermanent setup, we'd prefer to just do /nix/persist,
-    # but that also requires setting up the persist dir as a subvol
-    SUBVOLUME = "/nix";
-    ALLOW_USERS = [ "colin" ];
-  };
+  # services.snapper.configs.nix = {
+  #   # TODO: for the impermanent setup, we'd prefer to just do /nix/persist,
+  #   # but that also requires setting up the persist dir as a subvol
+  #   SUBVOLUME = "/nix";
+  #   ALLOW_USERS = [ "alex" ];
+  # };
 
   # docs: https://nixos.org/manual/nixos/stable/options.html#opt-system.stateVersion
-  system.stateVersion = "21.05";
+  system.stateVersion = "24.05";
 }

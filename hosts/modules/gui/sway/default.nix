@@ -198,7 +198,7 @@ in
 
     (lib.mkIf cfg.enable {
       sane.programs.fontconfig.enableFor.system = true;
-      sane.programs.swayApps.enableFor.user.colin = true;
+      sane.programs.swayApps.enableFor.user.alex = true;
 
       sane.gui.gtk.enable = lib.mkDefault true;
       # sane.gui.gtk.gtk-theme = lib.mkDefault "Fluent-Light-compact";
@@ -217,7 +217,7 @@ in
       sane.gui.unl0kr = lib.mkIf cfg.useGreeter {
         enable = true;
         afterLogin = "sway";
-        user = "colin";
+        user = "alex";
       };
 
       # swap in these lines to use `greetd`+`gtkgreet` instead:
@@ -233,7 +233,7 @@ in
       #     # instead, want to run sway as a systemd user service.
       #     # this seems silly, but it allows the launched sway to access any linux capabilities which the systemd --user manager is granted.
       #     # notably, that means CAP_NET_ADMIN, CAP_NET_RAW; necessary for wireshark.
-      #     # these capabilities are granted to systemd --user by pam. see the user definition in hosts/common/users/colin.nix for more.
+      #     # these capabilities are granted to systemd --user by pam. see the user definition in hosts/common/users/alex.nix for more.
       #     # session.command = "${pkgs.systemd}/bin/systemd-run --user --wait --collect --service-type=exec ${cfg.package}/bin/sway";  #< works, but can't launch terminals, etc ("exec: no such file" (sh))
       #     # session.command = ''${pkgs.systemd}/bin/systemd-run --user --wait --collect --service-type=exec -E "PATH=$PATH" -p AmbientCapabilities="cap_net_admin cap_net_raw" ${cfg.package}/bin/sway'';
       #   };

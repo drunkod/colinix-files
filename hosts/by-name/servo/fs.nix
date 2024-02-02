@@ -83,11 +83,11 @@
 
   sane.persist.sys.byStore.plaintext = [
     # TODO: this is overly broad; only need media and share directories to be persisted
-    { user = "colin"; group = "users"; path = "/var/lib/uninsane"; }
+    { user = "alex"; group = "users"; path = "/var/lib/uninsane"; }
   ];
   # force some problematic directories to always get correct permissions:
   sane.fs."/var/lib/uninsane/media".dir.acl = {
-    user = "colin"; group = "media"; mode = "0775";
+    user = "alex"; group = "media"; mode = "0775";
   };
   sane.fs."/var/lib/uninsane/media/archive".dir = {};
   sane.fs."/var/lib/uninsane/media/archive/README.md".file.text = ''
@@ -116,19 +116,19 @@
   # make sure large media is stored to the HDD
   sane.persist.sys.byStore.ext = [
     {
-      user = "colin";
+      user = "alex";
       group = "users";
       mode = "0777";
       path = "/var/lib/uninsane/media/Videos";
     }
     {
-      user = "colin";
+      user = "alex";
       group = "users";
       mode = "0777";
       path = "/var/lib/uninsane/media/freeleech";
     }
     {
-      user = "colin";
+      user = "alex";
       group = "users";
       mode = "0777";
       path = "/var/lib/uninsane/media/datasets";

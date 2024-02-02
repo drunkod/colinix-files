@@ -33,14 +33,14 @@ lib.mkIf false
     };
     provisioning = {
       # allow these users to control the puppet
-      whitelist = [ "@colin:uninsane\\.org" ];
+      whitelist = [ "@alex:uninsane\\.org" ];
     };
     relay = {
-      whitelist = [ "@colin:uninsane\\.org" ];
+      whitelist = [ "@alex:uninsane\\.org" ];
     };
     selfService = {
       # who's allowed to use plumbed rooms (idk what that means)
-      whitelist = [ "@colin:uninsane\\.org" ];
+      whitelist = [ "@alex:uninsane\\.org" ];
     };
     logging = {
       # silly, debug, verbose, info, warn, error

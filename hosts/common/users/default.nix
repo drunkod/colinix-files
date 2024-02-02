@@ -15,7 +15,7 @@ let
 in
 {
   imports = [
-    ./colin.nix
+    ./alex.nix
     ./guest.nix
     ./root.nix
   ];

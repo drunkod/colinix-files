@@ -22,7 +22,7 @@
 -- - that would manifest as wikipedia links failing to open in external application (xdg-open)
 
 local logger = require("logger")
-logger.info("applying colin patch")
+logger.info("applying alex patch")
 
 local Device = require("device")
 logger.info("Device:" .. tostring(Device))

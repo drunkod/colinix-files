@@ -53,7 +53,7 @@ stdenv.mkDerivation rec {
     description = "Watch YouTube and PeerTube videos in one place";
     homepage = "https://gitlab.com/schmiddi-on-mobile/pipeline";
     license = lib.licenses.gpl3Plus;
-    maintainers = with lib.maintainers; [ colinsane ];
+    maintainers = with lib.maintainers; [ alexsane ];
     platforms = lib.platforms.linux;
     mainProgram = "tubefeeder";
   };

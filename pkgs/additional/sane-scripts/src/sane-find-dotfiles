@@ -1,7 +1,7 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -i bash -p findutils
 # find where a package stores its dotfiles/dotdir
-# e.g. `sane-find-dotfiles foo` might print `/home/colin/.foo`, `/home/colin/.local/share/foo`, etc.
+# e.g. `sane-find-dotfiles foo` might print `/home/alex/.foo`, `/home/alex/.local/share/foo`, etc.
 
 find ~/ -maxdepth 1 -iname "*$1*" -print
 find ~/.local/share/*/ -maxdepth 1 -iname "*$1*" -print

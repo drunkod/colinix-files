@@ -20,6 +20,6 @@ rustPlatform.buildRustPackage rec {
     description = "unFTP is an open-source FTP(S) (not SFTP) server aimed at the Cloud that allows bespoke extension through its pluggable authenticator, storage back-end and user detail store architectures.";
     homepage = "https://unftp.rs/";
     license = licenses.asl20;
-    maintainers = with maintainers; [ colinsane ];
+    maintainers = with maintainers; [ alexsane ];
   };
 }

@@ -46,7 +46,7 @@ in
     };
     sane.gui.unl0kr.user = mkOption {
       type = types.str;
-      default = "colin";
+      default = "alex";
     };
     sane.gui.unl0kr.afterLogin = mkOption {
       type = types.nullOr types.str;

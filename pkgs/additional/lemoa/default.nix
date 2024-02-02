@@ -59,6 +59,6 @@ stdenv.mkDerivation rec {
     description = "Native Gtk client for Lemmy";
     homepage = "https://github.com/lemmy-gtk/lemoa";
     license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ colinsane ];
+    maintainers = with maintainers; [ alexsane ];
   };
 }

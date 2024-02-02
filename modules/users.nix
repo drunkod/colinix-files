@@ -16,14 +16,14 @@ let
         description = ''
           entries to pass onto `sane.fs` after prepending the user's home-dir to the path
           and marking them as wanted.
-          e.g. `sane.users.colin.fs."/.config/aerc" = X`
-          => `sane.fs."/home/colin/.config/aerc" = { wantedBy = [ "multi-user.target"]; } // X;
+          e.g. `sane.users.alex.fs."/.config/aerc" = X`
+          => `sane.fs."/home/alex/.config/aerc" = { wantedBy = [ "multi-user.target"]; } // X;
 
           conventions are similar as to toplevel `sane.fs`. so `sane.users.foo.fs."/"` represents the home directory,
           whereas every other entry is expected to *not* have a trailing slash.
 
-          option merging happens inside `sane.fs`, so `sane.users.colin.fs."foo" = A` and `sane.fs."/home/colin/foo" = B`
-          behaves identically to `sane.fs."/home/colin/foo" = lib.mkMerge [ A B ];
+          option merging happens inside `sane.fs`, so `sane.users.alex.fs."foo" = A` and `sane.fs."/home/alex/foo" = B`
+          behaves identically to `sane.fs."/home/alex/foo" = lib.mkMerge [ A B ];
           (the unusual signature for this type is how we delay option merging)
         '';
       };

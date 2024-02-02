@@ -6,7 +6,7 @@
 # then:
 # - remove ~/.local/share/stable/*
 #   - this might give I/O error, in which case remove the corresponding path under
-#     /nix/persist/home/colin/private (which can be found by correlating timestamps/sizes with that in ~/private/.local/share/stable).
+#     /nix/persist/home/alex/private (which can be found by correlating timestamps/sizes with that in ~/private/.local/share/stable).
 # - reboot (maybe necessary).
 # - now you can send messages, and read messages in unencrypted rooms, but not read messages from encrypted rooms.
 # to fix encrypted message receipt:

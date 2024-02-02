@@ -11,7 +11,7 @@ then
   if ! (test -e /mnt/iphone)
   then
     sudo mkdir /mnt/iphone
-    sudo chown colin:users /mnt/iphone
+    sudo chown alex:users /mnt/iphone
   fi
 fi
 
@@ -22,4 +22,4 @@ then
   ifuse /mnt/iphone
 fi
 
-rsync -arv /mnt/iphone/DCIM/ /home/colin/Pictures/iphone/
+rsync -arv /mnt/iphone/DCIM/ /home/alex/Pictures/iphone/

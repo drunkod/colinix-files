@@ -60,7 +60,7 @@
   sane.ids.nix-serve.uid = 2420;
   sane.ids.nix-serve.gid = 2420;
 
-  sane.ids.colin.uid = 1000;
+  sane.ids.alex.uid = 1000;
   sane.ids.guest.uid = 1100;
 
   # found on all hosts

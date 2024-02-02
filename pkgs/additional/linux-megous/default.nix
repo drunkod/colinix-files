@@ -141,7 +141,7 @@ let
     #   # there appears to be support for WOWLAN even with this patch dropped.
     #   name = "pinephone-dt-keep-power-in-suspend";
     #   patch = fetchpatch {
-    #     url = "https://git.uninsane.org/colin/linux/commit/afd6514fd3098047000b3f1f198c2256478dce46.patch";
+    #     url = "https://git.uninsane.org/alex/linux/commit/afd6514fd3098047000b3f1f198c2256478dce46.patch";
     #     hash = "sha256-8OtGXpCPJbk3c3Z4DcurS0F+Ogqx+xahEv+256+4dcY=";
     #   };
     # }
@@ -150,7 +150,7 @@ let
     #   # uncertain what this does, LPS = "Leisure Power Savings"
     #   name = "disable-rtl8723cs-lps";
     #   patch = fetchpatch {
-    #     url = "https://git.uninsane.org/colin/linux/commit/8bee908739b3b3aa505b22e558397d2d59060951.patch";
+    #     url = "https://git.uninsane.org/alex/linux/commit/8bee908739b3b3aa505b22e558397d2d59060951.patch";
     #     hash = "sha256-DnLDseL1Ar5gE31CQUTrGNxxNu88jGCzj8ko99Z8vUA=";
     #   };
     # }
@@ -163,21 +163,21 @@ let
     #   # seems to infrequently disrupt waking on ARP packets, as well.
     #   name = "enable-wowlan-offloads";
     #   patch = fetchpatch {
-    #     url = "https://git.uninsane.org/colin/linux/commit/c4d2d12e31ae70bb43c6190eccc49e42ad645090.patch";
+    #     url = "https://git.uninsane.org/alex/linux/commit/c4d2d12e31ae70bb43c6190eccc49e42ad645090.patch";
     #     hash = "sha256-B1rxeVu6y5hP/iMLSbl3ExwrEIXL7WShWsMFh6ko6yk=";
     #   };
     # }
     {
       name = "pinephone: wowlan: disable unicast";
       patch = fetchpatch {
-        url = "https://git.uninsane.org/colin/linux/commit/3b3328cfb35b6cea3480c6358faf4d4175146372.patch";
+        url = "https://git.uninsane.org/alex/linux/commit/3b3328cfb35b6cea3480c6358faf4d4175146372.patch";
         hash = "sha256-aBa63UHaU+KSWNzeXEamcMhJr2bRkJGZPTM7nBNu9wk=";
       };
     }
     # {
     #   name = "pinephone: wowlan: disable unicast/deauth/magic packet/arp";
     #   patch = fetchpatch {
-    #     url = "https://git.uninsane.org/colin/linux/commit/624315afd2ebd44fc6d0056c206b502e50d92775.patch";
+    #     url = "https://git.uninsane.org/alex/linux/commit/624315afd2ebd44fc6d0056c206b502e50d92775.patch";
     #     hash = "sha256-KlgIJigK7G89obT7qWGdHqQ+eavYrCkuwo2d0wdUrpE=";
     #   };
     # }
@@ -188,7 +188,7 @@ let
       # /sys/kernel/debug/gpio
       name = "pinephone: rtl8723cs: enable CONFIG_GPIO_API";
       patch = fetchpatch {
-        url = "https://git.uninsane.org/colin/linux/commit/51dea574a4559bd30fda2b0f852e42cad6cb6757.patch";
+        url = "https://git.uninsane.org/alex/linux/commit/51dea574a4559bd30fda2b0f852e42cad6cb6757.patch";
         hash = "sha256-pAmif5vMdZzgmyzkLmvdOltoXdeXeBeOhvGbpHWzIkc=";
       };
     }
@@ -199,7 +199,7 @@ let
     #   # likely something else is configuring the IRQ at runtime.
     #   name = "pinephone: rtl8723cs: IRQ on LEVEL_LOW instead of EDGE_FALLING";
     #   patch = fetchpatch {
-    #     url = "https://git.uninsane.org/colin/linux/commit/223046eac02c5b1ca6203f68df495d35ce191280.patch";
+    #     url = "https://git.uninsane.org/alex/linux/commit/223046eac02c5b1ca6203f68df495d35ce191280.patch";
     #     hash = "sha256-Quhvz7hiM3TbpZ2pKuHVXrO8OLn3r7WNYYIjQc1CWcQ=";
     #   };
     # }
@@ -237,7 +237,7 @@ in buildLinux (args // {
 
   src = fetchFromGitea {
     domain = "git.uninsane.org";
-    owner = "colin";
+    owner = "alex";
     repo = "linux";
     inherit rev hash;
   };

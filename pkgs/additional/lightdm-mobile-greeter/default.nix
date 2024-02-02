@@ -26,7 +26,7 @@ rustPlatform.buildRustPackage rec {
   # sane dev:
   src = fetchFromGitea {
     domain = "git.uninsane.org";
-    owner = "colin";
+    owner = "alex";
     repo = "lightdm-mobile-greeter";
     # rev = "bd2138f630db0dfb901bc28a9b70d6be8b9879dd";
     # hash = "sha256-B3dNvnduR1pz5DedmAR8Fc/CXowR3jsyrjMUFOMizxI=";
@@ -67,7 +67,7 @@ rustPlatform.buildRustPackage rec {
   meta = with lib; {
     description = "A simple log in screen for use on touch screens.";
     homepage = "https://git.raatty.club/raatty/lightdm-mobile-greeter";
-    maintainers = with maintainers; [ colinsane ];
+    maintainers = with maintainers; [ alexsane ];
     platforms = platforms.linux;
     license = licenses.mit;
   };

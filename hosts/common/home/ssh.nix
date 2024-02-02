@@ -1,9 +1,9 @@
-# TODO: this should be moved to users/colin.nix
+# TODO: this should be moved to users/alex.nix
 { config, lib, ... }:
 
 let
   host = config.networking.hostName;
-  user-pubkey-full = config.sane.ssh.pubkeys."colin@${host}" or {};
+  user-pubkey-full = config.sane.ssh.pubkeys."alex@${host}" or {};
   user-pubkey = user-pubkey-full.asUserKey or null;
   host-keys = lib.filter (k: k.user == "root") (lib.attrValues config.sane.ssh.pubkeys);
   known-hosts-text = lib.concatStringsSep
@@ -21,9 +21,9 @@ in
   };
   sane.user.fs.".ssh/known_hosts".symlink.text = known-hosts-text;
 
-  users.users.colin.openssh.authorizedKeys.keys =
+  users.users.alex.openssh.authorizedKeys.keys =
   let
-    user-keys = lib.filter (k: k.user == "colin") (lib.attrValues config.sane.ssh.pubkeys);
+    user-keys = lib.filter (k: k.user == "alex") (lib.attrValues config.sane.ssh.pubkeys);
   in
     builtins.map (k: k.asUserKey) user-keys;
 }

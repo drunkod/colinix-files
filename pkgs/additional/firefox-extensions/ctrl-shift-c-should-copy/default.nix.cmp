@@ -41,6 +41,6 @@ stdenv.mkDerivation {
 
       the proper fix to disabling Ctrl+Shift+C seems to require compiling Firefox from source, as of their Quantum project post-2019.
     '';
-    maintainer = with lib.maintainers; [ colinsane ];
+    maintainer = with lib.maintainers; [ alexsane ];
   };
 }

@@ -19,13 +19,13 @@ in
     visibleTo.lan = true;
     visibleTo.wan = true;
     visibleTo.ovpn = true;  # so that letsencrypt can procure a cert for the mx record
-    description = "colin-http-uninsane.org";
+    description = "alex-http-uninsane.org";
   };
   sane.ports.ports."443" = {
     protocol = [ "tcp" ];
     visibleTo.lan = true;
     visibleTo.wan = true;
-    description = "colin-https-uninsane.org";
+    description = "alex-https-uninsane.org";
   };
 
   services.nginx.enable = true;
@@ -170,7 +170,7 @@ in
 
   sane.persist.sys.byStore.plaintext = [
     { user = "acme"; group = "acme"; path = "/var/lib/acme"; }
-    { user = "colin"; group = "users"; path = "/var/www/sites"; }
+    { user = "alex"; group = "users"; path = "/var/www/sites"; }
   ];
 
   # let's encrypt default chain looks like:

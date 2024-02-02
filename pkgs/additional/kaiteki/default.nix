@@ -58,7 +58,7 @@ flutter.mkFlutterApp rec {
     description = "The comfy Fediverse client";
     homepage = "https://craftplacer.moe/projects/kaiteki/";
     license = licenses.agpl3Plus;
-    maintainers = with maintainers; [ colinsane ];
+    maintainers = with maintainers; [ alexsane ];
     platforms = platforms.linux;
   };
 }

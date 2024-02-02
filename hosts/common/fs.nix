@@ -21,11 +21,11 @@ let
     ];
 
     ssh = common ++ [
-      "identityfile=/home/colin/.ssh/id_ed25519"
+      "identityfile=/home/alex/.ssh/id_ed25519"
       "allow_other"
       "default_permissions"
     ];
-    sshColin = ssh ++ [
+    sshalex = ssh ++ [
       "transform_symlinks"
       "idmap=user"
       "uid=1000"
@@ -58,9 +58,9 @@ let
   };
   remoteHome = host: {
     fileSystems."/mnt/${host}-home" = {
-      device = "colin@${host}:/home/colin";
+      device = "alex@${host}:/home/alex";
       fsType = "fuse.sshfs";
-      options = fsOpts.sshColin ++ fsOpts.noauto;
+      options = fsOpts.sshalex ++ fsOpts.noauto;
       noCheck = true;
     };
     sane.fs."/mnt/${host}-home" = sane-lib.fs.wantedDir;

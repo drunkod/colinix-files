@@ -131,5 +131,5 @@
     group = "clightning";
   };
 
-  sane.programs.clightning.enableFor.user.colin = true;  # for debugging/admin: `lightning-cli`
+  sane.programs.clightning.enableFor.user.alex = true;  # for debugging/admin: `lightning-cli`
 }

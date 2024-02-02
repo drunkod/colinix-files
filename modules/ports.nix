@@ -19,7 +19,7 @@ let
       };
       description = mkOption {
         type = types.str;
-        default = "colin-${config.net.hostName}";
+        default = "alex-${config.net.hostName}";
         description = ''
           short description of why this port is open.
           this is shown, for example, in an upstream's UPnP status page.

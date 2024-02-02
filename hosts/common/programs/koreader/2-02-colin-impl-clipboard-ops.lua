@@ -1,5 +1,5 @@
 local logger = require("logger")
-logger.info("applying colin patch colin-impl-clipboard")
+logger.info("applying alex patch alex-impl-clipboard")
 
 -- source: <https://github.com/ncopa/lua-shell/blob/master/shell.lua>
 local function shescape(arg)

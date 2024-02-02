@@ -8,7 +8,7 @@ lib.optionalAttrs false  # disabled until i can be sure it's not gonna OOM my se
     script = ''
       working=$(mktemp -d /tmp/nixos-prebuild.XXXXXX)
       pushd "$working"
-      git clone https://git.uninsane.org/colin/nix-files.git \
+      git clone https://git.uninsane.org/alex/nix-files.git \
         && cd nix-files \
         && nix flake update \
         || true

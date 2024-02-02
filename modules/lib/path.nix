@@ -29,7 +29,7 @@ let path = rec {
   leaf = str: lib.last (split str);
 
   # return the path from `from` to `to`, but keeping absolute form
-  # e.g. `pathFrom "/home/colin" "/home/colin/foo/bar"` -> "/foo/bar"
+  # e.g. `pathFrom "/home/alex" "/home/alex/foo/bar"` -> "/foo/bar"
   from = start: end: let
     s = path.norm start;
     e = path.norm end;
