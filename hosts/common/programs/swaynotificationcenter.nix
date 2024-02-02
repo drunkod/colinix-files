@@ -127,12 +127,12 @@ in
         (pkgs.fetchpatch {
           # import of <https://github.com/ErikReider/SwayNotificationCenter/pull/304>
           # as of 2023/11/08 the upstream patch has merge conflicts AND runtime issues (see wip-swaync-update nixos branch)
-          url = "https://git.uninsane.org/alex/SwayNotificationCenter/commit/d9a0d938b88cbee65cfaef887af77a5a23d5fe89.patch";
+          url = "https://git.uninsane.org/colin/SwayNotificationCenter/commit/d9a0d938b88cbee65cfaef887af77a5a23d5fe89.patch";
           name = "Add toggle button";
           hash = "sha256-bove2EXc5FZ5nN1X1FYOn3czCgHG03ibIAupJNoctiM=";
         })
         (pkgs.fetchpatch {
-          url = "https://git.uninsane.org/alex/SwayNotificationCenter/commit/f5d9405e040fc42ea98dc4d37202c85728d0d4fd.patch";
+          url = "https://git.uninsane.org/colin/SwayNotificationCenter/commit/f5d9405e040fc42ea98dc4d37202c85728d0d4fd.patch";
           name = "toggleButton: change active field to be a command";
           hash = "sha256-Y8fiZbAP9yGOVU3rOkZKO8TnPPlrGpINWYGaqeeNzF0=";
         })

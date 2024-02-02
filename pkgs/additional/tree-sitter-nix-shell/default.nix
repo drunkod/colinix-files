@@ -36,7 +36,7 @@ tree-sitter.buildGrammar {
 
   meta = with lib; {
     description = "parse `#!/usr/bin/env nix-shell` scripts with tree-sitter";
-    homepage = "https://git.uninsane.org/alex/tree-sitter-nix-shell";
+    homepage = "https://git.uninsane.org/colin/tree-sitter-nix-shell";
     maintainers = with maintainers; [ alexsane ];
   };
 }

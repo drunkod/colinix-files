@@ -118,17 +118,17 @@ stdenv.mkDerivation rec {
   patches = [
     (fetchpatch {
       name = "only alias jq=gojq if the latter is available";
-      url = "https://git.uninsane.org/alex/sxmo-utils/commit/e0caaeb4219ba3b92d358a16dfa85bcd09a89adf.patch";
+      url = "https://git.uninsane.org/colin/sxmo-utils/commit/e0caaeb4219ba3b92d358a16dfa85bcd09a89adf.patch";
       hash = "sha256-EuJeHEEmewpipfpEy54pmyBaxhu5KBg7rX5n2kg+iMs=";
     })
     (fetchpatch {
       name = "apps: add Lemoa";
-      url = "https://git.uninsane.org/alex/sxmo-utils/commit/54948ab328d751fc380c7fca032f0b7403070dbf.patch";
+      url = "https://git.uninsane.org/colin/sxmo-utils/commit/54948ab328d751fc380c7fca032f0b7403070dbf.patch";
       hash = "sha256-xFvzfz4g9F3VI+wxmrz2aqGokV4YjBRlnnKg5GJbhqA=";
     })
     (fetchpatch {
       name ="apps: add Notejot";
-      url = "https://git.uninsane.org/alex/sxmo-utils/commit/bb862e0f89906c4d59484414f194469626e4c229.patch";
+      url = "https://git.uninsane.org/colin/sxmo-utils/commit/bb862e0f89906c4d59484414f194469626e4c229.patch";
       hash = "sha256-Sjma5ZKCd3VGk7EzzY5d1JySr3L38nA87pZuMITaxGU=";
     })
 
@@ -150,18 +150,18 @@ stdenv.mkDerivation rec {
       #     - sxmo_appmenu.sh applications
       #       - <application, e.g. chatty>
       name = "sxmo_hook_apps: launch apps via the window manager";
-      url = "https://git.uninsane.org/alex/sxmo-utils/commit/0087acfecedf9d1663c8b526ed32e1e2c3fc97f9.patch";
+      url = "https://git.uninsane.org/colin/sxmo-utils/commit/0087acfecedf9d1663c8b526ed32e1e2c3fc97f9.patch";
       hash = "sha256-YwlGM/vx3ZrBShXJJYuUa7FTPQ4CFP/tYffJzUxC7tI=";
     })
     # (fetchpatch {
     #   name = "sxmo_log: print to console";
-    #   url = "https://git.uninsane.org/alex/sxmo-utils/commit/030280cb83298ea44656e69db4f2693d0ea35eb9.patch";
+    #   url = "https://git.uninsane.org/colin/sxmo-utils/commit/030280cb83298ea44656e69db4f2693d0ea35eb9.patch";
     #   hash = "sha256-dc71eztkXaZyy+hm5teCw9lI9hKS68pPoP53KiBm5Fg=";
     # })
   ] ++ lib.optionals preferXdgOpen [
     (fetchpatch {
       name = "sxmo_open: use xdg-open";
-      url = "https://git.uninsane.org/alex/sxmo-utils/commit/8897aa5ef869be879e2419f70a16afd710f053fe.patch";
+      url = "https://git.uninsane.org/colin/sxmo-utils/commit/8897aa5ef869be879e2419f70a16afd710f053fe.patch";
       hash = "sha256-jvMSDJdOGeN2VGnuQ6UT/1gmFJtzTXTxt0WJ9gPInpU=";
     })
   ];

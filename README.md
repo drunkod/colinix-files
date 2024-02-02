@@ -111,7 +111,7 @@ them being factored out of my config, message me and we could work to make that 
 ## Mirrors
 
 this repo exists in a few known locations:
-- primary: <https://git.uninsane.org/alex/nix-files>
+- primary: <https://git.uninsane.org/colin/nix-files>
 - mirror: <https://github.com/nix-community/nur-combined/tree/master/repos/alexsane>
 
 ## Contact

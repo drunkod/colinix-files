@@ -1,5 +1,5 @@
 # XXX: lemonade is ALPHA. literally unusable right now. it loads the top communities from lemmy.ml, but interacting with them in any form is completely unimplemented.
-# my development fork: <https://git.uninsane.org/alex/lemonade>
+# my development fork: <https://git.uninsane.org/colin/lemonade>
 # difference from tip:
 # - flake.nix/default.nix
 # - runs outside flatpak

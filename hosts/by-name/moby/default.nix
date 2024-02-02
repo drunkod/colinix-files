@@ -36,15 +36,15 @@
   # sops.secrets.alex-passwd.neededForUsers = true;
 
   sane.gui.sxmo.enable = true;
-  sane.programs.consoleUtils.enableFor.user.alex = true;
+  sane.programs.consoleUtils.enableFor.user.alex = false;
   sane.programs.guiApps.enableFor.user.alex = false;
   sane.programs.blueberry.enableFor.user.alex = false;  # bluetooth manager: doesn't cross compile!
   sane.programs.mercurial.enableFor.user.alex = false;  # does not cross compile
   sane.programs.nvme-cli.enableFor.system = false;  # does not cross compile (libhugetlbfs)
 
   # enabled for easier debugging
-  sane.programs.eg25-control.enableFor.user.alex = true;
-  sane.programs.rtl8723cs-wowlan.enableFor.user.alex = true;
+  sane.programs.eg25-control.enableFor.user.alex = false;
+  sane.programs.rtl8723cs-wowlan.enableFor.user.alex = false;
 
   # sane.programs.ntfy-sh.config.autostart = true;
   sane.programs.dino.config.autostart = true;
@@ -120,7 +120,7 @@
   '';
 
   # enable rotation sensor
-  hardware.sensor.iio.enable = true;
+  hardware.sensor.iio.enable = false;
 
   # inject specialized alsa configs via the environment.
   # specifically, this gets the pinephone headphones & internal earpiece working.

@@ -5,7 +5,7 @@
     packageUnwrapped = pkgs.bubblewrap.overrideAttrs (base: {
       # patches = (base.patches or []) ++ [
       #   (pkgs.fetchpatch {
-      #     url = "https://git.uninsane.org/alex/bubblewrap/commit/9843f9b2b5f086563fd37250658d69350a2939be.patch";
+      #     url = "https://git.uninsane.org/colin/bubblewrap/commit/9843f9b2b5f086563fd37250658d69350a2939be.patch";
       #     name = "enable debug logging and add a bunch more tracing";
       #     hash = "sha256-AlDsqddaBahhqGibZlCjgmChuK7mmxDt0aYHNgY05OI=";
       #   })

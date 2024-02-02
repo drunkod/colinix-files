@@ -267,11 +267,12 @@ in
       sane.programs.sxmoApps = {
         packageUnwrapped = null;
         suggestedPrograms = [
-          "guiApps"
+          # "guiApps"
           "bemenu"  # specifically to import its theming
           "sfeed"   # want this here so that the user's ~/.sfeed/sfeedrc gets created
           # "superd"  # make superctl (used by sxmo) be on PATH
           # "sway-autoscaler"
+          "zsh"
         ];
 
         persist.byStore.cryptClearOnBoot = [
